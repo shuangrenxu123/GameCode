@@ -8,8 +8,6 @@ public class Main : MonoBehaviour
 {
     //public IMethod update;
     public bool updateOver = false;
-    [ColorUsageAttribute(true, true)] //添加HDR类型的颜色
-    public Color Color;
     private void Awake()
     {
         //MotionEngine.Initialize(this);
@@ -27,8 +25,8 @@ public class Main : MonoBehaviour
     {
         DontDestroyOnLoad(this);
         NetWorkManager.Instance.ConnectServer("192.168.31.143", 9990);
-        GameObject.Find("Canvas/Button").GetComponent<Button>().onClick.AddListener(
-            () => NetWorkManager.Instance.SendMessage(1, new login(){ Id = 2, Pw = "222" }));
+       // GameObject.Find("Canvas/Button").GetComponent<Button>().onClick.AddListener(
+       //     () => NetWorkManager.Instance.SendMessage(1, new login(){ Id = 2, Pw = "222" }));
     }
     private void Update()
     {
