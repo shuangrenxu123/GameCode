@@ -6,6 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine.UIElements;
 using System;
 using System.Linq;
+using UnityEditor;
 
 namespace DialogueEdtior
 {
@@ -13,24 +14,24 @@ namespace DialogueEdtior
 	{
 		public readonly Vector2 NodeSize = new(100, 150);
 		private NodeSearchWindow searchWindow;
-		public DialogueGraphView()
+		public DialogueGraphView(EditorWindow window)
 		{
 			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
 
-			AddSearchWindow();
+			AddSearchWindow(window);
 
 			AddElement(GenerateEntryPointNode());
 		}
 		/// <summary>
 		/// 创建右键的节点菜单类
 		/// </summary>
-        private void AddSearchWindow()
+        private void AddSearchWindow(EditorWindow window)
         {
             searchWindow =ScriptableObject.CreateInstance<NodeSearchWindow>();
-			searchWindow.Init(this);
+			searchWindow.Init(this,window);
 			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition),searchWindow);
         }
         /// <summary>
@@ -45,7 +46,7 @@ namespace DialogueEdtior
 			return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float));
 		}
 		/// <summary>
-		/// 初始化生成节点
+		/// 初始化生成入口节点
 		/// </summary>
 		/// <returns></returns>
 		private DialogueNode GenerateEntryPointNode()
@@ -60,27 +61,23 @@ namespace DialogueEdtior
 			node.SetPosition(new Rect(100,200,100,150));
 			var port = GeneratePort(node, Direction.Output,Port.Capacity.Multi);
 			port.portName = "OutPut";
-
-            var port2 = GeneratePort(node, Direction.Input, Port.Capacity.Multi);
-            port.portName = "input";
-            node.outputContainer.Add(port);
-            node.outputContainer.Add(port2);
+            node.outputContainer.Add(port); 
 			return node;
 		}
 		/// <summary>
 		/// 直接在Graph中生成一个Node
 		/// </summary>
 		/// <param name="name"></param>
-		public void CreateNode(string name)
+		public void CreateNode(string name,Vector2 pos)
 		{
-			AddElement(CreatDialogueNode(name));
+			AddElement(CreatDialogueNode(name,pos));
 		}
 		/// <summary>
 		/// 返回一个节点，但不会添加到Graph中
 		/// </summary>
 		/// <param name="nodename"></param>
 		/// <returns></returns>
-		public DialogueNode CreatDialogueNode(string nodename)
+		public DialogueNode CreatDialogueNode(string nodename,Vector2 pos)
 		{
 			var node = new DialogueNode()
 			{
@@ -92,20 +89,22 @@ namespace DialogueEdtior
 			inputPort.portName = "Input";
 			node.inputContainer.Add(inputPort);
 
-			var button = new Button(() => { AddChoicePort(node,""); });
+            var button = new Button(() => { AddChoicePort(node,""); });
 			button.text = "添加输出";
 			node.titleContainer.Add(button);
 
-            var lable = new Label();		
-			node.contentContainer.Add(lable);
 
 			var tf = new TextField();
-			tf.RegisterValueChangedCallback(e => lable.text = e.newValue);
+			tf.RegisterValueChangedCallback(e =>
+			{
+				node.title = e.newValue;
+				node.DialogueText= e.newValue;
+			});
 			node.contentContainer.Add(tf);
 
 			node.RefreshExpandedState();
 			node.RefreshPorts();
-			node.SetPosition(new Rect(new Vector2(50,50), NodeSize));
+			node.SetPosition(new Rect(pos, NodeSize));
 
 			return node;
 		}

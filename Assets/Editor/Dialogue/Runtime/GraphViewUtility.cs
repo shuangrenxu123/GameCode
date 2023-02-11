@@ -97,11 +97,11 @@ public class GraphViewUtility
     {
         foreach (var nodedata in container.NodeDatas)
         {
-            var tempNode = targetGraphView.CreatDialogueNode(nodedata.dialogueText);
+            var tempNode = targetGraphView.CreatDialogueNode(nodedata.dialogueText,nodedata.position);
             tempNode.GUID= nodedata.guid;
             targetGraphView.AddElement(tempNode);
             var nodePorts = container.nodeLinks.Where(x => x.BaseNodeGuid== nodedata.guid).ToList();
-            nodePorts.ForEach(x => { targetGraphView.AddChoicePort(tempNode, x.PortName); });
+            nodePorts.ForEach(x => { targetGraphView.AddChoicePort(tempNode, x.PortName);});
         }
     }
 
@@ -119,12 +119,16 @@ public class GraphViewUtility
 
     private void ClearGraph()
     {
+        ///找到入口节点，即自动生成的那个
+        nodes.Find(x => x.EntryPoint).GUID = container.nodeLinks[0].BaseNodeGuid;
         foreach (var node in nodes)
         {
-            //Edges.Where(x => x.input.node == node).ToList().ForEach(edge => targetGraphView.RemoveElement(edge));
-            Edges.ForEach(e => targetGraphView.RemoveElement(e));
-            targetGraphView.Remove(node);
+            if (node.EntryPoint)
+            {
+                continue;
+            }
+            Edges.Where(x => x.input.node == node).ToList().ForEach(edge => targetGraphView.RemoveElement(edge));
+            targetGraphView.RemoveElement(node);
         }
-        //targetGraphView.Clear();
     }
 }

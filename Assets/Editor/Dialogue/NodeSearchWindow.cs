@@ -1,12 +1,15 @@
 using DialogueEdtior;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
 {
     private DialogueGraphView view;
+    private EditorWindow editorWindow;
     public List<SearchTreeEntry> CreateSearchTree(SearchWindowContext context)
     {
         var tree = new List<SearchTreeEntry>()
@@ -22,20 +25,25 @@ public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
         return tree;
 
     }
-    public void Init(DialogueGraphView dialogueGraphView)
+    public void Init(DialogueGraphView dialogueGraphView,EditorWindow window)
     {
         this.view = dialogueGraphView;
+        this.editorWindow = window;
+
     }
     public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
     {
+        var position = editorWindow.rootVisualElement.ChangeCoordinatesTo(editorWindow.rootVisualElement.parent,context.screenMousePosition - editorWindow.position.position);
+
+        var loaclposition = view.contentContainer.WorldToLocal(position);
         switch(SearchTreeEntry.userData)
         {
             case "dialogue":
-                view.CreateNode("Node");
+                view.CreateNode("Node",loaclposition);
                 
                 return true;
             default:
-                return true;
+                return false;
         }
     }
 }

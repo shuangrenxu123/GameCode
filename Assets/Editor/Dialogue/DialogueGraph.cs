@@ -28,7 +28,7 @@ namespace DialogueEdtior
         }
         private void ConstructGraphview()
         {
-            graphView = new DialogueGraphView()
+            graphView = new DialogueGraphView(this)
             {
                 name = "对话系统"
             };
