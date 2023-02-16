@@ -3,9 +3,18 @@ using UnityEngine;
 
 public class CombatEntity : MonoBehaviour
 {
-    public HealthPoint hp = new HealthPoint();
-    public ActionPointManager ActionPointManager = new ActionPointManager();
-    public CombatNumberBox numberBox = new CombatNumberBox();
+    public HealthPoint hp;
+    public ActionPointManager ActionPointManager;
+    public CombatNumberBox numberBox;
+
+    private void Start()
+    {
+        hp = new HealthPoint();
+        ActionPointManager = new ActionPointManager();
+        numberBox = new CombatNumberBox();
+        numberBox.Init();
+        numberBox.Speed.SetBase(5);
+    }
     public void Init(int h)
     {
         hp.SetMaxValue(h);

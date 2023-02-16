@@ -1,6 +1,7 @@
 using DialogueEdtior;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -20,6 +21,12 @@ public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
             {
                 userData = "dialogue",
                 level =2,
+            },
+
+            new SearchTreeEntry(new GUIContent("Group"))
+            {
+                userData = "group",
+                level = 1,
             }
         };
         return tree;
@@ -39,8 +46,10 @@ public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
         switch(SearchTreeEntry.userData)
         {
             case "dialogue":
-                view.CreateNode("Node",loaclposition);
-                
+                view.CreateNode(loaclposition, "Node");
+                return true;
+            case "group":
+                view.Creategroup(view.selection.ToList().Cast<GraphElement>().ToList());
                 return true;
             default:
                 return false;

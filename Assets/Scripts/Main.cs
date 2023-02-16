@@ -16,7 +16,7 @@ public class Main : MonoBehaviour
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
         MotionEngine.CreateModule<NetWorkManager>(a);
         //MotionEngine.CreateModule<EventManager>();
-        //MotionEngine.CreateModule<WindowsManager>();
+        MotionEngine.CreateModule<WindowsManager>();
         //MotionEngine.CreateModule<VersionManager>();
         //MotionEngine.CreateModule<PoolManager>();
         //MotionEngine.CreateModule<ProcessManager>();
@@ -24,9 +24,7 @@ public class Main : MonoBehaviour
     private void Start()
     {
         DontDestroyOnLoad(this);
-        NetWorkManager.Instance.ConnectServer("192.168.31.143", 9990);
-       // GameObject.Find("Canvas/Button").GetComponent<Button>().onClick.AddListener(
-       //     () => NetWorkManager.Instance.SendMessage(1, new login(){ Id = 2, Pw = "222" }));
+        //NetWorkManager.Instance.ConnectServer("192.168.3.96", 20000);
     }
     private void Update()
     {

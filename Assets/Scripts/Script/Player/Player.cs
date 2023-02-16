@@ -26,21 +26,4 @@ public class Player : MonoBehaviour
             new DamageAction(entity, other.GetComponent<Enemy>().entity).Allpy();
         }
     }
-
-    private void FixedUpdate()
-    {
-        if (NetWorkManager.Instance.state == ENetWorkState.Connected)
-            SendPos();
-    }
-    private void SendPos()
-    {
-        PlayerInfo.move msg = new PlayerInfo.move
-        {
-            Id = 1,
-            X = transform.position.x,
-            Y = transform.position.y,
-            Z = transform.position.z
-        };
-        NetWorkManager.Instance.SendMessage(2, msg);
-    }
 }

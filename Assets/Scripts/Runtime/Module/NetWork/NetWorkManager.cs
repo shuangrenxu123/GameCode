@@ -126,6 +126,7 @@ namespace NetWork
                 state = ENetWorkState.Disconnect;
                 //发送广播，但我没写
                 CloseClient();
+                Debug.Log("与服务器的连接成功断开");
             }
         }
         /// <summary>

@@ -114,15 +114,15 @@ public class TcpChannel : IDisposable
 
     private void UpdateSending()
     {
-        if (!isSending || sendQueue.Count > 0)
+        if (sendQueue.Count > 0)
         {
-            isSending = true;
 
             //清空缓存
             sendBuffer.Clear();
             //合并数据一起发送
-            while (sendQueue.Count > 0)
+            while (sendQueue.Count > 0 && !isSending)
             {
+                isSending = true;
                 if (sendBuffer.WriteBytes() < packageMaxSize)
                     break;
 
@@ -201,11 +201,12 @@ public class TcpChannel : IDisposable
             //解码完成后等待接收下次的数据
             e.SetBuffer(0, receiveBuffer.Length);
             //Socket so = (Socket)e.UserToken;
-            bool willRaiseEvent = socket.ReceiveAsync(e);
-            if (!willRaiseEvent)
-            {
-                ProcessReceive(e);//循环接收
-            }
+            isReceive = false;
+            //bool willRaiseEvent = socket.ReceiveAsync(e);
+            //if (!willRaiseEvent)
+            //{
+            //    ProcessReceive(e);//循环接收
+            //}
         }
     }
     /// <summary>

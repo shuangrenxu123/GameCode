@@ -7,6 +7,7 @@ using UnityEngine.UIElements;
 using System;
 using System.Linq;
 using UnityEditor;
+using System.ComponentModel.Composition.Hosting;
 
 namespace DialogueEdtior
 {
@@ -20,10 +21,9 @@ namespace DialogueEdtior
 			this.AddManipulator(new ContentDragger());
 			this.AddManipulator(new SelectionDragger());
 			this.AddManipulator(new RectangleSelector());
-
 			AddSearchWindow(window);
-
 			AddElement(GenerateEntryPointNode());
+
 		}
 		/// <summary>
 		/// 创建右键的节点菜单类
@@ -68,7 +68,7 @@ namespace DialogueEdtior
 		/// 直接在Graph中生成一个Node
 		/// </summary>
 		/// <param name="name"></param>
-		public void CreateNode(string name,Vector2 pos)
+		public void CreateNode(Vector2 pos,string name = "")
 		{
 			AddElement(CreatDialogueNode(name,pos));
 		}
@@ -108,7 +108,12 @@ namespace DialogueEdtior
 
 			return node;
 		}
-
+		/// <summary>
+		/// 添加一个Port给node
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="name"></param>
+		/// <param name="direction"></param>
         public void AddChoicePort(DialogueNode node,string name = "",Direction direction = Direction.Output)
         {
             var generatedPort = GeneratePort(node, direction);
@@ -134,7 +139,11 @@ namespace DialogueEdtior
 			node.RefreshExpandedState();
             node.RefreshPorts();
         }
-
+		/// <summary>
+		/// 移除一个Port
+		/// </summary>
+		/// <param name="node"></param>
+		/// <param name="generatedPort"></param>
         private void RemovePort(DialogueNode node, Port generatedPort)
         {
 			//找出该端口所连接到的线
@@ -154,6 +163,34 @@ namespace DialogueEdtior
 
         }
 
+		public void Creategroup(List<GraphElement> nodes)
+		{
+			if (nodes.Count == 0 || nodes == null)
+				return;
+			var group = new Group();
+			group.title = "Group";
+			AddElement(group);
+			try
+			{
+				group.AddElements(nodes);
+			}
+			catch {
+				var a = nodes.OfType<Group>().ToList();
+				var name = a.First().title;
+				RemoveElement(a[0]);
+
+				foreach (var i in nodes)
+				{
+					if(i is Group)
+					{
+						continue;
+					}
+					group.AddElement(i);
+				}
+				group.title = name;
+
+			}
+		}
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
 			var CompatiblePorts = new List<Port>();
@@ -164,5 +201,6 @@ namespace DialogueEdtior
 			});
 			return CompatiblePorts;
         }
+
     }
 }

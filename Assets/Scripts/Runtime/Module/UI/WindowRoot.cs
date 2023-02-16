@@ -19,11 +19,11 @@ public abstract class WindowRoot : MonoBehaviour
         return listeners[name];
     }
 
-    public abstract void UpdateWindow();
     public GameObject GetUI(string name)
     {
         return transform.FindChildByName(name).gameObject;
     }
+    public abstract void UpdateWindow();
     public void RemoveUIEventListener(string name)
     {
         if (listeners.ContainsKey(name))

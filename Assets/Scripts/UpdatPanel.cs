@@ -45,10 +45,6 @@ public class UpdatPanel : WindowRoot
             hotUpdater.actionNothongUpdate += UpdateEnd;
             hotUpdater.Start();
         }
-        else
-        {
-            SceneManager.LoadScene("Fight");
-        }
     }
 
 }

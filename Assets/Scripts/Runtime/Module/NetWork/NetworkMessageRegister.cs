@@ -14,14 +14,15 @@ public class NetworkMessageRegister
 
     public void Init()
     {
-        RegisterMessageType(1, typeof(PlayerInfo.login));
+        RegisterMessageType(0, typeof(PlayerInfo.ping));
+        RegisterMessageType(1, typeof(PlayerInfo.move));
     }
     /// <summary>
-    /// ×¢²á·ÇÈÈ¸üµÄÏûÏ¢ÀàĞÍ
+    /// æ³¨å†Œéçƒ­æ›´çš„æ¶ˆæ¯ç±»å‹
     /// </summary>
     public static void RegisterMessageType(int msgID, Type classType)
     {
-        // ÅĞ¶ÏÊÇ·ñÖØ¸´
+        // åˆ¤æ–­æ˜¯å¦é‡å¤
         if (types.ContainsKey(msgID))
             throw new Exception($"NetMessage {msgID} already exist.");
 
@@ -29,10 +30,10 @@ public class NetworkMessageRegister
     }
 
     /// <summary>
-    /// »ñÈ¡Ö¸¶¨ÏûÏ¢IDµÄÏûÏ¢ÀàĞÍ
+    /// è·å–æŒ‡å®šæ¶ˆæ¯IDçš„æ¶ˆæ¯ç±»å‹
     /// </summary>
-    /// <param name="msgID">ÏûÏ¢ID</param>
-    /// <returns>Èç¹ûÕÒ²»µ½»á±¨Òì³£</returns>
+    /// <param name="msgID">æ¶ˆæ¯ID</param>
+    /// <returns>å¦‚æœæ‰¾ä¸åˆ°ä¼šæŠ¥å¼‚å¸¸</returns>
     public static Type GetMessageType(int msgID)
     {
         Type type;
