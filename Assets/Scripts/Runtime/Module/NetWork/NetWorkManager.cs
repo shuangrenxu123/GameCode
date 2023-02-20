@@ -58,12 +58,10 @@ namespace NetWork
                 //如果没有包了就退出循环
                 if (package == null)
                 {
-
                     return;
                 }
                 else if(handle != null)
                 {
-                    Debug.Log("接收到了消息");
                     handle?.Invoke(package);
                 }
 

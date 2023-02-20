@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     PlayerInput input;
     [SerializeField]
-    Rigidbody rb;
+    public Rigidbody rb;
     Animator anim;
     Vector3 rota = Vector3.zero;
     public float rotaSpeed = 200;
@@ -18,24 +18,24 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         entity = GetComponent<CombatEntity>();
-        input = new PlayerInput();
-        input.EnableTable();
-        input.Onmove += Move;
-        input.Onstop += Stop;
+        //input = new PlayerInput();
+        //input.EnableTable();
+        //input.Onmove += Move;
+        //input.Onstop += Stop;
         anim = GetComponent<Animator>();
     }
 
-    private void Stop(Vector2 arg0)
-    {
-        rb.velocity = new Vector3(0, rb.velocity.y, 0) * entity.numberBox.Speed.Value;
-        //rigidbody2d.velocity = transform.forward* speed;
-
-    }
-    private void Move(Vector2 arg0)
-    {
-        rb.velocity = new Vector3(0, 0, -arg0.y) * entity.numberBox.Speed.Value;
-        rb.velocity = -transform.forward * entity.numberBox.Speed.Value * arg0.y;
-    }
+    //private void Stop(Vector2 arg0)
+    //{
+    //    rb.velocity = new Vector3(0, rb.velocity.y, 0) * entity.numberBox.Speed.Value;
+    //    //rigidbody2d.velocity = transform.forward* speed;
+    //
+    //}
+    //private void Move(Vector2 arg0)
+    //{
+    //    rb.velocity = new Vector3(0, 0, -arg0.y) * entity.numberBox.Speed.Value;
+    //    rb.velocity = -transform.forward * entity.numberBox.Speed.Value * arg0.y;
+    //}
     void Update()
     {
         if (Keyboard.current.dKey.isPressed)
@@ -58,10 +58,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            rb.velocity = new Vector3(0, rb.velocity.y, 0);
+            rb.velocity = new Vector3(0, 0, 0);
         }
         transform.transform.rotation = Quaternion.Euler(rota);
-        //Debug.Log(rb.velocity);
 
     }
 }

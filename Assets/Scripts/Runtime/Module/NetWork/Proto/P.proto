@@ -3,9 +3,10 @@ package playerInfo;
 //protoc --csharp_out=. P.proto
 message move{
 	string id =1;
-	vector3 position = 2;
-    vector3 rotation = 3;
-    vector3 velocity = 4;
+	int32 time = 2;
+	vector3 position = 3;
+    vector3 rotation = 4;
+    vector3 velocity = 5;
 }
 message vector3{
 	float x=1;
@@ -14,4 +15,5 @@ message vector3{
 }
 message ping{
 	string id =1;
+	string timer = 2;
 }

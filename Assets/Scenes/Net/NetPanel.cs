@@ -36,7 +36,7 @@ public class NetPanel : WindowRoot
             NetWorkManager.Instance.DisConnectServer();
         });
         GetUI("id").GetComponent<TMP_InputField>().onValueChanged.AddListener(e=> GameObject.Find("Cube")
-        .GetComponent<NetObj>().id = e);
+        .GetComponent<Player>().id = e);
     }
 
 
@@ -48,10 +48,9 @@ public class NetPanel : WindowRoot
     {
         
     }
-    public void SetPingValue(float value,float v2)
+    public void SetPingValue(float value)
     {
         Ping.GetComponent<TMP_Text>().text = ((int)value).ToString();
-        GetUI("pingvalue").GetComponent<TMP_Text>().text = v2.ToString();
     }
 
 }

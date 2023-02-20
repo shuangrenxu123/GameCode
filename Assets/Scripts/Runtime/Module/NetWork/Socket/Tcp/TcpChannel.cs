@@ -6,8 +6,8 @@ using System.Net.Sockets;
 
 public class TcpChannel : IDisposable
 {
-    private readonly SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
-    private readonly SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
+    private  SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
+    private  SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
     private NetWorkpackCoder packageCoder;
 
     private readonly Queue<System.Object> sendQueue = new Queue<object>();
@@ -23,7 +23,6 @@ public class TcpChannel : IDisposable
 
     private bool isSending = false;
     private bool isReceive = false;
-    //private bool isServer = false;
 
     private MainThreadSyncContext context;
 
@@ -179,7 +178,6 @@ public class TcpChannel : IDisposable
     private void ProcessReceive(object obj)
     {
         SocketAsyncEventArgs e = obj as SocketAsyncEventArgs;
-        UnityEngine.Debug.Log("接收到了信息");
         //socket传输的字节数
         if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
         {
@@ -200,13 +198,7 @@ public class TcpChannel : IDisposable
             }
             //解码完成后等待接收下次的数据
             e.SetBuffer(0, receiveBuffer.Length);
-            //Socket so = (Socket)e.UserToken;
             isReceive = false;
-            //bool willRaiseEvent = socket.ReceiveAsync(e);
-            //if (!willRaiseEvent)
-            //{
-            //    ProcessReceive(e);//循环接收
-            //}
         }
     }
     /// <summary>
@@ -220,7 +212,6 @@ public class TcpChannel : IDisposable
         if (e.SocketError == SocketError.Success)
         {
             isSending = false;
-            UnityEngine.Debug.Log("发送信息成功");
         }
         else
         {

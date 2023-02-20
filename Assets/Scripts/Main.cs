@@ -23,8 +23,8 @@ public class Main : MonoBehaviour
     }
     private void Start()
     {
+        QualitySettings.vSyncCount= 0;
         DontDestroyOnLoad(this);
-        //NetWorkManager.Instance.ConnectServer("192.168.3.96", 20000);
     }
     private void Update()
     {

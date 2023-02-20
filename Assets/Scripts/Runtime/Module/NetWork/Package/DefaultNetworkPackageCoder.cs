@@ -113,7 +113,6 @@ public class DefaultNetworkPackageCoder : NetWorkpackCoder
     /// <param name="outputList">目的地的列表</param>
     public override void Decode(ByteBuffer receiveBuffer, List<object> outputList)
     {
-        Debug.Log("开始解码");
         while (true)
         {
             //剩余的未读取数据如果少于包头，也就是剩下的数据凑不够一个包
@@ -156,7 +155,6 @@ public class DefaultNetworkPackageCoder : NetWorkpackCoder
                     packager.Msgobj = DeCodeInternal(classType, body);
                     if (packager.Msgobj != null)
                     {
-                        Debug.Log("解码成功");
                         outputList.Add(packager);
                     }
                     else

@@ -24,18 +24,18 @@ namespace PlayerInfo {
     static PReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgdQLnByb3RvEgpwbGF5ZXJJbmZvIocBCgRtb3ZlEgoKAmlkGAEgASgJEiUK",
-            "CHBvc2l0aW9uGAIgASgLMhMucGxheWVySW5mby52ZWN0b3IzEiUKCHJvdGF0",
-            "aW9uGAMgASgLMhMucGxheWVySW5mby52ZWN0b3IzEiUKCHZlbG9jaXR5GAQg",
-            "ASgLMhMucGxheWVySW5mby52ZWN0b3IzIioKB3ZlY3RvcjMSCQoBeBgBIAEo",
-            "AhIJCgF5GAIgASgCEgkKAXoYAyABKAIiEgoEcGluZxIKCgJpZBgBIAEoCWIG",
-            "cHJvdG8z"));
+            "CgdQLnByb3RvEgpwbGF5ZXJJbmZvIpUBCgRtb3ZlEgoKAmlkGAEgASgJEgwK",
+            "BHRpbWUYAiABKAUSJQoIcG9zaXRpb24YAyABKAsyEy5wbGF5ZXJJbmZvLnZl",
+            "Y3RvcjMSJQoIcm90YXRpb24YBCABKAsyEy5wbGF5ZXJJbmZvLnZlY3RvcjMS",
+            "JQoIdmVsb2NpdHkYBSABKAsyEy5wbGF5ZXJJbmZvLnZlY3RvcjMiKgoHdmVj",
+            "dG9yMxIJCgF4GAEgASgCEgkKAXkYAiABKAISCQoBehgDIAEoAiIhCgRwaW5n",
+            "EgoKAmlkGAEgASgJEg0KBXRpbWVyGAIgASgJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Id", "Position", "Rotation", "Velocity" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Id", "Time", "Position", "Rotation", "Velocity" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.vector3), global::PlayerInfo.vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Id" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Id", "Timer" }, null, null, null)
           }));
     }
     #endregion
@@ -71,6 +71,7 @@ namespace PlayerInfo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public move(move other) : this() {
       id_ = other.id_;
+      time_ = other.time_;
       Position = other.position_ != null ? other.Position.Clone() : null;
       Rotation = other.rotation_ != null ? other.Rotation.Clone() : null;
       Velocity = other.velocity_ != null ? other.Velocity.Clone() : null;
@@ -93,8 +94,19 @@ namespace PlayerInfo {
       }
     }
 
+    /// <summary>Field number for the "time" field.</summary>
+    public const int TimeFieldNumber = 2;
+    private int time_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Time {
+      get { return time_; }
+      set {
+        time_ = value;
+      }
+    }
+
     /// <summary>Field number for the "position" field.</summary>
-    public const int PositionFieldNumber = 2;
+    public const int PositionFieldNumber = 3;
     private global::PlayerInfo.vector3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Position {
@@ -105,7 +117,7 @@ namespace PlayerInfo {
     }
 
     /// <summary>Field number for the "rotation" field.</summary>
-    public const int RotationFieldNumber = 3;
+    public const int RotationFieldNumber = 4;
     private global::PlayerInfo.vector3 rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Rotation {
@@ -116,7 +128,7 @@ namespace PlayerInfo {
     }
 
     /// <summary>Field number for the "velocity" field.</summary>
-    public const int VelocityFieldNumber = 4;
+    public const int VelocityFieldNumber = 5;
     private global::PlayerInfo.vector3 velocity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Velocity {
@@ -140,6 +152,7 @@ namespace PlayerInfo {
         return true;
       }
       if (Id != other.Id) return false;
+      if (Time != other.Time) return false;
       if (!object.Equals(Position, other.Position)) return false;
       if (!object.Equals(Rotation, other.Rotation)) return false;
       if (!object.Equals(Velocity, other.Velocity)) return false;
@@ -150,6 +163,7 @@ namespace PlayerInfo {
     public override int GetHashCode() {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
+      if (Time != 0) hash ^= Time.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       if (rotation_ != null) hash ^= Rotation.GetHashCode();
       if (velocity_ != null) hash ^= Velocity.GetHashCode();
@@ -170,16 +184,20 @@ namespace PlayerInfo {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
+      if (Time != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(Time);
+      }
       if (position_ != null) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(26);
         output.WriteMessage(Position);
       }
       if (rotation_ != null) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(34);
         output.WriteMessage(Rotation);
       }
       if (velocity_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(42);
         output.WriteMessage(Velocity);
       }
       if (_unknownFields != null) {
@@ -192,6 +210,9 @@ namespace PlayerInfo {
       int size = 0;
       if (Id.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
+      if (Time != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Time);
       }
       if (position_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
@@ -215,6 +236,9 @@ namespace PlayerInfo {
       }
       if (other.Id.Length != 0) {
         Id = other.Id;
+      }
+      if (other.Time != 0) {
+        Time = other.Time;
       }
       if (other.position_ != null) {
         if (position_ == null) {
@@ -249,21 +273,25 @@ namespace PlayerInfo {
             Id = input.ReadString();
             break;
           }
-          case 18: {
+          case 16: {
+            Time = input.ReadInt32();
+            break;
+          }
+          case 26: {
             if (position_ == null) {
               position_ = new global::PlayerInfo.vector3();
             }
             input.ReadMessage(position_);
             break;
           }
-          case 26: {
+          case 34: {
             if (rotation_ == null) {
               rotation_ = new global::PlayerInfo.vector3();
             }
             input.ReadMessage(rotation_);
             break;
           }
-          case 34: {
+          case 42: {
             if (velocity_ == null) {
               velocity_ = new global::PlayerInfo.vector3();
             }
@@ -487,6 +515,7 @@ namespace PlayerInfo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ping(ping other) : this() {
       id_ = other.id_;
+      timer_ = other.timer_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -506,6 +535,17 @@ namespace PlayerInfo {
       }
     }
 
+    /// <summary>Field number for the "timer" field.</summary>
+    public const int TimerFieldNumber = 2;
+    private string timer_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Timer {
+      get { return timer_; }
+      set {
+        timer_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ping);
@@ -520,6 +560,7 @@ namespace PlayerInfo {
         return true;
       }
       if (Id != other.Id) return false;
+      if (Timer != other.Timer) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -527,6 +568,7 @@ namespace PlayerInfo {
     public override int GetHashCode() {
       int hash = 1;
       if (Id.Length != 0) hash ^= Id.GetHashCode();
+      if (Timer.Length != 0) hash ^= Timer.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -544,6 +586,10 @@ namespace PlayerInfo {
         output.WriteRawTag(10);
         output.WriteString(Id);
       }
+      if (Timer.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(Timer);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -554,6 +600,9 @@ namespace PlayerInfo {
       int size = 0;
       if (Id.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
+      }
+      if (Timer.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Timer);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -569,6 +618,9 @@ namespace PlayerInfo {
       if (other.Id.Length != 0) {
         Id = other.Id;
       }
+      if (other.Timer.Length != 0) {
+        Timer = other.Timer;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -582,6 +634,10 @@ namespace PlayerInfo {
             break;
           case 10: {
             Id = input.ReadString();
+            break;
+          }
+          case 18: {
+            Timer = input.ReadString();
             break;
           }
         }
