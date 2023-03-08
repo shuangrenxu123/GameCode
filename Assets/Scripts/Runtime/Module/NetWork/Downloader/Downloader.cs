@@ -7,8 +7,8 @@ public class Downloader
     private Stream fs, ns;
     private int readSize;
     private byte[] readBuff;
-    private PackInfo packInfo;
-    private Thread thread;//Ğ´ÎÄ¼şµÄÏß³Ì
+    public PackInfo packInfo;
+    private Thread thread;//å†™æ–‡ä»¶çš„çº¿ç¨‹
     private bool stopThread = false;
 
     public long currDownloadSize;
@@ -17,8 +17,8 @@ public class Downloader
     public enum DownloadState
     {
         Ready,
-        ConnectionError,//Á¬½Ó´íÎó
-        DataProcessingError,//ÏÂÔØ´íÎó
+        ConnectionError,//è¿æ¥é”™è¯¯
+        DataProcessingError,//ä¸‹è½½é”™è¯¯
         Ing,
         End,
     }
@@ -27,23 +27,24 @@ public class Downloader
         readBuff = new byte[1024 * 4];
         state = DownloadState.Ready;
         packInfo = info;
-        var httpReq = HttpWebRequest.Create(info.url) as HttpWebRequest;
+        var httpReq = WebRequest.Create(info.url) as HttpWebRequest;
         httpReq.Timeout = 5000;
 
-        //ÁÙÊ±µÄÊı¾İ±£´æ
+        //ä¸´æ—¶çš„æ•°æ®ä¿å­˜
         var savePath = Application.persistentDataPath + "/" + info.MD5;
 
         fs = new FileStream(savePath, FileMode.OpenOrCreate, FileAccess.Write);
+        //å½“å‰æ–‡ä»¶å¤§å°
         currDownloadSize = fs.Length;
-        //ÏàÍ¬Ò²¼´ÏÂÔØÍê³É
+        //ç›¸åŒä¹Ÿå³ä¸‹è½½å®Œæˆ
         if (currDownloadSize == info.size)
         {
             state = DownloadState.End;
-            Debug.Log("ÏÂÔØÍê³É");
-            Dispose();
+            Debug.Log("ä¸‹è½½å®Œæˆ");
+            Reset();
             return;
         }
-        //Èç¹ûÎÄ¼şÀïÃæµÄÊı¾İ±È°üµÄ´óĞ¡´óÔòËµÃ÷³ö´íÁË
+        //å¦‚æœæ–‡ä»¶é‡Œé¢çš„æ•°æ®æ¯”åŒ…çš„å¤§å°å¤§åˆ™è¯´æ˜å‡ºé”™äº†
         else if (currDownloadSize > info.size)
         {
             currDownloadSize = 0;
@@ -51,25 +52,28 @@ public class Downloader
             File.Delete(savePath);
             fs = new FileStream(savePath, FileMode.Create, FileAccess.Write);
         }
-        //ËµÃ÷ÒÑ¾­ÏÂÔØ¹ı
+        //è¯´æ˜å·²ç»ä¸‹è½½è¿‡
         else if (currDownloadSize > 0)
         {
-            //ÉèÖÃ´ÓÄÄ¿ªÊ¼Ğ´
+            //è®¾ç½®ä»å“ªå¼€å§‹å†™
             fs.Seek(currDownloadSize, SeekOrigin.Begin);
             httpReq.AddRange(currDownloadSize);
         }
+        
         HttpWebResponse response;
         try
         {
+            //è·å¾—å›åº”ã€‚å³è·å¾—ä¸‹è½½çš„å­—èŠ‚
             response = (HttpWebResponse)httpReq.GetResponse();
         }
         catch (System.Exception e)
         {
             state = DownloadState.ConnectionError;
             Debug.LogError(e);
+            Reset();
             return;
         }
-        //Èç¹û²»³É¹¦ÔòÖØĞÂÏÂÔØ
+        //å¦‚æœä¸æˆåŠŸåˆ™é‡æ–°ä¸‹è½½
         if (response.StatusCode != HttpStatusCode.PartialContent)
         {
             if (File.Exists(savePath))
@@ -81,6 +85,7 @@ public class Downloader
             }
             fs = new FileStream(savePath, FileMode.Create, FileAccess.Write);
         }
+        //è·å¾—æ–‡ä»¶æµ
         ns = response.GetResponseStream();
         if (thread == null)
         {
@@ -109,7 +114,7 @@ public class Downloader
                     stopThread = true;
                     fs.Dispose();
                     state = DownloadState.End;
-
+                    Reset();
                 }
             }
             catch (System.Exception e)
@@ -117,12 +122,12 @@ public class Downloader
 
                 state = DownloadState.DataProcessingError;
                 Debug.LogError(e);
-                Dispose();
+                Reset();
             }
         }
     }
-
-    public void Dispose()
+    //é‡ç½®
+    public void Reset()
     {
         if (fs != null)
         {

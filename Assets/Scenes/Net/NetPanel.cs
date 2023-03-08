@@ -19,18 +19,18 @@ public class NetPanel : WindowRoot
             NetWorkManager.Instance.ConnectServer(text,
                 int.Parse(GetUI("port").GetComponent<TMP_InputField>().text));
         });
-        GetUI("send").GetComponent<Button>().onClick.AddListener(() =>
-        {
-            NetWorkManager.Instance.SendMessage(1,
-                new PlayerInfo.move()
-                {
-                    Id = "xu",
-                    Position = new PlayerInfo.vector3(),
-                    Rotation = new PlayerInfo.vector3(),
-                    Velocity= new PlayerInfo.vector3(),
-                }
-                );
-        });
+        //GetUI("send").GetComponent<Button>().onClick.AddListener(() =>
+        //{
+        //    NetWorkManager.Instance.SendMessage(1,
+        //        new PlayerInfo.move()
+        //        {
+        //            Id = "xu",
+        //            Position = new PlayerInfo.vector3(),
+        //            Rotation = new PlayerInfo.vector3(),
+        //            Velocity= new PlayerInfo.vector3(),
+        //        }
+        //        );
+        //});
         GetUI("close").GetComponent<Button>().onClick.AddListener(() =>
         {
             NetWorkManager.Instance.DisConnectServer();

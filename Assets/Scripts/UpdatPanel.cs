@@ -38,12 +38,12 @@ public class UpdatPanel : WindowRoot
         {
             GetUI("update").SetActive(true);
             hotUpdater = new HotUpdater();
-            hotUpdater.Init();
+            //hotUpdater.Init();
             value = GetUI("Image").GetComponent<Image>();
             hotUpdater.actionDownloadValue += UpdateProgress;
             hotUpdater.actionAllDownloadDone += UpdateEnd;
             hotUpdater.actionNothongUpdate += UpdateEnd;
-            hotUpdater.Start();
+            //hotUpdater.Start();
         }
     }
 

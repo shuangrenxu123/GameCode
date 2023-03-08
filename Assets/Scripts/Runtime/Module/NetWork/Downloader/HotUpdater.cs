@@ -7,102 +7,157 @@ using System.IO;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 public class HotUpdater
 {
+    private Dictionary<Thread, Downloader> runingList = new Dictionary<Thread, Downloader>();
+    private Queue<PackInfo> readyList = new Queue<PackInfo>();
+    private object locker = new object();
+    const int MAX_THREAD_COUNT = 20;
     private DownloadingInfo downloadingInfo;
-
     /// <summary>
-    /// Ã»ÓĞÈÎºÎ¸üĞÂ
+    /// æ²¡æœ‰ä»»ä½•æ›´æ–°
     /// </summary>
     public Action actionNothongUpdate;
     /// <summary>
-    /// ËùÓĞ°üÏÂÔØÍê±ÏÒÔºó
+    /// æ‰€æœ‰åŒ…ä¸‹è½½å®Œæ¯•ä»¥å
     /// </summary>
     public Action actionAllDownloadDone;
     /// <summary>
-    /// ¸üĞÂÌáÊ¾Óï
+    /// æ›´æ–°æç¤ºè¯­
     /// </summary>
     public Action<string> actionUpdateTipsText;
     /// <summary>
-    /// ½ø¶ÈÌõº¯Êı¸üĞÂ
+    /// è¿›åº¦æ¡å‡½æ•°æ›´æ–°
     /// </summary>
     public Action<float> actionDownloadValue;
     /// <summary>
-    /// ĞèÒªÕû°ü¸üĞÂ£¬Ò²¾ÍÊÇÖØĞÂÈ«²¿ÏÂÔØ
+    /// éœ€è¦æ•´åŒ…æ›´æ–°ï¼Œä¹Ÿå°±æ˜¯é‡æ–°å…¨éƒ¨ä¸‹è½½
     /// </summary>
     bool needFullAppUpdate;
     /// <summary>
-    /// ÊÇ·ñÇ¿ÖÆ¸üĞÂ
+    /// æ˜¯å¦å¼ºåˆ¶æ›´æ–°
     /// </summary>
-    bool hasNextUpdateBtn;
+    public bool hasNextUpdateBtn;
     /// <summary>
-    /// Õû°ü¸üĞÂµÄURL
+    /// æ•´åŒ…æ›´æ–°çš„URL,å³å•†åŸä¸‹è½½åœ°å€
     /// </summary>
     string fullAppUpdateUrl;
     /// <summary>
-    /// ÏàÍ¬°æ±¾ºÅµÄ×ÊÔ´¸üĞÂ
+    /// ç›¸åŒç‰ˆæœ¬å·çš„èµ„æºæ›´æ–°
     /// </summary>
     bool sameAppVerResUpdate;
     private List<PackInfo> packList = new List<PackInfo>();
     private Downloader downloader;
-
     private IEnumerator OnDownloadItr;
-    /// <summary>
-    /// µ±Ç°ÏÂÔØ°üµÄĞòºÅ
-    /// </summary>
-    private int currPackIndex = 0;
-
-    public void Init()
+    private async void Init()
     {
-        // ½â¾öHTTPSÖ¤ÊéÎÊÌâ
+        // è§£å†³HTTPSè¯ä¹¦é—®é¢˜
         ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
-    }
 
-    public async void Start()
-    {
         needFullAppUpdate = false;
         hasNextUpdateBtn = false;
         fullAppUpdateUrl = "http://1.116.50.215";
         sameAppVerResUpdate = false;
-
         packList.Clear();
         downloadingInfo = new DownloadingInfo();
-        //»ñµÃ°æ±¾ÁĞ±íjson
         var updateInfos = await ReqUpdateInfo();
         if (updateInfos != null)
         {
             SortUpdateInfo(ref updateInfos);
-            //ÎªºóÃæµÄ¸üĞÂÀàĞÍ×öÆÌµæ
+            //ä¸ºåé¢çš„æ›´æ–°ç±»å‹åšé“ºå«
             CalculateUpdatePackList(updateInfos);
             if (needFullAppUpdate)
             {
-                Debug.Log("-----------------------ĞèÒª¸üĞÂ°æ±¾-----------------------");
-                ///
-                ///
-                ///
-                ///
+                Debug.LogError("-----------------------éœ€è¦æ›´æ–°å¤§ç‰ˆæœ¬-----------------------");
             }
-            else
+            if(!sameAppVerResUpdate)
             {
-                if (sameAppVerResUpdate)
-                {
-                    Debug.Log("¿ªÊ¼ÏÂÔØ×ÊÔ´°ü£¬¹²:" + packList.Count);
-                    //µ±Ç°ÏÂÔØµÄ°üµÄĞòºÅ
-                    currPackIndex = 0;
-                    StartDownloadResPack();
-                }
-                else
-                {
-                    Debug.Log("Ã»ÓĞÈÎºÎ¸üĞÂ");
-                    actionNothongUpdate?.Invoke();
-                }
+                Debug.Log("æ²¡æœ‰ä»»ä½•æ›´æ–°");
+                actionNothongUpdate?.Invoke();
             }
         }
     }
+    #region å¤šçº¿ç¨‹ä¸‹è½½ç›¸å…³
+    /// <summary>
+    /// å¤šçº¿ç¨‹å¼€å§‹ä¸‹è½½èµ„æº
+    /// </summary>
+    public void DownloadAsync()
+    {
+        Init();
+        if (sameAppVerResUpdate)
+        {
+            CreateThread();
+        }
+    }
+    private void CreateThread()
+    {
+        for (int i = 0; i < MAX_THREAD_COUNT; i++)
+        {
+            var thread = new Thread(ThreadLoop);
+            runingList.Add(thread, new Downloader());
+            thread.Start();
+        }
+    }
+    private void ThreadLoop()
+    {
+        var downloader = runingList[Thread.CurrentThread];
+        while (true)
+        {
+            //å¦‚æœæ­£åœ¨ä¸‹è½½å°±ç›´æ¥è·³è¿‡
+            if (downloader.state == Downloader.DownloadState.Ing)
+                continue;
+            //å¦‚æœæ˜¯ç»“æŸæˆ–è€…å°±ç»ªçŠ¶æ€å°±ä¸‹è½½
+            if (readyList.Count > 0)
+            {
+                lock (locker)
+                {
+                    if (downloader.state == Downloader.DownloadState.End || downloader.state == Downloader.DownloadState.Ready)
+                    {
+                        var info = readyList.Dequeue();
+                        runingList[Thread.CurrentThread].Start(info);
+                    }
+                }
+            }
+            //å¦‚æœæ˜¯ç½‘ç»œç›¸å…³é—®é¢˜å°±ç›´æ¥é‡æ–°ä¸‹è½½
+            if (downloader.state == Downloader.DownloadState.DataProcessingError || downloader.state == Downloader.DownloadState.ConnectionError)
+            {
+                lock (locker)
+                {
+                    readyList.Enqueue(downloader.packInfo);
+                }
+            }
+            //å¦‚æœæ˜¯å…¶ä»–é—®é¢˜å°±ç›´æ¥ç»“æŸçº¿ç¨‹
+            else
+            {
+                break;
+            }
+        }
+    }
+    /// <summary>
+    /// å¤šçº¿ç¨‹ä¸‹è½½æ—¶å€™çš„Update éœ€è¦å†™åœ¨ä¸»çº¿ç¨‹ä¸­
+    /// </summary>
+    public void UpdateAsync()
+    {
 
+    }
+    #endregion
+    #region å•çº¿ç¨‹ä¸‹è½½çš„ç‰ˆæœ¬
+    public void Download()
+    {
+        Init();
+        if (sameAppVerResUpdate)
+        {
+            Debug.Log("å¼€å§‹å•çº¿ç¨‹ä¸‹è½½èµ„æºåŒ…ï¼Œå…±:" + packList.Count);
+            StartDownloadResPack();
+        }
+    }
+    /// <summary>
+    /// å•çº¿ç¨‹ä¸‹çš„ä¸‹è½½æ›´æ–° éœ€è¦å†™åœ¨ä¸»çº¿ç¨‹ä¸­
+    /// </summary>
     public void Update()
     {
         if (downloader != null)
@@ -110,10 +165,10 @@ public class HotUpdater
             switch (downloader.state)
             {
                 case Downloader.DownloadState.ConnectionError:
-                    Debug.LogError("ÏÂÔØ´íÎó");
+                    Debug.LogError("ä¸‹è½½é”™è¯¯");
                     break;
                 case Downloader.DownloadState.DataProcessingError:
-                    Debug.LogError("ÏÂÔØ´íÎó");
+                    Debug.LogError("ä¸‹è½½é”™è¯¯");
                     break;
                 case Downloader.DownloadState.Ing:
                     OnDownloading();
@@ -127,34 +182,39 @@ public class HotUpdater
             }
 
         }
-        //¿ªÆôÏÂÒ»¸öÏÂÔØ£¬¼´½âÑ¹ÒÑ¾­ÏÂÔØºÃÁËµÄÑ¹Ëõ°ü£¬È»ºó¿ªÊ¼ÅĞ¶ÏÏÂÒ»¸öÏÂÔØ
+        //å¼€å¯ä¸‹ä¸€ä¸ªä¸‹è½½ï¼Œå³è§£å‹å·²ç»ä¸‹è½½å¥½äº†çš„å‹ç¼©åŒ…ï¼Œç„¶åå¼€å§‹åˆ¤æ–­ä¸‹ä¸€ä¸ªä¸‹è½½
         RunCorotine();
-
     }
-
     private void RunCorotine()
     {
-        //movenext»áÆô¶¯Ğ¯³Ì
+        //movenextä¼šå¯åŠ¨æºç¨‹
         if (OnDownloadItr != null && !OnDownloadItr.MoveNext())
         {
             OnDownloadItr = null;
         }
     }
     /// <summary>
-    /// Ò»¸ö°üÏÂÔØÍê±ÏÒÔºó
+    /// ä¸€ä¸ªåŒ…ä¸‹è½½å®Œæ¯•ä»¥å
     /// </summary>
     private IEnumerator OnDownloadEnd()
     {
-        var packInfo = packList[currPackIndex];
-        Debug.Log($"ÏÂÔØÍê±Ï¹²ÏÂÔØÁË{currPackIndex + 1}¸ö°ü");
-        yield return null;
-        var file = Application.persistentDataPath + "/" + packInfo.MD5;
-        //ÅĞ¶ÏMD5ÊÇ·ñÕıÈ·
         var MD5 = CheckMD5();
-        if (MD5)
+        if (!MD5)
         {
-            int index = 0;
-            using (ZipFile zip = new ZipFile(file))
+            //å¦‚æœä¸‹è½½çš„ä¸æ­£ç¡®ï¼Œé‚£ä¹ˆå°±ä¼šé‡æ–°ä¸‹è½½
+            var info = readyList.Peek();
+            var ErrorFile = Application.persistentDataPath + "/" + info.MD5;
+            DeleteFile(ErrorFile);
+            downloader = null;
+            downloader = new Downloader();
+            downloader.Start(info);
+        }
+        //å¦‚æœæˆåŠŸäº†åˆ™å–å‡º
+        var packInfo = readyList.Dequeue();
+        var file = Application.persistentDataPath + "/" + packInfo.MD5;
+        yield return null;
+        int index = 0;
+        using (ZipFile zip = new(file))
             {
                 var count = zip.Count;
                 foreach (var i in zip)
@@ -164,24 +224,16 @@ public class HotUpdater
                     yield return null;
                 }
             }
-            DeleteFile(file);
-            VersionManager.Instance.UpdateResVersion(packInfo.resVersion);
-            currPackIndex++;
-            actionDownloadValue?.Invoke(1);
-            StartDownloadResPack();
-        }
-        else
-        {
-            DeleteFile(file);
-            downloader = null;
-            downloader = new Downloader();
-            downloader.Start(packList[currPackIndex]);
-
-        }
+        //åˆ é™¤ä¸´æ—¶æ–‡ä»¶
+        DeleteFile(file);
+        
+        VersionManager.Instance.UpdateResVersion(packInfo.resVersion);  //ç‰ˆæœ¬æ›´æ–°é€»è¾‘ä»£æ›´æ­£
+        actionDownloadValue?.Invoke(1);
+        StartDownloadResPack();
     }
 
     /// <summary>
-    /// É¾³ıÎÄ¼ş
+    /// åˆ é™¤æ–‡ä»¶
     /// </summary>
     /// <param name="file"></param>
     private void DeleteFile(string file)
@@ -191,51 +243,50 @@ public class HotUpdater
             File.Delete(file);
         }
     }
-    private bool CheckMD5()
-    {
-        return true;
-    }
-
     ///<summary>
-    ///ÏÂÔØÖĞµÄÊ±ºòÀ´¸üĞÂ½ø¶ÈÌõ
+    ///ä¸‹è½½ä¸­çš„æ—¶å€™æ¥æ›´æ–°è¿›åº¦æ¡
     ///</summary>
     public void OnDownloading()
     {
-        //»ñµÃµ±Ç°ÏÂÔØÁËµÄÎÄ¼ş
+        //è·å¾—å½“å‰ä¸‹è½½äº†çš„æ–‡ä»¶
         downloadingInfo.currDownloadsize = downloader.currDownloadSize;
         float value = (float)downloadingInfo.currDownloadsize / downloadingInfo.targetDownloadSize;
         actionDownloadValue?.Invoke(value);
 
     }
     /// <summary>
-    /// ¿ªÊ¼ÏÂÔØ×ÊÔ´°ü
+    /// å¼€å§‹ä¸‹è½½èµ„æºåŒ…
     /// </summary>
     public void StartDownloadResPack()
     {
-        //if(next)
-        //    currPackIndex++;
-        if (currPackIndex > packList.Count - 1)
+        if (readyList.Count == 0)
         {
-            Debug.Log("ËùÓĞ°üÏÂÔØÍê±Ï");
+            Debug.Log("æ‰€æœ‰åŒ…ä¸‹è½½å®Œæ¯•");
             actionAllDownloadDone?.Invoke();
-            downloader.Dispose();
+            downloader.Reset();
             downloader = null;
             return;
         }
-        packList.Sort((a, b) =>
-        {
-            return VersionManager.Instance.CompareVersion(a.resVersion, b.resVersion);
-        });
-        var packinfo = packList[currPackIndex];
+        //è¿™é‡Œä»…ä»…æ˜¯è·å¾—åŒ…ï¼Œä½†æ˜¯ä¸ä¼šå–å‡º
+        var packinfo = readyList.Peek();
         downloadingInfo.targetDownloadSize = packinfo.size;
-        downloadingInfo.currPackIndex = currPackIndex;
         downloadingInfo.totalPackCount = packList.Count;
         downloader = new Downloader();
         downloader.Start(packinfo);
 
     }
+    #endregion
+    #region ç‰ˆæœ¬ç›¸å…³
+
+
+
+
+
+
+
+
     /// <summary>
-    /// ½«ÁĞ±íÖĞµÄ°´ÄæĞòÀ´ÅÅĞò
+    /// å°†åˆ—è¡¨ä¸­çš„æŒ‰é€†åºæ¥æ’åº
     /// </summary>
     /// <param name="updateInfos"></param>
     private void SortUpdateInfo(ref List<UpdateInfo> updateInfos)
@@ -245,8 +296,29 @@ public class HotUpdater
             return VersionManager.Instance.CompareVersion(b.appVersion, a.appVersion);
         });
     }
+
+    private void SortPackInfo(List<PackInfo> infos)
+    {
+        infos.Sort((a, b) =>
+        {
+            return VersionManager.Instance.CompareVersion(a.resVersion, b.resVersion);
+        });
+        readyList = new Queue<PackInfo>(infos);
+    }
+
+
+
+
+
+
+
+
+    private bool CheckMD5()
+    {
+        return true;
+    }
     /// <summary>
-    /// ÇëÇó¸üĞÂÁĞ±í£¬¾ÍÊÇÏÂÔØ°æ±¾ÁĞ±í
+    /// è¯·æ±‚æ›´æ–°åˆ—è¡¨ï¼Œå°±æ˜¯ä¸‹è½½ç‰ˆæœ¬åˆ—è¡¨
     /// </summary>
     /// <returns></returns>
     private async Task<List<UpdateInfo>> ReqUpdateInfo()
@@ -257,24 +329,25 @@ public class HotUpdater
         {
             await Task.Delay(1);
         }
-        //¿¨Ïß³ÌµÈ´ı·µ»Ø½á¹û
+        //å¡çº¿ç¨‹ç­‰å¾…è¿”å›ç»“æœ
         if (uwr.error != null)
         {
-            Debug.LogError("Ã»ÓĞÊÕµ½¸üĞÂÁĞ±í");
+            Debug.LogError("æ²¡æœ‰æ”¶åˆ°æ›´æ–°åˆ—è¡¨");
             actionNothongUpdate.Invoke();
             return null;
         }
         return JsonMapper.ToObject<List<UpdateInfo>>(uwr.downloadHandler.text);
     }
-
     /// <summary>
-    /// ·ÖÎö¸üĞÂµÄÀàĞÍ
+    /// åˆ†ææ›´æ–°çš„ç±»å‹
     /// </summary>
     /// <param name="updateinfos"></param>
     private void CalculateUpdatePackList(List<UpdateInfo> updateinfos)
     {
         //Debug.Log(VersionManager.Instance.resVersion);
         //Debug.Log(updateinfos[0].updateList[0].resVersion);
+
+        //è·å¾—å½“å‰çš„ç‰ˆæœ¬
         string bigestVer = VersionManager.Instance.appVersion;
         foreach (UpdateInfo info in updateinfos)
         {
@@ -293,7 +366,7 @@ public class HotUpdater
                 {
                     if (VersionManager.Instance.CompareVersion(pack.resVersion, VersionManager.Instance.resVersion) > 0)
                     {
-                        //½«¸ßÓÚ×ÊÔ´°æ±¾ºÅµÄÌí¼Óµ½ÏÂÔØÁĞ±í
+                        //å°†é«˜äºèµ„æºç‰ˆæœ¬å·çš„æ·»åŠ åˆ°ä¸‹è½½åˆ—è¡¨
                         sameAppVerResUpdate = true;
                         packList.Add(pack);
                     }
@@ -304,7 +377,7 @@ public class HotUpdater
     }
 
     /// <summary>
-    /// ½â¾öHTTPsÎÊÌâ
+    /// è§£å†³HTTPsé—®é¢˜
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="certificate"></param>
@@ -333,8 +406,19 @@ public class HotUpdater
         }
         return isOk;
     }
+    /// <summary>
+    /// æ£€æµ‹ç½‘ç»œç±»å‹
+    /// </summary>
+    /// <returns></returns>
+    public bool CheckNetWorkActive()
+    {
+        if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork || Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork)
+            return true;
+        return false;
+    }
+    #endregion
 }
-
+//å•çº¿ç¨‹ä¸‹ä¸‹è½½çš„ä¿¡æ¯
 class DownloadingInfo
 {
     public long currDownloadsize;
@@ -342,28 +426,33 @@ class DownloadingInfo
     public int currPackIndex;
     public int totalPackCount;
 }
+//ç‰ˆæœ¬å·ä¿¡æ¯
 public class UpdateInfo
 {
+    //ç‰ˆæœ¬çš„ç‰ˆæœ¬å·
     public string appVersion;
+    //ç‰ˆæœ¬ä¸‹è½½åœ°å€
     public string appUrl;
+    //ç‰ˆæœ¬æ‰€åŒ…å«çš„èµ„æºåŒ…
     public List<PackInfo> updateList = new List<PackInfo>();
 }
+//æ¯ä¸ªåŒ…çš„ä¿¡æ¯
 public class PackInfo
 {
     /// <summary>
-    /// °ü¶ÔÓ¦µÄMD5
+    /// åŒ…å¯¹åº”çš„MD5
     /// </summary>
     public string MD5;
     /// <summary>
-    /// ×ÊÔ´°æ±¾ºÅ
+    /// èµ„æºç‰ˆæœ¬å·
     /// </summary>
     public string resVersion;
     /// <summary>
-    /// °üµÄ´óĞ¡
+    /// åŒ…çš„å¤§å°
     /// </summary>
     public int size;
     /// <summary>
-    /// °ü¶ÔÓ¦µÄÏÂÔØµØÖ·
+    /// åŒ…å¯¹åº”çš„ä¸‹è½½åœ°å€
     /// </summary>
     public string url;
 }
