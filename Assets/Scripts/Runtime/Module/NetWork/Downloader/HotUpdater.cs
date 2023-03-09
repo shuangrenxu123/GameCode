@@ -57,6 +57,8 @@ public class HotUpdater
     {
         // 解决HTTPS证书问题
         ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
+        if (!CheckNetWorkActive())
+            Debug.LogError("网络错误，没有连接网络");
 
         needFullAppUpdate = false;
         hasNextUpdateBtn = false;
@@ -79,6 +81,10 @@ public class HotUpdater
                 Debug.Log("没有任何更新");
                 actionNothongUpdate?.Invoke();
             }
+        }
+        else
+        {
+            Debug.LogError("没有获取到版本列表");
         }
     }
     #region 多线程下载相关
@@ -122,6 +128,11 @@ public class HotUpdater
                     }
                 }
             }
+            //当不需要下载了以后就会停止该线程，最终所有的线程都会慢慢停止
+            else
+            {
+                break;
+            }
             //如果是网络相关问题就直接重新下载
             if (downloader.state == Downloader.DownloadState.DataProcessingError || downloader.state == Downloader.DownloadState.ConnectionError)
             {
@@ -137,12 +148,49 @@ public class HotUpdater
             }
         }
     }
+
+    private void UpdateThread()
+    {
+        if (!CheckNetWorkActive() ||(readyList.Count == 0 && runingList.Count==0))
+        {
+            return;
+        }
+        //关闭一些有问题的线程，并将他们的信息重新添加到等待队列
+        lock (locker)
+        {
+            List<Thread> threads= new List<Thread>();
+            foreach (var i in runingList)
+            {
+                if (i.Key.IsAlive)
+                    continue;
+                if (i.Value != null)
+                    readyList.Enqueue(i.Value.packInfo);
+                threads.Add(i.Key);
+            }
+            foreach (var thread in threads)
+            {
+                runingList.Remove(thread);
+                thread.Abort();
+            }
+        }
+        if (runingList.Count >= MAX_THREAD_COUNT)
+            return;
+        else
+        {
+            var thread= new Thread(ThreadLoop);
+            lock (locker)
+            {
+                runingList.Add(thread,new Downloader());
+            }
+            thread.Start();
+        }
+    }
     /// <summary>
     /// 多线程下载时候的Update 需要写在主线程中
     /// </summary>
     public void UpdateAsync()
     {
-
+        UpdateThread();
     }
     #endregion
     #region 单线程下载的版本
@@ -277,14 +325,6 @@ public class HotUpdater
     }
     #endregion
     #region 版本相关
-
-
-
-
-
-
-
-
     /// <summary>
     /// 将列表中的按逆序来排序
     /// </summary>
@@ -296,22 +336,6 @@ public class HotUpdater
             return VersionManager.Instance.CompareVersion(b.appVersion, a.appVersion);
         });
     }
-
-    private void SortPackInfo(List<PackInfo> infos)
-    {
-        infos.Sort((a, b) =>
-        {
-            return VersionManager.Instance.CompareVersion(a.resVersion, b.resVersion);
-        });
-        readyList = new Queue<PackInfo>(infos);
-    }
-
-
-
-
-
-
-
 
     private bool CheckMD5()
     {
@@ -339,14 +363,11 @@ public class HotUpdater
         return JsonMapper.ToObject<List<UpdateInfo>>(uwr.downloadHandler.text);
     }
     /// <summary>
-    /// 分析更新的类型
+    /// 分析更新的类型,同时将需要下载的包加入到队列中
     /// </summary>
     /// <param name="updateinfos"></param>
     private void CalculateUpdatePackList(List<UpdateInfo> updateinfos)
     {
-        //Debug.Log(VersionManager.Instance.resVersion);
-        //Debug.Log(updateinfos[0].updateList[0].resVersion);
-
         //获得当前的版本
         string bigestVer = VersionManager.Instance.appVersion;
         foreach (UpdateInfo info in updateinfos)
@@ -371,6 +392,7 @@ public class HotUpdater
                         packList.Add(pack);
                     }
                 }
+                readyList = new Queue<PackInfo>(packList);
             }
         }
 
