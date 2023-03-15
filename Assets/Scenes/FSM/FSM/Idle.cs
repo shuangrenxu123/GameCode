@@ -6,7 +6,7 @@ public class Idle : FsmNodeBase, IFsmNode
     public float duration;
     public float timer = 0;
     Transform obj;
-    public Idle(FiniteStateMachine fsm,  AiData data) : base(fsm, data)
+    public Idle(FiniteStateMachine fsm, AiData data) : base(fsm, data)
     {
     }
 
@@ -15,12 +15,12 @@ public class Idle : FsmNodeBase, IFsmNode
         duration = Random.Range(1, 5);
         timer = 0;
         obj = token as Transform;
-        Debug.Log("½øÈëÁË×´Ì¬:Idle");
+        Debug.Log("è¿›å…¥äº†çŠ¶æ€:Idle");
     }
 
     public void Exit()
     {
-        Debug.Log("ÍË³öÁË×´Ì¬ Idle");
+        Debug.Log("é€€å‡ºäº†çŠ¶æ€ Idle");
     }
 
     public void Update(GameObject go)

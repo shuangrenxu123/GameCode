@@ -1,5 +1,4 @@
 using DialogueEdtior;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -7,7 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
+public class NodeSearchWindow : ScriptableObject, ISearchWindowProvider
 {
     private DialogueGraphView view;
     private EditorWindow editorWindow;
@@ -32,7 +31,7 @@ public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
         return tree;
 
     }
-    public void Init(DialogueGraphView dialogueGraphView,EditorWindow window)
+    public void Init(DialogueGraphView dialogueGraphView, EditorWindow window)
     {
         this.view = dialogueGraphView;
         this.editorWindow = window;
@@ -40,10 +39,10 @@ public class NodeSearchWindow : ScriptableObject,ISearchWindowProvider
     }
     public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
     {
-        var position = editorWindow.rootVisualElement.ChangeCoordinatesTo(editorWindow.rootVisualElement.parent,context.screenMousePosition - editorWindow.position.position);
+        var position = editorWindow.rootVisualElement.ChangeCoordinatesTo(editorWindow.rootVisualElement.parent, context.screenMousePosition - editorWindow.position.position);
 
         var loaclposition = view.contentContainer.WorldToLocal(position);
-        switch(SearchTreeEntry.userData)
+        switch (SearchTreeEntry.userData)
         {
             case "dialogue":
                 view.CreateNode(loaclposition, "Node");

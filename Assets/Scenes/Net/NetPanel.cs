@@ -1,8 +1,4 @@
 using NetWork;
-using PlayerInfo;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,7 +11,8 @@ public class NetPanel : WindowRoot
     {
         Ping = GetUI("ping");
         var text = GetUI("ip").GetComponent<TMP_InputField>().text;
-        GetUI("Conn").GetComponent<Button>().onClick.AddListener(() => {
+        GetUI("Conn").GetComponent<Button>().onClick.AddListener(() =>
+        {
             NetWorkManager.Instance.ConnectServer(text,
                 int.Parse(GetUI("port").GetComponent<TMP_InputField>().text));
         });
@@ -35,7 +32,7 @@ public class NetPanel : WindowRoot
         {
             NetWorkManager.Instance.DisConnectServer();
         });
-        GetUI("id").GetComponent<TMP_InputField>().onValueChanged.AddListener(e=> GameObject.Find("Cube")
+        GetUI("id").GetComponent<TMP_InputField>().onValueChanged.AddListener(e => GameObject.Find("Cube")
         .GetComponent<Player>().id = e);
     }
 
@@ -44,9 +41,9 @@ public class NetPanel : WindowRoot
     {
     }
 
-    public override void UpdateWindow() 
+    public override void UpdateWindow()
     {
-        
+
     }
     public void SetPingValue(float value)
     {

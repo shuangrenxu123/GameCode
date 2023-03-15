@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
@@ -18,11 +15,11 @@ namespace DialogueEdtior
         public static void OpenDialogueWindow()
         {
             var window = GetWindow<DialogueGraph>();
-            window.titleContent = new GUIContent("对话窗口");
+            window.titleContent = new GUIContent("瀵硅瘽绐楀彛");
         }
 
         private void OnEnable()
-        {  
+        {
             ConstructGraphview();
             GenerateToolbar();
         }
@@ -30,7 +27,7 @@ namespace DialogueEdtior
         {
             graphView = new DialogueGraphView(this)
             {
-                name = "对话系统"
+                name = "瀵硅瘽绯荤粺"
             };
             graphView.StretchToParentSize();
             rootVisualElement.Add(graphView);
@@ -46,8 +43,8 @@ namespace DialogueEdtior
             textfield.RegisterValueChangedCallback(e => { fileName = e.newValue; });
             toolbar.Add(textfield);
 
-            toolbar.Add(new Button(() => SaveData()) { text = "Save Data"});
-            toolbar.Add(new Button(() => LoadData()) { text = "Load Data"});
+            toolbar.Add(new Button(() => SaveData()) { text = "Save Data" });
+            toolbar.Add(new Button(() => LoadData()) { text = "Load Data" });
 
             rootVisualElement.Add(toolbar);
         }

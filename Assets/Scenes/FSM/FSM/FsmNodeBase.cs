@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public class FsmNodeBase
+﻿public class FsmNodeBase
 {
     protected AiData aiData;
     protected FiniteStateMachine fsm { get; }

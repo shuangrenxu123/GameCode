@@ -1,27 +1,29 @@
-/// <summary>
-/// Ò»´ÎĞĞÎª
-/// </summary>
-public abstract class CombatAction
-{
-    /// <summary>
-    /// ·¢ÆğÕß
-    /// </summary>
-    public CombatEntity Creator { get; set; }
-    /// <summary>
-    /// ¶ÔÏó
-    /// </summary>
-    public CombatEntity Target { get; set; }
-    /// <summary>
-    /// Ç°ÖÃ
-    /// </summary>
-    public abstract void PreProcess();
-    /// <summary>
-    /// Ó¦ÓÃ
-    /// </summary>
-    public abstract void Allpy();
-    /// <summary>
-    /// ºóĞø
-    /// </summary>
-    public abstract void PostProcess();
 
+namespace Fight {
+    /// <summary>
+    /// ä¸€æ¬¡è¡Œä¸º
+    /// </summary>
+    public abstract class CombatAction
+    {
+        /// <summary>
+        /// å‘èµ·è€…
+        /// </summary>
+        public CombatEntity Creator { get; set; }
+        /// <summary>
+        /// å¯¹è±¡
+        /// </summary>
+        public CombatEntity Target { get; set; }
+        /// <summary>
+        /// å‰ç½®
+        /// </summary>
+        public abstract void PreProcess();
+        /// <summary>
+        /// åº”ç”¨
+        /// </summary>
+        public abstract void Apply();
+        /// <summary>
+        /// åç»­
+        /// </summary>
+        public abstract void PostProcess();
+    }
 }

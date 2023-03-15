@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
@@ -6,29 +5,11 @@ using UnityEngine;
 public class ABEditor : MonoBehaviour
 {
     /// <summary>
-    /// ÈÈ¸ü×ÊÔ´µÄ¸ùÄ¿Â¼
-    /// </summary>
-    public static string rootpath = Application.dataPath + "/GAssets";
-    /// <summary>
-    /// AB°üµÄÊä³öÂ·¾¶
+    /// ABåŒ…çš„è¾“å‡ºè·¯å¾„
     /// </summary>
     public static string outputPath = Application.streamingAssetsPath;
-    /// <summary>
-    /// Ò»¸öab°ü¶ÔÓ¦ÁËÒ»¸öbuildÎÄ¼ş
-    /// </summary>
-    public static List<AssetBundleBuild> assetBundleList = new List<AssetBundleBuild>();
-    /// <summary>
-    /// ×ÊÔ´µØÖ·ºÍ¶ÔÓ¦µÄab°ü
-    /// </summary>
-    public static Dictionary<string, string> Asset2Bundle = new Dictionary<string, string>();
 
-    // public static List<string> assetnames = new List<string>();
-
-    /// <summary>
-    /// Ä³¸öab°üºÍËùÒÀÀµµÄab°ü
-    /// </summary>
-    public static Dictionary<string, List<string>> asset2Dependencies = new Dictionary<string, List<string>>();
-    [MenuItem("AB°ü´ò°ü/Éú³Éab°ü")]
+    [MenuItem("ABåŒ…æ‰“åŒ…/ç”ŸæˆabåŒ…")]
 
     public static void BuildeAB()
     {

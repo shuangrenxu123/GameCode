@@ -1,11 +1,9 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class ItemTask : TaskBase
 {
-    public ItemTask(TaskData taskData,TaskMgr taskMgr) : base(taskData,taskMgr)
+    public ItemTask(TaskData taskData, TaskMgr taskMgr) : base(taskData, taskMgr)
     {
 
     }
@@ -37,7 +35,7 @@ public class ItemTask : TaskBase
     public override void UpdateTask(int id, int num)
     {
         var n = taskData.filter[id];
-        taskData.filter[id] = Math.Max(0,n - num);
+        taskData.filter[id] = Math.Max(0, n - num);
         isEligible();
     }
 
@@ -51,7 +49,7 @@ public class ItemTask : TaskBase
             {
                 if (TaskMgr.finishTasks[j].GetTaskId() == i)
                 {
-                    have=true;
+                    have = true;
                     break;
                 }
             }

@@ -59,7 +59,7 @@ public class Downloader
             fs.Seek(currDownloadSize, SeekOrigin.Begin);
             httpReq.AddRange(currDownloadSize);
         }
-        
+
         HttpWebResponse response;
         try
         {

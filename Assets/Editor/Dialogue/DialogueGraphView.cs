@@ -1,205 +1,203 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor.Graphs;
-using UnityEditor.Experimental.GraphView;
-using UnityEngine.UIElements;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
-using System.ComponentModel.Composition.Hosting;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace DialogueEdtior
 {
-	public class DialogueGraphView : GraphView
-	{
-		public readonly Vector2 NodeSize = new(100, 150);
-		private NodeSearchWindow searchWindow;
-		public DialogueGraphView(EditorWindow window)
-		{
-			SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
-			this.AddManipulator(new ContentDragger());
-			this.AddManipulator(new SelectionDragger());
-			this.AddManipulator(new RectangleSelector());
-			AddSearchWindow(window);
-			AddElement(GenerateEntryPointNode());
-
-		}
-		/// <summary>
-		/// ´´½¨ÓÒ¼üµÄ½Úµã²Ëµ¥Àà
-		/// </summary>
-        private void AddSearchWindow(EditorWindow window)
+    public class DialogueGraphView : GraphView
+    {
+        public readonly Vector2 NodeSize = new(100, 150);
+        private NodeSearchWindow searchWindow;
+        public DialogueGraphView(EditorWindow window)
         {
-            searchWindow =ScriptableObject.CreateInstance<NodeSearchWindow>();
-			searchWindow.Init(this,window);
-			nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition),searchWindow);
+            SetupZoom(ContentZoomer.DefaultMinScale, ContentZoomer.DefaultMaxScale);
+            this.AddManipulator(new ContentDragger());
+            this.AddManipulator(new SelectionDragger());
+            this.AddManipulator(new RectangleSelector());
+            AddSearchWindow(window);
+            AddElement(GenerateEntryPointNode());
+
         }
         /// <summary>
-        /// ³õÊ¼»¯Ò»¸öPort
+        /// åˆ›å»ºå³é”®çš„èŠ‚ç‚¹èœå•ç±»
+        /// </summary>
+        private void AddSearchWindow(EditorWindow window)
+        {
+            searchWindow = ScriptableObject.CreateInstance<NodeSearchWindow>();
+            searchWindow.Init(this, window);
+            nodeCreationRequest = context => SearchWindow.Open(new SearchWindowContext(context.screenMousePosition), searchWindow);
+        }
+        /// <summary>
+        /// åˆå§‹åŒ–ä¸€ä¸ªPort
         /// </summary>
         /// <param name="node"></param>
-        /// <param name="portDirection">¶Ë¿Ú·½Ïò</param>
-        /// <param name="capacity">Ò»¸ö½ÚµãµÄÁ¬½ÓÊı£¬singleÎªÒ»¸ö multiÎª¶à¸ö</param>
+        /// <param name="portDirection">ç«¯å£æ–¹å‘</param>
+        /// <param name="capacity">ä¸€ä¸ªèŠ‚ç‚¹çš„è¿æ¥æ•°ï¼Œsingleä¸ºä¸€ä¸ª multiä¸ºå¤šä¸ª</param>
         /// <returns></returns>
-        private Port GeneratePort(DialogueNode node,Direction portDirection,Port.Capacity capacity = Port.Capacity.Single)
-		{
-			return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float));
-		}
-		/// <summary>
-		/// ³õÊ¼»¯Éú³ÉÈë¿Ú½Úµã
-		/// </summary>
-		/// <returns></returns>
-		private DialogueNode GenerateEntryPointNode()
-		{
-			var node = new DialogueNode()
-			{
-				title = "Óï¾ä½Úµã",
-				GUID = Guid.NewGuid().ToString(),
-				DialogueText = "EntryPoint",
-				EntryPoint = true,
+        private Port GeneratePort(DialogueNode node, Direction portDirection, Port.Capacity capacity = Port.Capacity.Single)
+        {
+            return node.InstantiatePort(Orientation.Horizontal, portDirection, capacity, typeof(float));
+        }
+        /// <summary>
+        /// åˆå§‹åŒ–ç”Ÿæˆå…¥å£èŠ‚ç‚¹
+        /// </summary>
+        /// <returns></returns>
+        private DialogueNode GenerateEntryPointNode()
+        {
+            var node = new DialogueNode()
+            {
+                title = "è¯­å¥èŠ‚ç‚¹",
+                GUID = Guid.NewGuid().ToString(),
+                DialogueText = "EntryPoint",
+                EntryPoint = true,
             };
-			node.SetPosition(new Rect(100,200,100,150));
-			var port = GeneratePort(node, Direction.Output,Port.Capacity.Multi);
-			port.portName = "OutPut";
-            node.outputContainer.Add(port); 
-			return node;
-		}
-		/// <summary>
-		/// Ö±½ÓÔÚGraphÖĞÉú³ÉÒ»¸öNode
-		/// </summary>
-		/// <param name="name"></param>
-		public void CreateNode(Vector2 pos,string name = "")
-		{
-			AddElement(CreatDialogueNode(name,pos));
-		}
-		/// <summary>
-		/// ·µ»ØÒ»¸ö½Úµã£¬µ«²»»áÌí¼Óµ½GraphÖĞ
-		/// </summary>
-		/// <param name="nodename"></param>
-		/// <returns></returns>
-		public DialogueNode CreatDialogueNode(string nodename,Vector2 pos)
-		{
-			var node = new DialogueNode()
-			{
-				title = nodename,
-				DialogueText = nodename,
-				GUID = Guid.NewGuid().ToString(),
-			};
-			var inputPort = GeneratePort(node, Direction.Input,Port.Capacity.Multi);
-			inputPort.portName = "Input";
-			node.inputContainer.Add(inputPort);
+            node.SetPosition(new Rect(100, 200, 100, 150));
+            var port = GeneratePort(node, Direction.Output, Port.Capacity.Multi);
+            port.portName = "OutPut";
+            node.outputContainer.Add(port);
+            return node;
+        }
+        /// <summary>
+        /// ç›´æ¥åœ¨Graphä¸­ç”Ÿæˆä¸€ä¸ªNode
+        /// </summary>
+        /// <param name="name"></param>
+        public void CreateNode(Vector2 pos, string name = "")
+        {
+            AddElement(CreatDialogueNode(name, pos));
+        }
+        /// <summary>
+        /// è¿”å›ä¸€ä¸ªèŠ‚ç‚¹ï¼Œä½†ä¸ä¼šæ·»åŠ åˆ°Graphä¸­
+        /// </summary>
+        /// <param name="nodename"></param>
+        /// <returns></returns>
+        public DialogueNode CreatDialogueNode(string nodename, Vector2 pos)
+        {
+            var node = new DialogueNode()
+            {
+                title = nodename,
+                DialogueText = nodename,
+                GUID = Guid.NewGuid().ToString(),
+            };
+            var inputPort = GeneratePort(node, Direction.Input, Port.Capacity.Multi);
+            inputPort.portName = "Input";
+            node.inputContainer.Add(inputPort);
 
-            var button = new Button(() => { AddChoicePort(node,""); });
-			button.text = "Ìí¼ÓÊä³ö";
-			node.titleContainer.Add(button);
+            var button = new Button(() => { AddChoicePort(node, ""); });
+            button.text = "æ·»åŠ è¾“å‡º";
+            node.titleContainer.Add(button);
 
 
-			var tf = new TextField();
-			tf.RegisterValueChangedCallback(e =>
-			{
-				node.title = e.newValue;
-				node.DialogueText= e.newValue;
-			});
-			node.contentContainer.Add(tf);
+            var tf = new TextField();
+            tf.RegisterValueChangedCallback(e =>
+            {
+                node.title = e.newValue;
+                node.DialogueText = e.newValue;
+            });
+            node.contentContainer.Add(tf);
 
-			node.RefreshExpandedState();
-			node.RefreshPorts();
-			node.SetPosition(new Rect(pos, NodeSize));
+            node.RefreshExpandedState();
+            node.RefreshPorts();
+            node.SetPosition(new Rect(pos, NodeSize));
 
-			return node;
-		}
-		/// <summary>
-		/// Ìí¼ÓÒ»¸öPort¸ønode
-		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="name"></param>
-		/// <param name="direction"></param>
-        public void AddChoicePort(DialogueNode node,string name = "",Direction direction = Direction.Output)
+            return node;
+        }
+        /// <summary>
+        /// æ·»åŠ ä¸€ä¸ªPortç»™node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="name"></param>
+        /// <param name="direction"></param>
+        public void AddChoicePort(DialogueNode node, string name = "", Direction direction = Direction.Output)
         {
             var generatedPort = GeneratePort(node, direction);
-			var portName = name==""?"text":name;
+            var portName = name == "" ? "text" : name;
 
-			var textfield = new TextField()
-			{
-				name = string.Empty,
-				value = portName,
-			};
-			textfield.RegisterValueChangedCallback(evt => generatedPort.portName = evt.newValue);
-			textfield.styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
-			generatedPort.contentContainer.Add(new Label(" "));
-			generatedPort.contentContainer.Add(textfield);
-			var deleteButton = new Button(() => { RemovePort(node, generatedPort); })
-			{
-				text = "X"
-			};
+            var textfield = new TextField()
+            {
+                name = string.Empty,
+                value = portName,
+            };
+            textfield.RegisterValueChangedCallback(evt => generatedPort.portName = evt.newValue);
+            textfield.styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
+            generatedPort.contentContainer.Add(new Label(" "));
+            generatedPort.contentContainer.Add(textfield);
+            var deleteButton = new Button(() => { RemovePort(node, generatedPort); })
+            {
+                text = "X"
+            };
 
-			generatedPort.contentContainer.Add(deleteButton);
+            generatedPort.contentContainer.Add(deleteButton);
             generatedPort.portName = name;
             node.outputContainer.Add(generatedPort);
-			node.RefreshExpandedState();
+            node.RefreshExpandedState();
             node.RefreshPorts();
         }
-		/// <summary>
-		/// ÒÆ³ıÒ»¸öPort
-		/// </summary>
-		/// <param name="node"></param>
-		/// <param name="generatedPort"></param>
+        /// <summary>
+        /// ç§»é™¤ä¸€ä¸ªPort
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="generatedPort"></param>
         private void RemovePort(DialogueNode node, Port generatedPort)
         {
-			//ÕÒ³ö¸Ã¶Ë¿ÚËùÁ¬½Óµ½µÄÏß
-			var targetEdge = edges.ToList().Where(x =>
-				x.output.portName == generatedPort.portName && x.output.node == generatedPort.node
-			);
+            //æ‰¾å‡ºè¯¥ç«¯å£æ‰€è¿æ¥åˆ°çš„çº¿
+            var targetEdge = edges.ToList().Where(x =>
+                x.output.portName == generatedPort.portName && x.output.node == generatedPort.node
+            );
 
-			if (targetEdge.Any())
-			{
-				var edge = targetEdge.First();
-				edge.input.Disconnect(edge);
-				RemoveElement(targetEdge.First());
-			}
-			node.outputContainer.Remove(generatedPort);
-			node.RefreshPorts();
-			node.RefreshExpandedState();
+            if (targetEdge.Any())
+            {
+                var edge = targetEdge.First();
+                edge.input.Disconnect(edge);
+                RemoveElement(targetEdge.First());
+            }
+            node.outputContainer.Remove(generatedPort);
+            node.RefreshPorts();
+            node.RefreshExpandedState();
 
         }
 
-		public void Creategroup(List<GraphElement> nodes)
-		{
-			if (nodes.Count == 0 || nodes == null)
-				return;
-			var group = new Group();
-			group.title = "Group";
-			AddElement(group);
-			try
-			{
-				group.AddElements(nodes);
-			}
-			catch {
-				var a = nodes.OfType<Group>().ToList();
-				var name = a.First().title;
-				RemoveElement(a[0]);
+        public void Creategroup(List<GraphElement> nodes)
+        {
+            if (nodes.Count == 0 || nodes == null)
+                return;
+            var group = new Group();
+            group.title = "Group";
+            AddElement(group);
+            try
+            {
+                group.AddElements(nodes);
+            }
+            catch
+            {
+                var a = nodes.OfType<Group>().ToList();
+                var name = a.First().title;
+                RemoveElement(a[0]);
 
-				foreach (var i in nodes)
-				{
-					if(i is Group)
-					{
-						continue;
-					}
-					group.AddElement(i);
-				}
-				group.title = name;
+                foreach (var i in nodes)
+                {
+                    if (i is Group)
+                    {
+                        continue;
+                    }
+                    group.AddElement(i);
+                }
+                group.title = name;
 
-			}
-		}
+            }
+        }
         public override List<Port> GetCompatiblePorts(Port startPort, NodeAdapter nodeAdapter)
         {
-			var CompatiblePorts = new List<Port>();
-			ports.ForEach(port =>
-			{
-				if(startPort!= port && startPort.node!=port.node)
-					CompatiblePorts.Add(port);
-			});
-			return CompatiblePorts;
+            var CompatiblePorts = new List<Port>();
+            ports.ForEach(port =>
+            {
+                if (startPort != port && startPort.node != port.node)
+                    CompatiblePorts.Add(port);
+            });
+            return CompatiblePorts;
         }
 
     }

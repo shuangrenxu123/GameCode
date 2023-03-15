@@ -15,7 +15,7 @@ namespace FindPath
             this.goals = goals;
         }
         /// <summary>
-        /// Éú³ÉÃ¿Ò»¸öµ¥Ôª¸ñµ½Ä¿±êµãµÄ×î½ü¾àÀë
+        /// ç”Ÿæˆæ¯ä¸€ä¸ªå•å…ƒæ ¼åˆ°ç›®æ ‡ç‚¹çš„æœ€è¿‘è·ç¦»
         /// </summary>
         public void GenerateDistance()
         {
@@ -28,7 +28,7 @@ namespace FindPath
             }
             if (goals == null || goals.Length < 1)
             {
-                Debug.LogWarning("Ã»ÓĞÉèÖÃÄ¿±êµã");
+                Debug.LogWarning("æ²¡æœ‰è®¾ç½®ç›®æ ‡ç‚¹");
             }
             int cost = 0;
             while (marks.Count > 0)
@@ -45,7 +45,7 @@ namespace FindPath
                     for (int j = 0; j < neighbours.Length; j++)
                     {
                         var cur = neighbours[j];
-                        if (cur != null && isuser[(int)cur.position.x, (int)cur.position.y] == false && cur.UnPassable==false)
+                        if (cur != null && isuser[(int)cur.position.x, (int)cur.position.y] == false && cur.UnPassable == false)
                         {
                             marks.Enqueue(cur);
                             isuser[(int)cur.position.x, (int)cur.position.y] = true;
@@ -57,7 +57,7 @@ namespace FindPath
             }
         }
         /// <summary>
-        /// ÉèÖÃÃ¿Ò»¸öµ¥Ôª¸ñµ½Ä¿±êµãµÄ·½Ïò
+        /// è®¾ç½®æ¯ä¸€ä¸ªå•å…ƒæ ¼åˆ°ç›®æ ‡ç‚¹çš„æ–¹å‘
         /// </summary>
         public void GenerateVector()
         {
@@ -67,7 +67,7 @@ namespace FindPath
                 {
                     var cell = grid.cells[i, j];
                     var neighbours = grid.GetMooreNeighbours(cell);
-                    Cell min =null;
+                    Cell min = null;
 
                     foreach (var c in neighbours)
                     {
@@ -75,18 +75,18 @@ namespace FindPath
                         {
                             min = c;
                         }
-                        else if (c !=null &&c.UnPassable==false&& min.distance > c.distance)
+                        else if (c != null && c.UnPassable == false && min.distance > c.distance)
                         {
                             min = c;
                         }
                     }
-                    cell.direction = min.position-cell.position;
+                    cell.direction = min.position - cell.position;
                     cell.direction.Normalize();
                 }
             }
             foreach (var i in goals)
             {
-                grid.cells[(int)i.x, (int)i.y].direction =Vector2.zero;
+                grid.cells[(int)i.x, (int)i.y].direction = Vector2.zero;
                 Debug.Log(grid.cells[(int)i.x, (int)i.y].direction);
             }
         }

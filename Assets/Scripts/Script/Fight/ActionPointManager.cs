@@ -1,32 +1,34 @@
 using System;
 using System.Collections.Generic;
-
-public class ActionPointManager
+namespace Fight
 {
-    Dictionary<ActionPointType, ActionPoint> ActionPoints = new Dictionary<ActionPointType, ActionPoint>();
-    /// <summary>
-    /// 初始化行为点。注册某个行为点
-    /// </summary>
-    public void Init()
+    public class ActionPointManager
     {
-        ActionPoints.Add(ActionPointType.PreReceiveDamage, new ActionPoint());
-        ActionPoints.Add(ActionPointType.PostCauseDamage, new ActionPoint());
-    }
-    public void AddListener(ActionPointType type, Action<CombatAction> action)
-    {
-        ActionPoints[type].Listeners.Add(action);
-    }
-    public void RemoveListener(ActionPointType type, Action<CombatAction> action)
-    {
-        ActionPoints[type].Listeners.Remove(action);
-    }
-    public void TriggerActionPoint(ActionPointType type, CombatAction action)
-    {
-        if (ActionPoints.ContainsKey(type))
+        Dictionary<ActionPointType, ActionPoint> ActionPoints = new Dictionary<ActionPointType, ActionPoint>();
+        /// <summary>
+        /// 鍒濆鍖栬涓虹偣銆傛敞鍐屾煇涓涓虹偣
+        /// </summary>
+        public void Init()
         {
-            foreach (var item in ActionPoints[type].Listeners)
+            ActionPoints.Add(ActionPointType.PreReceiveDamage, new ActionPoint());
+            ActionPoints.Add(ActionPointType.PostCauseDamage, new ActionPoint());
+        }
+        public void AddListener(ActionPointType type, Action<CombatAction> action)
+        {
+            ActionPoints[type].Listeners.Add(action);
+        }
+        public void RemoveListener(ActionPointType type, Action<CombatAction> action)
+        {
+            ActionPoints[type].Listeners.Remove(action);
+        }
+        public void TriggerActionPoint(ActionPointType type, CombatAction action)
+        {
+            if (ActionPoints.ContainsKey(type))
             {
-                item.Invoke(action);
+                foreach (var item in ActionPoints[type].Listeners)
+                {
+                    item.Invoke(action);
+                }
             }
         }
     }

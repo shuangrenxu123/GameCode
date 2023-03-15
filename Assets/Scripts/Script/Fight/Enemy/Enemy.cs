@@ -1,3 +1,4 @@
+using Fight;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour

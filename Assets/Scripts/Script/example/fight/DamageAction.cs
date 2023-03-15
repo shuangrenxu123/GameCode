@@ -1,39 +1,39 @@
 using TMPro;
 using UnityEngine;
-
-public class DamageAction : CombatAction
+namespace Fight
 {
-    int damage = 10;
-    public DamageAction(CombatEntity creater, CombatEntity target)
+    public class DamageAction : CombatAction
     {
-        Creator = creater;
-        Target = target;
-    }
-    public override void Allpy()
-    {
-        PreProcess();
-        Target.hp.Minus(damage);
-        GameObject go = PoolManager.Instance.GetGameObjectToPool("hppanel", Target.gameObject.transform.position + new Vector3(0, 0.5f, 0),
-            Quaternion.Euler(0, 180, 0));
-        go.GetComponent<TextMeshPro>().text = damage.ToString();
-        PostProcess();
-    }
-    /// <summary>
-    /// ºóÖÃĞĞÎª
-    /// </summary>
-    public override void PostProcess()
-    {
-        Debug.Log("-------------´¥·¢ÁËºóÖÃĞĞÎª(ÈçÎüÑªµÈ)-----------");
-        Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
-        Target.ActionPointManager.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
-    }
-    /// <summary>
-    /// Ç°ÖÃĞĞÎª
-    /// </summary>
-    public override void PreProcess()
-    {
-        Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
-        Target.ActionPointManager.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
-        Debug.Log("------------´¥·¢ÁËÇ°ÖÃĞĞÎª(Èç¼ÆËãÃâÉËµÈµÈ)---------");
+        int damage = 10;
+        public DamageAction(CombatEntity creater, CombatEntity target)
+        {
+            Creator = creater;
+            Target = target;
+        }
+        public override void Apply()
+        {
+            PreProcess();
+            Target.hp.Minus(damage);
+            Target.enemyAnimator.PlayTargetAnimation("damage",true);
+            PostProcess();
+        }
+        /// <summary>
+        /// åç½®è¡Œä¸º
+        /// </summary>
+        public override void PostProcess()
+        {
+            Debug.Log("-------------è§¦å‘äº†åç½®è¡Œä¸º(å¦‚å¸è¡€ç­‰)-----------");
+            Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
+            Target.ActionPointManager.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
+        }
+        /// <summary>
+        /// å‰ç½®è¡Œä¸º
+        /// </summary>
+        public override void PreProcess()
+        {
+            Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
+            Target.ActionPointManager.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
+            Debug.Log("------------è§¦å‘äº†å‰ç½®è¡Œä¸º(å¦‚è®¡ç®—å…ä¼¤ç­‰ç­‰)---------");
+        }
     }
 }

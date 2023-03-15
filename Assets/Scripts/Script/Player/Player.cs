@@ -1,15 +1,26 @@
+using Fight;
 using NetWork;
 using PlayerInfo;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 
 public class Player : MonoBehaviour
 {
-    public string id;
-    public CombatEntity entity;
-    public PlayerController controller;
-    //网络同步部分
+    CombatEntity entity;
+    PlayerInputHandle inputHandle;
+    CameraHandler cameraHandler;
+    PlayerController controller;
+    Animator animator;
+    [Header("Player Flag")]
+    public bool isInteracting;
+    public bool isSprinting;
+    public bool isDefense;
+    public bool isInAir = false;
+    public bool isGrounded;
+    public bool canDoCombo;
+    #region 网络同步部分
     MotionState lastMotionState;
+    public string id;
     /// <summary>
     /// 位置差。当大于该值时才会发送坐标
     /// </summary>
@@ -18,23 +29,13 @@ public class Player : MonoBehaviour
     /// 预测位置，即在其他客户端中的位置
     /// </summary>
     private Vector3 drPosition = Vector3.zero;
-    private void Awake()
-    {
-        entity = GetComponent<CombatEntity>();
-        controller = GetComponent<PlayerController>();
-    }
+#endregion
     void Start()
     {
-        entity.Init(1000);
-        InvokeRepeating("SendPosition", time: 0f, 0.05f);
-    }
-    private void FixedUpdate()
-    {
-        //drPosition = lastMotionState.Position + lastMotionState.velocity * (Time.time - lastMotionState.lastMotionTime);
-        //if ((drPosition - transform.position).sqrMagnitude > deadReckoningThreshold)
-        //{
-        //    SendPosition();
-        //}
+        inputHandle = GetComponent<PlayerInputHandle>();
+        cameraHandler = CameraHandler.singleton;
+        animator = GetComponentInChildren<Animator>();
+        controller= GetComponent<PlayerController>();   
     }
     public void SyncPlayerLastMotionState(DefaultNetWorkPackage package)
     {
@@ -48,20 +49,55 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
+        float delta = Time.deltaTime;
+        canDoCombo = animator.GetBool("canDoCombo");
+        isInteracting = animator.GetBool("isInteracting");
+        isDefense = animator.GetBool("isDefense");
 
+        inputHandle.TickInput(delta);
+        controller.HandleMovement(delta);
+        controller.HandleRollingAndSprinting(delta);
+        controller.HandleFalling(delta,controller.moveDirection);
+        CheckForInteractableObject();
     }
-    private void SendPosition()
+    private void FixedUpdate()
     {
-        if (NetWorkManager.Instance.state == ENetWorkState.Connected)
+        float delta = Time.fixedDeltaTime;
+        if (cameraHandler != null)
         {
-            move state = new move()
+            cameraHandler.FollowTarget(delta);
+            cameraHandler.HandleCamerRotation(delta, inputHandle.mousex, inputHandle.mousey);
+        }
+    }
+    private void LateUpdate()
+    {
+        inputHandle.rollFlag = false;
+        inputHandle.LightAttackFlag = false;
+        inputHandle.b_Input = false;
+        inputHandle.e_Input= false;
+        if(isInAir)
+        {
+            controller.inAirTimer = controller.inAirTimer + Time.deltaTime;
+        }
+    } 
+
+    private void CheckForInteractableObject()
+    {
+        RaycastHit hit;
+        if (Physics.SphereCast(transform.position,0.3f,transform.forward,out hit,1f,cameraHandler.ignoreLayers))
+        {
+            if (hit.collider.CompareTag("Interactable"))
             {
-                Id = id,
-                Position = NetWorkUtility.ToProtoBufV3(transform.position),
-                Rotation = NetWorkUtility.ToProtoBufV3(transform.eulerAngles),
-                Velocity = NetWorkUtility.ToProtoBufV3(Vector3.zero),
-            };
-            NetWorkManager.Instance.SendMessage(1, state);
+                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                if (interactable != null)
+                {
+                    Debug.Log("周围有一个物体");
+                    if (inputHandle.e_Input)
+                    {
+                        interactable.Interact(this);
+                    }
+                }
+            }
         }
     }
 }

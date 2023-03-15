@@ -1,14 +1,16 @@
-using System;
-public class CombatNumberBox
+namespace Fight
 {
-    public Number Atk;
-    public Number Def;
-    public Number Speed;
-
-    public void Init()
+    public class CombatNumberBox
     {
-        Atk = new Number();
-        Def = new Number();
-        Speed = new Number();
+        public Number Atk;
+        public Number Def;
+        public Number Speed;
+
+        public void Init()
+        {
+            Atk = new Number();
+            Def = new Number();
+            Speed = new Number();
+        }
     }
 }

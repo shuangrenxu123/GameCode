@@ -1,3 +1,4 @@
+using Fight;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,32 +8,32 @@ public class AiData : MonoBehaviour
     public CombatNumberBox CombatNumberBox;
     [HideInInspector]
     /// <summary>
-    /// Ä¿±êÊı×é
+    /// ç›®æ ‡æ•°ç»„
     /// </summary>
     public List<Transform> targets = null;
     [HideInInspector]
     /// <summary>
-    /// ÕÏ°­ÎïÊı×é
+    /// éšœç¢ç‰©æ•°ç»„
     /// </summary>
     public Collider2D[] obstacles = null;
     [HideInInspector]
     /// <summary>
-    /// ÊÇ·ñµÃµ½Ëæ¼´Ä¿±ê
+    /// æ˜¯å¦å¾—åˆ°éšå³ç›®æ ‡
     /// </summary>
     public bool reachedLastTarget = true;
     [HideInInspector]
     /// <summary>
-    /// µ±Ç°Ó¦¸Ãµ½´ïµÄÄ¿±êµã
+    /// å½“å‰åº”è¯¥åˆ°è¾¾çš„ç›®æ ‡ç‚¹
     /// </summary>
     public Transform currentTarget;
     [HideInInspector]
     /// <summary>
-    /// µĞÈËÄ¿±ê
+    /// æ•Œäººç›®æ ‡
     /// </summary>
     public Transform enemy;
     [HideInInspector]
     /// <summary>
-    /// ×Ô¼ºµÄ×ø±ê
+    /// è‡ªå·±çš„åæ ‡
     /// </summary>
     public Transform me;
 

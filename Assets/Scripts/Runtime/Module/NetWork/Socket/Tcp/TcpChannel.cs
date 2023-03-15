@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using UnityEngine;
 using System.Net.Sockets;
 
 public class TcpChannel : IDisposable
 {
-    private  SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
-    private  SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
+    private SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
+    private SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
     private NetWorkpackCoder packageCoder;
 
     private readonly Queue<System.Object> sendQueue = new Queue<object>();

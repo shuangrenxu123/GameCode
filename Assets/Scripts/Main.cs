@@ -1,8 +1,5 @@
-﻿//using ILRuntime.CLR.Method;
-using NetWork;
-using PlayerInfo;
+﻿using NetWork;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Main : MonoBehaviour
 {
@@ -23,7 +20,7 @@ public class Main : MonoBehaviour
     }
     private void Start()
     {
-        QualitySettings.vSyncCount= 0;
+        QualitySettings.vSyncCount = 0;
         DontDestroyOnLoad(this);
     }
     private void Update()

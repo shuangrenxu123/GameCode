@@ -21,13 +21,13 @@ public class Move : FsmNodeBase, IFsmNode
         if (obj == null)
             obj = token as Transform;
         aiData.reachedLastTarget = true;
-        Debug.Log("½øÈëÁË walk");
+        Debug.Log("è¿›å…¥äº† walk");
     }
 
     public void Exit()
     {
         //Nextpos = Vector2.zero;
-        Debug.Log("ÍË³öÁË walk");
+        Debug.Log("é€€å‡ºäº† walk");
     }
 
     public void Update(GameObject go)
@@ -47,18 +47,18 @@ public class Move : FsmNodeBase, IFsmNode
         {
             if (aiData.enemy != null)
             {
-                Debug.Log("½øÈëÕ½¶·×´Ì¬");
+                Debug.Log("è¿›å…¥æˆ˜æ–—çŠ¶æ€");
                 fsm.ChangeNode("Attack", aiData.enemy.GetComponent<TestAi>());
             }
             else
             {
-                Debug.Log("½øÈëÕ¾Á¢×´Ì¬");
+                Debug.Log("è¿›å…¥ç«™ç«‹çŠ¶æ€");
                 fsm.ChangeNode("Idle", obj);
             }
         }
         else
         {
-            go.transform.position +=aiData.CombatNumberBox.Speed.Value * Time.deltaTime * (Vector3)dircetion;
+            go.transform.position += aiData.CombatNumberBox.Speed.Value * Time.deltaTime * (Vector3)dircetion;
         }
     }
 }

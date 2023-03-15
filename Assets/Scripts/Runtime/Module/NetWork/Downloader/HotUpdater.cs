@@ -27,30 +27,22 @@ public class HotUpdater
     /// </summary>
     public Action actionAllDownloadDone;
     /// <summary>
-    /// 更新提示语
-    /// </summary>
-    public Action<string> actionUpdateTipsText;
-    /// <summary>
     /// 进度条函数更新
     /// </summary>
     public Action<float> actionDownloadValue;
-    /// <summary>
-    /// 需要整包更新，也就是重新全部下载
-    /// </summary>
-    bool needFullAppUpdate;
     /// <summary>
     /// 是否强制更新
     /// </summary>
     public bool hasNextUpdateBtn;
     /// <summary>
-    /// 整包更新的URL,即商城下载地址
+    /// 更新的URL,即服务器地址
     /// </summary>
     string fullAppUpdateUrl;
     /// <summary>
     /// 相同版本号的资源更新
     /// </summary>
     bool sameAppVerResUpdate;
-    private List<PackInfo> packList = new List<PackInfo>();
+    string bigestVer;
     private Downloader downloader;
     private IEnumerator OnDownloadItr;
     private async void Init()
@@ -59,12 +51,10 @@ public class HotUpdater
         ServicePointManager.ServerCertificateValidationCallback = MyRemoteCertificateValidationCallback;
         if (!CheckNetWorkActive())
             Debug.LogError("网络错误，没有连接网络");
-
-        needFullAppUpdate = false;
         hasNextUpdateBtn = false;
         fullAppUpdateUrl = "http://1.116.50.215";
         sameAppVerResUpdate = false;
-        packList.Clear();
+        actionAllDownloadDone += UpdateAppversion;
         downloadingInfo = new DownloadingInfo();
         var updateInfos = await ReqUpdateInfo();
         if (updateInfos != null)
@@ -72,11 +62,7 @@ public class HotUpdater
             SortUpdateInfo(ref updateInfos);
             //为后面的更新类型做铺垫
             CalculateUpdatePackList(updateInfos);
-            if (needFullAppUpdate)
-            {
-                Debug.LogError("-----------------------需要更新大版本-----------------------");
-            }
-            if(!sameAppVerResUpdate)
+            if (!sameAppVerResUpdate)
             {
                 Debug.Log("没有任何更新");
                 actionNothongUpdate?.Invoke();
@@ -148,17 +134,12 @@ public class HotUpdater
             }
         }
     }
-
     private void UpdateThread()
     {
-        if (!CheckNetWorkActive() ||(readyList.Count == 0 && runingList.Count==0))
-        {
-            return;
-        }
         //关闭一些有问题的线程，并将他们的信息重新添加到等待队列
         lock (locker)
         {
-            List<Thread> threads= new List<Thread>();
+            List<Thread> threads = new List<Thread>();
             foreach (var i in runingList)
             {
                 if (i.Key.IsAlive)
@@ -170,23 +151,37 @@ public class HotUpdater
             foreach (var thread in threads)
             {
                 runingList.Remove(thread);
+                //强制终止线程
                 thread.Abort();
             }
         }
+        if (readyList.Count == 0 && runingList.Count == 0)
+        {
+            actionAllDownloadDone?.Invoke();
+            return;
+        }
+
+        if (!CheckNetWorkActive())
+        {
+            Debug.LogError("没有网络了");
+            return;
+        }
+
         if (runingList.Count >= MAX_THREAD_COUNT)
             return;
-        else
+        //如果还有其他的任务未完成，那就补充线程数量
+        else if (readyList.Count > 0)
         {
-            var thread= new Thread(ThreadLoop);
+            var thread = new Thread(ThreadLoop);
             lock (locker)
             {
-                runingList.Add(thread,new Downloader());
+                runingList.Add(thread, new Downloader());
             }
             thread.Start();
         }
     }
     /// <summary>
-    /// 多线程下载时候的Update 需要写在主线程中
+    /// 多线程下载的update
     /// </summary>
     public void UpdateAsync()
     {
@@ -199,7 +194,6 @@ public class HotUpdater
         Init();
         if (sameAppVerResUpdate)
         {
-            Debug.Log("开始单线程下载资源包，共:" + packList.Count);
             StartDownloadResPack();
         }
     }
@@ -263,33 +257,20 @@ public class HotUpdater
         yield return null;
         int index = 0;
         using (ZipFile zip = new(file))
+        {
+            var count = zip.Count;
+            foreach (var i in zip)
             {
-                var count = zip.Count;
-                foreach (var i in zip)
-                {
-                    index++;
-                    i.Extract(Application.persistentDataPath + "/update/", ExtractExistingFileAction.OverwriteSilently);
-                    yield return null;
-                }
+                index++;
+                i.Extract(Application.persistentDataPath + "/update/", ExtractExistingFileAction.OverwriteSilently);
+                yield return null;
             }
+        }
         //删除临时文件
         DeleteFile(file);
-        
-        VersionManager.Instance.UpdateResVersion(packInfo.resVersion);  //版本更新逻辑代更正
+
         actionDownloadValue?.Invoke(1);
         StartDownloadResPack();
-    }
-
-    /// <summary>
-    /// 删除文件
-    /// </summary>
-    /// <param name="file"></param>
-    private void DeleteFile(string file)
-    {
-        if (File.Exists(file))
-        {
-            File.Delete(file);
-        }
     }
     ///<summary>
     ///下载中的时候来更新进度条
@@ -318,13 +299,24 @@ public class HotUpdater
         //这里仅仅是获得包，但是不会取出
         var packinfo = readyList.Peek();
         downloadingInfo.targetDownloadSize = packinfo.size;
-        downloadingInfo.totalPackCount = packList.Count;
+        downloadingInfo.totalPackCount = readyList.Count;
         downloader = new Downloader();
         downloader.Start(packinfo);
 
     }
     #endregion
     #region 版本相关
+    private void UpdateAppversion()
+    {
+        VersionManager.Instance.UpdateAppVersion(bigestVer);
+    }
+    private void DeleteFile(string file)
+    {
+        if (File.Exists(file))
+        {
+            File.Delete(file);
+        }
+    }
     /// <summary>
     /// 将列表中的按逆序来排序
     /// </summary>
@@ -336,7 +328,6 @@ public class HotUpdater
             return VersionManager.Instance.CompareVersion(b.appVersion, a.appVersion);
         });
     }
-
     private bool CheckMD5()
     {
         return true;
@@ -369,35 +360,21 @@ public class HotUpdater
     private void CalculateUpdatePackList(List<UpdateInfo> updateinfos)
     {
         //获得当前的版本
-        string bigestVer = VersionManager.Instance.appVersion;
+        bigestVer = VersionManager.Instance.appVersion;
+        List<PackInfo> packList = new List<PackInfo>();
         foreach (UpdateInfo info in updateinfos)
         {
+            ///需要注意版本号应该从小往大来加载，不然会出现漏掉的情况
             if (VersionManager.Instance.CompareVersion(info.appVersion, bigestVer) > 0)
             {
-                needFullAppUpdate = true;
+                sameAppVerResUpdate = true;
+                //更新版本号
                 bigestVer = info.appVersion;
-                fullAppUpdateUrl = info.appUrl;
-                return;
-            }
-
-            if (VersionManager.Instance.CompareVersion(info.appVersion, bigestVer) == 0)
-            {
-                hasNextUpdateBtn = true;
-                foreach (var pack in info.updateList)
-                {
-                    if (VersionManager.Instance.CompareVersion(pack.resVersion, VersionManager.Instance.resVersion) > 0)
-                    {
-                        //将高于资源版本号的添加到下载列表
-                        sameAppVerResUpdate = true;
-                        packList.Add(pack);
-                    }
-                }
-                readyList = new Queue<PackInfo>(packList);
+                packList.AddRange(info.updateList);
             }
         }
-
+        readyList = new Queue<PackInfo>(packList);
     }
-
     /// <summary>
     /// 解决HTTPs问题
     /// </summary>
@@ -458,17 +435,13 @@ public class UpdateInfo
     //版本所包含的资源包
     public List<PackInfo> updateList = new List<PackInfo>();
 }
-//每个包的信息
+//每个文件的信息
 public class PackInfo
 {
     /// <summary>
     /// 包对应的MD5
     /// </summary>
     public string MD5;
-    /// <summary>
-    /// 资源版本号
-    /// </summary>
-    public string resVersion;
     /// <summary>
     /// 包的大小
     /// </summary>

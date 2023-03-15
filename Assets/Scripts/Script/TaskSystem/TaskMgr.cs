@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -29,11 +28,11 @@ public class TaskMgr : MonoBehaviour
         }
     }
 
-    public void UpdateTask(int id,int num)
+    public void UpdateTask(int id, int num)
     {
         foreach (var i in tasks)
         {
-            i.UpdateTask(id,num);
+            i.UpdateTask(id, num);
         }
     }
 }

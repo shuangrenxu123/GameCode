@@ -1,66 +1,210 @@
-using NetWork;
 using PlayerInfo;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    CombatEntity entity;
-    [SerializeField]
-    PlayerInput input;
-    [SerializeField]
+    Transform cameraObject;
+    PlayerInputHandle inputHandle;
+    Player PlayerManager;
+    public Vector3 moveDirection;
+
+    [HideInInspector]
+    public Transform myTransform;
+    public AnimatorHandle animatorHandle;
+
     public Rigidbody rb;
-    Animator anim;
-    Vector3 rota = Vector3.zero;
-    public float rotaSpeed = 200;
+    public GameObject normalCamera;
+    [Header("Ground & AIR Detection States")]
+    [SerializeField]
+    float groundDetectionRayStartPoint = 0.5f;
+    [SerializeField]
+    float minimumDistanceNeededToBeginFall = 1f;
+    [SerializeField]
+    float groundDirectionRayDistance = 0.2f;
+    LayerMask ignoreForGroundCheck;
+    public float inAirTimer;
+
+    [Header("state")]
+    [SerializeField]
+    float movementSpeed = 5;
+    [SerializeField]
+    float rotationSpeed = 10;
+    [SerializeField]
+    float sprintSpeed = 8;
+    [SerializeField]
+    float fallingSpeed =30;
+
     void Start()
     {
+        animatorHandle = GetComponentInChildren<AnimatorHandle>();     
         rb = GetComponent<Rigidbody>();
-        entity = GetComponent<CombatEntity>();
-        //input = new PlayerInput();
-        //input.EnableTable();
-        //input.Onmove += Move;
-        //input.Onstop += Stop;
-        anim = GetComponent<Animator>();
+        PlayerManager = GetComponent<Player>();
+        inputHandle = GetComponent<PlayerInputHandle>();
+        cameraObject = Camera.main.transform; 
+        myTransform = transform;
+        animatorHandle.Initialize();
+
+        PlayerManager.isGrounded= true;
+        ignoreForGroundCheck = ~(1 << 8 | 1 << 11);
+    }
+    #region 移动代码
+    Vector3 noramalVector;
+    Vector3 targetPosition;
+    private void HandleRotation(float delta)
+    {
+        if (PlayerManager.isInteracting || PlayerManager.isInAir)
+        {
+            return;
+        }
+        Vector3 targetDir = Vector3.zero;
+        float moveOverride = inputHandle.moveAmount;
+        targetDir = cameraObject.forward * inputHandle.vertical;
+        targetDir += cameraObject.right * inputHandle.horizontal;
+        targetDir.Normalize();
+        targetDir.y = 0;
+        if(targetDir == Vector3.zero)
+        {
+            targetDir = myTransform.forward;
+        }
+        float rs = rotationSpeed;
+        Quaternion tr = Quaternion.LookRotation(targetDir);
+        Quaternion targerRotition = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
+        myTransform.rotation = targerRotition;
     }
 
-    //private void Stop(Vector2 arg0)
-    //{
-    //    rb.velocity = new Vector3(0, rb.velocity.y, 0) * entity.numberBox.Speed.Value;
-    //    //rigidbody2d.velocity = transform.forward* speed;
-    //
-    //}
-    //private void Move(Vector2 arg0)
-    //{
-    //    rb.velocity = new Vector3(0, 0, -arg0.y) * entity.numberBox.Speed.Value;
-    //    rb.velocity = -transform.forward * entity.numberBox.Speed.Value * arg0.y;
-    //}
-    void Update()
+    public void HandleMovement(float delta)
     {
-        if (Keyboard.current.dKey.isPressed)
+        if (inputHandle.rollFlag)
         {
-            rota += new Vector3(0, 1, 0) * rotaSpeed * Time.deltaTime;
+            return;
         }
-        if (Keyboard.current.aKey.isPressed)
+        moveDirection = cameraObject.forward * inputHandle.vertical;
+        moveDirection += cameraObject.right * inputHandle.horizontal;
+        moveDirection.Normalize();
+        moveDirection.y = 0;
+        float speed = movementSpeed;
+        if(inputHandle.sprintFlag && moveDirection != Vector3.zero)
         {
-            rota -= new Vector3(0, 1, 0) * rotaSpeed * Time.deltaTime;
-        }
-        if (Keyboard.current.wKey.isPressed)
-        {
-            //rigidbody2d.AddForce(-transform.forward * speed);
-            rb.velocity = transform.forward * entity.numberBox.Speed.Value;
-        }
-        else if (Keyboard.current.sKey.isPressed)
-        {
-            //rigidbody2d.AddForce(-transform.forward * -speed);
-            rb.velocity = -transform.forward * entity.numberBox.Speed.Value;
+            speed = sprintSpeed;
+            PlayerManager.isSprinting = true;
+            moveDirection *= speed;
         }
         else
         {
-            rb.velocity = new Vector3(0, 0, 0);
+            PlayerManager.isSprinting = false;
+            moveDirection *= speed;
         }
-        transform.transform.rotation = Quaternion.Euler(rota);
-
+        Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, noramalVector);
+        rb.velocity = projectedVelocity;
+        animatorHandle.UpdateAnimatorValues(inputHandle.moveAmount, 0, PlayerManager.isSprinting);
+        if (animatorHandle.canRotate)
+        {
+            HandleRotation(delta);
+        }
     }
+
+    public void HandleRollingAndSprinting(float delta)
+    {
+        if(animatorHandle.anim.GetBool("isInteracting")) 
+        {
+            return;
+        }
+        if (inputHandle.rollFlag)
+        {
+            moveDirection = cameraObject.forward * inputHandle.vertical;
+            moveDirection += cameraObject.right * inputHandle.horizontal;
+
+            if(inputHandle.moveAmount> 0)
+            {
+                animatorHandle.PlayTargetAnimation("Rolling", true);
+                moveDirection.y=0;
+                Quaternion rollRotation = Quaternion.LookRotation(moveDirection);
+                myTransform.rotation = rollRotation;
+            }
+            else
+            {
+                animatorHandle.PlayTargetAnimation("Backstep", true);
+                return;
+            }
+        }
+    }
+    /// <summary>
+    /// 处理坠落等
+    /// </summary>
+    /// <param name="delta"></param>
+    /// <param name="moveDirction"></param>
+    public void HandleFalling(float delta,Vector3 moveDirction)
+    {
+        PlayerManager.isGrounded = false;
+        RaycastHit hit;
+        Vector3 origin = myTransform.position;
+        origin.y += groundDetectionRayStartPoint;
+        //由于碰撞体已经不包含脚，这里来判断前方的障碍物是否可以通行
+        if(Physics.Raycast(origin,myTransform.forward,out hit, 0.4f))
+        {
+            moveDirction = Vector3.zero;
+        }
+        //添加下落的速度
+        if(PlayerManager.isInAir)
+        {
+            rb.AddForce(-Vector3.up * fallingSpeed);
+            rb.AddForce(moveDirction * fallingSpeed / 5f);
+        }
+        Vector3 dir = moveDirction;
+        dir.Normalize();
+        origin = origin + dir * groundDirectionRayDistance;
+        targetPosition = myTransform.position;
+        Debug.DrawRay(origin,-Vector3.up * minimumDistanceNeededToBeginFall,Color.red,0.1f,false);
+        if(Physics.Raycast(origin,-Vector3.up,out hit, minimumDistanceNeededToBeginFall, ignoreForGroundCheck))
+        {
+            noramalVector = hit.normal;
+            Vector3 tp = hit.point;
+            PlayerManager.isGrounded = true;
+            targetPosition.y = tp.y;
+            if(PlayerManager.isInAir)
+            {
+                if (inAirTimer > 0.5f)
+                {
+                    animatorHandle.PlayTargetAnimation("Land", true);
+                }
+                else
+                {
+                    animatorHandle.PlayTargetAnimation("Empty",false);
+                    inAirTimer= 0;
+                }
+                PlayerManager.isInAir= false;
+            }
+        }
+        else
+        {
+            if(PlayerManager.isGrounded)
+            {
+                PlayerManager.isGrounded = false;
+            }
+            if(PlayerManager.isInAir == false) 
+            {
+                if(PlayerManager.isInteracting == false)
+                {
+                    animatorHandle.PlayTargetAnimation("Falling",true);
+                }
+
+                Vector3 vel = rb.velocity;
+                vel.Normalize();
+                rb.velocity = vel * movementSpeed / 2;
+                PlayerManager.isInAir = true;
+            }
+        }
+        if (PlayerManager.isGrounded)
+        {
+            if(PlayerManager.isInteracting || inputHandle.moveAmount > 0)
+            {
+                myTransform.position = Vector3.Lerp(myTransform.position,targetPosition,Time.deltaTime);
+            }
+            else
+            {
+                myTransform.position = targetPosition;
+            }
+        }
+    }
+    #endregion
 }

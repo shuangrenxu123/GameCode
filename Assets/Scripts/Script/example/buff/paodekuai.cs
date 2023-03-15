@@ -1,3 +1,4 @@
+using Fight;
 using UnityEngine;
 
 public class paodekuai : BuffBase
@@ -10,7 +11,7 @@ public class paodekuai : BuffBase
 
     public override void Add()
     {
-        Debug.Log("收到了buff");
+        Debug.Log("鏀跺埌浜哹uff");
     }
 
     public override void OnRefresh()
@@ -20,7 +21,7 @@ public class paodekuai : BuffBase
 
     public override void OnRemove()
     {
-        Debug.Log("跑得快结束了");
+        Debug.Log("璺戝緱蹇粨鏉熶簡");
     }
 
     public override void OnUpdate()

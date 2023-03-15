@@ -1,10 +1,5 @@
-using NetWork;
 using PlayerInfo;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class NetObj : MonoBehaviour
 {
@@ -27,11 +22,11 @@ public class NetObj : MonoBehaviour
     public void SyncPostion(DefaultNetWorkPackage arg0)
     {
         var state = (move)arg0.Msgobj;
-        if(state != null)
+        if (state != null)
         {
             syncDelta = Time.time - lastMotionState.lastMotionTime;
             lastMotionState.lastMotionTime = Time.time;
-            forcastPosition = NetWorkUtility.ToUnityV3(state.Position)+ NetWorkUtility.ToUnityV3(state.Velocity) * syncDelta;
+            forcastPosition = NetWorkUtility.ToUnityV3(state.Position) + NetWorkUtility.ToUnityV3(state.Velocity) * syncDelta;
             startPosition = transform.position;
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));

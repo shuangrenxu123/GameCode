@@ -60,7 +60,7 @@ namespace NetWork
                 {
                     return;
                 }
-                else if(handle != null)
+                else if (handle != null)
                 {
                     handle?.Invoke(package);
                 }
@@ -155,8 +155,8 @@ namespace NetWork
         }
     }
 
- public class PackageEvent : UnityEvent<DefaultNetWorkPackage>
+    public class PackageEvent : UnityEvent<DefaultNetWorkPackage>
     {
 
-    } 
+    }
 }

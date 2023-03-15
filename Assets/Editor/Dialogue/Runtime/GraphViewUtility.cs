@@ -1,9 +1,6 @@
 using DialogueEdtior;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -13,10 +10,10 @@ using Edge = UnityEditor.Experimental.GraphView.Edge;
 public class GraphViewUtility
 {
     private DialogueGraphView targetGraphView;
-    private DialogueContainer container; 
+    private DialogueContainer container;
     private List<Edge> Edges => targetGraphView.edges.ToList();
     /// <summary>
-    /// »ñÈ¡µ±Ç°viewÖĞËùÓĞµÄnodes²¢×ª»¯ÎªdialogueNode
+    /// è·å–å½“å‰viewä¸­æ‰€æœ‰çš„nodeså¹¶è½¬åŒ–ä¸ºdialogueNode
     /// </summary>
     private List<DialogueNode> nodes => targetGraphView.nodes.ToList().Cast<DialogueNode>().ToList();
     public static GraphViewUtility GetInstance(DialogueGraphView tar)
@@ -28,28 +25,28 @@ public class GraphViewUtility
     {
         if (!Edges.Any())
         {
-            Debug.Log("µ±Ç°Í¼ÖĞÃ»ÓĞÁ¬Ïß");
+            Debug.Log("å½“å‰å›¾ä¸­æ²¡æœ‰è¿çº¿");
             return;
         }
         var dialogueContainer = ScriptableObject.CreateInstance<DialogueContainer>();
-        //ÌôÑ¡³öËùÓĞÊäÈë½Úµã²»ÎªnullµÄÁ¬Ïß
-        var connectPorts = Edges.Where(x => x.input.node !=null).ToArray();
+        //æŒ‘é€‰å‡ºæ‰€æœ‰è¾“å…¥èŠ‚ç‚¹ä¸ä¸ºnullçš„è¿çº¿
+        var connectPorts = Edges.Where(x => x.input.node != null).ToArray();
 
         for (int i = 0; i < connectPorts.Length; i++)
         {
             var outputNode = connectPorts[i].output.node as DialogueNode;
             var inputNode = connectPorts[i].input.node as DialogueNode;
 
-            //Ìí¼ÓÒ»¸öÁ¬½Ó
+            //æ·»åŠ ä¸€ä¸ªè¿æ¥
             dialogueContainer.nodeLinks.Add(new NodeLInkData()
             {
-                BaseNodeGuid =outputNode.GUID,
-                PortName= connectPorts[i].output.portName,
-                TargetNodeGuid=inputNode.GUID,
+                BaseNodeGuid = outputNode.GUID,
+                PortName = connectPorts[i].output.portName,
+                TargetNodeGuid = inputNode.GUID,
             });
         }
 
-        foreach (var i in nodes.Where(node=>!node.EntryPoint))
+        foreach (var i in nodes.Where(node => !node.EntryPoint))
         {
             dialogueContainer.NodeDatas.Add(new DialogueNodeData()
             {
@@ -63,12 +60,12 @@ public class GraphViewUtility
         AssetDatabase.SaveAssets();
     }
 
-    public void LoadData(string fileName) 
+    public void LoadData(string fileName)
     {
         container = Resources.Load<DialogueContainer>(fileName);
         if (container == null)
         {
-            Debug.LogError("Ã»ÓĞÕÒµ½ÎÄ¼ş");
+            Debug.LogError("æ²¡æœ‰æ‰¾åˆ°æ–‡ä»¶");
             return;
         }
         ClearGraph();
@@ -97,15 +94,15 @@ public class GraphViewUtility
     {
         foreach (var nodedata in container.NodeDatas)
         {
-            var tempNode = targetGraphView.CreatDialogueNode(nodedata.dialogueText,nodedata.position);
-            tempNode.GUID= nodedata.guid;
+            var tempNode = targetGraphView.CreatDialogueNode(nodedata.dialogueText, nodedata.position);
+            tempNode.GUID = nodedata.guid;
             targetGraphView.AddElement(tempNode);
-            var nodePorts = container.nodeLinks.Where(x => x.BaseNodeGuid== nodedata.guid).ToList();
-            nodePorts.ForEach(x => { targetGraphView.AddChoicePort(tempNode, x.PortName);});
+            var nodePorts = container.nodeLinks.Where(x => x.BaseNodeGuid == nodedata.guid).ToList();
+            nodePorts.ForEach(x => { targetGraphView.AddChoicePort(tempNode, x.PortName); });
         }
     }
 
-    private void LinkNodes(Port output,Port input)
+    private void LinkNodes(Port output, Port input)
     {
         var tempEdge = new Edge()
         {
@@ -119,7 +116,7 @@ public class GraphViewUtility
 
     private void ClearGraph()
     {
-        ///ÕÒµ½Èë¿Ú½Úµã£¬¼´×Ô¶¯Éú³ÉµÄÄÇ¸ö
+        ///æ‰¾åˆ°å…¥å£èŠ‚ç‚¹ï¼Œå³è‡ªåŠ¨ç”Ÿæˆçš„é‚£ä¸ª
         nodes.Find(x => x.EntryPoint).GUID = container.nodeLinks[0].BaseNodeGuid;
         foreach (var node in nodes)
         {

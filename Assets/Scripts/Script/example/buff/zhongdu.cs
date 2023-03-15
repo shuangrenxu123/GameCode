@@ -1,3 +1,4 @@
+using Fight;
 using UnityEngine;
 
 public class zhongdu : BuffBase
@@ -9,15 +10,15 @@ public class zhongdu : BuffBase
     }
 
     /// <summary>
-    /// Ìí¼Óºó
+    /// æ·»åŠ å
     /// </summary>
     public override void Add()
     {
-        Debug.Log("»ñµÃÖĞ¶¾buff");
+        Debug.Log("è·å¾—ä¸­æ¯’buff");
     }
 
     /// <summary>
-    /// ÔÙ´Î»ñµÃºóµÄË¢ĞÂ
+    /// å†æ¬¡è·å¾—åçš„åˆ·æ–°
     /// </summary>
     public override void OnRefresh()
     {
@@ -26,14 +27,14 @@ public class zhongdu : BuffBase
 
     public override void OnRemove()
     {
-        Debug.Log("ÖĞ¶¾½áÊø");
+        Debug.Log("ä¸­æ¯’ç»“æŸ");
     }
 
     public override void OnUpdate()
     {
         if (nowtime < Maxtime)
         {
-            Debug.Log("ÎÒÖĞ¶¾ÁË");
+            Debug.Log("æˆ‘ä¸­æ¯’äº†");
             nowtime += Time.deltaTime;
         }
         else

@@ -1,9 +1,10 @@
+using Fight;
 using System.Collections.Generic;
 using System.Linq;
 namespace HTN
 {
     /// <summary>
-    /// ¹æ»®Óò,¾ßÌå×ÓÀà¿ÉÒÔÊµÏÖÕâ¸ö
+    /// è§„åˆ’åŸŸ,å…·ä½“å­ç±»å¯ä»¥å®ç°è¿™ä¸ª
     /// </summary>
     public abstract class DomainBase
     {
@@ -28,12 +29,12 @@ namespace HTN
             TaskList = TaskList.Where(x => x.Name != name).ToList();
         }
         /// <summary>
-        /// ÓÃÓÚÉùÃ÷Ëù°üº¬µÄÈÎÎñÁĞ±í
+        /// ç”¨äºå£°æ˜æ‰€åŒ…å«çš„ä»»åŠ¡åˆ—è¡¨
         /// </summary>
         public abstract void Init();
 
         /// <summary>
-        /// ÓÃÓÚÉùÃ÷ÊÀ½ç×´Ì¬»ù±¾ĞÅÏ¢
+        /// ç”¨äºå£°æ˜ä¸–ç•ŒçŠ¶æ€åŸºæœ¬ä¿¡æ¯
         /// </summary>
         public abstract void BuildWorldState();
     }

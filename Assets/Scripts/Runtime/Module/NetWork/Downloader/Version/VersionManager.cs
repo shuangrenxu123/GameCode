@@ -5,26 +5,26 @@ using UnityEngine;
 public class VersionManager : ModuleSingleton<VersionManager>, IModule
 {
     public string appVersion;
-    public string resVersion;
+    //public string resVersion;
     public string cacheResVersionFile { get { return Application.persistentDataPath + "/update/version.txt"; } }
 
     public void OnCreate(object createParam)
     {
-        //»ñµÃ°æ±¾ºÅ
+        //è·å¾—ç‰ˆæœ¬å·
         string version = Resources.Load<TextAsset>("version").text;
-        //jsonÖĞ°üº¬ÁË°æ±¾ºÅºÍ×ÊÔ´°æ±¾ºÅ
+        //jsonä¸­åŒ…å«äº†ç‰ˆæœ¬å·å’Œèµ„æºç‰ˆæœ¬å·
         var jsonData = JsonMapper.ToObject(version);
         appVersion = jsonData["app_version"].ToString();
-        resVersion = jsonData["res_version"].ToString();
+        //resVersion = jsonData["res_version"].ToString();
         var cacheVersion = ReadCacheResVersion();
-        if (CompareVersion(cacheVersion, resVersion) > 0)
-        {
-            resVersion = cacheVersion;
-        }
+        //if (CompareVersion(cacheVersion, resVersion) > 0)
+        //{
+        //    resVersion = cacheVersion;
+        //}
 
     }
     ///<summary>
-    ///»ñµÃ»º´æ°æ±¾ºÅ
+    ///è·å¾—ç¼“å­˜ç‰ˆæœ¬å·
     /// </summary>
     public string ReadCacheResVersion()
     {
@@ -41,13 +41,13 @@ public class VersionManager : ModuleSingleton<VersionManager>, IModule
         return "0.0.0.0";
     }
     /// <summary>
-    /// ¸üĞÂ»º´æµÄ×ÊÔ´°æ±¾ºÅ£¬Í¬Ê±»áĞ´Èëµ½ÎÄ¼şÖĞ
+    /// æ›´æ–°ç¼“å­˜çš„èµ„æºç‰ˆæœ¬å·ï¼ŒåŒæ—¶ä¼šå†™å…¥åˆ°æ–‡ä»¶ä¸­
     /// </summary>
     /// <param name="newVersion"></param>
-    public void UpdateResVersion(string newVersion)
+    public void UpdateAppVersion(string newVersion)
     {
-        resVersion = newVersion;
-        //ÓĞ¿ÉÄÜÎÒÃÇÃ»ÓĞupdateÎÄ¼ş¼Ğ¡£ËùÒÔĞèÒª´´½¨Ò»¸ö
+        appVersion = newVersion;
+        //æœ‰å¯èƒ½æˆ‘ä»¬æ²¡æœ‰updateæ–‡ä»¶å¤¹ã€‚æ‰€ä»¥éœ€è¦åˆ›å»ºä¸€ä¸ª
         var dir = Path.GetDirectoryName(cacheResVersionFile);
         if (Directory.Exists(dir))
             Directory.CreateDirectory(dir);
@@ -55,12 +55,12 @@ public class VersionManager : ModuleSingleton<VersionManager>, IModule
         {
             using (var sw = new StreamWriter(f))
             {
-                sw.Write(resVersion);
+                sw.Write(appVersion);
             }
         }
     }
     /// <summary>
-    /// É¾³ı»º´æ°æ±¾ºÅÎÄ¼ş
+    /// åˆ é™¤ç¼“å­˜ç‰ˆæœ¬å·æ–‡ä»¶
     /// </summary>
     public void DeleteResVersion()
     {
@@ -70,7 +70,7 @@ public class VersionManager : ModuleSingleton<VersionManager>, IModule
         }
     }
     /// <summary>
-    /// ±È½ÏÁ½¸ö°æ±¾ºÅ£¬Èôv1´óÓÚv2Ôò·µ»Ø 1£¬·´Ö®·µ»Ø-1£¬ÈôÏàµÈÔòÎª0
+    /// æ¯”è¾ƒä¸¤ä¸ªç‰ˆæœ¬å·ï¼Œè‹¥v1å¤§äºv2åˆ™è¿”å› 1ï¼Œåä¹‹è¿”å›-1ï¼Œè‹¥ç›¸ç­‰åˆ™ä¸º0
     /// </summary>
     /// <param name="v1"></param>
     /// <param name="v2"></param>

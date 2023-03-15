@@ -1,26 +1,30 @@
 using System;
 using System.Collections.Generic;
+namespace Fight
+{
 
-public class ActionPoint
-{
-    public List<Action<CombatAction>> Listeners = new List<Action<CombatAction>>();
-}
-public enum ActionPointType
-{
-    /// <summary>
-    /// Ôì³ÉÉËº¦Ç°
-    /// </summary>
-    PreCauseDamage,
-    /// <summary>
-    /// ³ĞÊÜÉËº¦Ç°
-    /// </summary>
-    PreReceiveDamage,
-    /// <summary>
-    /// Ôì³ÉÉËº¦ºó
-    /// </summary>
-    PostCauseDamage,
-    /// <summary>
-    /// ³ĞÊÜÉËº¦ºó
-    /// </summary>
-    PostReceiveDamage,
+
+    public class ActionPoint
+    {
+        public List<Action<CombatAction>> Listeners = new List<Action<CombatAction>>();
+    }
+    public enum ActionPointType
+    {
+        /// <summary>
+        /// é€ æˆä¼¤å®³å‰
+        /// </summary>
+        PreCauseDamage,
+        /// <summary>
+        /// æ‰¿å—ä¼¤å®³å‰
+        /// </summary>
+        PreReceiveDamage,
+        /// <summary>
+        /// é€ æˆä¼¤å®³å
+        /// </summary>
+        PostCauseDamage,
+        /// <summary>
+        /// æ‰¿å—ä¼¤å®³å
+        /// </summary>
+        PostReceiveDamage,
+    }
 }

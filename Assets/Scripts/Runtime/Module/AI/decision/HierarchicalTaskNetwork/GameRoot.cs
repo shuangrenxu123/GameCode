@@ -1,3 +1,4 @@
+using Fight;
 using System;
 using UnityEngine;
 
@@ -19,13 +20,13 @@ namespace HTN
                 entity = GetComponent<CombatEntity>();
                 domain = (DomainBase)Activator.CreateInstance(Type.GetType(AIName));
                 domain.Init(entity, ws);
-                //ÔÚÆäÖĞÌí¼Ó¾ßÌåµÄÈÎÎñ
+                //åœ¨å…¶ä¸­æ·»åŠ å…·ä½“çš„ä»»åŠ¡
                 domain.Init();
                 domain.BuildWorldState();
-                //³õÊ¼»¯Ô¤²âÆ÷
+                //åˆå§‹åŒ–é¢„æµ‹å™¨
                 Planner = new Planner();
                 Planner.Init(ws, domain);
-                //³õÊ¼»¯ Ö´ĞĞÆ÷
+                //åˆå§‹åŒ– æ‰§è¡Œå™¨
                 PlanRunner = new PlanRunner(ws);
             }
         }

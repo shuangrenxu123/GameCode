@@ -1,5 +1,6 @@
+using Fight;
 /// <summary>
-/// buffµÄ×´Ì¬£¬
+/// buffçš„çŠ¶æ€ï¼Œ
 /// </summary>
 public enum BuffState
 {
@@ -12,23 +13,23 @@ public abstract class BuffBase
     public BuffState buffState;
 
     /// <summary>
-    /// ÒÑ¾­³ÖĞøµÄÊ±¼ä
+    /// å·²ç»æŒç»­çš„æ—¶é—´
     /// </summary>
     public float nowtime = 0;
     /// <summary>
-    /// buff³ÖĞøÊ±¼ä
+    /// buffæŒç»­æ—¶é—´
     /// </summary>
     public float Maxtime;
     /// <summary>
-    /// µ±Ç°µş¼ÓµÄ²ãÊı
+    /// å½“å‰å åŠ çš„å±‚æ•°
     /// </summary>
     float currNumber;
     /// <summary>
-    /// ÊÍ·ÅÕß
+    /// é‡Šæ”¾è€…
     /// </summary>
     public CombatEntity Creator;
     /// <summary>
-    /// Ä¿±ê
+    /// ç›®æ ‡
     /// </summary>
     public CombatEntity taget;
 
@@ -40,20 +41,20 @@ public abstract class BuffBase
         taget = t;
     }
     /// <summary>
-    /// »ñµÃbuff
+    /// è·å¾—buff
     /// </summary>
     public abstract void Add();
     /// <summary>
-    /// Ã¿ÃëµÄbuff¸üĞÂ
+    /// æ¯ç§’çš„buffæ›´æ–°
     /// </summary>
     public abstract void OnUpdate();
 
     /// <summary>
-    /// ÒÆ³ıbuff
+    /// ç§»é™¤buff
     /// </summary>
     public abstract void OnRemove();
     /// <summary>
-    /// ÔÙ´Î»ñµÃÏàÍ¬buffµÄË¢ĞÂ
+    /// å†æ¬¡è·å¾—ç›¸åŒbuffçš„åˆ·æ–°
     /// </summary>
     public abstract void OnRefresh();
 

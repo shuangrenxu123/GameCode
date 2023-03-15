@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public abstract class TaskBase
 {
@@ -17,19 +15,19 @@ public abstract class TaskBase
         return taskData.isFinish;
     }
     /// <summary>
-    /// ¸üĞÂÈÎÎñĞèÇó
+    /// æ›´æ–°ä»»åŠ¡éœ€æ±‚
     /// </summary>
     /// <param name="id"></param>
     /// <param name="num"></param>
-    public abstract void UpdateTask(int id,int num);
+    public abstract void UpdateTask(int id, int num);
     public abstract int GetTaskId();
     /// <summary>
-    /// »ñµÃ½±Àø
+    /// è·å¾—å¥–åŠ±
     /// </summary>
     /// <returns></returns>
     public abstract Dictionary<int, int> GetremunerationItems();
     /// <summary>
-    /// ÊÇ·ñÍê³ÉÈÎÎñËùÓĞĞèÇó
+    /// æ˜¯å¦å®Œæˆä»»åŠ¡æ‰€æœ‰éœ€æ±‚
     /// </summary>
     /// <returns></returns>
     protected abstract void isEligible();

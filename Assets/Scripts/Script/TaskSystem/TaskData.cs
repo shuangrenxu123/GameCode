@@ -1,37 +1,35 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class TaskData
 {
     /// <summary>
-    /// Ç°ÖÃÈÎÎñid
+    /// å‰ç½®ä»»åŠ¡id
     /// </summary>
     public HashSet<int> predecessorTasksId;
     public int id;
     /// <summary>
-    /// ÈÎÎñÀàÐÍ
+    /// ä»»åŠ¡ç±»åž‹
     /// </summary>
     public TaskType type;
     public string name;
     /// <summary>
-    /// ÈÎÎñÃèÊö
+    /// ä»»åŠ¡æè¿°
     /// </summary>
     public string description;
     /// <summary>
-    /// ÊÇ·ñÍê³É
+    /// æ˜¯å¦å®Œæˆ
     /// </summary>
     public bool isFinish = false;
 
     public bool CanAppect = true;
     /// <summary>
-    /// ½±ÀøÎïÆ·id
+    /// å¥–åŠ±ç‰©å“id
     /// </summary>
     public Dictionary<int, int> remunerationItemsId;
     /// <summary>
-    /// ËùÐèÒªµÄÎïÆ·»òÐèÒª»÷É±µÄ¹ÖÎï
+    /// æ‰€éœ€è¦çš„ç‰©å“æˆ–éœ€è¦å‡»æ€çš„æ€ªç‰©
     /// </summary>
-    public Dictionary<int,int> filter;
+    public Dictionary<int, int> filter;
 }
 public enum TaskType
 {
