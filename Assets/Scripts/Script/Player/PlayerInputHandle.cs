@@ -11,6 +11,10 @@ public class PlayerInputHandle : MonoBehaviour
 
     public bool b_Input;
     public bool e_Input;
+    public bool LockOnInput;
+
+    [SerializeField]
+    public bool LockFlag;
     public bool rollFlag;
     public bool comboFlag;
     public bool DefenseFlag;
@@ -19,7 +23,7 @@ public class PlayerInputHandle : MonoBehaviour
     PlayerAttack PlayerAttacker;
     PlayerControls inputAction;
     Player playerManager;
-
+    public CameraHandler cameraHandler;
     Vector2 movementInput;
     Vector2 cameraInput;
 
@@ -37,17 +41,26 @@ public class PlayerInputHandle : MonoBehaviour
         {
             inputAction = new PlayerControls();
         }
-        inputAction.PlayerMovement.Movement.performed   += i =>movementInput=i.ReadValue<Vector2>();
+        inputAction.PlayerMovement.Movement.performed   += i => movementInput = i.ReadValue<Vector2>();
         inputAction.PlayerMovement.Movement.canceled    += i => movementInput = i.ReadValue<Vector2>();
 
         inputAction.PlayerMovement.Camera.performed     += i => cameraInput = i.ReadValue<Vector2>();
         inputAction.PlayerMovement.Camera.canceled      += i => cameraInput = i.ReadValue<Vector2>();
 
-        inputAction.PlayerMovement.Sprint.performed += i => sprintFlag = true;
-        inputAction.PlayerMovement.Sprint.canceled += i => sprintFlag = false;
+        inputAction.PlayerMovement.Sprint.performed     += i => sprintFlag = true;
+        inputAction.PlayerMovement.Sprint.canceled      += i => sprintFlag = false;
 
-        inputAction.PlayerAction.defense.performed += i => DefenseFlag = true;
-        inputAction.PlayerAction.defense.canceled += i => DefenseFlag = false;
+        inputAction.PlayerAction.defense.performed      += i => DefenseFlag = true;
+        inputAction.PlayerAction.defense.canceled       += i => DefenseFlag = false;
+
+        inputAction.PlayerAction.Interactable.performed += i => e_Input = true;
+        inputAction.PlayerAction.Interactable.canceled  += i => e_Input = false;
+
+        inputAction.PlayerAction.Roll.performed         += i => b_Input = true;
+        inputAction.PlayerAction.Roll.canceled          += i => b_Input = false;
+
+        inputAction.PlayerAction.Lock.performed         += i => LockOnInput = true;
+        inputAction.PlayerAction.Lock.canceled          += i => LockOnInput = false;
 
         inputAction.Enable();
     }
@@ -68,8 +81,8 @@ public class PlayerInputHandle : MonoBehaviour
         MoveInput(delta);
         HanldeRollInput(delta);
         HandleAttackInput(delta);
-        HandleInteractingInput(delta);
         HandleDefenseInput(delta);
+        HandleLock();
     }
     private void MoveInput(float delta)
     {
@@ -82,7 +95,6 @@ public class PlayerInputHandle : MonoBehaviour
 
     private void HanldeRollInput(float delta)
     {
-        b_Input = inputAction.PlayerAction.Roll.phase == InputActionPhase.Performed;
         if (b_Input)
         {
             rollFlag = true;
@@ -112,11 +124,21 @@ public class PlayerInputHandle : MonoBehaviour
             }
         }
     }
-    private void HandleInteractingInput(float delta)
+    private void HandleLock()
     {
-        inputAction.PlayerAction.Interactable.performed += i => e_Input = true;
+        if (LockOnInput && LockFlag == false)
+        {
+            cameraHandler.ClearLockTargets();
+            LockOnInput= false;
+            LockFlag = cameraHandler.HandleLockOn();
+        }
+        else if(LockOnInput && LockFlag) 
+        {
+            LockFlag = false;
+            LockOnInput = false;
+            cameraHandler.ClearLockTargets();
+        }
     }
-
     private void HandleDefenseInput(float delta)
     {
         if (LightAttackFlag)

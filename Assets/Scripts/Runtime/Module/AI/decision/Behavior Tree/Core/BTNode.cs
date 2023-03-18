@@ -4,132 +4,40 @@ using UnityEngine;
 namespace BT
 {
     /// <summary>
-    /// ËùÓĞ½ÚµãµÄ¸¸½Úµã
+    /// æ‰€æœ‰èŠ‚ç‚¹çš„çˆ¶èŠ‚ç‚¹
     /// </summary>
     public class BTNode
     {
         public string name;
+        public bool isRunning { get; set; }
 
-        /// <summary>
-        /// ×Ó½Úµã
-        /// </summary>
-        public List<BTNode> children;
-        /// <summary>
-        /// ¼ì²âÊÇ·ñ¿ÉÒÔ½øÈë´Ë½Úµã
-        /// </summary>
-        public BTPrecondition precondition;
-
+        public BTNode clearTick { get; set; }
         public BTDataBase database;
 
         /// <summary>
-        /// ÀäÈ´Ê±¼ä
-        /// </summary>
-        public float interval = 0;
-        private float lastTimeEvaluated = 0;
-        /// <summary>
-        /// ÊÇ·ñÒÑ¾­¼¤»î
-        /// </summary>
-        public bool activated;
-
-        public BTNode() : this(null)
-        {
-
-        }
-        public BTNode(BTPrecondition precondition)
-        {
-            this.precondition = precondition;
-        }
-        /// <summary>
-        /// ¼¤»î½Úµã
+        /// æ¿€æ´»èŠ‚ç‚¹
         /// </summary>
         /// <param name="database"></param>
         public virtual void Activate(BTDataBase database)
         {
-            if (activated)
-            {
-                return;
-            }
             this.database = database;
-            if (precondition != null)
-                precondition.Activate(database);
-            if (children != null)
-                foreach (BTNode child in children)
-                {
-                    child.Activate(database);
-                }
-            activated = true;
+            if(clearTick != null)
+            {
+                clearTick.Activate(database);
+            }
         }
-
+        /// <summary>
+        /// æ¸…é™¤åªç”¨å…³å¿ƒå­èŠ‚ç‚¹çš„æ¸…é™¤
+        /// </summary>
         public virtual void Clear()
         {
 
         }
 
-        /// <summary>
-        /// ¼ì²é½ÚµãÄÜ·ñÖ´ĞĞ£¬°üÀ¨ÊÇ·ñactivated£¬ÊÇ·ñÀäÈ´Íê³É£¬ÊÇ·ñÍ¨¹ı×¼ÈëÌõ¼ş£¬ºÍ¸öĞÔ»¯¼ì²é (DoEvaluate)
-        /// </summary>
-        /// <returns></returns>
-        internal bool Evaluate()
-        {
-            bool coolDownOk = CheakTimer();
-            return activated && coolDownOk && (precondition == null || precondition.Check()) && DoEvaluate();
-        }
-
-        protected virtual bool DoEvaluate()
-        {
-            return true;
-        }
-
-        protected bool CheakTimer()
-        {
-            if (Time.time - lastTimeEvaluated > interval)
-            {
-                lastTimeEvaluated = Time.time;
-                return true;
-            }
-            return false;
-        }
-
         public virtual BTResult Tick()
         {
-            return BTResult.Ended;
+            return BTResult.Success;
         }
 
-        public virtual void AddChild(BTNode node)
-        {
-            if (children == null)
-            {
-                children = new List<BTNode>();
-            }
-            if (node != null)
-            {
-                children.Add(node);
-            }
-
-        }
-
-        public virtual void RemoveChild(BTNode node)
-        {
-            if (children != null && node != null)
-                children.Remove(node);
-        }
-    }
-    /// <summary>
-    /// ½ÚµãµÄÔËĞĞ×´Ì¬
-    /// </summary>
-    public enum BTResult
-    {
-        /// <summary>
-        /// ³É¹¦
-        /// </summary>
-        Ended = 1,
-        /// <summary>
-        /// ÔËĞĞÖĞ
-        /// </summary>
-        Running = 2,
-        /// <summary>
-        /// Ê§°Ü
-        /// </summary>
-        Fail = 3,
     }
 }

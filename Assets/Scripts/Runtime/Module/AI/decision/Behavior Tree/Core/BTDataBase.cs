@@ -4,40 +4,52 @@ namespace BT
 {
     public class BTDataBase : MonoBehaviour
     {
-        private List<object> _database = new List<object>();
+        private List<object> _dataList = new List<object>();
         private List<string> _dataNames = new List<string>();
         public T GetData<T>(string dataName)
         {
             int dataId = IndexOfDataId(dataName);
             if (dataId == -1) Debug.LogError("Database: Data for " + dataName + " does not exist!");
 
-            return (T)_database[dataId];
+            return (T)_dataList[dataId];
         }
 
         // Should use this function to get data!
         public T GetData<T>(int dataId)
         {
-            return (T)_database[dataId];
+            return (T)_dataList[dataId];
         }
 
         public void SetData<T>(string dataName, T data)
         {
             int dataId = GetDataId(dataName);
-            _database[dataId] = (object)data;
+            _dataList[dataId] = (object)data;
         }
 
         public void SetData<T>(int dataId, T data)
         {
-            _database[dataId] = (object)data;
+            _dataList[dataId] = (object)data;
         }
 
+
+        public bool CheckDataNull(string dataName)
+        {
+            int dataId = IndexOfDataId(dataName);
+            if (dataId == -1) return true;
+
+            return CheckDataNull(dataId);
+        }
+        public bool CheckDataNull(int dataId)
+        {
+            return _dataList[dataId] == null || _dataList[dataId].Equals(null);
+        }
         public int GetDataId(string dataName)
         {
             int dataId = IndexOfDataId(dataName);
             if (dataId == -1)
             {
                 _dataNames.Add(dataName);
-                _database.Add(null);
+                _dataList.Add(null);
                 dataId = _dataNames.Count - 1;
             }
 

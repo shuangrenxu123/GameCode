@@ -28,4 +28,14 @@ public class WindowsManager : ModuleSingleton<WindowsManager>, IModule
         UIWindows.Add(window.GetType().Name, window);
         //window.gameObject.SetActive(false);
     }
+    public void EnableWindow<T>() where T : WindowRoot
+    {
+        var window = GetUiWindow<T>();
+        window.gameObject.SetActive(true);
+    }
+    public void DisableWindow<T>() where T: WindowRoot
+    {
+        var window = GetUiWindow<T>();
+        window.gameObject.SetActive(false);
+    }
 }

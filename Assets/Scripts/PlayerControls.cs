@@ -207,6 +207,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Lock"",
+                    ""type"": ""Button"",
+                    ""id"": ""1e18e0fa-26d9-424d-8238-696a1a1aee92"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -297,6 +306,17 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""defense"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""eb9b4f10-6926-433a-8bb7-6a494e6a41d7"",
+                    ""path"": ""<Keyboard>/tab"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -314,6 +334,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_PlayerAction_LightAttack = m_PlayerAction.FindAction("LightAttack", throwIfNotFound: true);
         m_PlayerAction_Interactable = m_PlayerAction.FindAction("Interactable", throwIfNotFound: true);
         m_PlayerAction_defense = m_PlayerAction.FindAction("defense", throwIfNotFound: true);
+        m_PlayerAction_Lock = m_PlayerAction.FindAction("Lock", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -426,6 +447,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerAction_LightAttack;
     private readonly InputAction m_PlayerAction_Interactable;
     private readonly InputAction m_PlayerAction_defense;
+    private readonly InputAction m_PlayerAction_Lock;
     public struct PlayerActionActions
     {
         private @PlayerControls m_Wrapper;
@@ -434,6 +456,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @LightAttack => m_Wrapper.m_PlayerAction_LightAttack;
         public InputAction @Interactable => m_Wrapper.m_PlayerAction_Interactable;
         public InputAction @defense => m_Wrapper.m_PlayerAction_defense;
+        public InputAction @Lock => m_Wrapper.m_PlayerAction_Lock;
         public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -455,6 +478,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @defense.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDefense;
                 @defense.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDefense;
                 @defense.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDefense;
+                @Lock.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
+                @Lock.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
+                @Lock.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
             }
             m_Wrapper.m_PlayerActionActionsCallbackInterface = instance;
             if (instance != null)
@@ -471,6 +497,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @defense.started += instance.OnDefense;
                 @defense.performed += instance.OnDefense;
                 @defense.canceled += instance.OnDefense;
+                @Lock.started += instance.OnLock;
+                @Lock.performed += instance.OnLock;
+                @Lock.canceled += instance.OnLock;
             }
         }
     }
@@ -487,5 +516,6 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnLightAttack(InputAction.CallbackContext context);
         void OnInteractable(InputAction.CallbackContext context);
         void OnDefense(InputAction.CallbackContext context);
+        void OnLock(InputAction.CallbackContext context);
     }
 }

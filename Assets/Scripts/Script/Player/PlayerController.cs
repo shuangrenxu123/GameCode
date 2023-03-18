@@ -71,10 +71,13 @@ public class PlayerController : MonoBehaviour
         Quaternion targerRotition = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
         myTransform.rotation = targerRotition;
     }
-
+    /// <summary>
+    /// 具体的移动
+    /// </summary>
+    /// <param name="delta"></param>
     public void HandleMovement(float delta)
     {
-        if (inputHandle.rollFlag)
+        if (inputHandle.rollFlag || PlayerManager.isInAir || PlayerManager.isInteracting)
         {
             return;
         }
@@ -102,7 +105,10 @@ public class PlayerController : MonoBehaviour
             HandleRotation(delta);
         }
     }
-
+    /// <summary>
+    /// 翻滚与后撤
+    /// </summary>
+    /// <param name="delta"></param>
     public void HandleRollingAndSprinting(float delta)
     {
         if(animatorHandle.anim.GetBool("isInteracting")) 
@@ -129,7 +135,7 @@ public class PlayerController : MonoBehaviour
         }
     }
     /// <summary>
-    /// 处理坠落等
+    /// 坠落与地面检测
     /// </summary>
     /// <param name="delta"></param>
     /// <param name="moveDirction"></param>
@@ -140,7 +146,7 @@ public class PlayerController : MonoBehaviour
         Vector3 origin = myTransform.position;
         origin.y += groundDetectionRayStartPoint;
         //由于碰撞体已经不包含脚，这里来判断前方的障碍物是否可以通行
-        if(Physics.Raycast(origin,myTransform.forward,out hit, 0.4f))
+        if(Physics.Raycast(origin,myTransform.forward,out hit, 0.2f))
         {
             moveDirction = Vector3.zero;
         }
@@ -148,13 +154,14 @@ public class PlayerController : MonoBehaviour
         if(PlayerManager.isInAir)
         {
             rb.AddForce(-Vector3.up * fallingSpeed);
-            rb.AddForce(moveDirction * fallingSpeed / 5f);
+            rb.AddForce(moveDirction * fallingSpeed / 5f); 
         }
         Vector3 dir = moveDirction;
         dir.Normalize();
         origin = origin + dir * groundDirectionRayDistance;
         targetPosition = myTransform.position;
-        Debug.DrawRay(origin,-Vector3.up * minimumDistanceNeededToBeginFall,Color.red,0.1f,false);
+        Debug.DrawRay(transform.position,-Vector3.up * minimumDistanceNeededToBeginFall,Color.red,0.1f,false);
+
         if(Physics.Raycast(origin,-Vector3.up,out hit, minimumDistanceNeededToBeginFall, ignoreForGroundCheck))
         {
             noramalVector = hit.normal;
@@ -163,9 +170,11 @@ public class PlayerController : MonoBehaviour
             targetPosition.y = tp.y;
             if(PlayerManager.isInAir)
             {
+                moveDirction = Vector3.zero;
                 if (inAirTimer > 0.5f)
                 {
-                    animatorHandle.PlayTargetAnimation("Land", true);
+                    animatorHandle.PlayTargetAnimation("Landing", true);
+                    inAirTimer = 0;
                 }
                 else
                 {
@@ -181,6 +190,7 @@ public class PlayerController : MonoBehaviour
             {
                 PlayerManager.isGrounded = false;
             }
+
             if(PlayerManager.isInAir == false) 
             {
                 if(PlayerManager.isInteracting == false)
@@ -190,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
                 Vector3 vel = rb.velocity;
                 vel.Normalize();
-                rb.velocity = vel * movementSpeed / 2;
+                rb.velocity = vel * (movementSpeed / 2);
                 PlayerManager.isInAir = true;
             }
         }

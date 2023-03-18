@@ -4,7 +4,7 @@ using PlayerInfo;
 using UnityEngine;
 
 
-public class Player : MonoBehaviour
+public class Player : CharacterManager
 {
     CombatEntity entity;
     PlayerInputHandle inputHandle;
@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
         inputHandle.TickInput(delta);
         controller.HandleMovement(delta);
         controller.HandleRollingAndSprinting(delta);
-        controller.HandleFalling(delta,controller.moveDirection);
+        //controller.HandleFalling(delta,controller.moveDirection);
         CheckForInteractableObject();
     }
     private void FixedUpdate()
@@ -68,13 +68,12 @@ public class Player : MonoBehaviour
             cameraHandler.FollowTarget(delta);
             cameraHandler.HandleCamerRotation(delta, inputHandle.mousex, inputHandle.mousey);
         }
+        controller.HandleFalling(delta, controller.moveDirection);
     }
     private void LateUpdate()
     {
         inputHandle.rollFlag = false;
         inputHandle.LightAttackFlag = false;
-        inputHandle.b_Input = false;
-        inputHandle.e_Input= false;
         if(isInAir)
         {
             controller.inAirTimer = controller.inAirTimer + Time.deltaTime;
@@ -91,13 +90,17 @@ public class Player : MonoBehaviour
                 Interactable interactable = hit.collider.GetComponent<Interactable>();
                 if (interactable != null)
                 {
-                    Debug.Log("周围有一个物体");
+                    WindowsManager.Instance.EnableWindow<InteractPanel>();
                     if (inputHandle.e_Input)
                     {
                         interactable.Interact(this);
                     }
                 }
             }
+        }
+        else
+        {
+            WindowsManager.Instance.DisableWindow<InteractPanel>();
         }
     }
 }

@@ -3,11 +3,8 @@ using UnityEngine;
 
 public class Main : MonoBehaviour
 {
-    //public IMethod update;
-    public bool updateOver = false;
     private void Awake()
     {
-        //MotionEngine.Initialize(this);
         //参数设置
         var a = new NetWorkManager.CreateParameters();
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
@@ -25,11 +22,6 @@ public class Main : MonoBehaviour
     }
     private void Update()
     {
-        //if (updateOver)
-        //{
-        //    //ILRuntimeHelp.appDomain.Invoke("Hotfix.HotfixMain", "update", null,null);
-        //    ILRuntimeHelp.appDomain.Invoke(update, null, null);
-        //}
         MotionEngine.Update();
     }
 }
