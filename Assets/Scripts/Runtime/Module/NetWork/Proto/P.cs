@@ -24,18 +24,20 @@ namespace PlayerInfo {
     static PReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgdQLnByb3RvEgpwbGF5ZXJJbmZvIpUBCgRtb3ZlEgoKAmlkGAEgASgJEgwK",
-            "BHRpbWUYAiABKAUSJQoIcG9zaXRpb24YAyABKAsyEy5wbGF5ZXJJbmZvLnZl",
-            "Y3RvcjMSJQoIcm90YXRpb24YBCABKAsyEy5wbGF5ZXJJbmZvLnZlY3RvcjMS",
-            "JQoIdmVsb2NpdHkYBSABKAsyEy5wbGF5ZXJJbmZvLnZlY3RvcjMiKgoHdmVj",
-            "dG9yMxIJCgF4GAEgASgCEgkKAXkYAiABKAISCQoBehgDIAEoAiIhCgRwaW5n",
-            "EgoKAmlkGAEgASgJEg0KBXRpbWVyGAIgASgJYgZwcm90bzM="));
+            "CgdQLnByb3RvEgpwbGF5ZXJJbmZvIpEBCgRtb3ZlEiUKCHBvc2l0aW9uGAEg",
+            "ASgLMhMucGxheWVySW5mby52ZWN0b3IzEiUKCHJvdGF0aW9uGAIgASgLMhMu",
+            "cGxheWVySW5mby52ZWN0b3IzEiUKCHZlbG9jaXR5GAMgASgLMhMucGxheWVy",
+            "SW5mby52ZWN0b3IzEgkKAWgYBCABKAISCQoBdhgFIAEoAiIqCgd2ZWN0b3Iz",
+            "EgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgCIhUKBHBpbmcSDQoF",
+            "dGltZXIYASABKAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAliBnByb3Rv",
+            "Mw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Id", "Time", "Position", "Rotation", "Velocity" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Position", "Rotation", "Velocity", "H", "V" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.vector3), global::PlayerInfo.vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Id", "Timer" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Timer" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null)
           }));
     }
     #endregion
@@ -70,11 +72,11 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public move(move other) : this() {
-      id_ = other.id_;
-      time_ = other.time_;
       Position = other.position_ != null ? other.Position.Clone() : null;
       Rotation = other.rotation_ != null ? other.Rotation.Clone() : null;
       Velocity = other.velocity_ != null ? other.Velocity.Clone() : null;
+      h_ = other.h_;
+      v_ = other.v_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -83,30 +85,8 @@ namespace PlayerInfo {
       return new move(this);
     }
 
-    /// <summary>Field number for the "id" field.</summary>
-    public const int IdFieldNumber = 1;
-    private string id_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Id {
-      get { return id_; }
-      set {
-        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
-    /// <summary>Field number for the "time" field.</summary>
-    public const int TimeFieldNumber = 2;
-    private int time_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int Time {
-      get { return time_; }
-      set {
-        time_ = value;
-      }
-    }
-
     /// <summary>Field number for the "position" field.</summary>
-    public const int PositionFieldNumber = 3;
+    public const int PositionFieldNumber = 1;
     private global::PlayerInfo.vector3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Position {
@@ -117,7 +97,7 @@ namespace PlayerInfo {
     }
 
     /// <summary>Field number for the "rotation" field.</summary>
-    public const int RotationFieldNumber = 4;
+    public const int RotationFieldNumber = 2;
     private global::PlayerInfo.vector3 rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Rotation {
@@ -128,13 +108,35 @@ namespace PlayerInfo {
     }
 
     /// <summary>Field number for the "velocity" field.</summary>
-    public const int VelocityFieldNumber = 5;
+    public const int VelocityFieldNumber = 3;
     private global::PlayerInfo.vector3 velocity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::PlayerInfo.vector3 Velocity {
       get { return velocity_; }
       set {
         velocity_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "h" field.</summary>
+    public const int HFieldNumber = 4;
+    private float h_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float H {
+      get { return h_; }
+      set {
+        h_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "v" field.</summary>
+    public const int VFieldNumber = 5;
+    private float v_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float V {
+      get { return v_; }
+      set {
+        v_ = value;
       }
     }
 
@@ -151,22 +153,22 @@ namespace PlayerInfo {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Id != other.Id) return false;
-      if (Time != other.Time) return false;
       if (!object.Equals(Position, other.Position)) return false;
       if (!object.Equals(Rotation, other.Rotation)) return false;
       if (!object.Equals(Velocity, other.Velocity)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(H, other.H)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(V, other.V)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Id.Length != 0) hash ^= Id.GetHashCode();
-      if (Time != 0) hash ^= Time.GetHashCode();
       if (position_ != null) hash ^= Position.GetHashCode();
       if (rotation_ != null) hash ^= Rotation.GetHashCode();
       if (velocity_ != null) hash ^= Velocity.GetHashCode();
+      if (H != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(H);
+      if (V != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(V);
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -180,25 +182,25 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Id);
-      }
-      if (Time != 0) {
-        output.WriteRawTag(16);
-        output.WriteInt32(Time);
-      }
       if (position_ != null) {
-        output.WriteRawTag(26);
+        output.WriteRawTag(10);
         output.WriteMessage(Position);
       }
       if (rotation_ != null) {
-        output.WriteRawTag(34);
+        output.WriteRawTag(18);
         output.WriteMessage(Rotation);
       }
       if (velocity_ != null) {
-        output.WriteRawTag(42);
+        output.WriteRawTag(26);
         output.WriteMessage(Velocity);
+      }
+      if (H != 0F) {
+        output.WriteRawTag(37);
+        output.WriteFloat(H);
+      }
+      if (V != 0F) {
+        output.WriteRawTag(45);
+        output.WriteFloat(V);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -208,12 +210,6 @@ namespace PlayerInfo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
-      }
-      if (Time != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Time);
-      }
       if (position_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
       }
@@ -222,6 +218,12 @@ namespace PlayerInfo {
       }
       if (velocity_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Velocity);
+      }
+      if (H != 0F) {
+        size += 1 + 4;
+      }
+      if (V != 0F) {
+        size += 1 + 4;
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -233,12 +235,6 @@ namespace PlayerInfo {
     public void MergeFrom(move other) {
       if (other == null) {
         return;
-      }
-      if (other.Id.Length != 0) {
-        Id = other.Id;
-      }
-      if (other.Time != 0) {
-        Time = other.Time;
       }
       if (other.position_ != null) {
         if (position_ == null) {
@@ -258,6 +254,12 @@ namespace PlayerInfo {
         }
         Velocity.MergeFrom(other.Velocity);
       }
+      if (other.H != 0F) {
+        H = other.H;
+      }
+      if (other.V != 0F) {
+        V = other.V;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -270,32 +272,32 @@ namespace PlayerInfo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Id = input.ReadString();
-            break;
-          }
-          case 16: {
-            Time = input.ReadInt32();
-            break;
-          }
-          case 26: {
             if (position_ == null) {
               position_ = new global::PlayerInfo.vector3();
             }
             input.ReadMessage(position_);
             break;
           }
-          case 34: {
+          case 18: {
             if (rotation_ == null) {
               rotation_ = new global::PlayerInfo.vector3();
             }
             input.ReadMessage(rotation_);
             break;
           }
-          case 42: {
+          case 26: {
             if (velocity_ == null) {
               velocity_ = new global::PlayerInfo.vector3();
             }
             input.ReadMessage(velocity_);
+            break;
+          }
+          case 37: {
+            H = input.ReadFloat();
+            break;
+          }
+          case 45: {
+            V = input.ReadFloat();
             break;
           }
         }
@@ -514,7 +516,6 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ping(ping other) : this() {
-      id_ = other.id_;
       timer_ = other.timer_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -524,19 +525,8 @@ namespace PlayerInfo {
       return new ping(this);
     }
 
-    /// <summary>Field number for the "id" field.</summary>
-    public const int IdFieldNumber = 1;
-    private string id_ = "";
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Id {
-      get { return id_; }
-      set {
-        id_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-
     /// <summary>Field number for the "timer" field.</summary>
-    public const int TimerFieldNumber = 2;
+    public const int TimerFieldNumber = 1;
     private string timer_ = "";
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string Timer {
@@ -559,7 +549,6 @@ namespace PlayerInfo {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (Id != other.Id) return false;
       if (Timer != other.Timer) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -567,7 +556,6 @@ namespace PlayerInfo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (Id.Length != 0) hash ^= Id.GetHashCode();
       if (Timer.Length != 0) hash ^= Timer.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -582,12 +570,8 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id.Length != 0) {
-        output.WriteRawTag(10);
-        output.WriteString(Id);
-      }
       if (Timer.Length != 0) {
-        output.WriteRawTag(18);
+        output.WriteRawTag(10);
         output.WriteString(Timer);
       }
       if (_unknownFields != null) {
@@ -598,9 +582,6 @@ namespace PlayerInfo {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id.Length != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Id);
-      }
       if (Timer.Length != 0) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Timer);
       }
@@ -614,9 +595,6 @@ namespace PlayerInfo {
     public void MergeFrom(ping other) {
       if (other == null) {
         return;
-      }
-      if (other.Id.Length != 0) {
-        Id = other.Id;
       }
       if (other.Timer.Length != 0) {
         Timer = other.Timer;
@@ -633,11 +611,136 @@ namespace PlayerInfo {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            Id = input.ReadString();
+            Timer = input.ReadString();
             break;
           }
-          case 18: {
-            Timer = input.ReadString();
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Animation : pb::IMessage<Animation> {
+    private static readonly pb::MessageParser<Animation> _parser = new pb::MessageParser<Animation>(() => new Animation());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Animation> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Animation() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Animation(Animation other) : this() {
+      name_ = other.name_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Animation Clone() {
+      return new Animation(this);
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 1;
+    private string name_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Name {
+      get { return name_; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Animation);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Animation other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Name != other.Name) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Name.Length != 0) hash ^= Name.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Name.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Name.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Animation other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Name.Length != 0) {
+        Name = other.Name;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Name = input.ReadString();
             break;
           }
         }

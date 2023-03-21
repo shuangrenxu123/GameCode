@@ -63,14 +63,10 @@ namespace NetWork
                 Debug.LogError("发送的包不合逻辑");
                 return;
             }
-            //判断消息是否可以使用
-            else
+            if (package.Msgobj == null)
             {
-                if (package.Msgobj == null)
-                {
-                    Debug.LogError("消息为null");
-                    return;
-                }
+                Debug.LogError("消息为null");
+                return;
             }
             //获得包体数据
             byte[] bytes;
@@ -80,7 +76,8 @@ namespace NetWork
                 return;
             }
             //包长，这里只是计算，并未写入
-            int packagerSize = (ushort)MessageIDFieldType + bytes.Length;
+            //由于bytebuff底层将string的长度定位为ushort。所以这里只用加两个字节即可
+            int packagerSize = (ushort)MessageIDFieldType + bytes.Length+2;
             //写入包长
             if (PackageSizeFieldType == EpackageSizeFieldType.UShort)
             {
@@ -104,7 +101,7 @@ namespace NetWork
             {
                 sendBuffer.WriteInt(package.MsgId);
             }
-
+            sendBuffer.WriteString(package.SenderId);
             sendBuffer.WriteBytes(bytes, 0, bytes.Length);
 
         }
@@ -118,6 +115,7 @@ namespace NetWork
             while (true)
             {
                 //剩余的未读取数据如果少于包头，也就是剩下的数据凑不够一个包
+                //(int)PackageSizeFieldType = 4字节
                 if (receiveBuffer.ReadableBytes() < (int)PackageSizeFieldType)
                     break;
                 int packageSize;
@@ -140,8 +138,10 @@ namespace NetWork
                 {
                     packager.MsgId = receiveBuffer.ReadInt();
                 }
+                //读取发送者
+                packager.SenderId = receiveBuffer.ReadString();
 
-                int bodySize = packageSize - (int)MessageIDFieldType;
+                int bodySize = packageSize - (int)MessageIDFieldType - 2;
                 if (bodySize > PackageBodyMaxSize)
                 {
                     Debug.LogError("包太长了");

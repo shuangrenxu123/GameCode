@@ -66,7 +66,7 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void Start()
     {
-        Cursor.visible = false;
+        //Cursor.visible = false;
     }
     private void OnDisable()
     {
@@ -92,7 +92,6 @@ public class PlayerInputHandle : MonoBehaviour
         mousex = cameraInput.x;
         mousey = cameraInput.y;
     }
-
     private void HanldeRollInput(float delta)
     {
         if (b_Input)

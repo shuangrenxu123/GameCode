@@ -33,7 +33,6 @@ namespace NetWork
         /// Mono层的回调,用于处理包，每一帧都会处理接收到的包
         /// </summary>
         public PackageEvent handle;
-
         public void OnCreate(object createParam)
         {
             CreateParameters c = createParam as CreateParameters;
@@ -94,7 +93,6 @@ namespace NetWork
                 client.ConnectAsync(remote, OnConnectServer);
             }
         }
-
         /// <summary>
         /// 异步连接成功后的回调函数
         /// </summary>
@@ -131,7 +129,7 @@ namespace NetWork
         /// 发送网络消息
         /// </summary>
         /// <param name="package"></param>
-        public void SendMessage(int Msgid, object package)
+        public void SendMessage(string senderid,int Msgid, object package)
         {
             if (state != ENetWorkState.Connected)
             {
@@ -141,6 +139,7 @@ namespace NetWork
             if (client != null)
             {
                 var t = new DefaultNetWorkPackage();
+                t.SenderId= senderid;
                 t.MsgId = Msgid;
                 t.Msgobj = package;
                 client.SendPackage(t);

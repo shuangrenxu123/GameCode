@@ -8,7 +8,7 @@ public class NetObj : MonoBehaviour
     [HideInInspector]
     private float syncDelta = 1;
     private float smoothTick;
-    //public float last
+    public NetAnimator anim;
     Vector3 forcastPosition = Vector3.zero;
     Vector3 startPosition = Vector3.zero;
     Vector3 velocity = Vector3.zero;
@@ -18,8 +18,14 @@ public class NetObj : MonoBehaviour
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
     }
-
-    public void SyncPostion(DefaultNetWorkPackage arg0)
+    public void SyncData(DefaultNetWorkPackage data)
+    {
+        if(data.MsgId == 1)
+        {
+            SyncPostion(data);
+        }
+    }
+    private void SyncPostion(DefaultNetWorkPackage arg0)
     {
         var state = (move)arg0.Msgobj;
         if (state != null)
@@ -30,6 +36,7 @@ public class NetObj : MonoBehaviour
             startPosition = transform.position;
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
+            anim.UpdateAnimatorValues(state.V,state.H,false);
         }
     }
     private void FixedUpdate()

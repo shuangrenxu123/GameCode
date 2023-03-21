@@ -7,6 +7,7 @@ public class NetPanel : WindowRoot
 {
     [SerializeField]
     private GameObject Ping;
+    public Player player;
     public override void Start()
     {
         Ping = GetUI("ping");
@@ -16,24 +17,13 @@ public class NetPanel : WindowRoot
             NetWorkManager.Instance.ConnectServer(text,
                 int.Parse(GetUI("port").GetComponent<TMP_InputField>().text));
         });
-        //GetUI("send").GetComponent<Button>().onClick.AddListener(() =>
-        //{
-        //    NetWorkManager.Instance.SendMessage(1,
-        //        new PlayerInfo.move()
-        //        {
-        //            Id = "xu",
-        //            Position = new PlayerInfo.vector3(),
-        //            Rotation = new PlayerInfo.vector3(),
-        //            Velocity= new PlayerInfo.vector3(),
-        //        }
-        //        );
-        //});
+        GetUI("id").GetComponent<TMP_InputField>().onValueChanged.AddListener(
+            i => player.id = i
+            );
         GetUI("close").GetComponent<Button>().onClick.AddListener(() =>
         {
             NetWorkManager.Instance.DisConnectServer();
         });
-        GetUI("id").GetComponent<TMP_InputField>().onValueChanged.AddListener(e => GameObject.Find("Cube")
-        .GetComponent<Player>().id = e);
     }
 
 
