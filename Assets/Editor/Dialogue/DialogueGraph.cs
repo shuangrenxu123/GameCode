@@ -5,8 +5,6 @@ using UnityEngine.UIElements;
 
 namespace DialogueEdtior
 {
-
-
     public class DialogueGraph : EditorWindow
     {
         private DialogueGraphView graphView;

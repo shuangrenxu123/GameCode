@@ -35,7 +35,6 @@ public class NodeSearchWindow : ScriptableObject, ISearchWindowProvider
     {
         this.view = dialogueGraphView;
         this.editorWindow = window;
-
     }
     public bool OnSelectEntry(SearchTreeEntry SearchTreeEntry, SearchWindowContext context)
     {

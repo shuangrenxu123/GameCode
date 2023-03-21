@@ -78,13 +78,13 @@ public class PlayerInputHandle : MonoBehaviour
 
     public void TickInput(float delta)
     {
-        MoveInput(delta);
+        HandleMoveInput(delta);
         HanldeRollInput(delta);
         HandleAttackInput(delta);
         HandleDefenseInput(delta);
-        HandleLock();
+        HandleLockInput();
     }
-    private void MoveInput(float delta)
+    private void HandleMoveInput(float delta)
     {
         horizontal = movementInput.x;
         vertical = movementInput.y;
@@ -114,17 +114,15 @@ public class PlayerInputHandle : MonoBehaviour
             }
             else
             {
-                if(playerManager.isInteracting)
+                if(playerManager.isInteracting|| playerManager.canDoCombo || playerManager.isDefense)
                 {
                     return;
                 }
-                if (playerManager.canDoCombo)
-                    return;
                 PlayerAttacker.HandleLightAttack(PlayerInventory.rightWeapon as WeaponItem);
             }
         }
     }
-    private void HandleLock()
+    private void HandleLockInput()
     {
         if (LockOnInput && LockFlag == false)
         {
@@ -138,6 +136,7 @@ public class PlayerInputHandle : MonoBehaviour
             LockOnInput = false;
             cameraHandler.ClearLockTargets();
         }
+        cameraHandler.SetCameraHeight();
     }
     private void HandleDefenseInput(float delta)
     {

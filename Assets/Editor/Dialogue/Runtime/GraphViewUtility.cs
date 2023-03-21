@@ -9,14 +9,14 @@ using Edge = UnityEditor.Experimental.GraphView.Edge;
 
 public class GraphViewUtility
 {
-    private DialogueGraphView targetGraphView;
+    private GraphViewBase targetGraphView;
     private DialogueContainer container;
     private List<Edge> Edges => targetGraphView.edges.ToList();
     /// <summary>
     /// 获取当前view中所有的nodes并转化为dialogueNode
     /// </summary>
     private List<DialogueNode> nodes => targetGraphView.nodes.ToList().Cast<DialogueNode>().ToList();
-    public static GraphViewUtility GetInstance(DialogueGraphView tar)
+    public static GraphViewUtility GetInstance(GraphViewBase tar)
     {
         return new GraphViewUtility() { targetGraphView = tar };
     }
@@ -48,10 +48,10 @@ public class GraphViewUtility
 
         foreach (var i in nodes.Where(node => !node.EntryPoint))
         {
-            dialogueContainer.NodeDatas.Add(new DialogueNodeData()
+            dialogueContainer.NodeDatas.Add(new NodeData()
             {
                 guid = i.GUID,
-                dialogueText = i.DialogueText,
+                Text = i.DialogueText,
                 position = i.GetPosition().position
             });
         }
@@ -92,9 +92,9 @@ public class GraphViewUtility
 
     private void CreateNodes()
     {
-        foreach (var nodedata in container.NodeDatas)
+        foreach (NodeData nodedata in container.NodeDatas)
         {
-            var tempNode = targetGraphView.CreatDialogueNode(nodedata.dialogueText, nodedata.position);
+            var tempNode = targetGraphView.CreatNode(nodedata.Text, nodedata.position);
             tempNode.GUID = nodedata.guid;
             targetGraphView.AddElement(tempNode);
             var nodePorts = container.nodeLinks.Where(x => x.BaseNodeGuid == nodedata.guid).ToList();

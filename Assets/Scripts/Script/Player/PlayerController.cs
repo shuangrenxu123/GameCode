@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
+    CameraHandler cameraHandler;
     Transform cameraObject;
     PlayerInputHandle inputHandle;
     Player PlayerManager;
@@ -36,13 +37,14 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
-        animatorHandle = GetComponentInChildren<AnimatorHandle>();     
+        animatorHandle = GetComponentInChildren<AnimatorHandle>();
+        cameraHandler = CameraHandler.singleton;
         rb = GetComponent<Rigidbody>();
         PlayerManager = GetComponent<Player>();
         inputHandle = GetComponent<PlayerInputHandle>();
         cameraObject = Camera.main.transform; 
         myTransform = transform;
-        animatorHandle.Initialize();
+        animatorHandle.Initialize(); 
 
         PlayerManager.isGrounded= true;
         ignoreForGroundCheck = ~(1 << 8 | 1 << 11);
@@ -50,26 +52,58 @@ public class PlayerController : MonoBehaviour
     #region 移动代码
     Vector3 noramalVector;
     Vector3 targetPosition;
+    
     private void HandleRotation(float delta)
     {
-        if (PlayerManager.isInteracting || PlayerManager.isInAir)
+        if (inputHandle.LockFlag)
         {
-            return;
+            if (inputHandle.sprintFlag || inputHandle.rollFlag)
+            {
+                Vector3 targetDirection = Vector3.zero;
+                targetDirection = cameraHandler.cameraTransform.forward * inputHandle.vertical;
+                targetDirection += cameraHandler.cameraTransform.right * inputHandle.horizontal;
+                targetDirection.Normalize();
+                targetDirection.y = 0;
+                if (targetDirection == Vector3.zero)
+                {
+                    targetDirection = transform.forward;
+                }
+                Quaternion tr = Quaternion.LookRotation(targetDirection);
+                Quaternion targetRotation = Quaternion.Slerp(transform.rotation, tr, rotationSpeed * delta);
+                transform.rotation = targetRotation;
+            }
+            else
+            {
+                Vector3 rotationDirection = moveDirection;
+                rotationDirection = cameraHandler.currentLockOnTarget.position - transform.position;
+                rotationDirection.y = 0;
+                rotationDirection.Normalize();
+                Quaternion tr = Quaternion.LookRotation(rotationDirection);
+                Quaternion targetRotation =Quaternion.Slerp(transform.rotation,tr,rotationSpeed * delta);
+                transform.rotation = targetRotation;    
+            }
         }
-        Vector3 targetDir = Vector3.zero;
-        float moveOverride = inputHandle.moveAmount;
-        targetDir = cameraObject.forward * inputHandle.vertical;
-        targetDir += cameraObject.right * inputHandle.horizontal;
-        targetDir.Normalize();
-        targetDir.y = 0;
-        if(targetDir == Vector3.zero)
+        else
         {
-            targetDir = myTransform.forward;
+            if (PlayerManager.isInteracting || PlayerManager.isInAir)
+            {
+                return;
+            }
+            Vector3 targetDir = Vector3.zero;
+            float moveOverride = inputHandle.moveAmount;
+            targetDir = cameraObject.forward * inputHandle.vertical;
+            targetDir += cameraObject.right * inputHandle.horizontal;
+            targetDir.Normalize();
+            targetDir.y = 0;
+            if (targetDir == Vector3.zero)
+            {
+                targetDir = myTransform.forward;
+            }
+            float rs = rotationSpeed;
+            Quaternion tr = Quaternion.LookRotation(targetDir);
+            Quaternion targerRotition = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
+            myTransform.rotation = targerRotition;
         }
-        float rs = rotationSpeed;
-        Quaternion tr = Quaternion.LookRotation(targetDir);
-        Quaternion targerRotition = Quaternion.Slerp(myTransform.rotation, tr, rs * delta);
-        myTransform.rotation = targerRotition;
     }
     /// <summary>
     /// 具体的移动
@@ -99,7 +133,14 @@ public class PlayerController : MonoBehaviour
         }
         Vector3 projectedVelocity = Vector3.ProjectOnPlane(moveDirection, noramalVector);
         rb.velocity = projectedVelocity;
-        animatorHandle.UpdateAnimatorValues(inputHandle.moveAmount, 0, PlayerManager.isSprinting);
+        if (inputHandle.LockFlag  && inputHandle.sprintFlag == false)
+        {
+            animatorHandle.UpdateAnimatorValues(inputHandle.vertical, inputHandle.horizontal, PlayerManager.isSprinting);
+        }
+        else
+        {
+            animatorHandle.UpdateAnimatorValues(inputHandle.moveAmount, 0, PlayerManager.isSprinting);
+        }
         if (animatorHandle.canRotate)
         {
             HandleRotation(delta);
@@ -139,7 +180,7 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     /// <param name="delta"></param>
     /// <param name="moveDirction"></param>
-    public void HandleFalling(float delta,Vector3 moveDirction)
+    public void HandleFalling(float delta)
     {
         PlayerManager.isGrounded = false;
         RaycastHit hit;
@@ -148,15 +189,15 @@ public class PlayerController : MonoBehaviour
         //由于碰撞体已经不包含脚，这里来判断前方的障碍物是否可以通行
         if(Physics.Raycast(origin,myTransform.forward,out hit, 0.2f))
         {
-            moveDirction = Vector3.zero;
+            moveDirection = Vector3.zero;
         }
         //添加下落的速度
         if(PlayerManager.isInAir)
         {
             rb.AddForce(-Vector3.up * fallingSpeed);
-            rb.AddForce(moveDirction * fallingSpeed / 5f); 
+            rb.AddForce(moveDirection * fallingSpeed / 5f); 
         }
-        Vector3 dir = moveDirction;
+        Vector3 dir = moveDirection;
         dir.Normalize();
         origin = origin + dir * groundDirectionRayDistance;
         targetPosition = myTransform.position;
@@ -170,7 +211,7 @@ public class PlayerController : MonoBehaviour
             targetPosition.y = tp.y;
             if(PlayerManager.isInAir)
             {
-                moveDirction = Vector3.zero;
+                moveDirection = Vector3.zero;
                 if (inAirTimer > 0.5f)
                 {
                     animatorHandle.PlayTargetAnimation("Landing", true);

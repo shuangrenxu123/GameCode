@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraHandler : MonoBehaviour
 {
@@ -11,8 +12,10 @@ public class CameraHandler : MonoBehaviour
     private Transform myTransform;
     private Vector3 cameraTransformPosition;
     public LayerMask ignoreLayers;
+    private LayerMask enviromentLayer;
     public float maxLockDistance = 30;
 
+    public Player playerManager;
     public static CameraHandler singleton;
     public PlayerInputHandle InputHandle;
     /// <summary>
@@ -25,7 +28,6 @@ public class CameraHandler : MonoBehaviour
     public Transform currentLockOnTarget;
     public Transform leftLockTarget;
     public Transform rightLockTarget;
-
     public float lookSpeed = 0.1f;
     public float followSpeed = 0.1f;
     public float pivotSpeed = 0.03f;
@@ -35,9 +37,10 @@ public class CameraHandler : MonoBehaviour
     private float defaultPosition;
     private float lookAngle;
     private float pivotAngle;
-    public float minmumPivot = -35;
-    public float maxmumPivot = 35;
-
+    public float minmumPivotAngle = -35;
+    public float maxmumPivotAngle = 35;
+    public float lockedPivotHeight = 2.25f;
+    public float unlockedPivotHeight = 1.65f;
     public float cameraSphereRadius = 0.2f;
     public float cameraCollisionOffset = 0.2f;
     public float minimumCollisionOffset = 0.2f;
@@ -48,6 +51,10 @@ public class CameraHandler : MonoBehaviour
         myTransform = transform;
         defaultPosition = cameraTransform.localPosition.z;
         ignoreLayers = ~(1 << 8 | 1<<9 | 1<<10);
+    }
+    private void Start()
+    {
+        enviromentLayer = LayerMask.NameToLayer("Enviroment");
     }
     public void FollowTarget(float delta)
     {
@@ -62,7 +69,7 @@ public class CameraHandler : MonoBehaviour
         {
             lookAngle += (mouseXInput * lookSpeed) / delta;
             pivotAngle -= (mouseYInput * pivotSpeed) / delta;
-            pivotAngle = Mathf.Clamp(pivotAngle, minmumPivot, maxmumPivot);
+            pivotAngle = Mathf.Clamp(pivotAngle, minmumPivotAngle, maxmumPivotAngle);
             Vector3 rotation = Vector3.zero;
             rotation.y = lookAngle;
 
@@ -115,7 +122,13 @@ public class CameraHandler : MonoBehaviour
 
     public bool HandleLockOn()
     {
-        Collider[] colliders = Physics.OverlapSphere(targetTransform.position,5);
+        float shortTargetDistance           = Mathf.Infinity;
+        float shortestDistanceOfLeftTarget  = Mathf.Infinity;
+        float shortestDistanceOfRightTarget = Mathf.Infinity;
+
+
+        Collider[] colliders = Physics.OverlapSphere(targetTransform.position,20);
+
         for (int i = 0; i < colliders.Length; i++)
         {
             CharacterManager character = colliders[i].GetComponent<CharacterManager>();
@@ -126,18 +139,22 @@ public class CameraHandler : MonoBehaviour
                 //求出我们看向敌人方向与摄像机的角度
                 float viewableAngle = Vector3.Angle(lockTargetDirection, cameraTransform.forward);
 
+
                 if(character.transform.root!= targetTransform.transform.root && viewableAngle >-60 
                     && viewableAngle < 60 && distanceFormTargetSqr <= maxLockDistance)
                 {
-                    avilableTargets.Add(character);
+                    if(Physics.Linecast(playerManager.LockOnTransform.position,character.LockOnTransform.position,out RaycastHit hit))
+                    {
+                        if(hit.transform.gameObject.layer != enviromentLayer)
+                        {
+                             avilableTargets.Add(character);
+                        }
+                    }
                 }
             }
         }
         if (avilableTargets.Count == 0)
             return false; 
-        float shortTargetDistance           = Mathf.Infinity;
-        float shortestDistanceOfLeftTarget  = Mathf.Infinity;
-        float shortestDistanceOfRightTarget = Mathf.Infinity;
         for (int i = 0; i < avilableTargets.Count; i++)
         {
             if (avilableTargets[i].tag != "Hittable")
@@ -178,6 +195,21 @@ public class CameraHandler : MonoBehaviour
         avilableTargets.Clear();
         nearestLockOnTarget= null;
         currentLockOnTarget = null; 
+    }
+
+    public void SetCameraHeight()
+    {
+        Vector3 velocity = Vector3.zero;
+        Vector3 newlockedPosition = new Vector3(0,lockedPivotHeight);
+        Vector3 newUnlockedPosition = new Vector3(0,unlockedPivotHeight);
+        if(currentLockOnTarget!= null)
+        {
+            cameraPivotTransform.transform.localPosition = Vector3.SmoothDamp(cameraPivotTransform.transform.localPosition,newlockedPosition,ref velocity,Time.deltaTime);
+        }
+        else
+        {
+            cameraPivotTransform.transform.localPosition = Vector3.SmoothDamp(cameraPivotTransform.transform.localPosition, newUnlockedPosition, ref velocity, Time.deltaTime);
+        }
     }
 }
 

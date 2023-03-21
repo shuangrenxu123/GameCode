@@ -57,7 +57,6 @@ public class Player : CharacterManager
         inputHandle.TickInput(delta);
         controller.HandleMovement(delta);
         controller.HandleRollingAndSprinting(delta);
-        //controller.HandleFalling(delta,controller.moveDirection);
         CheckForInteractableObject();
     }
     private void FixedUpdate()
@@ -68,7 +67,7 @@ public class Player : CharacterManager
             cameraHandler.FollowTarget(delta);
             cameraHandler.HandleCamerRotation(delta, inputHandle.mousex, inputHandle.mousey);
         }
-        controller.HandleFalling(delta, controller.moveDirection);
+        controller.HandleFalling(delta);
     }
     private void LateUpdate()
     {

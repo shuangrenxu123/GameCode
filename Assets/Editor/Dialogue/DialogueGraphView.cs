@@ -8,9 +8,8 @@ using UnityEngine.UIElements;
 
 namespace DialogueEdtior
 {
-    public class DialogueGraphView : GraphView
+    public class DialogueGraphView : GraphViewBase
     {
-        public readonly Vector2 NodeSize = new(100, 150);
         private NodeSearchWindow searchWindow;
         public DialogueGraphView(EditorWindow window)
         {
@@ -20,7 +19,6 @@ namespace DialogueEdtior
             this.AddManipulator(new RectangleSelector());
             AddSearchWindow(window);
             AddElement(GenerateEntryPointNode());
-
         }
         /// <summary>
         /// 创建右键的节点菜单类
@@ -67,14 +65,14 @@ namespace DialogueEdtior
         /// <param name="name"></param>
         public void CreateNode(Vector2 pos, string name = "")
         {
-            AddElement(CreatDialogueNode(name, pos));
+            AddElement(CreatNode(name, pos));
         }
         /// <summary>
         /// 返回一个节点，但不会添加到Graph中
         /// </summary>
         /// <param name="nodename"></param>
         /// <returns></returns>
-        public DialogueNode CreatDialogueNode(string nodename, Vector2 pos)
+        public override NodeBase CreatNode(string nodename, Vector2 pos)
         {
             var node = new DialogueNode()
             {
@@ -111,9 +109,10 @@ namespace DialogueEdtior
         /// <param name="node"></param>
         /// <param name="name"></param>
         /// <param name="direction"></param>
-        public void AddChoicePort(DialogueNode node, string name = "", Direction direction = Direction.Output)
+        public override void AddChoicePort(NodeBase node, string name = "", Direction direction = Direction.Output, Port.Capacity capacity = Port.Capacity.Multi)
         {
-            var generatedPort = GeneratePort(node, direction);
+            var n = node as DialogueNode;
+            var generatedPort = GeneratePort(n, direction);
             var portName = name == "" ? "text" : name;
 
             var textfield = new TextField()
@@ -125,7 +124,7 @@ namespace DialogueEdtior
             textfield.styleSheets.Add(Resources.Load<StyleSheet>("DialogueGraph"));
             generatedPort.contentContainer.Add(new Label(" "));
             generatedPort.contentContainer.Add(textfield);
-            var deleteButton = new Button(() => { RemovePort(node, generatedPort); })
+            var deleteButton = new Button(() => { RemovePort(n, generatedPort); })
             {
                 text = "X"
             };
