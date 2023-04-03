@@ -216,6 +216,15 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""ESC"",
+                    ""type"": ""Button"",
+                    ""id"": ""4fd54064-5adf-41eb-9d60-f803ae95f317"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -317,6 +326,45 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""action"": ""Lock"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""3b57e3b1-4e51-462f-9678-94708a2ca49c"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ESC"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Player UI"",
+            ""id"": ""665e3d3f-2270-452b-b9e4-48d255c533e6"",
+            ""actions"": [
+                {
+                    ""name"": ""ESC"",
+                    ""type"": ""Button"",
+                    ""id"": ""a245e3bb-66ee-4d8e-8f7f-49f57fdf4e59"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""2b6fdcc6-aa66-4c8f-811c-6aec15c2f407"",
+                    ""path"": ""<Keyboard>/escape"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ESC"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -335,6 +383,10 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_PlayerAction_Interactable = m_PlayerAction.FindAction("Interactable", throwIfNotFound: true);
         m_PlayerAction_defense = m_PlayerAction.FindAction("defense", throwIfNotFound: true);
         m_PlayerAction_Lock = m_PlayerAction.FindAction("Lock", throwIfNotFound: true);
+        m_PlayerAction_ESC = m_PlayerAction.FindAction("ESC", throwIfNotFound: true);
+        // Player UI
+        m_PlayerUI = asset.FindActionMap("Player UI", throwIfNotFound: true);
+        m_PlayerUI_ESC = m_PlayerUI.FindAction("ESC", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -448,6 +500,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerAction_Interactable;
     private readonly InputAction m_PlayerAction_defense;
     private readonly InputAction m_PlayerAction_Lock;
+    private readonly InputAction m_PlayerAction_ESC;
     public struct PlayerActionActions
     {
         private @PlayerControls m_Wrapper;
@@ -457,6 +510,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @Interactable => m_Wrapper.m_PlayerAction_Interactable;
         public InputAction @defense => m_Wrapper.m_PlayerAction_defense;
         public InputAction @Lock => m_Wrapper.m_PlayerAction_Lock;
+        public InputAction @ESC => m_Wrapper.m_PlayerAction_ESC;
         public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -481,6 +535,9 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Lock.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
                 @Lock.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
                 @Lock.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnLock;
+                @ESC.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
+                @ESC.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
+                @ESC.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
             }
             m_Wrapper.m_PlayerActionActionsCallbackInterface = instance;
             if (instance != null)
@@ -500,10 +557,46 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @Lock.started += instance.OnLock;
                 @Lock.performed += instance.OnLock;
                 @Lock.canceled += instance.OnLock;
+                @ESC.started += instance.OnESC;
+                @ESC.performed += instance.OnESC;
+                @ESC.canceled += instance.OnESC;
             }
         }
     }
     public PlayerActionActions @PlayerAction => new PlayerActionActions(this);
+
+    // Player UI
+    private readonly InputActionMap m_PlayerUI;
+    private IPlayerUIActions m_PlayerUIActionsCallbackInterface;
+    private readonly InputAction m_PlayerUI_ESC;
+    public struct PlayerUIActions
+    {
+        private @PlayerControls m_Wrapper;
+        public PlayerUIActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ESC => m_Wrapper.m_PlayerUI_ESC;
+        public InputActionMap Get() { return m_Wrapper.m_PlayerUI; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(PlayerUIActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerUIActions instance)
+        {
+            if (m_Wrapper.m_PlayerUIActionsCallbackInterface != null)
+            {
+                @ESC.started -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnESC;
+                @ESC.performed -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnESC;
+                @ESC.canceled -= m_Wrapper.m_PlayerUIActionsCallbackInterface.OnESC;
+            }
+            m_Wrapper.m_PlayerUIActionsCallbackInterface = instance;
+            if (instance != null)
+            {
+                @ESC.started += instance.OnESC;
+                @ESC.performed += instance.OnESC;
+                @ESC.canceled += instance.OnESC;
+            }
+        }
+    }
+    public PlayerUIActions @PlayerUI => new PlayerUIActions(this);
     public interface IPlayerMovementActions
     {
         void OnMovement(InputAction.CallbackContext context);
@@ -517,5 +610,10 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnInteractable(InputAction.CallbackContext context);
         void OnDefense(InputAction.CallbackContext context);
         void OnLock(InputAction.CallbackContext context);
+        void OnESC(InputAction.CallbackContext context);
+    }
+    public interface IPlayerUIActions
+    {
+        void OnESC(InputAction.CallbackContext context);
     }
 }

@@ -75,7 +75,7 @@ public class AnimatorHandle : MonoBehaviour
             v = 2;
             h = horizontalMovement;
         }
-        anim.SetFloat(vertical,v,0.1f,Time.deltaTime);
+        anim.SetFloat(vertical,v, 0.1f,Time.deltaTime);
         anim.SetFloat(horizontal,h,0.1f,Time.deltaTime);
     }
     public void PlayTargetAnimation(string targetAnim,bool isInteracting)

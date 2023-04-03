@@ -32,4 +32,19 @@ public class NetTranform : MonoBehaviour
                 );
         }
     }
+
+    public void SendAction(string actionName)
+    {
+        if (NetWorkManager.Instance.state == ENetWorkState.Connected)
+        {
+            NetWorkManager.Instance.SendMessage(
+                player.id,
+                2,
+                new Action()
+                {
+                    Actionname = actionName
+                }
+            );
+        }
+    }
 }

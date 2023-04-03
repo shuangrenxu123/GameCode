@@ -7,12 +7,11 @@ public class PlayerController : MonoBehaviour
     Transform cameraObject;
     PlayerInputHandle inputHandle;
     Player PlayerManager;
-    public Vector3 moveDirection;
-
-    [HideInInspector]
     public Transform myTransform;
     public AnimatorHandle animatorHandle;
+    public NetTranform netController;
 
+    public Vector3 moveDirection;
     public Rigidbody rb;
     public GameObject normalCamera;
     [Header("Ground & AIR Detection States")]
@@ -156,21 +155,23 @@ public class PlayerController : MonoBehaviour
         {
             return;
         }
-        if (inputHandle.rollFlag)
+        if (inputHandle.rollFlag && !PlayerManager.isInAir)
         {
             moveDirection = cameraObject.forward * inputHandle.vertical;
             moveDirection += cameraObject.right * inputHandle.horizontal;
 
             if(inputHandle.moveAmount> 0)
             {
+                moveDirection.y = 0;
                 animatorHandle.PlayTargetAnimation("Rolling", true);
-                moveDirection.y=0;
+                netController.SendAction("Rolling");
                 Quaternion rollRotation = Quaternion.LookRotation(moveDirection);
                 myTransform.rotation = rollRotation;
             }
             else
             {
                 animatorHandle.PlayTargetAnimation("Backstep", true);
+                netController.SendAction("Backstep");
                 return;
             }
         }

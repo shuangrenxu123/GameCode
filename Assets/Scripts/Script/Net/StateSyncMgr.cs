@@ -63,7 +63,7 @@ public class StateSyncMgr : MonoBehaviour
         var obj = data.Msgobj as ping;
         if (obj != null)
         {
-            WindowsManager.Instance.GetUiWindow<NetPanel>().SetPingValue(timer / 2 * 1000);
+            WindowsManager.Instance.GetUiWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
             return;
         }
     }

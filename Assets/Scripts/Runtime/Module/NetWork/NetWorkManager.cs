@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.EventSystems;
 
 namespace NetWork
 {
@@ -103,13 +104,13 @@ namespace NetWork
             {
                 state = ENetWorkState.Connected;
                 Debug.Log("连接服务器成功");
-                //这里应该会广播一个连接好的事件，负责通知说我连上了
+                EventManager.Instance.SendMessage("ConnectServer",true);
             }
             else
             {
                 state = ENetWorkState.Disconnect;
-                //这里也是
                 Debug.LogError("连接服务器失败");
+                EventManager.Instance.SendMessage("ConnectServer", false);
             }
         }
         /// <summary>

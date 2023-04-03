@@ -13,8 +13,6 @@ namespace BT
 
             return (T)_dataList[dataId];
         }
-
-        // Should use this function to get data!
         public T GetData<T>(int dataId)
         {
             return (T)_dataList[dataId];

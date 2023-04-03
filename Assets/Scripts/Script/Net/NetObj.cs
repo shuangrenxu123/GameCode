@@ -24,6 +24,11 @@ public class NetObj : MonoBehaviour
         {
             SyncPostion(data);
         }
+        ///相关的动画事件，如后滚之类的
+        else if(data.MsgId == 2)
+        {
+            SyncOtherAnim(data);
+        }
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
@@ -36,10 +41,19 @@ public class NetObj : MonoBehaviour
             startPosition = transform.position;
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
-            anim.UpdateAnimatorValues(state.V,state.H,false);
+            anim.UpdateAnimatorValues(state.V,state.H);
         }
     }
-    private void FixedUpdate()
+    private void SyncOtherAnim(DefaultNetWorkPackage arg0)
+    {
+        var animName = (Action)arg0.Msgobj;
+        if(animName != null)
+        {
+            Debug.Log(animName.Actionname);
+            anim.PlayTargetAnimation(animName.Actionname);
+        }
+    }
+    private void Update()
     {
         if (smoothTick > 0)
         {

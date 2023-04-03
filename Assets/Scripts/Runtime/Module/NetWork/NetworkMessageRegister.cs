@@ -16,6 +16,7 @@ public class NetworkMessageRegister
     {
         RegisterMessageType(0, typeof(PlayerInfo.ping));
         RegisterMessageType(1, typeof(PlayerInfo.move));
+        RegisterMessageType(2, typeof(PlayerInfo.Action));
     }
     /// <summary>
     /// 注册非热更的消息类型

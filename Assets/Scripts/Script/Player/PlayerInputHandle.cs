@@ -18,6 +18,7 @@ public class PlayerInputHandle : MonoBehaviour
     public bool rollFlag;
     public bool comboFlag;
     public bool DefenseFlag;
+    public bool UIFlag;
 
     PlayerInventory PlayerInventory;
     PlayerAttack PlayerAttacker;
@@ -62,11 +63,11 @@ public class PlayerInputHandle : MonoBehaviour
         inputAction.PlayerAction.Lock.performed         += i => LockOnInput = true;
         inputAction.PlayerAction.Lock.canceled          += i => LockOnInput = false;
 
+        inputAction.PlayerUI.ESC.performed              += i => HandleEscInput();
+        inputAction.PlayerAction.ESC.performed          += i => HandleEscInput();
         inputAction.Enable();
-    }
-    private void Start()
-    {
-        //Cursor.visible = false;
+        EnableGameTable();
+
     }
     private void OnDisable()
     {
@@ -146,4 +147,33 @@ public class PlayerInputHandle : MonoBehaviour
 
     }
 
+    private void HandleEscInput()
+    {
+        UIFlag = !UIFlag;
+        if (UIFlag)
+        {
+            WindowsManager.Instance.EnableWindow<GameUIMgr>();
+            DisableGameTable();
+        }
+        else
+        {
+            WindowsManager.Instance.DisableWindow<GameUIMgr>();
+            EnableGameTable();
+        }
+    }
+
+    private void EnableGameTable()
+    {
+        Cursor.visible = false;
+        inputAction.PlayerAction.Enable();
+        inputAction.PlayerMovement.Enable();
+        inputAction.PlayerUI.Disable();
+    }
+    private void DisableGameTable()
+    {
+        Cursor.visible = true;
+        inputAction.PlayerAction.Disable();
+        inputAction.PlayerMovement.Disable();
+        inputAction.PlayerUI.Enable();
+    }
 }

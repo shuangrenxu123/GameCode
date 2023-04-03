@@ -22,6 +22,11 @@ namespace BT
         public BTParallel(ParallelType type)
         {
             ParallelType= type;
+            _results = new List<BTResult>();
+            for(int i = 0; i<children.Count;i++)
+            {
+                _results.Add(BTResult.Running);
+            }
         }
         public override BTResult Tick()
         {
@@ -58,17 +63,20 @@ namespace BT
                 ResetResults();
                 foreach (var i in _results)
                 {
-                    if (i == BTResult.Success)
-                    {
-                        return BTResult.Success;
-                    }
-                    else
+                    if (i == BTResult.Failed)
                     {
                         return BTResult.Failed;
                     }
                 }
+                return BTResult.Success;
             }
+            endingResultCount = 0;
             return BTResult.Running;
+        }
+        public override void AddChild(BTNode node)
+        {
+            base.AddChild(node);
+            _results.Add(BTResult.Running);
         }
         private void ResetResults()
         {

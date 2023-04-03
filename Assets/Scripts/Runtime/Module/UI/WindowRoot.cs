@@ -4,11 +4,6 @@ using UnityEngine;
 public abstract class WindowRoot : MonoBehaviour
 {
     public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
-    /// <summary>
-    /// 获得canves界面下面的子类ui
-    /// </summary>
-    /// <param name="name">子类ui的名字</param>
-    /// <returns></returns>
     public UIEventListener GetUIEvnetListener(string name)
     {
         if (!listeners.ContainsKey(name))
@@ -19,11 +14,10 @@ public abstract class WindowRoot : MonoBehaviour
         return listeners[name];
     }
 
-    public GameObject GetUI(string name)
+    public GameObject GetUIGameObject(string name)
     {
         return transform.FindChildByName(name).gameObject;
     }
-    public abstract void UpdateWindow();
     public void RemoveUIEventListener(string name)
     {
         if (listeners.ContainsKey(name))
@@ -31,6 +25,7 @@ public abstract class WindowRoot : MonoBehaviour
             listeners.Remove(name);
         }
     }
+    public abstract void UpdateWindow();
 
     public abstract void Start();
 

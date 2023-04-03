@@ -29,15 +29,16 @@ namespace PlayerInfo {
             "cGxheWVySW5mby52ZWN0b3IzEiUKCHZlbG9jaXR5GAMgASgLMhMucGxheWVy",
             "SW5mby52ZWN0b3IzEgkKAWgYBCABKAISCQoBdhgFIAEoAiIqCgd2ZWN0b3Iz",
             "EgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgCIhUKBHBpbmcSDQoF",
-            "dGltZXIYASABKAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAliBnByb3Rv",
-            "Mw=="));
+            "dGltZXIYASABKAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAkiHAoGQWN0",
+            "aW9uEhIKCmFjdGlvbm5hbWUYASABKAliBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Position", "Rotation", "Velocity", "H", "V" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.vector3), global::PlayerInfo.vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Timer" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Action), global::PlayerInfo.Action.Parser, new[]{ "Actionname" }, null, null, null)
           }));
     }
     #endregion
@@ -741,6 +742,135 @@ namespace PlayerInfo {
             break;
           case 10: {
             Name = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Action : pb::IMessage<Action> {
+    private static readonly pb::MessageParser<Action> _parser = new pb::MessageParser<Action>(() => new Action());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Action> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[4]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Action() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Action(Action other) : this() {
+      actionname_ = other.actionname_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Action Clone() {
+      return new Action(this);
+    }
+
+    /// <summary>Field number for the "actionname" field.</summary>
+    public const int ActionnameFieldNumber = 1;
+    private string actionname_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Actionname {
+      get { return actionname_; }
+      set {
+        actionname_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Action);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Action other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Actionname != other.Actionname) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Actionname.Length != 0) hash ^= Actionname.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Actionname.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Actionname);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Actionname.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Actionname);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Action other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Actionname.Length != 0) {
+        Actionname = other.Actionname;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Actionname = input.ReadString();
             break;
           }
         }

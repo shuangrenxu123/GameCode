@@ -17,7 +17,7 @@ public class EventManager : ModuleSingleton<EventManager>, IModule
     {
     }
     /// <summary>
-    /// 创建一个事件
+    /// 监听一个事件
     /// </summary>
     /// <param name="name"></param>
     /// <param name="listener"></param>
@@ -40,15 +40,16 @@ public class EventManager : ModuleSingleton<EventManager>, IModule
         else
             Debug.LogError("事件不存在");
     }
+    /// <summary>
+    /// 触发一个事件。后面为他的参数列表
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="mess"></param>
     public void SendMessage(string name, object mess)
     {
         if (Listener.ContainsKey(name))
         {
             Listener[name].Invoke(mess);
-        }
-        else
-        {
-            AddListener(name, null);
         }
     }
     public void ClearListener(string name)

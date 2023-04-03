@@ -90,9 +90,13 @@ public class Player : CharacterManager
                 if (interactable != null)
                 {
                     WindowsManager.Instance.EnableWindow<InteractPanel>();
-                    if (inputHandle.e_Input)
+                    if (inputHandle.e_Input && isInteracting == false)
                     {
                         interactable.Interact(this);
+                    }
+                    else if(isInteracting == true)
+                    {
+                        interactable.InteractUpdate(this);
                     }
                 }
             }

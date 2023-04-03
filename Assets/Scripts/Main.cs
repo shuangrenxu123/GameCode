@@ -9,11 +9,10 @@ public class Main : MonoBehaviour
         var a = new NetWorkManager.CreateParameters();
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
         MotionEngine.CreateModule<NetWorkManager>(a);
-        //MotionEngine.CreateModule<EventManager>();
+        MotionEngine.CreateModule<EventManager>();
         MotionEngine.CreateModule<WindowsManager>();
         //MotionEngine.CreateModule<VersionManager>();
         //MotionEngine.CreateModule<PoolManager>();
-        //MotionEngine.CreateModule<ProcessManager>();
     }
     private void Start()
     {

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace BT
 {
     /// <summary>
@@ -38,7 +40,7 @@ namespace BT
                 else
                 {
                     isRunning= true;
-                    return BTResult.Success;
+                    return BTResult.Running;
                 }
             }
             _activeChildIndex= -1;

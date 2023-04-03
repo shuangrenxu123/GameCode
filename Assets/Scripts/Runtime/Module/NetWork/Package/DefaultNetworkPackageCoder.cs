@@ -77,7 +77,7 @@ namespace NetWork
             }
             //包长，这里只是计算，并未写入
             //由于bytebuff底层将string的长度定位为ushort。所以这里只用加两个字节即可
-            int packagerSize = (ushort)MessageIDFieldType + bytes.Length+2;
+            int packagerSize = (ushort)MessageIDFieldType + bytes.Length + 2;
             //写入包长
             if (PackageSizeFieldType == EpackageSizeFieldType.UShort)
             {
@@ -94,7 +94,7 @@ namespace NetWork
                 {
                     Debug.LogError("消息id超出");
                     return;
-                }
+                }   
                 sendBuffer.WriteUshort((ushort)package.MsgId);
             }
             else
@@ -163,9 +163,11 @@ namespace NetWork
                         {
                             Debug.LogError("解码失败");
                         }
-
                     }
-
+                    else
+                    {
+                        Debug.LogError("没有注册相关类型");
+                    }
                 }
                 catch (System.Exception e)
                 {

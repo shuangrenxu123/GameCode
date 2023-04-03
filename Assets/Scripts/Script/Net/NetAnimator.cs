@@ -12,11 +12,10 @@ public class NetAnimator : MonoBehaviour
         vertical = Animator.StringToHash("Verical");
         horizontal = Animator.StringToHash("Horizontal");
     }
-    public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement, bool isSprinting)
+    public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement)
     {
-        #region Vertical
         float v = 0;
-        if (verticalMovement > 0 && verticalMovement < 0.55)
+        if (verticalMovement > 0.1 && verticalMovement < 0.55)
         {
             v = 0.5f;
         }
@@ -32,14 +31,16 @@ public class NetAnimator : MonoBehaviour
         {
             v = -1;
         }
+        else if(verticalMovement > 1f)
+        {
+            v = 2;
+        }
         else
         {
             v = 0;
         }
-        #endregion
-        #region horizontal
         float h = 0;
-        if (horizontalMovement > 0 && horizontalMovement < 0.55)
+        if (horizontalMovement > 0.1 && horizontalMovement < 0.55)
         {
             h = 0.5f;
         }
@@ -59,19 +60,12 @@ public class NetAnimator : MonoBehaviour
         {
             h = 0;
         }
-        #endregion
-        if (isSprinting)
-        {
-            v = 2;
-            h = horizontalMovement;
-        }
-        anim.SetFloat(vertical, v, 0.1f, Time.deltaTime);
-        anim.SetFloat(horizontal, h, 0.1f, Time.deltaTime);
+        anim.SetFloat(vertical,v,0.1f,Time.deltaTime);
+        anim.SetFloat(horizontal,horizontalMovement, 0.1f, Time.deltaTime);
     }
-    public void PlayTargetAnimation(string targetAnim, bool isInteracting)
+    public void PlayTargetAnimation(string targetAnim)
     {
-        //anim.applyRootMotion = isInteracting;
-        anim.SetBool("isInteracting", isInteracting);
+        Debug.Log(targetAnim); 
         anim.CrossFade(targetAnim, 0.1f);
     }
 }

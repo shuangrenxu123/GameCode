@@ -8,8 +8,8 @@ public class UpdatPanel : WindowRoot
 
     public override void Start()
     {
-        isupdate = GetUI("Toggle").GetComponent<Toggle>();
-        GetUI("updatebutton").GetComponent<Button>().onClick.AddListener(download);
+        isupdate = GetUIGameObject("Toggle").GetComponent<Toggle>();
+        GetUIGameObject("updatebutton").GetComponent<Button>().onClick.AddListener(download);
     }
 
     public override void Update()
@@ -36,10 +36,10 @@ public class UpdatPanel : WindowRoot
     {
         if (isupdate.isOn)
         {
-            GetUI("update").SetActive(true);
+            GetUIGameObject("update").SetActive(true);
             hotUpdater = new HotUpdater();
             //hotUpdater.Init();
-            value = GetUI("Image").GetComponent<Image>();
+            value = GetUIGameObject("Image").GetComponent<Image>();
             hotUpdater.actionDownloadValue += UpdateProgress;
             hotUpdater.actionAllDownloadDone += UpdateEnd;
             hotUpdater.actionNothongUpdate += UpdateEnd;

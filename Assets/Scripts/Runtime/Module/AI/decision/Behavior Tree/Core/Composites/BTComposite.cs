@@ -48,7 +48,7 @@ namespace BT
             }
         }
 
-        public void AddChild(BTNode node)
+        public virtual void AddChild(BTNode node)
         {
             if (node != null)
             {
@@ -56,7 +56,7 @@ namespace BT
             }
         }
 
-        public void AddChild(BTNode node, bool selectForClear)
+        public virtual void AddChild(BTNode node, bool selectForClear)
         {
             AddChild(node);
             if (selectForClear)
@@ -65,7 +65,7 @@ namespace BT
             }
         }
 
-        public void RemoveChild(BTNode node)
+        public virtual void RemoveChild(BTNode node)
         {
             children.Remove(node);
             selectedChildrenForClear.Remove(node);
