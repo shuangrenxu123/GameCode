@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class BTMoveAction : BTAction
 {
-    private Vector3 targetTransform;
+    private Transform targetTransform;
     private float speed;
     private string readDataName;
     private float distanceSqr;
@@ -22,14 +22,20 @@ public class BTMoveAction : BTAction
     {
         base.Enter();
         //获得下一个目标点
-        targetTransform = database.GetData<Vector3>(readDataName);
+        targetTransform = database.GetData<Transform>(readDataName);
+        
     }
     protected override BTResult Execute()
     {
         Vector3 pos = trans.position;
-        if ((pos - targetTransform).sqrMagnitude > distanceSqr)
+        Vector3 targetpos = targetTransform.position;
+        if ((pos-targetpos).sqrMagnitude > 100)
         {
-            Vector3 dir = targetTransform - pos;
+            return BTResult.Failed;
+        }
+        if ((pos - targetpos).sqrMagnitude > distanceSqr)
+        {
+            Vector3 dir = targetpos - pos;
             dir.Normalize();
             Quaternion quaternion = Quaternion.LookRotation(dir);
             pos += dir * speed * Time.deltaTime;

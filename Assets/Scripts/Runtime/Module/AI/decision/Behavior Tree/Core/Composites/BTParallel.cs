@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Rendering;
 
@@ -23,16 +21,11 @@ namespace BT
         {
             ParallelType= type;
             _results = new List<BTResult>();
-            for(int i = 0; i<children.Count;i++)
-            {
-                _results.Add(BTResult.Running);
-            }
         }
         public override BTResult Tick()
         {
             for (int i = 0; i < children.Count; i++)
             {
-
                 if (ParallelType == ParallelType.And)
                 {
                     if (_results[i] == BTResult.Running)
@@ -52,8 +45,9 @@ namespace BT
                     }
                     if (_results[i] != BTResult.Running)
                     {
+                        var result = _results[i];
                         ResetResults();
-                        return _results[i];
+                        return result;
                     }
                 }
             }
@@ -73,10 +67,11 @@ namespace BT
             endingResultCount = 0;
             return BTResult.Running;
         }
-        public override void AddChild(BTNode node)
+        public override BTComposite AddChild(BTNode node)
         {
             base.AddChild(node);
             _results.Add(BTResult.Running);
+            return this;
         }
         private void ResetResults()
         {

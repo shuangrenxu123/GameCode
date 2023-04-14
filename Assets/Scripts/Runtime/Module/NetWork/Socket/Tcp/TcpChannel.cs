@@ -112,7 +112,6 @@ namespace NetWork
             UpdateReceiving();
             UpdateSending();
         }
-
         private void UpdateSending()
         {
             if (sendQueue.Count > 0)

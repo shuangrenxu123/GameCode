@@ -5,15 +5,12 @@ using UnityEngine;
 namespace BT
 {
     /// <summary>
-    /// 所有修饰器节点的父类，他有且仅有一个子节点，常用于对节点返回值的修饰
+    /// 
     /// </summary>
     public class BTComposite : BTNode
     {
         private List<BTNode> _children;
-        private List<BTNode> _selectedChildrenForClear;
-
         public BTClearOpt clearOpt { get; set; }
-
         public List<BTNode> children
         {
             get
@@ -25,19 +22,6 @@ namespace BT
                 return _children;
             }
         }
-        protected List<BTNode> selectedChildrenForClear
-        {
-            get
-            {
-                if (_selectedChildrenForClear == null)
-                {
-                    _selectedChildrenForClear = new List<BTNode>();
-                }
-                return _selectedChildrenForClear;
-            }
-        }
-
-
         public override void Activate(BTDataBase database)
         {
             base.Activate(database);
@@ -48,27 +32,18 @@ namespace BT
             }
         }
 
-        public virtual void AddChild(BTNode node)
+        public virtual BTComposite AddChild(BTNode node)
         {
             if (node != null)
             {
                 children.Add(node);
             }
-        }
-
-        public virtual void AddChild(BTNode node, bool selectForClear)
-        {
-            AddChild(node);
-            if (selectForClear)
-            {
-                selectedChildrenForClear.Add(node);
-            }
+            return this;
         }
 
         public virtual void RemoveChild(BTNode node)
         {
             children.Remove(node);
-            selectedChildrenForClear.Remove(node);
         }
     }
 }

@@ -9,13 +9,11 @@ namespace Fight
         public HealthPoint hp;
         public ActionPointManager ActionPointManager;
         public CombatNumberBox numberBox;
-        public EnemyAnimatorHandler enemyAnimator;
         private void Start()
         {
             hp = new HealthPoint();
             ActionPointManager = new ActionPointManager();
             numberBox = new CombatNumberBox();
-            enemyAnimator = GetComponentInChildren<EnemyAnimatorHandler>();
             numberBox.Init();
             numberBox.Speed.SetBase(5);
         }

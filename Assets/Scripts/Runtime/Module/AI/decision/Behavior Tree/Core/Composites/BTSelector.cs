@@ -18,57 +18,9 @@ namespace BT
         public override void Clear()
         {
             base.Clear();
-            switch(clearOpt) 
+            foreach (BTNode child in children)
             {
-                case BTClearOpt.Default:
-                    if (_activeChildIndex != -1)
-                    {
-                        children[_activeChildIndex].Clear();
-                    }
-                    break;
-
-                case BTClearOpt.Selected:
-                    foreach (BTNode child in selectedChildrenForClear)
-                    {
-                        int index = children.IndexOf(child);
-                        if (index > _previousSuccessChildIndex)
-                        {
-                            child.Clear();
-                        }
-                    }
-                    break;
-
-                case BTClearOpt.DefaultAndSelected:
-                    if (_activeChildIndex != -1)
-                    {
-                        BTNode activeChild = children[_activeChildIndex];
-                        if (!selectedChildrenForClear.Contains(activeChild))
-                        {
-                            activeChild.Clear();
-                        }
-                    }
-                    int split = Mathf.Max(_activeChildIndex, _previousSuccessChildIndex);
-                    foreach (BTNode child in selectedChildrenForClear)
-                    {
-                        int index = children.IndexOf(child);
-                        if (index > split)
-                        {
-                            child.Clear();
-                        }
-                    }
-                    break;
-
-                case BTClearOpt.All:
-                    split = Mathf.Max(_activeChildIndex - 1, _previousSuccessChildIndex);
-                    foreach (BTNode child in children)
-                    {
-                        int index = children.IndexOf(child);
-                        if (index > split)
-                        {
-                            child.Clear();
-                        }
-                    }
-                    break;
+                child.Clear();
             }
         }
         public override BTResult Tick()

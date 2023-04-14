@@ -14,11 +14,11 @@ namespace Fight
         {
             PreProcess();
             Target.hp.Minus(damage);
-            Target.enemyAnimator.PlayTargetAnimation("damage",true);
+            
             PostProcess();
             if(Target.hp.Value<=0)
             {
-                Target.enemyAnimator.PlayTargetAnimation("dead",false);
+                //Target.enemyAnimator.PlayTargetAnimation("dead",false);
             }
         }
         /// <summary>

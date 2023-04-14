@@ -10,7 +10,6 @@ namespace BT
     {
         public string name;
         public bool isRunning { get; set; }
-
         public BTNode clearTick { get; set; }
         public BTDataBase database;
 

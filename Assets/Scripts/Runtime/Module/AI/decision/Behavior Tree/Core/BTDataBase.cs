@@ -9,7 +9,8 @@ namespace BT
         public T GetData<T>(string dataName)
         {
             int dataId = IndexOfDataId(dataName);
-            if (dataId == -1) Debug.LogError("Database: Data for " + dataName + " does not exist!");
+            if (dataId == -1) 
+                Debug.LogError("没有在黑板中找到相关数据");
 
             return (T)_dataList[dataId];
         }
@@ -58,7 +59,8 @@ namespace BT
         {
             for (int i = 0; i < _dataNames.Count; i++)
             {
-                if (_dataNames[i].Equals(dataName)) return i;
+                if (_dataNames[i].Equals(dataName)) 
+                    return i;
             }
 
             return -1;
