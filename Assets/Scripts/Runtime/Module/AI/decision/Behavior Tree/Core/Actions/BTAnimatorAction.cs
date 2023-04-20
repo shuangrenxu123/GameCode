@@ -11,7 +11,7 @@ namespace BT
         private bool loop;
         private bool justEntered = false;
 
-        public BTAnimatorAction(Animator animator,string stateName,bool loop = false,string layerName = "Base Layer")
+        public BTAnimatorAction(string name,Animator animator,string stateName,bool loop = false,string layerName = "Base Layer"):base(name)
         {
             this.animator = animator;  
             stateHash = Animator.StringToHash(layerName+"."+stateName);

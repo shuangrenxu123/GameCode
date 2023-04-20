@@ -6,11 +6,11 @@ public class BTRandomTargetPosition : BTAction
     private Transform transform;
     private Transform target;
     private string setDataName;
-    public BTRandomTargetPosition(string name,Transform transform)
+    public BTRandomTargetPosition(string name,string dataname,Transform transform):base(name)
     {
         target = new GameObject("target").transform;
         this.transform = transform;
-        setDataName = name;
+        setDataName = dataname;
         
     }
     protected override BTResult Execute()

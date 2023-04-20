@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour
     public Vector3 moveDirection;
     public Rigidbody rb;
     public GameObject normalCamera;
-    [Header("Ground & AIR Detection States")]
     [SerializeField]
     float groundDetectionRayStartPoint = 0.5f;
     [SerializeField]

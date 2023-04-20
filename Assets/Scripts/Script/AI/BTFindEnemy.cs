@@ -8,7 +8,7 @@ public class BTFindEnemy : BTAction
     private int layer;
     private string setDataName;
     private Transform transform;
-    public BTFindEnemy(string setDataName, string layer, Transform transform)
+    public BTFindEnemy(string name,string setDataName, string layer, Transform transform):base(name)
     {
         this.setDataName = setDataName;
         this.layer = LayerMask.NameToLayer(layer);

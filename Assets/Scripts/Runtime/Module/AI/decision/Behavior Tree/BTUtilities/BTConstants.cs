@@ -19,26 +19,6 @@ namespace BT
         /// </summary>
         Running,
     }
-
-    public enum BTAbortOpt
-    {
-        None,
-        Self,
-        LowerPriority,
-        Both,
-    }
-
-    /// <summary>
-    /// 清除类型
-    /// </summary>
-    public enum BTClearOpt
-    {
-        Default,
-        Selected,
-        DefaultAndSelected,
-        All,
-    }
-
     public enum BTLogic
     {
         /// <summary>
@@ -51,28 +31,20 @@ namespace BT
         Or,
     }
 
-    public enum BTExecuteOpt
-    {
-        OnTick,
-        OnClear,
-        Both,
-    }
-
-    public enum BTDataReadOpt
-    {
-        ReadAtBeginning,
-        ReadEveryTick,
-    }
     public enum ParallelType
     {
 
         /// <summary>
-        /// 等待所有的子节点都执行完
+        /// 等待所有的子节点都执行完，提前执行完毕的节点不会再重复执行
         /// </summary>
         And = 1,
         /// <summary>
         /// 只要有一个提前整完
         /// </summary>
         Or = 2,
+        /// <summary>
+        /// 等待所有节点同时完成，如果有一个未完成，其他的会重复执行
+        /// </summary>
+        Wait=3,
     }
 }

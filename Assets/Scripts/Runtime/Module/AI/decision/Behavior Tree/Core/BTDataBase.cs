@@ -9,8 +9,11 @@ namespace BT
         public T GetData<T>(string dataName)
         {
             int dataId = IndexOfDataId(dataName);
-            if (dataId == -1) 
+            if (dataId == -1)
+            {
                 Debug.LogError("没有在黑板中找到相关数据");
+                return default;
+            }
 
             return (T)_dataList[dataId];
         }

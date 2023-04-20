@@ -5,5 +5,8 @@ using UnityEngine;
 
 public class BTFall : BTAction
 {
-
+    public BTFall(string name):base(name)
+    {
+        
+    }
 }

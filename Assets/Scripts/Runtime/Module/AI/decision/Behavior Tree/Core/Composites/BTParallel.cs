@@ -23,49 +23,65 @@ namespace BT
             _results = new List<BTResult>();
         }
         public override BTResult Tick()
+        { 
+            switch (ParallelType)
+            {
+                case ParallelType.And:
+                    endingResultCount = 0;
+                    TickAllChildren();
+                    if (endingResultCount == children.Count)
+                    {
+                        foreach (var result in _results)
+                        {
+                            if(result==BTResult.Failed)
+                                return BTResult.Failed;
+                        }
+                        return BTResult.Success;
+                    }
+                    break;
+                case ParallelType.Or:
+                    TickAllChildren();
+                    foreach (BTResult result in _results)
+                    {
+                        if(result != BTResult.Running)
+                        {
+                            var t = result;
+                            ResetResults();
+                            return result;
+                        }
+                    }
+                    break;
+                case ParallelType.Wait:
+                    endingResultCount = 0;
+                    ResetResults();
+                    TickAllChildren();
+                    if(endingResultCount == children.Count)
+                    {
+                        foreach (var result in _results)
+                        {
+                            if (result == BTResult.Failed)
+                                return BTResult.Failed;
+                        }
+                        return BTResult.Success;
+                    }
+                    break;
+            }
+            return BTResult.Running;
+        }
+
+        private void TickAllChildren()
         {
             for (int i = 0; i < children.Count; i++)
             {
-                if (ParallelType == ParallelType.And)
+                if (_results[i] == BTResult.Running)
                 {
-                    if (_results[i] == BTResult.Running)
-                    {
-                        _results[i] = children[i].Tick();
-                    }
-                    if (_results[i] != BTResult.Running)
-                    {
-                        endingResultCount++;
-                    }
+                    _results[i] = children[i].Tick();
                 }
-                else
+                if (_results[i] != BTResult.Running)
                 {
-                    if (_results[i] == BTResult.Running)
-                    {
-                        _results[i] = children[i].Tick();
-                    }
-                    if (_results[i] != BTResult.Running)
-                    {
-                        var result = _results[i];
-                        ResetResults();
-                        return result;
-                    }
+                    endingResultCount++;
                 }
             }
-            ///只会应用于And
-            if(endingResultCount == children.Count)
-            {
-                ResetResults();
-                foreach (var i in _results)
-                {
-                    if (i == BTResult.Failed)
-                    {
-                        return BTResult.Failed;
-                    }
-                }
-                return BTResult.Success;
-            }
-            endingResultCount = 0;
-            return BTResult.Running;
         }
         public override BTComposite AddChild(BTNode node)
         {

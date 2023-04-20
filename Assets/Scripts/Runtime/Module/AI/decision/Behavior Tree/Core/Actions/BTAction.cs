@@ -5,6 +5,10 @@ namespace BT
     public class BTAction : BTNode
     {
         private BTActionStatus status = BTActionStatus.Ready;
+        public BTAction(string name)
+        {
+            this.name = name;
+        }
 
         /// <summary>
         /// 在操作节点即将执行时调用。

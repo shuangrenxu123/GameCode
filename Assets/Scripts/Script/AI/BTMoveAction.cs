@@ -1,4 +1,5 @@
 using BT;
+using Google.Protobuf.WellKnownTypes;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,11 +12,11 @@ public class BTMoveAction : BTAction
     private float distanceSqr;
     private Transform trans;
 
-    public BTMoveAction(Transform trans,float speed,string name,float distanceSqr)
+    public BTMoveAction(string name,Transform trans,float speed,string dataname,float distanceSqr):base(name)
     {
         this.trans = trans;
         this.speed = speed;
-        readDataName = name;
+        readDataName = dataname;
         this.distanceSqr = distanceSqr;
     }
     protected override void Enter()

@@ -10,7 +10,6 @@ namespace BT
     public class BTComposite : BTNode
     {
         private List<BTNode> _children;
-        public BTClearOpt clearOpt { get; set; }
         public List<BTNode> children
         {
             get
