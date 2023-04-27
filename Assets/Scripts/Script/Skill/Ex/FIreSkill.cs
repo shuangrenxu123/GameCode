@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class FIreSkill : SkillAbility
 {
-    public FIreSkill(SkillData data) : base(data)
+    public FIreSkill(SkillData data,GameObject prefab):base(data,prefab)
     {
+        
     }
 
     public override void CreateExecution()
     {
-        
+        GameObject.Instantiate(SkillPrefab);
     }
 }

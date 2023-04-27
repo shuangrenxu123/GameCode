@@ -11,5 +11,4 @@ public class SkillData :ScriptableObject
     public SkillType Type;
     public SkillAffectTargetType AffectTargetType;
     public SkillTargetSelectType TargetSelectType;
-    public GameObject SkillPrefab;
 }

@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class SkillSystem
 {
-    private Dictionary<string, SkillData> skills = new Dictionary<string, SkillData>();
+    private Dictionary<string, SkillAbility> skills = new Dictionary<string, SkillAbility>();
+    public void AddSkill(SkillData data,GameObject prefab)
+    {
+        skills.Add(data.skillName,new FIreSkill(data,prefab));
+    }
     public void GenerateSkill(string name)
     {
-        foreach (var i in skills)
-        {
-            if(i.Key == i.Value.name)
-            {
-                
-            }
-        }
+        skills[name].CreateExecution();
     }
 }

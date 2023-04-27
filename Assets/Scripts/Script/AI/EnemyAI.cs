@@ -4,7 +4,12 @@ using UnityEngine;
 public class EnemyAI : BTTree
 {
     public Animator animator;
-    public SkillSystem skillSystem;
+    public Enemy enemy;
+    protected override void Init()
+    {
+        enemy = GetComponent<Enemy>();
+        base.Init();
+    }
     public override void SetNode()
     {
         var rootNode = new BTParallel(ParallelType.Wait);
@@ -17,7 +22,9 @@ public class EnemyAI : BTTree
         .AddChild(new BTFindEnemy("追击节点下的寻找敌人","targetTransform", "Enemy", transform))
 
         .AddChild(new BTSelector()
-            .AddChild(new BTinterval(databaseName: "jili",5,new BTAnimatorAction("释放buff动画",animator,"jili")))
+            .AddChild(new BTParallel(ParallelType.And)
+                .AddChild(new BTinterval(databaseName: "jili",5,new BTAnimatorAction("释放buff动画",animator,"jili")))
+                .AddChild(new BTSkillAction(enemy.skillSystem,"jili","激励技能")))
             .AddChild(new BTSequence()
                 .AddChild(new BTParallel(ParallelType.Or)
                     .AddChild(new BTMoveAction("追击敌人移动节点",transform, 3.5f, "targetTransform", 2))
