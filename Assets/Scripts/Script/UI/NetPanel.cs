@@ -44,11 +44,6 @@ public class NetPanel : WindowRoot
     public override void Update()
     {
     }
-
-    public override void UpdateWindow()
-    {
-
-    }
     public void SetPingValue(float value)
     {
     }

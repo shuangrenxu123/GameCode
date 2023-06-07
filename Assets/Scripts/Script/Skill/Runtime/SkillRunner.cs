@@ -4,42 +4,48 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Timeline;
 
-public class SkillRunner : MonoBehaviour
+public class SkillRunner
 {
+    public bool isSubSkill;
     private GameObject SkillOwner;
     private List<TrackRunner> trackRunners;
-    private bool isFinish = false;
-    private Animator anim;
+    public bool isFinish = false;
+    public Animator anim;
     private AudioSource AudioSource;
-    private void Awake()
+    private Transform transform;
+    public SkillRunner(Animator anim,AudioSource audioSource,Transform transform)
     {
         trackRunners = new List<TrackRunner>();
-        anim = GetComponent<Animator>();
-        AudioSource = GetComponent<AudioSource>();
+        AudioSource = audioSource;
+        this.anim = anim;
+        this.transform = transform;
     }
-    void Start()
-    {
-        LoadConfig();
-    }
-    void Update()
+    public void Update()
     {
         int trackCount = trackRunners.Count;
-        if(trackCount == 0)
+        if (trackCount == 0)
         {
-            return;
+            isFinish = true;
         }
-        for(int i = trackCount - 1;i >= 0;i--)
+        else
         {
-            trackRunners[i].UpdateEvent();
-            if (trackRunners[i].hasFinished)
+            for (int i = trackCount - 1; i >= 0; i--)
             {
-                trackRunners.RemoveAt(i);
+                trackRunners[i].UpdateEvent();
+                if (trackRunners[i].hasFinished)
+                {
+                    trackRunners.RemoveAt(i);
+                }
             }
         }
+        if(isFinish)
+        {
+            OnFinish();
+        }
     }
-    void LoadConfig()
+    public void LoadConfig(string name,SkillTrigger trigger)
     {
-        TimelineAsset playable = Resources.Load<TimelineAsset>("skill");
+        TimelineAsset playable = Resources.Load<TimelineAsset>(name);
         var tracks = playable.GetOutputTracks();
         foreach (var track in tracks)
         {
@@ -62,7 +68,7 @@ public class SkillRunner : MonoBehaviour
                 }
                 else if(track is TriggerTrack)
                 {
-                    clip = new TriggerEventClip(transform);
+                    clip = new TriggerEventClip(transform,trigger);
                 }
                 else
                 {
@@ -74,6 +80,13 @@ public class SkillRunner : MonoBehaviour
             }
             trackRunners.Add(trackRunner);
 
+        }
+    }
+    private void OnFinish()
+    {
+        if(isSubSkill)
+        {
+            //删除自己
         }
     }
 }

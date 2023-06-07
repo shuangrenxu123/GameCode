@@ -1,61 +1,41 @@
 using BT;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class EnemyAI : BTTree
 {
-    public Animator animator;
-    public Enemy enemy;
-    protected override void Init()
+    public EnemyAnimatorHandle animator;
+    Transform transform;
+    public NavMeshAgent agent;
+    public override void Init(Enemy enemy, EnemyAnimatorHandle anim,Enemy e, BTDataBase dataBase = null)
     {
-        enemy = GetComponent<Enemy>();
-        base.Init();
+        this.enemy = enemy;
+        transform = enemy.transform;
+        animator = anim;
+        base.Init(enemy,anim,e,database);
     }
     public override void SetNode()
     {
         var rootNode = new BTParallel(ParallelType.Wait);
-
         var MainNoed = new BTSelector();
-
         #region main node
-
         MainNoed.AddChild(new BTSequence()
-        .AddChild(new BTFindEnemy("追击节点下的寻找敌人","targetTransform", "Enemy", transform))
+        .AddChild(new BTFindEnemy("追击节点下的寻找敌人","targetTransform", "Controller", transform))
 
         .AddChild(new BTSelector()
-            .AddChild(new BTParallel(ParallelType.And)
-                .AddChild(new BTinterval(databaseName: "jili",5,new BTAnimatorAction("释放buff动画",animator,"jili")))
-                .AddChild(new BTSkillAction(enemy.skillSystem,"jili","激励技能")))
             .AddChild(new BTSequence()
-                .AddChild(new BTParallel(ParallelType.Or)
-                    .AddChild(new BTMoveAction("追击敌人移动节点",transform, 3.5f, "targetTransform", 2))
-                    .AddChild(new BTAnimatorAction("追击敌人跑步动画",animator, "run", true))
+                .AddChild(new BTStrafing("围绕", animator))
+                .AddChild(new BTParallel(ParallelType.Or) 
+                    .AddChild(new BTMoveAction("追击敌人移动节点",transform, 1f, "targetTransform", 16))
+                    .AddChild(new BTAnimatorAction("追击敌人跑步动画",animator, "Walk", true))
                     )
+
                 .AddChild(new BTAnimatorAction("攻击动画", animator, "attack"))
                 )
         ));
 
-        MainNoed.AddChild(new BTSequence()
-            .AddChild(new BTRandomTargetPosition("随机设置移动点", "targetTransform", transform))
-        
-            .AddChild(new BTParallel(ParallelType.Or)
-                .AddChild(new BTMoveAction("巡逻移动节点", transform, 2, "targetTransform", 2))
-                .AddChild(new BTAnimatorAction("行走动画", animator, "walk", true))
-                .AddChild(new BTRepeat(new BTFindEnemy("巡逻节点下的寻找敌人", "targetTransform", "Enemy", transform))))
-        
-            .AddChild(new BTParallel(ParallelType.Or)
-                .AddChild(new BTAnimatorAction("站立动画", animator, "idle"))
-                .AddChild(new BTRepeat(new BTFindEnemy("站立节点下的寻找敌人", "targetTransform", "Enemy", transform))))
-            );
-
-
         #endregion
-        //分支的节点负责检测外部事件
-        rootNode.AddChild(MainNoed)
-            .AddChild(new BTUpdateTime("更新数据库").AddTimer("jili"));
+        rootNode.AddChild(MainNoed);
         root = rootNode;
-    }
-    private void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(transform.position,10);
     }
 }

@@ -11,19 +11,21 @@ public class PlayerInputHandle : MonoBehaviour
 
     public bool b_Input;
     public bool e_Input;
-    public bool LockOnInput;
 
-    [SerializeField]
     public bool LockFlag;
     public bool rollFlag;
     public bool comboFlag;
     public bool DefenseFlag;
     public bool UIFlag;
+    public bool TwoHandFlag;
+    public bool UseItem;
+    public bool BagPanleFlag = false;
 
-    PlayerInventory PlayerInventory;
-    PlayerAttack PlayerAttacker;
-    PlayerControls inputAction;
-    Player playerManager;
+    public Equipmanager equipmanager;
+    public PlayerInventory PlayerInventory;
+    public PlayerCombatInputHandle PlayerAttacker;
+    public PlayerControls inputAction;
+    public Player playerManager;
     public CameraHandler cameraHandler;
     Vector2 movementInput;
     Vector2 cameraInput;
@@ -33,8 +35,13 @@ public class PlayerInputHandle : MonoBehaviour
     private void Awake()
     {
         PlayerInventory = GetComponent<PlayerInventory>();
-        PlayerAttacker = GetComponent<PlayerAttack>();
         playerManager = GetComponent<Player>();
+        equipmanager = GetComponent<Equipmanager>();
+    }
+    private void Start()
+    {
+        cameraHandler = playerManager.cameraHandler;
+        PlayerAttacker = playerManager.combatInputHandle;
     }
     private void OnEnable()
     {
@@ -42,29 +49,38 @@ public class PlayerInputHandle : MonoBehaviour
         {
             inputAction = new PlayerControls();
         }
-        inputAction.PlayerMovement.Movement.performed   += i => movementInput = i.ReadValue<Vector2>();
-        inputAction.PlayerMovement.Movement.canceled    += i => movementInput = i.ReadValue<Vector2>();
+        inputAction.PlayerMovement.Movement.performed += i => movementInput = i.ReadValue<Vector2>();
+        inputAction.PlayerMovement.Movement.canceled += i => movementInput = i.ReadValue<Vector2>();
 
-        inputAction.PlayerMovement.Camera.performed     += i => cameraInput = i.ReadValue<Vector2>();
-        inputAction.PlayerMovement.Camera.canceled      += i => cameraInput = i.ReadValue<Vector2>();
-
-        inputAction.PlayerMovement.Sprint.performed     += i => sprintFlag = true;
-        inputAction.PlayerMovement.Sprint.canceled      += i => sprintFlag = false;
-
-        inputAction.PlayerAction.defense.performed      += i => DefenseFlag = true;
-        inputAction.PlayerAction.defense.canceled       += i => DefenseFlag = false;
-
+        inputAction.PlayerMovement.Camera.performed += i => cameraInput = i.ReadValue<Vector2>();
+        inputAction.PlayerMovement.Camera.canceled += i => cameraInput = i.ReadValue<Vector2>();
+        //奔跑
+        inputAction.PlayerMovement.Sprint.performed += i => sprintFlag = true;
+        inputAction.PlayerMovement.Sprint.canceled += i => sprintFlag = false;
+        //防御
+        inputAction.PlayerAction.defense.performed += i => DefenseFlag = true;
+        inputAction.PlayerAction.defense.canceled += i => DefenseFlag = false;
+        //交互
         inputAction.PlayerAction.Interactable.performed += i => e_Input = true;
-        inputAction.PlayerAction.Interactable.canceled  += i => e_Input = false;
+        inputAction.PlayerAction.Interactable.canceled += i => e_Input = false;
+        //翻滚
+        inputAction.PlayerAction.Roll.performed += i => b_Input = true;
+        inputAction.PlayerAction.Roll.canceled += i => b_Input = false;
+        //锁定敌人
+        inputAction.PlayerAction.LightAttack.performed += i => LightAttackFlag = true;
+        inputAction.PlayerAction.LightAttack.canceled += i => LightAttackFlag = false;
 
-        inputAction.PlayerAction.Roll.performed         += i => b_Input = true;
-        inputAction.PlayerAction.Roll.canceled          += i => b_Input = false;
+        inputAction.PlayerAction.Lock.performed += i => HandleLockInput();
 
-        inputAction.PlayerAction.Lock.performed         += i => LockOnInput = true;
-        inputAction.PlayerAction.Lock.canceled          += i => LockOnInput = false;
+        inputAction.PlayerAction.DualWielding.performed += i => HandleTwoHandInput();
 
-        inputAction.PlayerUI.ESC.performed              += i => HandleEscInput();
-        inputAction.PlayerAction.ESC.performed          += i => HandleEscInput();
+        inputAction.PlayerAction.useItem.performed += i => HandleUseItemInput();
+
+        inputAction.PlayerUI.ESC.performed += i => HandleEscInput();
+        inputAction.PlayerAction.ESC.performed += i => HandleEscInput();
+
+        inputAction.PlayerAction.Bag.performed += i => HandleBaginput();
+
         inputAction.Enable();
         EnableGameTable();
 
@@ -76,14 +92,12 @@ public class PlayerInputHandle : MonoBehaviour
             inputAction.Disable();
         }
     }
-
     public void TickInput(float delta)
     {
         HandleMoveInput(delta);
         HanldeRollInput(delta);
         HandleAttackInput(delta);
         HandleDefenseInput(delta);
-        HandleLockInput();
     }
     private void HandleMoveInput(float delta)
     {
@@ -102,38 +116,22 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void HandleAttackInput(float delta)
     {
-        inputAction.PlayerAction.LightAttack.performed += i => LightAttackFlag = true;
-
-        if(LightAttackFlag)
+        if (LightAttackFlag)
         {
-            if (playerManager.canDoCombo)
-            {
-                comboFlag = true;
-                PlayerAttacker.HandleWeaponCombo(PlayerInventory.rightWeapon as WeaponItem);
-                comboFlag = false;
-            }
-            else
-            {
-                if(playerManager.isInteracting|| playerManager.canDoCombo || playerManager.isDefense)
-                {
-                    return;
-                }
-                PlayerAttacker.HandleLightAttack(PlayerInventory.rightWeapon as WeaponItem);
-            }
+            PlayerAttacker.HandleLightAttack();
+            LightAttackFlag = false;
         }
     }
     private void HandleLockInput()
     {
-        if (LockOnInput && LockFlag == false)
+        if (LockFlag == false)
         {
             cameraHandler.ClearLockTargets();
-            LockOnInput= false;
             LockFlag = cameraHandler.HandleLockOn();
         }
-        else if(LockOnInput && LockFlag) 
+        else if (LockFlag)
         {
             LockFlag = false;
-            LockOnInput = false;
             cameraHandler.ClearLockTargets();
         }
         cameraHandler.SetCameraHeight();
@@ -142,26 +140,30 @@ public class PlayerInputHandle : MonoBehaviour
     {
         if (LightAttackFlag)
             return;
-        
-        PlayerAttacker.HandleDefense(PlayerInventory.leftWeapon as ArmorItem);
+
+        PlayerAttacker.HandleDefense(PlayerInventory.leftWeapon as ArmorItemData);
 
     }
-
     private void HandleEscInput()
     {
         UIFlag = !UIFlag;
         if (UIFlag)
         {
             WindowsManager.Instance.EnableWindow<GameUIMgr>();
+            WindowsManager.Instance.DisableWindow<StateUI>();
             DisableGameTable();
         }
         else
         {
             WindowsManager.Instance.DisableWindow<GameUIMgr>();
+            WindowsManager.Instance.EnableWindow<StateUI>();
             EnableGameTable();
         }
     }
-
+    private void HandleUseItemInput()
+    {
+        PlayerInventory.UseProps();
+    }
     private void EnableGameTable()
     {
         Cursor.visible = false;
@@ -175,5 +177,33 @@ public class PlayerInputHandle : MonoBehaviour
         inputAction.PlayerAction.Disable();
         inputAction.PlayerMovement.Disable();
         inputAction.PlayerUI.Enable();
+    } 
+    private void HandleTwoHandInput()
+    {
+        TwoHandFlag = !TwoHandFlag;
+        if(TwoHandFlag == false)
+        {
+            equipmanager.LoadWeaponOnSlot(PlayerInventory.rightWeapon,false);
+            equipmanager.LoadRightHandIK(false);
+        }
+        else
+        {
+            equipmanager.LoadWeaponOnSlot(PlayerInventory.rightWeapon, false);
+            equipmanager.LoadWeaponOnSlot(PlayerInventory.leftWeapon, true);
+            equipmanager.LoadRightHandIK(true);
+        }
+    }
+    private void HandleBaginput()
+    {
+        if (BagPanleFlag == false)
+        {
+            WindowsManager.Instance.EnableWindow<BagPanel>();
+            
+        }
+        else
+        {
+            WindowsManager.Instance.DisableWindow<BagPanel>();
+        }
+        BagPanleFlag = !BagPanleFlag;
     }
 }

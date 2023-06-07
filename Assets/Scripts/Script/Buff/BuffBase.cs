@@ -1,61 +1,56 @@
 using Fight;
-/// <summary>
-/// buff的状态，
-/// </summary>
-public enum BuffState
+public abstract class BuffBase : IBuff
 {
-    waiting,
-    runing,
-    end
-}
-public abstract class BuffBase
-{
-    public BuffState buffState;
-
+    public BuffManager BuffManager;
     /// <summary>
     /// 已经持续的时间
     /// </summary>
     public float nowtime = 0;
-    /// <summary>
-    /// buff持续时间
-    /// </summary>
-    public float Maxtime;
+    public float maxTime { get { return data.Maxtime; } }
     /// <summary>
     /// 当前叠加的层数
     /// </summary>
     float currNumber;
     /// <summary>
-    /// 释放者
+    /// buff提供者
     /// </summary>
     public CombatEntity Creator;
-    /// <summary>
-    /// 目标
-    /// </summary>
-    public CombatEntity taget;
-
     public BuffDataBase data;
-    public BuffBase(BuffState state, CombatEntity c, CombatEntity t)
+    public BuffBase(BuffManager manager,CombatEntity c)
     {
-        buffState = state;
+        this.BuffManager = manager;
         Creator = c;
-        taget = t;
+    }
+    public virtual void OnAdd()
+    {
+        
+    }
+
+    public virtual void OnTrigger()
+    {
+        
+    }
+
+    public virtual void OnRefresh()
+    {
+        
+    }
+
+    public virtual void OnRemove()
+    {
+        
+    }
+
+    public virtual void OnDestory()
+    {
+        
     }
     /// <summary>
-    /// 获得buff
+    /// 返回当前持续时间百分比
     /// </summary>
-    public abstract void Add();
-    /// <summary>
-    /// 每秒的buff更新
-    /// </summary>
-    public abstract void OnUpdate();
-
-    /// <summary>
-    /// 移除buff
-    /// </summary>
-    public abstract void OnRemove();
-    /// <summary>
-    /// 再次获得相同buff的刷新
-    /// </summary>
-    public abstract void OnRefresh();
-
+    /// <returns></returns>
+    public float Percent()
+    {
+        return nowtime/maxTime;
+    }
 }

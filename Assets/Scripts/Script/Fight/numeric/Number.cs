@@ -1,21 +1,21 @@
 public class Number
 {
     /// <summary>
-    /// »ù´¡Öµ
+    /// åŸºç¡€å€¼
     /// </summary>
-    public float baseValue = 0;
+    public int baseValue = 0;
     /// <summary>
-    /// ×°±¸¼Ó³ÉÖµ
+    /// è£…å¤‡åŠ æˆå€¼
     /// </summary>
-    public float equipValue = 0;
+    public int equipValue = 0;
     /// <summary>
-    /// buff¼Ó³ÉÖµ
+    /// buffåŠ æˆå€¼
     /// </summary>
-    public float buffValue = 0;
+    public int buffValue = 0;
     /// <summary>
-    /// ×îÖÕÖµ
+    /// æœ€ç»ˆå€¼
     /// </summary>
-    public float Value = 0;//×îÖÕÖµ
+    public int Value = 0;//æœ€ç»ˆå€¼
 
 
     public void SetBase(int value)

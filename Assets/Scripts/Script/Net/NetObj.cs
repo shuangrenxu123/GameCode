@@ -12,11 +12,13 @@ public class NetObj : MonoBehaviour
     Vector3 forcastPosition = Vector3.zero;
     Vector3 startPosition = Vector3.zero;
     Vector3 velocity = Vector3.zero;
+    Vector2 lastMove = Vector2.zero;
 
     private void Start()
     {
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
+        anim =GetComponentInChildren<NetAnimator>();
     }
     public void SyncData(DefaultNetWorkPackage data)
     {
@@ -41,7 +43,8 @@ public class NetObj : MonoBehaviour
             startPosition = transform.position;
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
-            anim.UpdateAnimatorValues(state.V,state.H);
+            //lastMove = new Vector2(state.V, state.H);
+            anim.UpdateAnimatorValues(state.V, state.H);
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
@@ -64,6 +67,7 @@ public class NetObj : MonoBehaviour
         {
             transform.position += velocity * Time.deltaTime;
         }
+        //anim.UpdateAnimatorValues(lastMove.x, lastMove.y);
     }
 
 }

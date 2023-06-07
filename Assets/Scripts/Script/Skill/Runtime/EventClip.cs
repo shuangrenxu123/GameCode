@@ -34,7 +34,7 @@ public class EventClip
     {
         UpdateEvent(time);
     }
-    protected virtual void UpdateEvent(float time)
+    public virtual void UpdateEvent(float time)
     {
 
     }
@@ -51,7 +51,7 @@ class AnimEventClip : EventClip
     public AnimEventClip(string clipName,Transform transform,Animator anim): base(transform) 
     {
         animator = anim;
-        clipHash = Animator.StringToHash("Base Layer"+"."+clipName);
+        clipHash = Animator.StringToHash("Base Layer"+"."+ clipName);
     }
     public override void Init()
     {
@@ -63,7 +63,7 @@ class AnimEventClip : EventClip
     }
     public override void OnFinish()
     {
-        animator.Play("Idle");
+        animator.Play("idle");
     }
     public override void OnStart()
     {
@@ -115,16 +115,23 @@ class FxEventClip : EventClip
 /// </summary>
 class TriggerEventClip : EventClip
 {
-    public TriggerEventClip(Transform trnas):base(trnas)
+    private SkillTrigger trigger;
+    public TriggerEventClip(Transform trnas,SkillTrigger trigger):base(trnas)
     {
         transform = trnas;
+        this.trigger = trigger;
     }
     public override void OnStart()
     {
-        var result = Physics.OverlapSphere(transform.position, 10);
-        if (result.Length == 0)
-        {
-            Debug.Log("没有敌人");
-        }
+        trigger.OnStart();
+    }
+    public override void OnFinish()
+    {
+        base.OnFinish();
+        trigger.OnFinish();
+    }
+    public override void UpdateEvent(float time)
+    {
+        trigger.OnUpdate(time);
     }
 }

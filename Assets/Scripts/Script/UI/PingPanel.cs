@@ -16,9 +16,6 @@ public class PingPanel : WindowRoot
 
     }
 
-    public override void UpdateWindow()
-    { 
-    }
     public void SetPingValue(int value)
     {
         ping.text = value.ToString();

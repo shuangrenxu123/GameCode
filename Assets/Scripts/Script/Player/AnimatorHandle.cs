@@ -1,25 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class AnimatorHandle : MonoBehaviour
+using UnityEngine.Animations.Rigging;
+public class AnimatorHandle : AnimatorManager
 {
     public Player playerManager;
-    public Animator anim;
     public PlayerInputHandle inputHandle;
     public PlayerController controller;
+    public PlayerInventory inventory;
+    public PlayerCombatEntity entity;
+    public Equipmanager equipmanager;
+
     int vertical;
     int horizontal;
-    public bool canRotate;
+
+    bool handIKWeightReset = false;
+
+    protected RigBuilder rigBuilder; 
+    public TwoBoneIKConstraint leftHandConstraint;
+    public TwoBoneIKConstraint rightHandConstraint;
 
     public void Initialize()
     {
-        playerManager = GetComponentInParent<Player>();
-        anim =  GetComponent<Animator>();
+        playerManager = GetComponent<Player>();
         vertical = Animator.StringToHash("Verical");
         horizontal = Animator.StringToHash("Horizontal");
-        inputHandle = GetComponentInParent<PlayerInputHandle>();
-        controller = GetComponentInParent<PlayerController>();
+        inputHandle = GetComponent<PlayerInputHandle>();
+        entity = GetComponent<PlayerCombatEntity>();
+        inventory = GetComponent<PlayerInventory>();
+        equipmanager = GetComponent<Equipmanager>();
+        controller = playerManager.controller;
+        rigBuilder = GetComponent<RigBuilder>();    
 
     }
     public void UpdateAnimatorValues(float verticalMovement,float horizontalMovement,bool isSprinting)
@@ -78,40 +89,71 @@ public class AnimatorHandle : MonoBehaviour
         anim.SetFloat(vertical,v, 0.1f,Time.deltaTime);
         anim.SetFloat(horizontal,h,0.1f,Time.deltaTime);
     }
-    public void PlayTargetAnimation(string targetAnim,bool isInteracting)
-    {
-        anim.applyRootMotion = isInteracting;
-        anim.SetBool("isInteracting", isInteracting);
-        anim.CrossFade(targetAnim, 0.1f); 
-    }
     private void OnAnimatorMove()
     {
         if(playerManager.isInteracting == false)
         {
             return;
         }
-        float delta = Time.deltaTime;
-        controller.rb.drag = 0;
-        Vector3 deltaPosition = anim.deltaPosition;
-        deltaPosition.y = 0;
-        Vector3 velocity = deltaPosition / delta;
-        controller.rb.velocity = velocity;
+        Vector3 velocity = playerManager.animatorHandle.anim.deltaPosition;
+        playerManager.characterController.Move(velocity);
+        playerManager.transform.rotation *= playerManager.animatorHandle.anim.deltaRotation;
     }
     public void CanRotate()
     {
-        canRotate = true;
+        anim.SetBool("canRotate",true);
     }
     public void StopRotate()
     {
-        canRotate = false;
+        anim.SetBool("canRotate", false);
     }
-
     public void EnableAttackCombo()
     {
-        anim.SetBool("canDoCombo", true);
+        anim.SetBool("canDoCombo",true);
     }
     public void DisableAttackCombo()
     {
         anim.SetBool("canDoCombo", false);
+    }
+    public void PropsCallBack()
+    {
+        inventory.currentItem.Effect(entity,equipmanager);
+        inventory.CanrReplace = true;
+    }
+
+    public void SetHandIKForWeapon(HandIK target,bool isTwoHandlingWeapon)
+    {
+        if(isTwoHandlingWeapon)
+        {
+            //缓存一份右手值
+            Vector3 rightpos = target.rightTransform.position;
+            var rotation = target.rightTransform.rotation;
+            var weapon = equipmanager.rightSlot.currentModel;
+            var hand = weapon.transform.parent;
+            //获得手的父物体
+            weapon.transform.SetParent(null);
+            hand.transform.position = rightpos;
+            hand.transform.rotation = rotation;
+            weapon.transform.SetParent(hand);
+
+            leftHandConstraint.data.target = target.leftTransform;
+            leftHandConstraint.data.targetRotationWeight = 1;
+            leftHandConstraint.data.targetPositionWeight = 1;
+        }
+        else
+        {
+            rightHandConstraint.data.target = null;
+            leftHandConstraint.data.target  = null;
+        }
+        rigBuilder.Build();
+    }
+    public void EraseHandIKForWeapon()
+    {
+        handIKWeightReset = true;
+        if(leftHandConstraint.data.target != null)
+        {
+            leftHandConstraint.data.targetPositionWeight = 0;
+            leftHandConstraint.data.targetRotationWeight = 0;
+        }
     }
 }

@@ -2,30 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WeaponHolderSlot : MonoBehaviour
+public class WeaponHolderSlot : HolderSlot
 {
-    public Transform parentOverride;
     public bool isLeftHandSlot;
     public bool isRightHandSlot;
 
-    public GameObject currentWeaponModel;
-
     public void UnloadWeapon()
     {
-        if(currentWeaponModel != null)
+        if(currentModel != null)
         {
-            currentWeaponModel.SetActive(false);
+            currentModel.SetActive(false);
         }
     }
     public void UnloadWeaponAndDestory()
     {
-        if(currentWeaponModel != null)
+        if(currentModel != null)
         {
-            Destroy(currentWeaponModel);
+            Destroy(currentModel);
         }
     }
-
-    public void LoadWeaponModel(Item Item)
+    public void LoadModel(ItemData Item)
     {
         var weaponItem = Item;
         if (weaponItem == null)
@@ -33,7 +29,11 @@ public class WeaponHolderSlot : MonoBehaviour
             UnloadWeapon();
             return;
         }
-
+        if(currentData != null && currentData.id == Item.id)
+        {
+            currentModel.SetActive(true);
+            return;
+        }
         GameObject model = Instantiate(weaponItem.modelPrefab);
         if(model != null)
         {
@@ -49,7 +49,8 @@ public class WeaponHolderSlot : MonoBehaviour
             model.transform.localRotation= Quaternion.identity;
             model.transform.localScale = Vector3.one;
         }
-        currentWeaponModel = model;
+        currentModel = model;
+        currentData = weaponItem;
 
     }
 }

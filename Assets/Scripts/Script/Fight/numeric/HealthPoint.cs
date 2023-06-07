@@ -1,45 +1,62 @@
 using UnityEngine;
+using UnityEngine.UI;
 /// <summary>
-/// ÑªÌõ×é¼ş
+/// è¡€æ¡ç»„ä»¶
 /// </summary>
 public class HealthPoint
 {
+    private StateUI stateui;
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
-
-
+    public void Init(bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            stateui = WindowsManager.Instance.GetUiWindow<StateUI>();
+        }
+        else
+        {
+            stateui = WindowsManager.Instance.GetUiWindow<EnemyStateUI>();
+        }
+    }
     public void Reset()
     {
         Value = MaxValue;
+        UpdateHPUI();
     }
-
     public void SetMaxValue(int value)
     {
         MaxValue = value;
         Reset();
     }
     /// <summary>
-    /// ¿ÛÑª
+    /// æ‰£è¡€
     /// </summary>
     /// <param name="value"></param>
     public void Minus(int value)
     {
         Value = Mathf.Max(0, Value - value);
+        UpdateHPUI();
     }
     /// <summary>
-    /// ¼ÓÑª
+    /// åŠ è¡€
     /// </summary>
     /// <param name="value"></param>
     public void Add(int value)
     {
         Value = Mathf.Min(MaxValue, Value + value);
+        UpdateHPUI();
     }
     /// <summary>
-    /// ·µ»Øµ±Ç°ÉúÃü°Ù·Ö±È
+    /// è¿”å›å½“å‰ç”Ÿå‘½ç™¾åˆ†æ¯”
     /// </summary>
     /// <returns></returns>
     public float Percent()
     {
         return (float)Value / MaxValue;
+    }
+    private void UpdateHPUI()
+    {
+        stateui.SetHPPercent(Percent());
     }
 }

@@ -11,6 +11,9 @@ public class SkillAbility
         SkillPrefab = p;
         this.data = data;
     }
-    public virtual void CreateExecution() { }
+    public GameObject CreateExecution(Vector3 pos) 
+    {
+       return GameObject.Instantiate(SkillPrefab,pos,Quaternion.identity);
+    }
 
 }

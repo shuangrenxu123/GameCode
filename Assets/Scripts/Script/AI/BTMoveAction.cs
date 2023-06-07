@@ -30,7 +30,7 @@ public class BTMoveAction : BTAction
     {
         Vector3 pos = trans.position;
         Vector3 targetpos = targetTransform.position;
-        if ((pos-targetpos).sqrMagnitude > 100)
+        if ((pos-targetpos).sqrMagnitude > 10000)
         {
             return BTResult.Failed;
         }

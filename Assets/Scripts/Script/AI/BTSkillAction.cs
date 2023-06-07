@@ -7,14 +7,39 @@ public class BTSkillAction : BTAction
 {
     private string skillname;
     private SkillSystem skillSystem;
-    public BTSkillAction(SkillSystem skill,string skillname,string name) : base(name)
+    private SkillTrigger runner;
+    public float SkillCD;
+    public BTSkillAction(SkillSystem skill,string skillname, string name, float skillCD) : base(name)
     {
         this.skillname = skillname;
         this.skillSystem = skill;
+        SkillCD = skillCD;
     }
     protected override BTResult Execute()
     {
-        skillSystem.GenerateSkill(skillname);
-        return BTResult.Success;
+        var time = database.GetData<float>(skillname);
+        if(time < SkillCD)
+        {
+            return BTResult.Failed;
+        }
+        if (runner == null)
+        {
+            runner = skillSystem.GenerateSkill(skillname).GetComponent<SkillTrigger>();
+        }
+        if(runner.isFinish == true)
+        {
+            database.SetData<float>(skillname,0f);
+            GameObject.Destroy(runner.gameObject);
+            return BTResult.Success;
+        }
+        else
+        {
+            return BTResult.Running;
+        }   
+    }
+    public override void Clear()
+    {
+        base.Clear();
+        runner = null;
     }
 }

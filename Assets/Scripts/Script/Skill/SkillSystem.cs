@@ -4,13 +4,21 @@ using UnityEngine;
 
 public class SkillSystem
 {
+    private Enemy enemy;
+    public SkillSystem(Enemy enemy)
+    {
+
+        this.enemy = enemy;
+
+    }
     private Dictionary<string, SkillAbility> skills = new Dictionary<string, SkillAbility>();
     public void AddSkill(SkillData data,GameObject prefab)
     {
-        skills.Add(data.skillName,new FIreSkill(data,prefab));
+        skills.Add(data.skillName,new SkillAbility(data,prefab));
     }
-    public void GenerateSkill(string name)
+    public GameObject GenerateSkill(string name)
     {
-        skills[name].CreateExecution();
+         var go = skills[name].CreateExecution(enemy.transform.position);
+         return go;
     }
 }

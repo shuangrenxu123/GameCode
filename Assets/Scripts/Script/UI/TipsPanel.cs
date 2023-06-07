@@ -14,8 +14,5 @@ public class TipsPanel : WindowRoot
         
     }
 
-    public override void UpdateWindow()
-    {
-        
-    }
+
 }

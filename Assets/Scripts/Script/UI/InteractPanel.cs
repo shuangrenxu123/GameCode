@@ -9,9 +9,5 @@ public class InteractPanel : WindowRoot
 
     }
 
-    public override void UpdateWindow()
-    {
-
-    }
 
 }

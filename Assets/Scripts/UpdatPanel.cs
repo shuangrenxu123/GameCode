@@ -18,11 +18,6 @@ public class UpdatPanel : WindowRoot
             hotUpdater.Update();
     }
 
-    public override void UpdateWindow()
-    {
-
-    }
-
     private void UpdateProgress(float value)
     {
         this.value.fillAmount = value;

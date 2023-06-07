@@ -7,6 +7,7 @@ using UnityEngine.EventSystems;
 public class GameUIMgr : WindowRoot
 {
     private string activePanle = string.Empty;
+    GameObject statePanel;
     public override void Start()
     {
         gameObject.SetActive(false);
@@ -31,7 +32,4 @@ public class GameUIMgr : WindowRoot
     {
     }
 
-    public override void UpdateWindow()
-    {
-    }
 }

@@ -1,7 +1,6 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-
 public class ABEditor : MonoBehaviour
 {
     /// <summary>

@@ -225,6 +225,60 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""useItem"",
+                    ""type"": ""Button"",
+                    ""id"": ""239af6f8-acc2-43c5-9da5-9dad67b7971b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dual Wielding"",
+                    ""type"": ""Button"",
+                    ""id"": ""045b26b7-e48f-4991-905f-0deaa1f27c8d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Bag"",
+                    ""type"": ""Button"",
+                    ""id"": ""fc22bbda-eb02-439d-9958-e3f7726fe2fa"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwichProp"",
+                    ""type"": ""Button"",
+                    ""id"": ""47d362a1-0c6f-41f3-9c55-ed8d69867d4c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwichLeft"",
+                    ""type"": ""Button"",
+                    ""id"": ""2af49a4d-2ee6-40ae-a76c-7613bcae3474"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SwichRight"",
+                    ""type"": ""Button"",
+                    ""id"": ""3445fcc8-6ed1-468f-a50d-e8c074cc7f26"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -308,7 +362,7 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""4fc574c0-164f-4e41-ab0d-7aff67ff3bfb"",
-                    ""path"": ""<iOSGameController>/leftTrigger"",
+                    ""path"": ""<XInputController>/leftTrigger"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -329,12 +383,133 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""896c2769-d8d5-4652-a24d-057f584bff57"",
+                    ""path"": ""<XInputController>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Lock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""3b57e3b1-4e51-462f-9678-94708a2ca49c"",
                     ""path"": ""<Keyboard>/escape"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""ESC"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cc80352e-e8fb-4fd8-af7e-341a03c118f1"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""useItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""83015252-5ea0-4b94-8f1d-54e2a3bd61df"",
+                    ""path"": ""<XInputController>/buttonWest"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""useItem"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7abd846c-34e9-4794-9ca7-5acd91de46cd"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dual Wielding"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc056c15-7db0-492f-9d99-5302d6785fcb"",
+                    ""path"": ""<Keyboard>/b"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Bag"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""75efd9d2-430d-431f-913e-5a22d30af08c"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichProp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9e97e6f1-daa1-46df-88c9-b1c227e72ef9"",
+                    ""path"": ""<XInputController>/dpad/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichProp"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8dd80bd0-b9a3-485a-ad5e-7cacaaf55a3e"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""ed585e58-c1fd-4deb-b8da-816c63377ecf"",
+                    ""path"": ""<XInputController>/dpad/left"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichLeft"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""75d32e30-49f9-457c-ac4e-916634d874cf"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichRight"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""0a4dd022-4b38-4869-affd-8fd94d205c94"",
+                    ""path"": ""<XInputController>/dpad/right"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SwichRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -384,6 +559,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         m_PlayerAction_defense = m_PlayerAction.FindAction("defense", throwIfNotFound: true);
         m_PlayerAction_Lock = m_PlayerAction.FindAction("Lock", throwIfNotFound: true);
         m_PlayerAction_ESC = m_PlayerAction.FindAction("ESC", throwIfNotFound: true);
+        m_PlayerAction_useItem = m_PlayerAction.FindAction("useItem", throwIfNotFound: true);
+        m_PlayerAction_DualWielding = m_PlayerAction.FindAction("Dual Wielding", throwIfNotFound: true);
+        m_PlayerAction_Bag = m_PlayerAction.FindAction("Bag", throwIfNotFound: true);
+        m_PlayerAction_SwichProp = m_PlayerAction.FindAction("SwichProp", throwIfNotFound: true);
+        m_PlayerAction_SwichLeft = m_PlayerAction.FindAction("SwichLeft", throwIfNotFound: true);
+        m_PlayerAction_SwichRight = m_PlayerAction.FindAction("SwichRight", throwIfNotFound: true);
         // Player UI
         m_PlayerUI = asset.FindActionMap("Player UI", throwIfNotFound: true);
         m_PlayerUI_ESC = m_PlayerUI.FindAction("ESC", throwIfNotFound: true);
@@ -501,6 +682,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
     private readonly InputAction m_PlayerAction_defense;
     private readonly InputAction m_PlayerAction_Lock;
     private readonly InputAction m_PlayerAction_ESC;
+    private readonly InputAction m_PlayerAction_useItem;
+    private readonly InputAction m_PlayerAction_DualWielding;
+    private readonly InputAction m_PlayerAction_Bag;
+    private readonly InputAction m_PlayerAction_SwichProp;
+    private readonly InputAction m_PlayerAction_SwichLeft;
+    private readonly InputAction m_PlayerAction_SwichRight;
     public struct PlayerActionActions
     {
         private @PlayerControls m_Wrapper;
@@ -511,6 +698,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         public InputAction @defense => m_Wrapper.m_PlayerAction_defense;
         public InputAction @Lock => m_Wrapper.m_PlayerAction_Lock;
         public InputAction @ESC => m_Wrapper.m_PlayerAction_ESC;
+        public InputAction @useItem => m_Wrapper.m_PlayerAction_useItem;
+        public InputAction @DualWielding => m_Wrapper.m_PlayerAction_DualWielding;
+        public InputAction @Bag => m_Wrapper.m_PlayerAction_Bag;
+        public InputAction @SwichProp => m_Wrapper.m_PlayerAction_SwichProp;
+        public InputAction @SwichLeft => m_Wrapper.m_PlayerAction_SwichLeft;
+        public InputAction @SwichRight => m_Wrapper.m_PlayerAction_SwichRight;
         public InputActionMap Get() { return m_Wrapper.m_PlayerAction; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -538,6 +731,24 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @ESC.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
                 @ESC.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
                 @ESC.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnESC;
+                @useItem.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnUseItem;
+                @useItem.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnUseItem;
+                @useItem.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnUseItem;
+                @DualWielding.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDualWielding;
+                @DualWielding.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDualWielding;
+                @DualWielding.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnDualWielding;
+                @Bag.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnBag;
+                @Bag.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnBag;
+                @Bag.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnBag;
+                @SwichProp.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichProp;
+                @SwichProp.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichProp;
+                @SwichProp.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichProp;
+                @SwichLeft.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichLeft;
+                @SwichLeft.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichLeft;
+                @SwichLeft.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichLeft;
+                @SwichRight.started -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichRight;
+                @SwichRight.performed -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichRight;
+                @SwichRight.canceled -= m_Wrapper.m_PlayerActionActionsCallbackInterface.OnSwichRight;
             }
             m_Wrapper.m_PlayerActionActionsCallbackInterface = instance;
             if (instance != null)
@@ -560,6 +771,24 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
                 @ESC.started += instance.OnESC;
                 @ESC.performed += instance.OnESC;
                 @ESC.canceled += instance.OnESC;
+                @useItem.started += instance.OnUseItem;
+                @useItem.performed += instance.OnUseItem;
+                @useItem.canceled += instance.OnUseItem;
+                @DualWielding.started += instance.OnDualWielding;
+                @DualWielding.performed += instance.OnDualWielding;
+                @DualWielding.canceled += instance.OnDualWielding;
+                @Bag.started += instance.OnBag;
+                @Bag.performed += instance.OnBag;
+                @Bag.canceled += instance.OnBag;
+                @SwichProp.started += instance.OnSwichProp;
+                @SwichProp.performed += instance.OnSwichProp;
+                @SwichProp.canceled += instance.OnSwichProp;
+                @SwichLeft.started += instance.OnSwichLeft;
+                @SwichLeft.performed += instance.OnSwichLeft;
+                @SwichLeft.canceled += instance.OnSwichLeft;
+                @SwichRight.started += instance.OnSwichRight;
+                @SwichRight.performed += instance.OnSwichRight;
+                @SwichRight.canceled += instance.OnSwichRight;
             }
         }
     }
@@ -611,6 +840,12 @@ public partial class @PlayerControls : IInputActionCollection2, IDisposable
         void OnDefense(InputAction.CallbackContext context);
         void OnLock(InputAction.CallbackContext context);
         void OnESC(InputAction.CallbackContext context);
+        void OnUseItem(InputAction.CallbackContext context);
+        void OnDualWielding(InputAction.CallbackContext context);
+        void OnBag(InputAction.CallbackContext context);
+        void OnSwichProp(InputAction.CallbackContext context);
+        void OnSwichLeft(InputAction.CallbackContext context);
+        void OnSwichRight(InputAction.CallbackContext context);
     }
     public interface IPlayerUIActions
     {

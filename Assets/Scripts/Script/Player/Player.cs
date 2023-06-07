@@ -2,83 +2,69 @@ using Fight;
 using NetWork;
 using PlayerInfo;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 
 public class Player : CharacterManager
 {
-    CombatEntity entity;
-    PlayerInputHandle inputHandle;
-    CameraHandler cameraHandler;
-    PlayerController controller;
-    Animator animator;
-    [Header("Player Flag")]
+    [Header("InputHandle")]
+    public PlayerInputHandle inputHandle;
+    public CameraHandler cameraHandler;
+    public PlayerController controller;
+    public PlayerCombatInputHandle combatInputHandle;
+    public CombatEntity combatEntity;
+    public NetTranform net;
+    public PlayerInventory inventory;
+    [Header("Player Status")]
     public bool isInteracting;
-    public bool isSprinting;
     public bool isDefense;
     public bool isInAir = false;
-    public bool isGrounded;
     public bool canDoCombo;
-    #region 网络同步部分
-    MotionState lastMotionState;
+    public bool isStep;
+    [Header("Net")]
     public string id;
-    /// <summary>
-    /// 位置差。当大于该值时才会发送坐标
-    /// </summary>
-    public float deadReckoningThreshold = 1f;
-    /// <summary>
-    /// 预测位置，即在其他客户端中的位置
-    /// </summary>
-    private Vector3 drPosition = Vector3.zero;
-#endregion
+    private void Awake()
+    {
+        inputHandle =       GetComponent<PlayerInputHandle>();
+        combatInputHandle = new PlayerCombatInputHandle(this);
+        combatEntity =            GetComponent<CombatEntity>();
+        animatorHandle =    GetComponent<AnimatorHandle>();
+        net =               GetComponent<NetTranform>();
+        characterController = GetComponent<CharacterController>();
+        controller          = GetComponent<PlayerController>();   
+        inventory           = GetComponent<PlayerInventory>();
+    }
     void Start()
     {
-        inputHandle = GetComponent<PlayerInputHandle>();
         cameraHandler = CameraHandler.singleton;
-        animator = GetComponentInChildren<Animator>();
-        controller= GetComponent<PlayerController>();   
-    }
-    public void SyncPlayerLastMotionState(DefaultNetWorkPackage package)
-    {
-        var state = (move)package.Msgobj;
-        if (state != null)
-        {
-            lastMotionState.lastMotionTime = Time.time;
-            lastMotionState.Position = NetWorkUtility.ToUnityV3(state.Position);
-            lastMotionState.velocity = NetWorkUtility.ToUnityV3(state.Velocity);
-        }
+        combatEntity.Init(1000);
+
+        combatInputHandle.Init();
+        inputHandle.PlayerAttacker = combatInputHandle;
     }
     void Update()
     {
         float delta = Time.deltaTime;
-        canDoCombo = animator.GetBool("canDoCombo");
-        isInteracting = animator.GetBool("isInteracting");
-        isDefense = animator.GetBool("isDefense");
-
+        isInteracting = animatorHandle.GetBool("isInteracting");
+        canDoCombo = animatorHandle.GetBool("canDoCombo");
+        isDefense = animatorHandle.GetBool("isDefense");
+        animatorHandle.canRotate = animatorHandle.GetBool("canRotate");
+        isStep = animatorHandle.GetBool("isStep");
         inputHandle.TickInput(delta);
-        controller.HandleMovement(delta);
+        controller.HandleGroundMovement(delta);
         controller.HandleRollingAndSprinting(delta);
         CheckForInteractableObject();
-    }
-    private void FixedUpdate()
-    {
-        float delta = Time.fixedDeltaTime;
+        controller.HandleRotation(delta);
         if (cameraHandler != null)
         {
             cameraHandler.FollowTarget(delta);
             cameraHandler.HandleCamerRotation(delta, inputHandle.mousex, inputHandle.mousey);
         }
-        controller.HandleFalling(delta);
     }
     private void LateUpdate()
     {
         inputHandle.rollFlag = false;
-        inputHandle.LightAttackFlag = false;
-        if(isInAir)
-        {
-            controller.inAirTimer = controller.inAirTimer + Time.deltaTime;
-        }
     } 
-
     private void CheckForInteractableObject()
     {
         RaycastHit hit;

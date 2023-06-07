@@ -29,7 +29,8 @@ public class CameraHandler : MonoBehaviour
     public Transform leftLockTarget;
     public Transform rightLockTarget;
     public float lookSpeed = 0.1f;
-    public float followSpeed = 0.1f;
+    public float groundFollowSpeed = 10f;//该值越小，相机跟随越快
+    public float aerialFollowSpeed = 1f;
     public float pivotSpeed = 0.03f;
     public Vector3 cameraFollowSpeed = Vector3.zero;
     public List<CharacterManager> avilableTargets;
@@ -46,20 +47,31 @@ public class CameraHandler : MonoBehaviour
     public float minimumCollisionOffset = 0.2f;
     private void Awake()
     {
-        
-        singleton= this;
+        singleton = this;
         myTransform = transform;
         defaultPosition = cameraTransform.localPosition.z;
-        ignoreLayers = ~(1 << 8 | 1<<9 | 1<<10);
+        ignoreLayers = ~(1 << 12 | 1<<13 | 1<<10 | 1 << 11);
+
+        targetTransform = GameObject.Find("player").transform;
+        playerManager = targetTransform.GetComponent<Player>();
     }
     private void Start()
     {
         enviromentLayer = LayerMask.NameToLayer("Enviroment");
+        InputHandle = playerManager.inputHandle;
     }
     public void FollowTarget(float delta)
     {
-        Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position,ref cameraFollowSpeed,delta/followSpeed);
-        myTransform.position = targetPosition;
+        if (playerManager.isGrounded)
+        {
+            Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position,ref cameraFollowSpeed,groundFollowSpeed * Time.deltaTime);
+            myTransform.position = targetPosition;
+        }
+        else 
+        {
+            Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position, ref cameraFollowSpeed, aerialFollowSpeed * Time.deltaTime);
+            myTransform.position = targetPosition;
+        }
 
         HandleCameraCollisions(delta);
     }
@@ -128,7 +140,6 @@ public class CameraHandler : MonoBehaviour
 
 
         Collider[] colliders = Physics.OverlapSphere(targetTransform.position,20);
-
         for (int i = 0; i < colliders.Length; i++)
         {
             CharacterManager character = colliders[i].GetComponent<CharacterManager>();
