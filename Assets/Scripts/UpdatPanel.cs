@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class UpdatPanel : WindowRoot
@@ -14,8 +15,7 @@ public class UpdatPanel : WindowRoot
 
     public override void Update()
     {
-        if (hotUpdater != null)
-            hotUpdater.Update();
+        hotUpdater?.Update();
     }
 
     private void UpdateProgress(float value)
@@ -24,21 +24,20 @@ public class UpdatPanel : WindowRoot
     }
     private void UpdateEnd()
     {
-        SceneManager.LoadScene("Fight");
-        //StartCoroutine(ILRuntimeHelp.LoadILRuntime(OnILRuntimeInitialized));
+        UnityEngine.Debug.Log("下载完毕");
     }
     public void download()
     {
         if (isupdate.isOn)
         {
             GetUIGameObject("update").SetActive(true);
-            hotUpdater = new HotUpdater();
-            //hotUpdater.Init();
             value = GetUIGameObject("Image").GetComponent<Image>();
+            hotUpdater = new HotUpdater();
+            hotUpdater.Download();
+
             hotUpdater.actionDownloadValue += UpdateProgress;
             hotUpdater.actionAllDownloadDone += UpdateEnd;
             hotUpdater.actionNothongUpdate += UpdateEnd;
-            //hotUpdater.Start();
         }
     }
 
