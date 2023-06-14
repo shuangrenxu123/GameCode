@@ -5,15 +5,23 @@ using UnityEngine;
 public class VersionManager : ModuleSingleton<VersionManager>, IModule
 {
     public string appVersion;
-    public string cacheResVersionFile { get { return PathUtil.DownloadPath + "version.txt"; } }
+    //public string resVersion;
+    public string cacheResVersionFile { get { return Application.persistentDataPath + "/update/version.txt"; } }
 
     public void OnCreate(object createParam)
     {
         //获得版本号
-        string version = ReadCacheResVersion();
+        string version = Resources.Load<TextAsset>("version").text;
         //json中包含了版本号和资源版本号
         var jsonData = JsonMapper.ToObject(version);
-        appVersion = jsonData["version"].ToString();
+        appVersion = jsonData["app_version"].ToString();
+        //resVersion = jsonData["res_version"].ToString();
+        var cacheVersion = ReadCacheResVersion();
+        //if (CompareVersion(cacheVersion, resVersion) > 0)
+        //{
+        //    resVersion = cacheVersion;
+        //}
+
     }
     ///<summary>
     ///获得缓存版本号
@@ -30,18 +38,7 @@ public class VersionManager : ModuleSingleton<VersionManager>, IModule
                 }
             }
         }
-        else
-        {
-            string json = @"{ ""version"" : ""0.0.0.0"" }"; 
-            using (var f = File.OpenWrite(cacheResVersionFile))
-            {
-                using (var sw = new StreamWriter(f))
-                {
-                    sw.Write(json);
-                }
-            }
-            return json;
-        }
+        return "0.0.0.0";
     }
     /// <summary>
     /// 更新缓存的资源版本号，同时会写入到文件中
@@ -49,16 +46,18 @@ public class VersionManager : ModuleSingleton<VersionManager>, IModule
     /// <param name="newVersion"></param>
     public void UpdateAppVersion(string newVersion)
     {
-        var versionData =  JsonMapper.ToObject(ReadCacheResVersion());
-        versionData["version"] = newVersion;
         appVersion = newVersion;
         //有可能我们没有update文件夹。所以需要创建一个
         var dir = Path.GetDirectoryName(cacheResVersionFile);
-
-        if (!Directory.Exists(dir))
+        if (Directory.Exists(dir))
             Directory.CreateDirectory(dir);
-        using FileStream fs= new FileStream(cacheResVersionFile,FileMode.Create,FileAccess.Write,FileShare.None);
-        fs.Write(System.Text.Encoding.UTF8.GetBytes(JsonMapper.ToJson(versionData)));
+        using (var f = File.OpenWrite(cacheResVersionFile))
+        {
+            using (var sw = new StreamWriter(f))
+            {
+                sw.Write(appVersion);
+            }
+        }
     }
     /// <summary>
     /// 删除缓存版本号文件

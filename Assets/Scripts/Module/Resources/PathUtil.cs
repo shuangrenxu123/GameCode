@@ -8,10 +8,9 @@ using UnityEngine;
 /// </summary>
 public class PathUtil
 {
-    public const string BuildRootPath = "Assets/AssetsBundles/";            //打包的根路径，在打包ab包和使用模式2的时候会用到
+    public const string BuildRootPath = "Assets/AssetsPackage/";            //打包的根路径，在打包ab包和使用模式2的时候会用到
     public const string ABRootPath = "AB/";                                 //AB包打包的根路径
-    public const string UpdateURL = "http://1.14.67.47/";
-    public static string DownloadPath = Application.dataPath + "/StreamingAssets/";
+
     /// <summary>
     /// 数据盘的根目录
     /// </summary>

@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
 {
+    Player player;
     Collider damageCollider;
     CombatEntity entity;
     WeaponItemData weaponItem;
@@ -13,12 +14,17 @@ public class DamageCollider : MonoBehaviour
     LayerMask Enemylayer;
     private void Awake()
     {
+        player = GetComponentInParent<Player>();
         damageCollider = GetComponent<Collider>();
         damageCollider.gameObject.SetActive(true);
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
         characterDamagedDuringThisCalculation = new List<CharacterManager>();
         Enemylayer = LayerMask.NameToLayer("Damageable Character");
+    }
+    private void Start()
+    {
+        player = GetComponentInParent<Player>();
         weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
         entity = GetComponentInParent<CombatEntity>();
     }
@@ -43,7 +49,7 @@ public class DamageCollider : MonoBehaviour
             characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             //Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
+            float directionHitFrom = (Vector3.SignedAngle(player.transform.forward, enemy.transform.forward, Vector3.up));
             ChooseWhichDirectionDamageCameFrom(directionHitFrom);
             new DamageAction(entity, new CombatEntity[] { target }) { animator = currentDamageAnimation }.Apply(10);
             AudioManager.Instance.PlaySound(weaponItem.attackToEnemy_audios[0]);
