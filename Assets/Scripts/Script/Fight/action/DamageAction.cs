@@ -16,7 +16,6 @@ namespace Fight
             foreach (var target in Target)
             {
                 damage = baseValue;
-                damage = Creator.numberBox.Atk.Value;
                 PreProcess(Creator,target);
                 target.TakeDamage(damage,animator);
                 PostProcess(Creator, target);

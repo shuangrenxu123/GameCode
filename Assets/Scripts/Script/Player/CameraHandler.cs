@@ -79,8 +79,8 @@ public class CameraHandler : MonoBehaviour
     {
         if (InputHandle.LockFlag == false && currentLockOnTarget == null)
         {
-            lookAngle += (mouseXInput * lookSpeed) / delta;
-            pivotAngle -= (mouseYInput * pivotSpeed) / delta;
+            lookAngle += (mouseXInput * lookSpeed) * delta;
+            pivotAngle -= (mouseYInput * pivotSpeed) * delta;
             pivotAngle = Mathf.Clamp(pivotAngle, minmumPivotAngle, maxmumPivotAngle);
             Vector3 rotation = Vector3.zero;
             rotation.y = lookAngle;
@@ -168,7 +168,7 @@ public class CameraHandler : MonoBehaviour
             return false; 
         for (int i = 0; i < avilableTargets.Count; i++)
         {
-            if (avilableTargets[i].tag != "Hittable")
+            if (avilableTargets[i].tag != "Enemy")
                 continue;
             float distance = Vector3.Distance(targetTransform.position, avilableTargets[i].transform.position);
             if(distance < shortTargetDistance)

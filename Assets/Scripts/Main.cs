@@ -14,6 +14,7 @@ public class Main : MonoBehaviour
         MotionEngine.CreateModule<AudioManager>();
         MotionEngine.CreateModule<ResourcesManager>();
         MotionEngine.CreateModule<PoolManager>();
+        MotionEngine.CreateModule<VersionManager>();
     }
     private void Start()
     {

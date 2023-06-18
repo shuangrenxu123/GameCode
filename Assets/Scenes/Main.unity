@@ -428,7 +428,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 2
+  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
@@ -438,7 +438,7 @@ MonoBehaviour:
   m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 1
+  m_SoftShadowQuality: 2
 --- !u!850595691 &747278804
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -635,7 +635,6 @@ GameObject:
   m_Component:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
-  - component: {fileID: 963194226}
   - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
@@ -644,14 +643,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &963194226
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -748,6 +739,7 @@ MonoBehaviour:
   m_Dithering: 0
   m_ClearDepth: 1
   m_AllowXRRendering: 1
+  m_AllowHDROutput: 1
   m_UseScreenCoordOverride: 0
   m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
@@ -1149,7 +1141,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_IsOn: 0
+  m_IsOn: 1
 --- !u!1 &1819128894
 GameObject:
   m_ObjectHideFlags: 0
@@ -1672,6 +1664,7 @@ Canvas:
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
+  m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0

@@ -166,14 +166,14 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void EnableGameTable()
     {
-        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         inputAction.PlayerAction.Enable();
         inputAction.PlayerMovement.Enable();
         inputAction.PlayerUI.Disable();
     }
     private void DisableGameTable()
     {
-        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
         inputAction.PlayerAction.Disable();
         inputAction.PlayerMovement.Disable();
         inputAction.PlayerUI.Enable();

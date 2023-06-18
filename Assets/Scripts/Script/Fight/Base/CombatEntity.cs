@@ -18,7 +18,7 @@ namespace Fight
             ActionPointManager = new ActionPointManager();
             numberBox = new CombatNumberBox();
             buffManager = new BuffManager(this);
-            animator = transform.GetChild(0).GetComponent<AnimatorManager>();
+            animator = GetComponent<AnimatorManager>();
             ActionPointManager.Init();
 
         }

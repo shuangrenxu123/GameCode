@@ -9,13 +9,12 @@ public class UpdatPanel : WindowRoot
     public override void Start()
     {
         isupdate = GetUIGameObject("Toggle").GetComponent<Toggle>();
-        GetUIGameObject("updatebutton").GetComponent<Button>().onClick.AddListener(download);
+        GetUIGameObject("updatebutton").GetComponent<Button>().onClick.AddListener(Download);
     }
 
     public override void Update()
     {
-        if (hotUpdater != null)
-            hotUpdater.Update();
+        hotUpdater?.Update();
     }
 
     private void UpdateProgress(float value)
@@ -24,21 +23,20 @@ public class UpdatPanel : WindowRoot
     }
     private void UpdateEnd()
     {
-        SceneManager.LoadScene("Fight");
-        //StartCoroutine(ILRuntimeHelp.LoadILRuntime(OnILRuntimeInitialized));
+        UnityEngine.Debug.Log("下载完毕");
     }
-    public void download()
+    public void Download()
     {
         if (isupdate.isOn)
         {
             GetUIGameObject("update").SetActive(true);
-            hotUpdater = new HotUpdater();
-            //hotUpdater.Init();
             value = GetUIGameObject("Image").GetComponent<Image>();
+            hotUpdater = new HotUpdater();
+            hotUpdater.Download();
+
             hotUpdater.actionDownloadValue += UpdateProgress;
             hotUpdater.actionAllDownloadDone += UpdateEnd;
             hotUpdater.actionNothongUpdate += UpdateEnd;
-            //hotUpdater.Start();
         }
     }
 
