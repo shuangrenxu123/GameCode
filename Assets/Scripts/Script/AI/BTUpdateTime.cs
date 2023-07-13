@@ -1,12 +1,11 @@
 using BT;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BTUpdateTime : BTAction
 {
     public List<string> timers;
-    public BTUpdateTime(string name):base(name)
+    public BTUpdateTime(string name) : base(name)
     {
         timers = new List<string>();
     }

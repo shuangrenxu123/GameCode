@@ -1,7 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
 
-[CreateAssetMenu(menuName =("buffData"))]
+[CreateAssetMenu(menuName = ("buffData"))]
 public class BuffDataBase : ScriptableObject
 {
     public int id;

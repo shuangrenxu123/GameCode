@@ -19,7 +19,7 @@ public class AnimatorManager : MonoBehaviour
     {
         return anim.GetBool(name);
     }
-    public float GetFloat(string name) 
+    public float GetFloat(string name)
     {
         return anim.GetFloat(name);
     }

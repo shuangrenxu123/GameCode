@@ -16,34 +16,34 @@ public abstract class BuffBase : IBuff
     /// </summary>
     public CombatEntity Creator;
     public BuffDataBase data;
-    public BuffBase(BuffManager manager,CombatEntity c)
+    public BuffBase(BuffManager manager, CombatEntity c)
     {
         this.BuffManager = manager;
         Creator = c;
     }
     public virtual void OnAdd()
     {
-        
+
     }
 
     public virtual void OnTrigger()
     {
-        
+
     }
 
     public virtual void OnRefresh()
     {
-        
+
     }
 
     public virtual void OnRemove()
     {
-        
+
     }
 
     public virtual void OnDestory()
     {
-        
+
     }
     /// <summary>
     /// 返回当前持续时间百分比
@@ -51,6 +51,6 @@ public abstract class BuffBase : IBuff
     /// <returns></returns>
     public float Percent()
     {
-        return nowtime/maxTime;
+        return nowtime / maxTime;
     }
 }

@@ -1,10 +1,5 @@
 using Fight;
-using NetWork;
-using PlayerInfo;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
-
-
 public class Player : CharacterManager
 {
     [Header("InputHandle")]
@@ -25,20 +20,19 @@ public class Player : CharacterManager
     public string id;
     private void Awake()
     {
-        inputHandle =       GetComponent<PlayerInputHandle>();
+        inputHandle = GetComponent<PlayerInputHandle>();
         combatInputHandle = new PlayerCombatInputHandle(this);
-        combatEntity =            GetComponent<CombatEntity>();
-        animatorHandle =    GetComponent<AnimatorHandle>();
-        net =               GetComponent<NetTranform>();
+        combatEntity = GetComponent<CombatEntity>();
+        animatorHandle = GetComponent<AnimatorHandle>();
+        net = GetComponent<NetTranform>();
         characterController = GetComponent<CharacterController>();
-        controller          = GetComponent<PlayerController>();   
-        inventory           = GetComponent<PlayerInventory>();
+        controller = GetComponent<PlayerController>();
+        inventory = GetComponent<PlayerInventory>();
+        cameraHandler = CameraHandler.singleton;
     }
     void Start()
     {
-        cameraHandler = CameraHandler.singleton;
         combatEntity.Init(1000);
-
         combatInputHandle.Init();
         inputHandle.PlayerAttacker = combatInputHandle;
     }
@@ -64,11 +58,11 @@ public class Player : CharacterManager
     private void LateUpdate()
     {
         inputHandle.rollFlag = false;
-    } 
+    }
     private void CheckForInteractableObject()
     {
         RaycastHit hit;
-        if (Physics.SphereCast(transform.position,0.3f,transform.forward,out hit,1f,cameraHandler.ignoreLayers))
+        if (Physics.SphereCast(transform.position, 0.3f, transform.forward, out hit, 1f, cameraHandler.ignoreLayers))
         {
             if (hit.collider.CompareTag("Interactable"))
             {
@@ -80,7 +74,7 @@ public class Player : CharacterManager
                     {
                         interactable.Interact(this);
                     }
-                    else if(isInteracting == true)
+                    else if (isInteracting == true)
                     {
                         interactable.InteractUpdate(this);
                     }

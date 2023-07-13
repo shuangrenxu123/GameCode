@@ -6,12 +6,12 @@ public class BTRandomTargetPosition : BTAction
     private Transform transform;
     private Transform target;
     private string setDataName;
-    public BTRandomTargetPosition(string name,string dataname,Transform transform):base(name)
+    public BTRandomTargetPosition(string name, string dataname, Transform transform) : base(name)
     {
         target = new GameObject("target").transform;
         this.transform = transform;
         setDataName = dataname;
-        
+
     }
     protected override BTResult Execute()
     {
@@ -25,7 +25,7 @@ public class BTRandomTargetPosition : BTAction
             ray = pos;
         } while (Physics.Raycast(transform.position, ray, 10f));
         target.position = transform.position + pos;
-        database.SetData(setDataName,target);
+        database.SetData(setDataName, target);
         return BTResult.Success;
     }
     public override void Clear()

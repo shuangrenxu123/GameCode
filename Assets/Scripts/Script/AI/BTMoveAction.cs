@@ -1,7 +1,4 @@
 using BT;
-using Google.Protobuf.WellKnownTypes;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BTMoveAction : BTAction
@@ -12,7 +9,7 @@ public class BTMoveAction : BTAction
     private float distanceSqr;
     private Transform trans;
 
-    public BTMoveAction(string name,Transform trans,float speed,string dataname,float distanceSqr):base(name)
+    public BTMoveAction(string name, Transform trans, float speed, string dataname, float distanceSqr) : base(name)
     {
         this.trans = trans;
         this.speed = speed;
@@ -24,13 +21,13 @@ public class BTMoveAction : BTAction
         base.Enter();
         //获得下一个目标点
         targetTransform = database.GetData<Transform>(readDataName);
-        
+
     }
     protected override BTResult Execute()
     {
         Vector3 pos = trans.position;
         Vector3 targetpos = targetTransform.position;
-        if ((pos-targetpos).sqrMagnitude > 10000)
+        if ((pos - targetpos).sqrMagnitude > 10000)
         {
             return BTResult.Failed;
         }

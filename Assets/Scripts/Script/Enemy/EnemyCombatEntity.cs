@@ -1,7 +1,4 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class EnemyCombatEntity : CombatEntity
 {
@@ -37,7 +34,7 @@ public class EnemyCombatEntity : CombatEntity
             enemy.isDead = true;
             return;
         }
-        
+
     }
 }
 

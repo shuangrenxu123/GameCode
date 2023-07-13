@@ -1,6 +1,4 @@
 using BT;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BTFindEnemy : BTAction
@@ -8,7 +6,7 @@ public class BTFindEnemy : BTAction
     private int layer;
     private string setDataName;
     private Transform transform;
-    public BTFindEnemy(string name,string setDataName, string layer, Transform transform):base(name)
+    public BTFindEnemy(string name, string setDataName, string layer, Transform transform) : base(name)
     {
         this.setDataName = setDataName;
         this.layer = LayerMask.NameToLayer(layer);
@@ -17,7 +15,7 @@ public class BTFindEnemy : BTAction
     }
     protected override BTResult Execute()
     {
-        var colliders = Physics.OverlapSphere(transform.position, 10,1 << layer);
+        var colliders = Physics.OverlapSphere(transform.position, 10, 1 << layer);
 
         if (colliders.Length == 0 || colliders == null)
         {

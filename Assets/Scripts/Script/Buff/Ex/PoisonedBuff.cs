@@ -1,11 +1,9 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PoisonedBuff : BuffBase
 {
-    float deltaTime = 0.5f; 
+    float deltaTime = 0.5f;
     int count = 1;
     public PoisonedBuff(BuffManager manager, CombatEntity c) : base(manager, c)
     {
@@ -17,9 +15,9 @@ public class PoisonedBuff : BuffBase
     }
     public override void OnTrigger()
     {
-        if(nowtime >= deltaTime * count)
+        if (nowtime >= deltaTime * count)
         {
-            new DamageAction(BuffManager.entity,new CombatEntity[] {BuffManager.entity}).Apply(10);
+            new DamageAction(BuffManager.entity, new CombatEntity[] { BuffManager.entity }).Apply(10);
             count += 1;
         }
     }

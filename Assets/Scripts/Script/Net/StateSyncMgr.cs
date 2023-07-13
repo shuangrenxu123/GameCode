@@ -1,7 +1,6 @@
 using NetWork;
 using PlayerInfo;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class StateSyncMgr : MonoBehaviour
@@ -27,7 +26,7 @@ public class StateSyncMgr : MonoBehaviour
     {
         if (timer >= time && NetWorkManager.Instance.state == ENetWorkState.Connected)
         {
-            NetWorkManager.Instance.SendMessage(player.id ,0, new ping()
+            NetWorkManager.Instance.SendMessage(player.id, 0, new ping()
             {
                 Timer = Time.time.ToString(),
             });
@@ -40,7 +39,7 @@ public class StateSyncMgr : MonoBehaviour
     }
     void SyncGameObjectState(DefaultNetWorkPackage package)
     {
-        if(package.MsgId == 0 && package.SenderId == player.id)
+        if (package.MsgId == 0 && package.SenderId == player.id)
         {
             SetPingValue(package);
             return;
@@ -54,7 +53,7 @@ public class StateSyncMgr : MonoBehaviour
         else
         {
             var go = InstantiateNetObject(package.SenderId);
-            netObjs.Add(package.SenderId,go);
+            netObjs.Add(package.SenderId, go);
         }
 
     }

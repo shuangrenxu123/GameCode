@@ -1,9 +1,7 @@
-using BT;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace BT {
+namespace BT
+{
     /// <summary>
     /// 延迟修饰器：会在 n 秒后才开始执行子节点，在此之前都会返回Running
     /// </summary>

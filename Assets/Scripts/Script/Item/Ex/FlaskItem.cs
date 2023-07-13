@@ -1,6 +1,4 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 public class FlaskItem : ConsumableItem
 {
@@ -10,7 +8,7 @@ public class FlaskItem : ConsumableItem
 
     public override void Effect(CombatEntity me, Equipmanager equipmanager)
     {
-        new RegenerationAction(me,new CombatEntity[] {me}).Apply(30);
+        new RegenerationAction(me, new CombatEntity[] { me }).Apply(30);
         equipmanager.LoadBothWeaponOnSlots();
         Object.Destroy(go);
     }

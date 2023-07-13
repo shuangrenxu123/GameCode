@@ -1,5 +1,3 @@
-using PlayerInfo;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Timeline;
@@ -13,7 +11,7 @@ public class SkillRunner
     public Animator anim;
     private AudioSource AudioSource;
     private Transform transform;
-    public SkillRunner(Animator anim,AudioSource audioSource,Transform transform)
+    public SkillRunner(Animator anim, AudioSource audioSource, Transform transform)
     {
         trackRunners = new List<TrackRunner>();
         AudioSource = audioSource;
@@ -38,12 +36,12 @@ public class SkillRunner
                 }
             }
         }
-        if(isFinish)
+        if (isFinish)
         {
             OnFinish();
         }
     }
-    public void LoadConfig(string name,SkillTrigger trigger)
+    public void LoadConfig(string name, SkillTrigger trigger)
     {
         TimelineAsset playable = Resources.Load<TimelineAsset>(name);
         var tracks = playable.GetOutputTracks();
@@ -54,21 +52,21 @@ public class SkillRunner
             foreach (var e in events)
             {
                 EventClip clip;
-                if(track is AnimationTrack)
+                if (track is AnimationTrack)
                 {
-                    clip = new AnimEventClip(e.displayName,transform,anim);
+                    clip = new AnimEventClip(e.displayName, transform, anim);
                 }
-                else if(track is AudioTrack)
+                else if (track is AudioTrack)
                 {
-                    clip = new AudioEventClip(transform,AudioSource,e.displayName);
+                    clip = new AudioEventClip(transform, AudioSource, e.displayName);
                 }
-                else if(track is ControlTrack)
+                else if (track is ControlTrack)
                 {
-                    clip = new FxEventClip(transform,e.displayName);
+                    clip = new FxEventClip(transform, e.displayName);
                 }
-                else if(track is TriggerTrack)
+                else if (track is TriggerTrack)
                 {
-                    clip = new TriggerEventClip(transform,trigger);
+                    clip = new TriggerEventClip(transform, trigger);
                 }
                 else
                 {
@@ -84,7 +82,7 @@ public class SkillRunner
     }
     private void OnFinish()
     {
-        if(isSubSkill)
+        if (isSubSkill)
         {
             //删除自己
         }

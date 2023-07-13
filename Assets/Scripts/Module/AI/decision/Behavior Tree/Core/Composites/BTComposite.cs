@@ -1,11 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace BT
 {
     /// <summary>
-    /// 
+    /// 组合节点，用于控制叶子节点怎么执行
     /// </summary>
     public class BTComposite : BTNode
     {
@@ -21,7 +19,7 @@ namespace BT
                 return _children;
             }
         }
-        public override void Activate(BTDataBase database,Enemy e)
+        public override void Activate(DataBase database, Enemy e)
         {
             base.Activate(database, e);
 

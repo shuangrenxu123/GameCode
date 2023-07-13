@@ -1,6 +1,4 @@
 using BT;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BTSkillAction : BTAction
@@ -9,7 +7,7 @@ public class BTSkillAction : BTAction
     private SkillSystem skillSystem;
     private SkillTrigger runner;
     public float SkillCD;
-    public BTSkillAction(SkillSystem skill,string skillname, string name, float skillCD) : base(name)
+    public BTSkillAction(SkillSystem skill, string skillname, string name, float skillCD) : base(name)
     {
         this.skillname = skillname;
         this.skillSystem = skill;
@@ -18,7 +16,7 @@ public class BTSkillAction : BTAction
     protected override BTResult Execute()
     {
         var time = database.GetData<float>(skillname);
-        if(time < SkillCD)
+        if (time < SkillCD)
         {
             return BTResult.Failed;
         }
@@ -26,16 +24,16 @@ public class BTSkillAction : BTAction
         {
             runner = skillSystem.GenerateSkill(skillname).GetComponent<SkillTrigger>();
         }
-        if(runner.isFinish == true)
+        if (runner.isFinish == true)
         {
-            database.SetData<float>(skillname,0f);
+            database.SetData<float>(skillname, 0f);
             GameObject.Destroy(runner.gameObject);
             return BTResult.Success;
         }
         else
         {
             return BTResult.Running;
-        }   
+        }
     }
     public override void Clear()
     {

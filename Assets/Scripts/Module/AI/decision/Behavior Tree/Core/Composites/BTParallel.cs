@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace BT
 {
@@ -19,11 +17,11 @@ namespace BT
         private int endingResultCount;
         public BTParallel(ParallelType type)
         {
-            ParallelType= type;
+            ParallelType = type;
             _results = new List<BTResult>();
         }
         public override BTResult Tick()
-        { 
+        {
             switch (ParallelType)
             {
                 case ParallelType.And:
@@ -33,7 +31,7 @@ namespace BT
                     {
                         foreach (var result in _results)
                         {
-                            if(result==BTResult.Failed)
+                            if (result == BTResult.Failed)
                                 return BTResult.Failed;
                         }
                         return BTResult.Success;
@@ -43,7 +41,7 @@ namespace BT
                     TickAllChildren();
                     foreach (BTResult result in _results)
                     {
-                        if(result != BTResult.Running)
+                        if (result != BTResult.Running)
                         {
                             var t = result;
                             ResetResults();
@@ -55,7 +53,7 @@ namespace BT
                     endingResultCount = 0;
                     ResetResults();
                     TickAllChildren();
-                    if(endingResultCount == children.Count)
+                    if (endingResultCount == children.Count)
                     {
                         foreach (var result in _results)
                         {

@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -10,13 +7,13 @@ public class GameUIMgr : WindowRoot
     GameObject statePanel;
     public override void Start()
     {
-        gameObject.SetActive(false);
+        WindowsManager.Instance.DisableWindow<GameUIMgr>();
         GetUIEvnetListener("Network").PointerClick += OpenNetworkPanel;
     }
 
     private void OpenNetworkPanel(PointerEventData eventData)
     {
-        if(activePanle == "Network")
+        if (activePanle == "Network")
         {
             activePanle = string.Empty;
             WindowsManager.Instance.DisableWindow<NetPanel>();

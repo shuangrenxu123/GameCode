@@ -1,8 +1,4 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
 /// 恢复
@@ -10,7 +6,7 @@ using static UnityEngine.GraphicsBuffer;
 public class RegenerationAction : CombatAction
 {
     int result;
-    public RegenerationAction(CombatEntity creater,CombatEntity[] targets)
+    public RegenerationAction(CombatEntity creater, CombatEntity[] targets)
     {
         Creator = creater;
         Target = targets;
@@ -28,11 +24,11 @@ public class RegenerationAction : CombatAction
 
     protected override void PostProcess(CombatEntity c, CombatEntity t)
     {
-        
+
     }
 
     protected override void PreProcess(CombatEntity c, CombatEntity t)
     {
-        
+
     }
 }

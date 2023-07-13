@@ -1,9 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class AudioManager :ModuleSingleton<AudioManager>,IModule
+public class AudioManager : ModuleSingleton<AudioManager>, IModule
 {
     /// <summary>
     /// 音频源封装类
@@ -26,7 +24,7 @@ public class AudioManager :ModuleSingleton<AudioManager>,IModule
         }
     }
 
-    private Dictionary<string,AudioClip> audios = new Dictionary<string,AudioClip>();
+    private Dictionary<string, AudioClip> audios = new Dictionary<string, AudioClip>();
     private Dictionary<AudioLayer, AudioSourceWrapper> audioWrappers = new Dictionary<AudioLayer, AudioSourceWrapper>();
     public void OnCreate(object createParam)
     {
@@ -42,7 +40,7 @@ public class AudioManager :ModuleSingleton<AudioManager>,IModule
 
     public void OnUpdate()
     {
-        
+
     }
     public void Stop(AudioLayer layer)
     {
@@ -69,21 +67,21 @@ public class AudioManager :ModuleSingleton<AudioManager>,IModule
     /// <summary>
     /// 播放环境音效
     /// </summary>
-    public void PlayAmbient(string name,bool isLoop)
+    public void PlayAmbient(string name, bool isLoop)
     {
         PlayAudioClip(AudioLayer.Ambient, name, isLoop);
     }
     /// <summary>
     /// 播放背景音乐
     /// </summary>
-    public void PlayMusic(string name,bool isLoop)
+    public void PlayMusic(string name, bool isLoop)
     {
-        PlayAudioClip(AudioLayer.Music,name,isLoop);
+        PlayAudioClip(AudioLayer.Music, name, isLoop);
     }
     /// <summary>
     /// 设置某个频道静音
     /// </summary>
-    public void Mute(AudioLayer layer,bool isMute)
+    public void Mute(AudioLayer layer, bool isMute)
     {
         audioWrappers[layer].Source.mute = isMute;
     }
@@ -110,14 +108,14 @@ public class AudioManager :ModuleSingleton<AudioManager>,IModule
     {
         return audioWrappers[layer].Source.mute;
     }
-    private void PlayAudioClip(AudioLayer layer,string name,bool isLoop)
+    private void PlayAudioClip(AudioLayer layer, string name, bool isLoop)
     {
         if (string.IsNullOrEmpty(name))
             return;
-        if(!audios.ContainsKey(name))
+        if (!audios.ContainsKey(name))
         {
             var audio = Resources.Load<AudioClip>(name);
-            if(audio == null)
+            if (audio == null)
             {
                 Debug.LogError("没有找到对应的音频文件");
                 return;

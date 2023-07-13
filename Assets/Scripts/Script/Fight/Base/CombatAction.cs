@@ -1,5 +1,6 @@
 
-namespace Fight {
+namespace Fight
+{
     /// <summary>
     /// 一次行为
     /// </summary>
@@ -16,7 +17,7 @@ namespace Fight {
         /// <summary>
         /// 前置
         /// </summary>
-        protected abstract void PreProcess(CombatEntity c,CombatEntity t);
+        protected abstract void PreProcess(CombatEntity c, CombatEntity t);
         /// <summary>
         /// 应用
         /// </summary>
@@ -24,6 +25,6 @@ namespace Fight {
         /// <summary>
         /// 后续
         /// </summary>
-        protected abstract void PostProcess(CombatEntity c,CombatEntity t);
+        protected abstract void PostProcess(CombatEntity c, CombatEntity t);
     }
 }

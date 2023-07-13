@@ -1,7 +1,4 @@
-using PlayerInfo;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 
 public class PlayerController : CharacterLocomotionManager
 {
@@ -32,7 +29,7 @@ public class PlayerController : CharacterLocomotionManager
         cameraObject = Camera.main.transform;
         myTransform = player.transform;
         player.isGrounded = true;
-        groundLayer = ~(1 << 13 | 1 << 11 | 1 << 10 | 1<<12);
+        groundLayer = ~(1 << 13 | 1 << 11 | 1 << 10 | 1 << 12);
         animatorHandle = player.animatorHandle as AnimatorHandle;
         cameraHandler = CameraHandler.singleton;
 
@@ -110,9 +107,9 @@ public class PlayerController : CharacterLocomotionManager
         moveDirection = player.cameraHandler.transform.forward * inputHandle.vertical;
         moveDirection = moveDirection + player.cameraHandler.transform.right * player.inputHandle.horizontal;
         moveDirection.Normalize();
-        moveDirection.y= 0;
+        moveDirection.y = 0;
 
-        if(inputHandle.sprintFlag)
+        if (inputHandle.sprintFlag)
         {
             player.characterController.Move(moveDirection * sprintSpeed * Time.deltaTime);
         }
@@ -121,13 +118,13 @@ public class PlayerController : CharacterLocomotionManager
             player.characterController.Move(moveDirection * movementSpeed * Time.deltaTime);
         }
 
-        if (inputHandle.LockFlag  && inputHandle.sprintFlag == false)
+        if (inputHandle.LockFlag && inputHandle.sprintFlag == false)
         {
             animatorHandle.UpdateAnimatorValues(inputHandle.vertical, inputHandle.horizontal, inputHandle.sprintFlag);
         }
         else
         {
-            if(inputHandle.sprintFlag && moveDirection.sqrMagnitude >= 0.01)
+            if (inputHandle.sprintFlag && moveDirection.sqrMagnitude >= 0.01)
             {
                 animatorHandle.UpdateAnimatorValues(inputHandle.moveAmount, 0, true);
             }
@@ -143,7 +140,7 @@ public class PlayerController : CharacterLocomotionManager
     /// <param name="delta"></param>
     public void HandleRollingAndSprinting(float delta)
     {
-        if(animatorHandle.anim.GetBool("isInteracting")) 
+        if (animatorHandle.anim.GetBool("isInteracting"))
         {
             return;
         }
@@ -152,7 +149,7 @@ public class PlayerController : CharacterLocomotionManager
             moveDirection = cameraObject.forward * inputHandle.vertical;
             moveDirection += cameraObject.right * inputHandle.horizontal;
 
-            if(inputHandle.moveAmount> 0)
+            if (inputHandle.moveAmount > 0)
             {
                 moveDirection.y = 0;
                 animatorHandle.PlayTargetAnimation("Rolling", true);
@@ -163,7 +160,7 @@ public class PlayerController : CharacterLocomotionManager
             else
             {
                 animatorHandle.PlayTargetAnimation("Backstep", true);
-                animatorHandle.anim.SetBool("isStep",true);
+                animatorHandle.anim.SetBool("isStep", true);
                 netController.SendAction("Backstep");
                 return;
             }

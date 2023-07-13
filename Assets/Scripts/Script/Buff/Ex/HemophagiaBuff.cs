@@ -1,7 +1,4 @@
 using Fight;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HemophagiaBuff : BuffBase
@@ -12,7 +9,7 @@ public class HemophagiaBuff : BuffBase
     }
     public override void OnAdd()
     {
-        BuffManager.entity.ActionPointManager.AddListener(ActionPointType.PostCauseDamage,blood);
+        BuffManager.entity.ActionPointManager.AddListener(ActionPointType.PostCauseDamage, blood);
         Debug.Log("获得了吸血buff");
     }
 
@@ -21,11 +18,11 @@ public class HemophagiaBuff : BuffBase
         var o = obj as DamageAction;
         if (o != null)
         {
-            new RegenerationAction(o.Creator,new CombatEntity[] {o.Creator}).Apply((int)(o.damage*0.5));
+            new RegenerationAction(o.Creator, new CombatEntity[] { o.Creator }).Apply((int)(o.damage * 0.5));
         }
     }
     public override void OnDestory()
     {
-        BuffManager.entity.ActionPointManager.RemoveListener(ActionPointType.PostCauseDamage,blood);
+        BuffManager.entity.ActionPointManager.RemoveListener(ActionPointType.PostCauseDamage, blood);
     }
 }

@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerInventoryPanel : WindowRoot
@@ -23,7 +20,7 @@ public class PlayerInventoryPanel : WindowRoot
 
     public override void Update()
     {
-        
+
     }
     void Init()
     {
@@ -33,7 +30,7 @@ public class PlayerInventoryPanel : WindowRoot
     }
     public void UpdateRightWeapon(ItemData data)
     {
-        if(data == null)
+        if (data == null)
         {
             right.gameObject.SetActive(false);
         }
@@ -43,7 +40,7 @@ public class PlayerInventoryPanel : WindowRoot
             right.sprite = data.Icon;
         }
     }
-    public void UpdateLeftWeapon(ItemData data) 
+    public void UpdateLeftWeapon(ItemData data)
     {
         if (data == null)
         {

@@ -1,4 +1,3 @@
-using TMPro;
 using UnityEngine;
 namespace Fight
 {
@@ -16,8 +15,8 @@ namespace Fight
             foreach (var target in Target)
             {
                 damage = baseValue;
-                PreProcess(Creator,target);
-                target.TakeDamage(damage,animator);
+                PreProcess(Creator, target);
+                target.TakeDamage(damage, animator);
                 PostProcess(Creator, target);
             }
         }
@@ -39,7 +38,7 @@ namespace Fight
         protected override void PreProcess(CombatEntity c, CombatEntity t)
         {
             Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
-            foreach(var target in Target)
+            foreach (var target in Target)
             {
                 target.ActionPointManager.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
             }

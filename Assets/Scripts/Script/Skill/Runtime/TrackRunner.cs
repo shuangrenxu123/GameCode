@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TrackRunner 
+public class TrackRunner
 {
     public bool hasFinished = false;
     private float currentTime = 0;
@@ -16,14 +15,14 @@ public class TrackRunner
     public void UpdateEvent()
     {
         int count = events.Count;
-        if(count == 0)
+        if (count == 0)
         {
             hasFinished = true;
             return;
         }
         currentTime += Time.deltaTime;
         int i = currentClip;
-        if(currentTime < events[i].StartTime)
+        if (currentTime < events[i].StartTime)
         {
             return;
         }

@@ -1,5 +1,4 @@
 using NetWork;
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +11,7 @@ public class NetPanel : WindowRoot
     private Player player;
     public override void Start()
     {
-        gameObject.SetActive(false);
+        WindowsManager.Instance.DisableWindow<NetPanel>();
         ip = GetUIGameObject("ip").GetComponent<TMP_InputField>();
         port = GetUIGameObject("port").GetComponent<TMP_InputField>();
 
@@ -32,7 +31,7 @@ public class NetPanel : WindowRoot
 
     private void ConnSer()
     {
-        NetWorkManager.Instance.ConnectServer(ip.text,int.Parse(port.text));
+        NetWorkManager.Instance.ConnectServer(ip.text, int.Parse(port.text));
     }
 
     private void SetIDValue(string arg0)

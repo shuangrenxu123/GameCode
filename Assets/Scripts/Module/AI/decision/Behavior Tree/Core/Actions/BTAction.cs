@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace BT
 {
+    /// <summary>
+    /// 最终的执行的节点，只能为叶子节点
+    /// </summary>
     public class BTAction : BTNode
     {
         public Transform transform;
@@ -50,7 +53,7 @@ namespace BT
                 {
                     Exit();
                     status = BTActionStatus.Ready;
-                    isRunning =false;
+                    isRunning = false;
                 }
             }
             return result;

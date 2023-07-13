@@ -1,9 +1,7 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-namespace BT {
+namespace BT
+{
     /// <summary>
     /// 该修饰节点用于判断前置条件，我们可以通过该节点，并添加一系列的前置条件来控制返回Susseecs或者Faild
     /// </summary>
@@ -19,7 +17,7 @@ namespace BT {
 
         private BTResult _previousResult = BTResult.Failed;
 
-        public BTConditionEvaluator(List<BTConditional> conditionals,BTLogic logicOpt, bool reevaludateEveryTick, ClearChildOpt clearopt,BTNode child) :base(child)
+        public BTConditionEvaluator(List<BTConditional> conditionals, BTLogic logicOpt, bool reevaludateEveryTick, ClearChildOpt clearopt, BTNode child) : base(child)
         {
             this.conditionals = conditionals;
             this.logicOpt = logicOpt;
@@ -27,7 +25,7 @@ namespace BT {
             this.clearopt = clearopt;
         }
 
-        public BTConditionEvaluator(BTLogic logicOpt, bool reevaludateEveryTick, ClearChildOpt clearopt,BTNode child) :base(child)
+        public BTConditionEvaluator(BTLogic logicOpt, bool reevaludateEveryTick, ClearChildOpt clearopt, BTNode child) : base(child)
         {
             conditionals = new List<BTConditional>();
             this.logicOpt = logicOpt;
@@ -35,7 +33,7 @@ namespace BT {
             this.clearopt = clearopt;
         }
 
-        public override void Activate(BTDataBase database, Enemy e)
+        public override void Activate(DataBase database, Enemy e)
         {
             base.Activate(database, e);
             foreach (var cond in conditionals)
@@ -43,19 +41,18 @@ namespace BT {
                 cond.Activate(database, e);
             }
         }
-
         public override BTResult Tick()
         {
             //先判断是否满足前置条件
-            if(_previousResult != BTResult.Running || reevaludateEveryTick)
+            if (_previousResult != BTResult.Running || reevaludateEveryTick)
             {
-                if(logicOpt == BTLogic.And)
+                if (logicOpt == BTLogic.And)
                 {
                     int i = 0;
                     foreach (var cond in conditionals)
                     {
                         i++;
-                        if(!cond.Check())
+                        if (!cond.Check())
                         {
                             return BTResult.Failed;
                         }
@@ -68,21 +65,21 @@ namespace BT {
                     foreach (var cond in conditionals)
                     {
                         i++;
-                        if(cond.Check())
+                        if (cond.Check())
                         {
                             anySuccess = true;
                             break;
                         }
                     }
 
-                    if(!anySuccess)
+                    if (!anySuccess)
                     {
                         return BTResult.Failed;
                     }
                 }
             }
             _previousResult = child.Tick();
-            if(_previousResult == BTResult.Running)
+            if (_previousResult == BTResult.Running)
             {
                 isRunning = true;
             }
@@ -90,22 +87,25 @@ namespace BT {
         }
         public override void Clear()
         {
-            if((isRunning && clearopt == ClearChildOpt.OnAbortRunning) ||
-                (_previousResult == BTResult.Success && clearopt == ClearChildOpt.OnStopRunning)||
+            if ((isRunning && clearopt == ClearChildOpt.OnAbortRunning) ||
+                (_previousResult == BTResult.Success && clearopt == ClearChildOpt.OnStopRunning) ||
                 clearopt == ClearChildOpt.OnNotRunning
                 )
             {
-                isRunning= false;
+                isRunning = false;
                 child.Clear();
             }
-            if(clearTick != null)
+            if (clearTick != null)
             {
                 clearTick.Clear();
             }
-            _previousResult= BTResult.Failed;
+            _previousResult = BTResult.Failed;
 
         }
-
+        /// <summary>
+        /// 添加一个判断
+        /// </summary>
+        /// <param name="conditional"></param>
         public void AddConditional(BTConditional conditional)
         {
             if (!conditionals.Contains(conditional))
@@ -113,10 +113,12 @@ namespace BT {
                 conditionals.Add(conditional);
             }
         }
-
+        /// <summary>
+        /// 移除一个判断
+        /// </summary>
+        /// <param name="conditional"></param>
         public void RemoveConditional(BTConditional conditional)
         {
-            int index = conditionals.IndexOf(conditional);
             conditionals.Remove(conditional);
         }
     }

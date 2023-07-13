@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterLocomotionManager : MonoBehaviour
@@ -22,15 +20,15 @@ public class CharacterLocomotionManager : MonoBehaviour
     protected bool fallingVelocitySet = false;
     private void Update()
     {
-        entity.isGrounded = Physics.CheckSphere(entity.transform.position, groundCheckSphereRadius,groundLayer);
+        entity.isGrounded = Physics.CheckSphere(entity.transform.position, groundCheckSphereRadius, groundLayer);
         entity.animatorHandle.anim.SetBool("isGround", entity.isGrounded);
         HandleGroundCheck();
     }
     public virtual void HandleGroundCheck()
     {
-        if(entity.isGrounded)
+        if (entity.isGrounded)
         {
-            if(Yvelcoity.y < 0)
+            if (Yvelcoity.y < 0)
             {
                 inAirTimer = 0;
                 fallingVelocitySet = false;
@@ -39,7 +37,7 @@ public class CharacterLocomotionManager : MonoBehaviour
         }
         else
         {
-            if(!fallingVelocitySet)
+            if (!fallingVelocitySet)
             {
                 fallingVelocitySet = true;
                 Yvelcoity.y = fallStartYVelcoity;
@@ -47,7 +45,7 @@ public class CharacterLocomotionManager : MonoBehaviour
             inAirTimer += Time.deltaTime;
             Yvelcoity.y += gravityForce * Time.deltaTime;
         }
-        entity.animatorHandle.anim.SetFloat("inAirTime",inAirTimer);
+        entity.animatorHandle.anim.SetFloat("inAirTime", inAirTimer);
         entity.characterController.Move(Yvelcoity * Time.deltaTime);
     }
 }

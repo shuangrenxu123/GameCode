@@ -1,7 +1,4 @@
 using BT;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 using Utility;
 
@@ -14,7 +11,7 @@ public class BTStrafing : BTAction
     private float insideDistanceSql = 100;
     private float timer;
     private float time = 2f;
-    public BTStrafing(string name,EnemyAnimatorHandle anim) : base(name)
+    public BTStrafing(string name, EnemyAnimatorHandle anim) : base(name)
     {
         this.anim = anim;
     }
@@ -29,12 +26,12 @@ public class BTStrafing : BTAction
     {
         timer += Time.deltaTime;
         bool attack = false;
-        if(timer > time)
+        if (timer > time)
         {
             attack = Probability.GetBool(70);
             timer = 0;
         }
-        var target = database.GetData<Transform>("targetTransform"); 
+        var target = database.GetData<Transform>("targetTransform");
         Vector3 lookat = target.position - enemy.transform.position;
         lookat.y = 0;
         enemy.transform.rotation = Quaternion.LookRotation(lookat);
@@ -49,7 +46,7 @@ public class BTStrafing : BTAction
         //    }
         //    return BTResult.Success;
         //}
-        if(attack) 
+        if (attack)
         {
             return BTResult.Success;
         }

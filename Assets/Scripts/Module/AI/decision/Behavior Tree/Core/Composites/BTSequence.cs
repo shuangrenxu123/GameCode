@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace BT
 {
     /// <summary>
@@ -18,20 +16,20 @@ namespace BT
         /// <returns></returns>
         public override BTResult Tick()
         {
-            if(_activeChildIndex == -1)
+            if (_activeChildIndex == -1)
             {
                 _activeChildIndex = 0;
             }
-            while(_activeChildIndex != children.Count)
+            while (_activeChildIndex != children.Count)
             {
                 var child = children[_activeChildIndex];
                 var result = child.Tick();
-                if(result == BTResult.Failed)
+                if (result == BTResult.Failed)
                 {
                     child.Clear();
                     return BTResult.Failed;
                 }
-                if(result == BTResult.Success)
+                if (result == BTResult.Success)
                 {
                     child.Clear();
                     _activeChildIndex += 1;
@@ -39,11 +37,11 @@ namespace BT
                 }
                 else
                 {
-                    isRunning= true;
+                    isRunning = true;
                     return BTResult.Running;
                 }
             }
-            _activeChildIndex= -1;
+            _activeChildIndex = -1;
             isRunning = false;
             return BTResult.Success;
         }

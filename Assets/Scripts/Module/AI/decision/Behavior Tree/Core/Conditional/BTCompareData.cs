@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace BT
 {
     /// <summary>
@@ -23,7 +19,7 @@ namespace BT
         }
         public override bool Check()
         {
-            if(rhs == null)
+            if (rhs == null)
             {
                 return database.CheckDataNull(readDataId);
             }

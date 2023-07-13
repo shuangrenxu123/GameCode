@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +11,7 @@ public class StateUI : WindowRoot
     {
         buffs = new Dictionary<string, GameObject>();
         hp = GetUIGameObject("hp");
-        buffGameObejct = GetUIGameObject("buff");    
+        buffGameObejct = GetUIGameObject("buff");
     }
     public override void Start()
     {
@@ -20,7 +19,7 @@ public class StateUI : WindowRoot
 
     public override void Update()
     {
-        
+
     }
     public void SetHPPercent(float v)
     {
@@ -32,9 +31,10 @@ public class StateUI : WindowRoot
         var image = go.AddComponent<Image>();
         go.transform.SetParent(buffGameObejct.transform, false);
         image.sprite = buff.data.icon;
-        buffs.Add(buff.data.name,go);
+        buffs.Add(buff.data.name, go);
     }
-    public void RemoveBuff(BuffBase buff ) {
+    public void RemoveBuff(BuffBase buff)
+    {
         var go = buffs[buff.data.name];
         buffs.Remove(buff.data.name);
         Destroy(go);

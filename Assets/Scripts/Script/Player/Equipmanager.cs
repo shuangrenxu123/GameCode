@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Equipmanager : MonoBehaviour
@@ -35,9 +33,9 @@ public class Equipmanager : MonoBehaviour
     }
     private void Start()
     {
-        
+
     }
-    public void LoadWeaponOnSlot(ItemData item,bool isLeft)
+    public void LoadWeaponOnSlot(ItemData item, bool isLeft)
     {
         if (isLeft)
         {
@@ -50,7 +48,7 @@ public class Equipmanager : MonoBehaviour
 
             if (inputHandle.TwoHandFlag)
             {
-                animatorHandle.anim.CrossFade(((WeaponItemData)item).TH_Idle,0.2f);    
+                animatorHandle.anim.CrossFade(((WeaponItemData)item).TH_Idle, 0.2f);
             }
             rightSlot.LoadModel(item);
             LoadRightWeaponDamageCollider();
@@ -68,7 +66,7 @@ public class Equipmanager : MonoBehaviour
     }
     private void LoadRightWeaponDamageCollider()
     {
-        rightCollider =rightSlot.currentModel.GetComponentInChildren<DamageCollider>();
+        rightCollider = rightSlot.currentModel.GetComponentInChildren<DamageCollider>();
     }
     public void OpenLeftCollider()
     {
@@ -89,6 +87,6 @@ public class Equipmanager : MonoBehaviour
     public void LoadRightHandIK(bool isTwoHandWeapon)
     {
         handIK = rightSlot.currentModel.GetComponentInChildren<HandIK>();
-        animatorHandle.SetHandIKForWeapon(handIK,isTwoHandWeapon);
+        animatorHandle.SetHandIKForWeapon(handIK, isTwoHandWeapon);
     }
 }

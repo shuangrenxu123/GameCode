@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace BT
 {
     public enum BTResult
@@ -45,6 +41,6 @@ namespace BT
         /// <summary>
         /// 等待所有节点同时完成，如果有一个未完成，其他的会重复执行
         /// </summary>
-        Wait=3,
+        Wait = 3,
     }
 }

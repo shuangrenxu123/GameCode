@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerInventory : MonoBehaviour
@@ -19,8 +17,8 @@ public class PlayerInventory : MonoBehaviour
     }
     private void Start()
     {
-        weaponManager.LoadWeaponOnSlot(rightWeapon,false);
-        weaponManager.LoadWeaponOnSlot(leftWeapon,true);
+        weaponManager.LoadWeaponOnSlot(rightWeapon, false);
+        weaponManager.LoadWeaponOnSlot(leftWeapon, true);
         panel = WindowsManager.Instance.GetUiWindow<PlayerInventoryPanel>();
 
         //----------------------Test-------------------------
@@ -32,12 +30,12 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("使用了道具");
             CanrReplace = false;
-            currentItem.AttemptToConsumeItem(animtorHandle,weaponManager);
+            currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
         }
     }
     public void ReplaceItem()
     {
-        if(CanrReplace ==  false)
+        if (CanrReplace == false)
         {
             return;
         }

@@ -30,12 +30,12 @@ public class BuffManager
         this.entity = me;
     }
     public void OnUpdate()
-    { 
-        for(int i = _buffs.Count - 1; i >= 0; i--)
+    {
+        for (int i = _buffs.Count - 1; i >= 0; i--)
         {
             var buff = _buffs[i];
             buff.nowtime += Time.deltaTime;
-            if(buff.nowtime >= buff.data.Maxtime)
+            if (buff.nowtime >= buff.data.Maxtime)
             {
                 RemoveBuff(buff);
                 entity.stateUI.RemoveBuff(buff);
@@ -46,9 +46,9 @@ public class BuffManager
         }
     }
 
-    public BuffBase AddBuff(string buffName,CombatEntity creater)
+    public BuffBase AddBuff(string buffName, CombatEntity creater)
     {
-        var buff = BuffFactory.CreateBuff(buffName,creater,this);
+        var buff = BuffFactory.CreateBuff(buffName, creater, this);
         bool canAdd = buff.data.Tag.ToList().Intersect(_mutexTags.ToList()).Count() == 0;
         if (canAdd)
         {
@@ -62,7 +62,7 @@ public class BuffManager
             }
             buff.OnAdd();
             _buffs.Add(buff);
-            foreach(var i in buff.data.Tag)
+            foreach (var i in buff.data.Tag)
             {
                 _tags.Add(i);
             }

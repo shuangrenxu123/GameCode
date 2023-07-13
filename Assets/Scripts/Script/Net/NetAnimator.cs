@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NetAnimator : MonoBehaviour
@@ -31,7 +29,7 @@ public class NetAnimator : MonoBehaviour
         {
             v = -1;
         }
-        else if(verticalMovement > 1f)
+        else if (verticalMovement > 1f)
         {
             v = 2;
         }
@@ -60,12 +58,12 @@ public class NetAnimator : MonoBehaviour
         {
             h = 0;
         }
-        anim.SetFloat(vertical,v,0.1f,Time.deltaTime);
-        anim.SetFloat(horizontal,h, 0.1f, Time.deltaTime);
+        anim.SetFloat(vertical, v, 0.1f, Time.deltaTime);
+        anim.SetFloat(horizontal, h, 0.1f, Time.deltaTime);
     }
     public void PlayTargetAnimation(string targetAnim)
     {
-        Debug.Log(targetAnim); 
+        Debug.Log(targetAnim);
         anim.CrossFade(targetAnim, 0.1f);
     }
 }

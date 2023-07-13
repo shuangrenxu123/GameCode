@@ -1,5 +1,3 @@
-using UnityEngine;
-
 namespace BT
 {
     /// <summary>
@@ -51,13 +49,13 @@ namespace BT
                 }
                 else
                 {
-                    isRunning= true;
+                    isRunning = true;
                     return BTResult.Running;
                 }
             }
             _activeChildIndex = -1;
             _previousSuccessChildIndex = -1;
-            isRunning= false;
+            isRunning = false;
             return BTResult.Failed;
         }
     }

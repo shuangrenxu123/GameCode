@@ -1,14 +1,13 @@
 using Ionic.Zip;
 using LitJson;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Security;
-using System.Reflection;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -85,13 +84,13 @@ public class HotUpdater
             actionNothongUpdate?.Invoke();
         }
     }
-
+    //--------------------------------Private--------------------------
     private void DownloadedCallBack(FileDownloader downloader)
     {
         try
         {
             //待更新
-            var MD5 = CheckMD5();
+            var MD5 = CheckMD5(downloader.fileInfo);
             if (!MD5)
             {
                 DeleteFile(downloader.FilePath);
@@ -151,17 +150,6 @@ public class HotUpdater
     {
         FileDownloader.Onupdate();
     }
-
-    ///<summary>
-    ///下载中的时候来更新进度条
-    ///</summary>
-    public void OnDownloading()
-    {
-        //获得当前下载了的文件
-        //downloadingInfo.currDownloadsize = downloader.currDownloadSize;
-        //float value = (float)downloadingInfo.currDownloadsize / downloadingInfo.targetDownloadSize;
-        //actionDownloadValue?.Invoke(value);
-    }
     /// <summary>
     /// 开始下载资源包
     /// </summary>
@@ -203,9 +191,34 @@ public class HotUpdater
             return VersionManager.Instance.CompareVersion(b.appVersion, a.appVersion);
         });
     }
-    private bool CheckMD5()
+    private bool CheckMD5(PackInfo file)
     {
-        return true;
+        var filepath = Path.Combine(PathUtil.DownloadPath, file.fileName);
+        byte[] data;
+        using (FileStream fs = new FileStream(filepath, FileMode.Open))
+        {
+            int len = (int)fs.Length;
+            data = new byte[len];
+            fs.Read(data, 0, len);
+        }
+        MD5 md5 = new MD5CryptoServiceProvider();
+        byte[] fileNewMD5 = md5.ComputeHash(data);
+        var fileOldMD5 = Encoding.UTF8.GetBytes(file.MD5);
+        bool isEqual = false;
+        if (fileNewMD5.Length == fileOldMD5.Length)
+        {
+            int i = 0;
+            while ((i < fileOldMD5.Length) && (fileOldMD5[i] == fileNewMD5[i]))
+            {
+                i += 1;
+            }
+            if (i == fileOldMD5.Length)
+            {
+                isEqual = true;
+            }
+        }
+
+        return isEqual;
     }
     /// <summary>
     /// 请求更新列表，就是下载版本列表
@@ -293,7 +306,7 @@ public class HotUpdater
     /// 检测网络类型
     /// </summary>
     /// <returns></returns>
-    public bool CheckNetWorkActive()
+    private bool CheckNetWorkActive()
     {
         if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork || Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork)
             return true;

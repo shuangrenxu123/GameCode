@@ -1,8 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public class CameraHandler : MonoBehaviour
 {
@@ -50,7 +47,7 @@ public class CameraHandler : MonoBehaviour
         singleton = this;
         myTransform = transform;
         defaultPosition = cameraTransform.localPosition.z;
-        ignoreLayers = ~(1 << 12 | 1<<13 | 1<<10 | 1 << 11);
+        ignoreLayers = ~(1 << 12 | 1 << 13 | 1 << 10 | 1 << 11);
 
         targetTransform = GameObject.Find("player").transform;
         playerManager = targetTransform.GetComponent<Player>();
@@ -64,10 +61,10 @@ public class CameraHandler : MonoBehaviour
     {
         if (playerManager.isGrounded)
         {
-            Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position,ref cameraFollowSpeed,groundFollowSpeed * Time.deltaTime);
+            Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position, ref cameraFollowSpeed, groundFollowSpeed * Time.deltaTime);
             myTransform.position = targetPosition;
         }
-        else 
+        else
         {
             Vector3 targetPosition = Vector3.SmoothDamp(myTransform.position, targetTransform.position, ref cameraFollowSpeed, aerialFollowSpeed * Time.deltaTime);
             myTransform.position = targetPosition;
@@ -75,7 +72,7 @@ public class CameraHandler : MonoBehaviour
 
         HandleCameraCollisions(delta);
     }
-    public void HandleCamerRotation(float delta,float mouseXInput,float mouseYInput)
+    public void HandleCamerRotation(float delta, float mouseXInput, float mouseYInput)
     {
         if (InputHandle.LockFlag == false && currentLockOnTarget == null)
         {
@@ -108,7 +105,7 @@ public class CameraHandler : MonoBehaviour
             targetRotation = Quaternion.LookRotation(dir);
             Vector3 eulerAngle = targetRotation.eulerAngles;
             eulerAngle.y = 0;
-            cameraPivotTransform.localEulerAngles= eulerAngle;
+            cameraPivotTransform.localEulerAngles = eulerAngle;
         }
     }
 
@@ -118,32 +115,32 @@ public class CameraHandler : MonoBehaviour
         RaycastHit hit;
         Vector3 direction = cameraTransform.position - cameraPivotTransform.position;
         direction.Normalize();
-        if(Physics.SphereCast
-            (cameraPivotTransform.position,cameraSphereRadius,direction,out hit, Mathf.Abs(targetPosition),ignoreLayers))
+        if (Physics.SphereCast
+            (cameraPivotTransform.position, cameraSphereRadius, direction, out hit, Mathf.Abs(targetPosition), ignoreLayers))
         {
             float dis = Vector3.Distance(cameraPivotTransform.position, hit.point);
             targetPosition = -(dis - cameraCollisionOffset);
         }
-        if(Mathf.Abs(targetPosition) < minimumCollisionOffset)
+        if (Mathf.Abs(targetPosition) < minimumCollisionOffset)
         {
             targetPosition = -minimumCollisionOffset;
         }
-        cameraTransformPosition.z = Mathf.Lerp(cameraTransform.localPosition.z,targetPosition,delta/0.2f);
-        cameraTransform.localPosition = cameraTransformPosition; 
+        cameraTransformPosition.z = Mathf.Lerp(cameraTransform.localPosition.z, targetPosition, delta / 0.2f);
+        cameraTransform.localPosition = cameraTransformPosition;
     }
 
     public bool HandleLockOn()
     {
-        float shortTargetDistance           = Mathf.Infinity;
-        float shortestDistanceOfLeftTarget  = Mathf.Infinity;
+        float shortTargetDistance = Mathf.Infinity;
+        float shortestDistanceOfLeftTarget = Mathf.Infinity;
         float shortestDistanceOfRightTarget = Mathf.Infinity;
 
 
-        Collider[] colliders = Physics.OverlapSphere(targetTransform.position,20);
+        Collider[] colliders = Physics.OverlapSphere(targetTransform.position, 20);
         for (int i = 0; i < colliders.Length; i++)
         {
             CharacterManager character = colliders[i].GetComponent<CharacterManager>();
-            if(character != null)
+            if (character != null)
             {
                 var lockTargetDirection = character.transform.position - targetTransform.position;
                 float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
@@ -151,27 +148,27 @@ public class CameraHandler : MonoBehaviour
                 float viewableAngle = Vector3.Angle(lockTargetDirection, cameraTransform.forward);
 
 
-                if(character.transform.root!= targetTransform.transform.root && viewableAngle >-60 
+                if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
                     && viewableAngle < 60 && distanceFormTargetSqr <= maxLockDistance)
                 {
-                    if(Physics.Linecast(playerManager.LockOnTransform.position,character.LockOnTransform.position,out RaycastHit hit))
+                    if (Physics.Linecast(playerManager.LockOnTransform.position, character.LockOnTransform.position, out RaycastHit hit))
                     {
-                        if(hit.transform.gameObject.layer != enviromentLayer)
+                        if (hit.transform.gameObject.layer != enviromentLayer)
                         {
-                             avilableTargets.Add(character);
+                            avilableTargets.Add(character);
                         }
                     }
                 }
             }
         }
         if (avilableTargets.Count == 0)
-            return false; 
+            return false;
         for (int i = 0; i < avilableTargets.Count; i++)
         {
             if (avilableTargets[i].tag != "Enemy")
                 continue;
             float distance = Vector3.Distance(targetTransform.position, avilableTargets[i].transform.position);
-            if(distance < shortTargetDistance)
+            if (distance < shortTargetDistance)
             {
                 shortTargetDistance = distance;
                 nearestLockOnTarget = avilableTargets[i].LockOnTransform;
@@ -182,13 +179,13 @@ public class CameraHandler : MonoBehaviour
                 //下个敌人的世界坐标，以当前的选择目标为基准
                 Vector3 relativeEnemyPosition = currentLockOnTarget.InverseTransformPoint(avilableTargets[i].transform.position);
                 var distanceFormLeftTarget = currentLockOnTarget.transform.position.x - avilableTargets[i].transform.position.x;
-                var distanceFormRightTarget = currentLockOnTarget.transform.position.x + avilableTargets[i].transform.position.x; 
-                if(relativeEnemyPosition.x > 0.0 && distanceFormLeftTarget < shortestDistanceOfLeftTarget)
+                var distanceFormRightTarget = currentLockOnTarget.transform.position.x + avilableTargets[i].transform.position.x;
+                if (relativeEnemyPosition.x > 0.0 && distanceFormLeftTarget < shortestDistanceOfLeftTarget)
                 {
                     shortestDistanceOfLeftTarget = distanceFormLeftTarget;
                     leftLockTarget = avilableTargets[i].LockOnTransform;
                 }
-                if(relativeEnemyPosition.x < 0 && distanceFormRightTarget < shortestDistanceOfRightTarget)
+                if (relativeEnemyPosition.x < 0 && distanceFormRightTarget < shortestDistanceOfRightTarget)
                 {
                     shortestDistanceOfRightTarget = distanceFormRightTarget;
                     rightLockTarget = avilableTargets[i].LockOnTransform;
@@ -204,18 +201,18 @@ public class CameraHandler : MonoBehaviour
     public void ClearLockTargets()
     {
         avilableTargets.Clear();
-        nearestLockOnTarget= null;
-        currentLockOnTarget = null; 
+        nearestLockOnTarget = null;
+        currentLockOnTarget = null;
     }
 
     public void SetCameraHeight()
     {
         Vector3 velocity = Vector3.zero;
-        Vector3 newlockedPosition = new Vector3(0,lockedPivotHeight);
-        Vector3 newUnlockedPosition = new Vector3(0,unlockedPivotHeight);
-        if(currentLockOnTarget!= null)
+        Vector3 newlockedPosition = new Vector3(0, lockedPivotHeight);
+        Vector3 newUnlockedPosition = new Vector3(0, unlockedPivotHeight);
+        if (currentLockOnTarget != null)
         {
-            cameraPivotTransform.transform.localPosition = Vector3.SmoothDamp(cameraPivotTransform.transform.localPosition,newlockedPosition,ref velocity,Time.deltaTime);
+            cameraPivotTransform.transform.localPosition = Vector3.SmoothDamp(cameraPivotTransform.transform.localPosition, newlockedPosition, ref velocity, Time.deltaTime);
         }
         else
         {

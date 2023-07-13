@@ -1,9 +1,7 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class ConsumableItem 
+public abstract class ConsumableItem
 {
     public ConsumableItemData data;
     public GameObject go;
@@ -12,7 +10,7 @@ public abstract class ConsumableItem
     {
         data = Resources.Load<ConsumableItemData>(name);
     }
-    public virtual void AttemptToConsumeItem(AnimatorHandle animator,Equipmanager equipmanager)
+    public virtual void AttemptToConsumeItem(AnimatorHandle animator, Equipmanager equipmanager)
     {
         if (currentItemAmount > 0)
         {
@@ -25,7 +23,7 @@ public abstract class ConsumableItem
             animator.PlayTargetAnimation(data.UsageFailedAnimation, true);
         }
     }
-    public abstract void Effect(CombatEntity me,Equipmanager equipmanager);
+    public abstract void Effect(CombatEntity me, Equipmanager equipmanager);
 
- 
+
 }

@@ -1,7 +1,5 @@
 using NetWork;
 using PlayerInfo;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class NetTranform : MonoBehaviour
@@ -12,7 +10,7 @@ public class NetTranform : MonoBehaviour
     public Animator anim;
     private void Start()
     {
-        InvokeRepeating("SendPosition",0,1f/Count);
+        InvokeRepeating("SendPosition", 0, 1f / Count);
     }
     public void SendPosition()
     {
@@ -27,7 +25,7 @@ public class NetTranform : MonoBehaviour
                     Rotation = NetWorkUtility.ToProtoBufV3(transform.rotation.eulerAngles),
                     Velocity = NetWorkUtility.ToProtoBufV3(Vector3.zero),
                     H = anim.GetFloat("Horizontal"),
-                    V= anim.GetFloat("Verical"),
+                    V = anim.GetFloat("Verical"),
                 }
                 );
         }

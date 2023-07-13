@@ -36,6 +36,6 @@ public class Enemy : CharacterManager
     }
     private void Dead()
     {
-        
+
     }
 }

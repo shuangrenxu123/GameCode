@@ -94,7 +94,7 @@ namespace NetWork
                 {
                     Debug.LogError("消息id超出");
                     return;
-                }   
+                }
                 sendBuffer.WriteUshort((ushort)package.MsgId);
             }
             else

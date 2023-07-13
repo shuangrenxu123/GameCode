@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace NetWork
 {
-
-
     public class TcpChannel : IDisposable
     {
         private SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();

@@ -17,15 +17,18 @@ public class WindowsManager : ModuleSingleton<WindowsManager>, IModule
     }
     public T GetUiWindow<T>() where T : WindowRoot
     {
-        string window = typeof(T).Name;
-        if (UIWindows.ContainsKey(window))
-            return UIWindows[window] as T;
+        string windowName = typeof(T).Name;
+        if (UIWindows.ContainsKey(windowName))
+            return UIWindows[windowName] as T;
         else
-            return null;
+        {
+            var w = GameObject.FindObjectOfType<T>();
+            AddWindow(w);
+            return w as T;
+        }
     }
     private void AddWindow(WindowRoot window)
     {
-
         try
         {
             UIWindows.Add(window.GetType().Name, window);
@@ -34,14 +37,13 @@ public class WindowsManager : ModuleSingleton<WindowsManager>, IModule
         {
             Debug.Log(window.GetType().Name);
         }
-        //window.gameObject.SetActive(false);
     }
     public void EnableWindow<T>() where T : WindowRoot
     {
         var window = GetUiWindow<T>();
         window.gameObject.SetActive(true);
     }
-    public void DisableWindow<T>() where T: WindowRoot
+    public void DisableWindow<T>() where T : WindowRoot
     {
         var window = GetUiWindow<T>();
         window.gameObject.SetActive(false);

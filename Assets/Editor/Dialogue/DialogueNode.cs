@@ -1,5 +1,3 @@
-using UnityEditor.Experimental.GraphView;
-
 namespace DialogueEdtior
 {
     public class DialogueNode : NodeBase

@@ -1,19 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using UnityEngine;
 namespace BT
 {
     public class BTinterval : BTDecorator
     {
         public float interval;
         private string dataBaseName;
-        public BTinterval(string databaseName,float time, BTNode child) : base(child)
+        public BTinterval(string databaseName, float time, BTNode child) : base(child)
         {
             dataBaseName = databaseName;
             interval = time;
         }
-        public override void Activate(BTDataBase database, Enemy e)
+        public override void Activate(DataBase database, Enemy e)
         {
             base.Activate(database, e);
             database.SetData<float>(dataBaseName, 0);
@@ -28,9 +24,9 @@ namespace BT
             else
             {
                 var result = child.Tick();
-                if(result != BTResult.Running)
+                if (result != BTResult.Running)
                 {
-                    database.SetData(dataBaseName,0f);
+                    database.SetData(dataBaseName, 0f);
                     return result;
                 }
                 else

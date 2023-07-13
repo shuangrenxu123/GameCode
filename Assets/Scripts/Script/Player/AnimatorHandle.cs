@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
 public class AnimatorHandle : AnimatorManager
@@ -16,7 +14,7 @@ public class AnimatorHandle : AnimatorManager
 
     bool handIKWeightReset = false;
 
-    protected RigBuilder rigBuilder; 
+    protected RigBuilder rigBuilder;
     public TwoBoneIKConstraint leftHandConstraint;
     public TwoBoneIKConstraint rightHandConstraint;
 
@@ -30,26 +28,26 @@ public class AnimatorHandle : AnimatorManager
         inventory = GetComponent<PlayerInventory>();
         equipmanager = GetComponent<Equipmanager>();
         controller = playerManager.controller;
-        rigBuilder = GetComponent<RigBuilder>();    
+        rigBuilder = GetComponent<RigBuilder>();
 
     }
-    public void UpdateAnimatorValues(float verticalMovement,float horizontalMovement,bool isSprinting)
+    public void UpdateAnimatorValues(float verticalMovement, float horizontalMovement, bool isSprinting)
     {
         #region Vertical
         float v = 0;
-        if(verticalMovement > 0 && verticalMovement<0.55)
+        if (verticalMovement > 0 && verticalMovement < 0.55)
         {
             v = 0.5f;
         }
-        else if(verticalMovement > 0.55)
+        else if (verticalMovement > 0.55)
         {
             v = 1f;
         }
-        else if(verticalMovement <0&& verticalMovement>-0.55)
+        else if (verticalMovement < 0 && verticalMovement > -0.55)
         {
             v = -0.5f;
         }
-        else if(verticalMovement < -0.55)
+        else if (verticalMovement < -0.55)
         {
             v = -1;
         }
@@ -60,7 +58,7 @@ public class AnimatorHandle : AnimatorManager
         #endregion
         #region horizontal
         float h = 0;
-        if(horizontalMovement>0 && horizontalMovement < 0.55)
+        if (horizontalMovement > 0 && horizontalMovement < 0.55)
         {
             h = 0.5f;
         }
@@ -68,11 +66,11 @@ public class AnimatorHandle : AnimatorManager
         {
             h = 1f;
         }
-        else if(horizontalMovement <0 && horizontalMovement > -0.55)
+        else if (horizontalMovement < 0 && horizontalMovement > -0.55)
         {
             h = -0.5f;
         }
-        else if(horizontalMovement < -0.55)
+        else if (horizontalMovement < -0.55)
         {
             h = -1;
         }
@@ -81,17 +79,17 @@ public class AnimatorHandle : AnimatorManager
             h = 0;
         }
         #endregion
-        if(isSprinting)
+        if (isSprinting)
         {
             v = 2;
             h = horizontalMovement;
         }
-        anim.SetFloat(vertical,v, 0.1f,Time.deltaTime);
-        anim.SetFloat(horizontal,h,0.1f,Time.deltaTime);
+        anim.SetFloat(vertical, v, 0.1f, Time.deltaTime);
+        anim.SetFloat(horizontal, h, 0.1f, Time.deltaTime);
     }
     private void OnAnimatorMove()
     {
-        if(playerManager.isInteracting == false)
+        if (playerManager.isInteracting == false)
         {
             return;
         }
@@ -101,7 +99,7 @@ public class AnimatorHandle : AnimatorManager
     }
     public void CanRotate()
     {
-        anim.SetBool("canRotate",true);
+        anim.SetBool("canRotate", true);
     }
     public void StopRotate()
     {
@@ -109,7 +107,7 @@ public class AnimatorHandle : AnimatorManager
     }
     public void EnableAttackCombo()
     {
-        anim.SetBool("canDoCombo",true);
+        anim.SetBool("canDoCombo", true);
     }
     public void DisableAttackCombo()
     {
@@ -117,13 +115,13 @@ public class AnimatorHandle : AnimatorManager
     }
     public void PropsCallBack()
     {
-        inventory.currentItem.Effect(entity,equipmanager);
+        inventory.currentItem.Effect(entity, equipmanager);
         inventory.CanrReplace = true;
     }
 
-    public void SetHandIKForWeapon(HandIK target,bool isTwoHandlingWeapon)
+    public void SetHandIKForWeapon(HandIK target, bool isTwoHandlingWeapon)
     {
-        if(isTwoHandlingWeapon)
+        if (isTwoHandlingWeapon)
         {
             //缓存一份右手值
             Vector3 rightpos = target.rightTransform.position;
@@ -143,14 +141,14 @@ public class AnimatorHandle : AnimatorManager
         else
         {
             rightHandConstraint.data.target = null;
-            leftHandConstraint.data.target  = null;
+            leftHandConstraint.data.target = null;
         }
         rigBuilder.Build();
     }
     public void EraseHandIKForWeapon()
     {
         handIKWeightReset = true;
-        if(leftHandConstraint.data.target != null)
+        if (leftHandConstraint.data.target != null)
         {
             leftHandConstraint.data.targetPositionWeight = 0;
             leftHandConstraint.data.targetRotationWeight = 0;

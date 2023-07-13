@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 /// <summary>
 /// 血条组件
 /// </summary>

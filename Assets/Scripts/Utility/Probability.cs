@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -14,7 +12,7 @@ namespace Utility
         /// <returns></returns>
         public static bool GetBool(int PValue)
         {
-            if(PValue < 0) 
+            if (PValue < 0)
                 return false;
             if (PValue > 100)
                 return true;
@@ -32,7 +30,7 @@ namespace Utility
             int p = Random.Range(0, sum);
             for (int i = 0; i < PValues.Length; i++)
             {
-                if(p <= PValues[i])
+                if (p <= PValues[i])
                 {
                     return i;
                 }

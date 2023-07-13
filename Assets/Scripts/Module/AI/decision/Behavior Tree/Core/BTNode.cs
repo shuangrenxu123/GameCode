@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine;
-
 namespace BT
 {
     /// <summary>
@@ -12,19 +9,19 @@ namespace BT
         public string name;
         public bool isRunning { get; set; }
         public BTNode clearTick { get; set; }
-        public BTDataBase database;
+        public DataBase database;
 
         /// <summary>
         /// 激活节点
         /// </summary>
         /// <param name="database"></param>
-        public virtual void Activate(BTDataBase database,Enemy e)
+        public virtual void Activate(DataBase database, Enemy e)
         {
             this.database = database;
             this.enemy = e;
-            if(clearTick != null)
+            if (clearTick != null)
             {
-                clearTick.Activate(database,e);
+                clearTick.Activate(database, e);
             }
         }
         /// <summary>

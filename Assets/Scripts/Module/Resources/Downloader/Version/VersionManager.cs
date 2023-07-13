@@ -1,6 +1,5 @@
 using LitJson;
 using System.IO;
-using UnityEngine;
 
 public class VersionManager : ModuleSingleton<VersionManager>, IModule
 {

@@ -36,7 +36,7 @@ public static class HttpClientPool
             }
             catch (Exception e)
             {
-                throw new Exception("回收 httpclient 失败");
+                throw e;
             }
         }
     }

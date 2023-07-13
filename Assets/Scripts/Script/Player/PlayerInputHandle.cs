@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 public class PlayerInputHandle : MonoBehaviour
 {
     public float horizontal;
@@ -177,13 +176,13 @@ public class PlayerInputHandle : MonoBehaviour
         inputAction.PlayerAction.Disable();
         inputAction.PlayerMovement.Disable();
         inputAction.PlayerUI.Enable();
-    } 
+    }
     private void HandleTwoHandInput()
     {
         TwoHandFlag = !TwoHandFlag;
-        if(TwoHandFlag == false)
+        if (TwoHandFlag == false)
         {
-            equipmanager.LoadWeaponOnSlot(PlayerInventory.rightWeapon,false);
+            equipmanager.LoadWeaponOnSlot(PlayerInventory.rightWeapon, false);
             equipmanager.LoadRightHandIK(false);
         }
         else
@@ -198,7 +197,7 @@ public class PlayerInputHandle : MonoBehaviour
         if (BagPanleFlag == false)
         {
             WindowsManager.Instance.EnableWindow<BagPanel>();
-            
+
         }
         else
         {

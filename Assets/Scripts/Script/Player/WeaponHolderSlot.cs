@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class WeaponHolderSlot : HolderSlot
@@ -9,14 +7,14 @@ public class WeaponHolderSlot : HolderSlot
 
     public void UnloadWeapon()
     {
-        if(currentModel != null)
+        if (currentModel != null)
         {
             currentModel.SetActive(false);
         }
     }
     public void UnloadWeaponAndDestory()
     {
-        if(currentModel != null)
+        if (currentModel != null)
         {
             Destroy(currentModel);
         }
@@ -29,15 +27,15 @@ public class WeaponHolderSlot : HolderSlot
             UnloadWeapon();
             return;
         }
-        if(currentData != null && currentData.id == Item.id)
+        if (currentData != null && currentData.id == Item.id)
         {
             currentModel.SetActive(true);
             return;
         }
         GameObject model = Instantiate(weaponItem.modelPrefab);
-        if(model != null)
+        if (model != null)
         {
-            if(parentOverride != null)
+            if (parentOverride != null)
             {
                 model.transform.parent = parentOverride;
             }
@@ -46,7 +44,7 @@ public class WeaponHolderSlot : HolderSlot
                 model.transform.parent = transform;
             }
             model.transform.localPosition = Vector3.zero;
-            model.transform.localRotation= Quaternion.identity;
+            model.transform.localRotation = Quaternion.identity;
             model.transform.localScale = Vector3.one;
         }
         currentModel = model;

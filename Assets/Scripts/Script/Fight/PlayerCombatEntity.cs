@@ -1,7 +1,4 @@
 using Fight;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class PlayerCombatEntity : CombatEntity
 {
@@ -19,7 +16,7 @@ public class PlayerCombatEntity : CombatEntity
     }
     public void AddBuff(string name)
     {
-        var buff = buffManager.AddBuff(name,this);
+        var buff = buffManager.AddBuff(name, this);
         stateUI.AddBuff(buff);
     }
 }

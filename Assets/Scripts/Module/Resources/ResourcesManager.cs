@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using UnityEngine;
 
-public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
+public class ResourcesManager : ModuleSingleton<ResourcesManager>, IModule
 {
     private AssetBundleManifest assetBundleManifest;
     public static ResMode ResMode = ResMode.LocalAB;
@@ -37,28 +35,29 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
 
     public void OnUpdate()
     {
-        
+
     }
 
 
 
-    public void LoadAssetAsync<T>(string abName,string assetName,Action<T> action) where T: UnityEngine.Object
+    public void LoadAssetAsync<T>(string abName, string assetName, Action<T> action) where T : UnityEngine.Object
     {
-        LoadAssetBundleAsync(abName,delegate(AssetBundle resAB)
+        LoadAssetBundleAsync(abName, delegate (AssetBundle resAB)
         {
             var res = resAB.LoadAssetAsync<T>(assetName);
-            res.completed += delegate(AsyncOperation operation) {
+            res.completed += delegate (AsyncOperation operation)
+            {
                 action?.Invoke((operation as AssetBundleRequest).asset as T);
-                };
+            };
         });
     }
 
 
-    private void  LoadAssetBundleAsync(string abName,Action<AssetBundle> action = null)
+    private void LoadAssetBundleAsync(string abName, Action<AssetBundle> action = null)
     {
         abName = abName.ToLower();
         AssetBundleInfo info = null;
-        if(_loadAssetBundles.TryGetValue(abName, out info))
+        if (_loadAssetBundles.TryGetValue(abName, out info))
         {
             info.m_ReferencedCount++;
             string[] dependices = assetBundleManifest.GetAllDependencies(abName);
@@ -72,7 +71,7 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
         {
             if (m_nowLodingList.ContainsKey(abName))
             {
-                if(action != null)
+                if (action != null)
                     m_nowLodingList[abName] += action;
                 m_nowLodingList[abName] += delegate
                 {
@@ -91,7 +90,7 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
                     m_nowLodingList.Add(abName, action);
                 }
                 var loadPath = PathUtil.DataPath + PathUtil.ABRootPath + abName;
-                AssetBundleCreateRequest abRequest =  AssetBundle.LoadFromFileAsync(loadPath);
+                AssetBundleCreateRequest abRequest = AssetBundle.LoadFromFileAsync(loadPath);
                 abRequest.completed += LoadAssetBundleCallBack;
             }
         }
@@ -99,15 +98,15 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
     private void LoadAssetBundleCallBack(AsyncOperation obj)
     {
         var abRequest = obj as AssetBundleCreateRequest;
-        if(abRequest == null)
+        if (abRequest == null)
         {
-            Debug.LogError(abRequest.assetBundle.name +" : 不存在");
+            Debug.LogError(abRequest.assetBundle.name + " : 不存在");
         }
         else
         {
             var abName = abRequest.assetBundle.name;
-            Debug.Log(abName  + " : 加载成功");
-            var resAB = abRequest.assetBundle; 
+            Debug.Log(abName + " : 加载成功");
+            var resAB = abRequest.assetBundle;
             var info = new AssetBundleInfo(resAB);
             _loadAssetBundles.Add(abName, info);
             if (m_nowLodingList.ContainsKey(abName))
@@ -121,11 +120,11 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
                 }
             }
 
-            if(assetBundleManifest != null)
+            if (assetBundleManifest != null)
             {
                 string[] dependencies = assetBundleManifest.GetDirectDependencies(abName);
 
-                foreach(string dependency in dependencies)
+                foreach (string dependency in dependencies)
                 {
                     if (_loadAssetBundles.ContainsKey(dependency))
                     {
@@ -162,26 +161,26 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
     {
         abName = abName.ToLower();
         AssetBundleInfo abinfo = null;
-        if(_loadAssetBundles.TryGetValue(abName, out abinfo))
+        if (_loadAssetBundles.TryGetValue(abName, out abinfo))
         {
             //如果被加载了，就让引用计数++
             abinfo.m_ReferencedCount++;
         }
         else
         {
-           var loadPath = PathUtil.DataPath + PathUtil.ABRootPath + abName;
+            var loadPath = PathUtil.DataPath + PathUtil.ABRootPath + abName;
             var AB = AssetBundle.LoadFromFile(loadPath);
-            if(AB == null)
+            if (AB == null)
             {
-                Debug.LogError(AB.name +": 不存在");
+                Debug.LogError(AB.name + ": 不存在");
             }
             else
             {
                 abinfo = new AssetBundleInfo(AB);
-                _loadAssetBundles.Add(abName,abinfo);
+                _loadAssetBundles.Add(abName, abinfo);
             }
         }
-        if(assetBundleManifest != null)
+        if (assetBundleManifest != null)
         {
             string[] des = assetBundleManifest.GetAllDependencies(abName);
             //循环加载所有直接或间接引用的AB包
@@ -197,7 +196,7 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
     /// </summary>
     /// <param name="abName"></param>
     /// <param name="isThorough">是否连带资源一起卸载</param>
-    public void UnLoadAssetBundle(string abName,bool isThorough = false)
+    public void UnLoadAssetBundle(string abName, bool isThorough = false)
     {
         abName.ToLower();
         if (_loadAssetBundles.ContainsKey(abName))
@@ -209,14 +208,14 @@ public class ResourcesManager :ModuleSingleton<ResourcesManager>,IModule
                 _loadAssetBundles[abName].m_AssetBundle.Unload(isThorough);
             }
             string[] deps = assetBundleManifest.GetAllDependencies(abName);
-            foreach(var de in deps)
+            foreach (var de in deps)
             {
                 UnLoadAssetBundle(de, isThorough);
             }
         }
         else
         {
-            Debug.LogError(abName+"：不存在");
+            Debug.LogError(abName + "：不存在");
         }
     }
 }

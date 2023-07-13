@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EventClip
@@ -48,10 +46,10 @@ class AnimEventClip : EventClip
 {
     private Animator animator;
     private int clipHash;
-    public AnimEventClip(string clipName,Transform transform,Animator anim): base(transform) 
+    public AnimEventClip(string clipName, Transform transform, Animator anim) : base(transform)
     {
         animator = anim;
-        clipHash = Animator.StringToHash("Base Layer"+"."+ clipName);
+        clipHash = Animator.StringToHash("Base Layer" + "." + clipName);
     }
     public override void Init()
     {
@@ -75,7 +73,7 @@ class AudioEventClip : EventClip
 {
     AudioSource source;
     AudioClip clip;
-    public AudioEventClip(Transform transform,AudioSource s,string clipName):base(transform)
+    public AudioEventClip(Transform transform, AudioSource s, string clipName) : base(transform)
     {
         this.clip = Resources.Load<AudioClip>(clipName);
         this.source = s;
@@ -98,7 +96,7 @@ class FxEventClip : EventClip
     /// 特效的名字
     /// </summary>
     private string name;
-    public FxEventClip(Transform transform,string name):base(transform)
+    public FxEventClip(Transform transform, string name) : base(transform)
     {
         this.name = name;
         this.transform = transform;
@@ -116,7 +114,7 @@ class FxEventClip : EventClip
 class TriggerEventClip : EventClip
 {
     private SkillTrigger trigger;
-    public TriggerEventClip(Transform trnas,SkillTrigger trigger):base(trnas)
+    public TriggerEventClip(Transform trnas, SkillTrigger trigger) : base(trnas)
     {
         transform = trnas;
         this.trigger = trigger;

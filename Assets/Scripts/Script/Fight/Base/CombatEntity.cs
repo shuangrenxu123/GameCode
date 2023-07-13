@@ -49,7 +49,7 @@ namespace Fight
             ActionPointManager.TriggerActionPoint(actionPointType, action);
         }
 
-        public virtual void TakeDamage(int damage,string animatorName)
+        public virtual void TakeDamage(int damage, string animatorName)
         {
 
         }

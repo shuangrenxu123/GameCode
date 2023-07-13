@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.EventSystems;
 
 namespace NetWork
 {
@@ -104,7 +103,7 @@ namespace NetWork
             {
                 state = ENetWorkState.Connected;
                 Debug.Log("连接服务器成功");
-                EventManager.Instance.SendMessage("ConnectServer",true);
+                EventManager.Instance.SendMessage("ConnectServer", true);
             }
             else
             {
@@ -130,7 +129,7 @@ namespace NetWork
         /// 发送网络消息
         /// </summary>
         /// <param name="package"></param>
-        public void SendMessage(string senderid,int Msgid, object package)
+        public void SendMessage(string senderid, int Msgid, object package)
         {
             if (state != ENetWorkState.Connected)
             {
@@ -140,7 +139,7 @@ namespace NetWork
             if (client != null)
             {
                 var t = new DefaultNetWorkPackage();
-                t.SenderId= senderid;
+                t.SenderId = senderid;
                 t.MsgId = Msgid;
                 t.Msgobj = package;
                 client.SendPackage(t);

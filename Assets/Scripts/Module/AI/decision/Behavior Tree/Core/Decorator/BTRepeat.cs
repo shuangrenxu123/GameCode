@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 namespace BT
 {
     public class BTRepeat : BTDecorator
@@ -12,12 +9,12 @@ namespace BT
         public override BTResult Tick()
         {
             var result = child.Tick();
-            if(result == BTResult.Success)
+            if (result == BTResult.Success)
             {
                 return BTResult.Success;
 
             }
-            if(result == BTResult.Failed)
+            if (result == BTResult.Failed)
             {
                 child.Clear();
             }

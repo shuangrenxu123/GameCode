@@ -18,16 +18,16 @@ public class NetObj : MonoBehaviour
     {
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
-        anim =GetComponentInChildren<NetAnimator>();
+        anim = GetComponentInChildren<NetAnimator>();
     }
     public void SyncData(DefaultNetWorkPackage data)
     {
-        if(data.MsgId == 1)
+        if (data.MsgId == 1)
         {
             SyncPostion(data);
         }
         ///相关的动画事件，如后滚之类的
-        else if(data.MsgId == 2)
+        else if (data.MsgId == 2)
         {
             SyncOtherAnim(data);
         }
@@ -50,7 +50,7 @@ public class NetObj : MonoBehaviour
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
     {
         var animName = (Action)arg0.Msgobj;
-        if(animName != null)
+        if (animName != null)
         {
             Debug.Log(animName.Actionname);
             anim.PlayTargetAnimation(animName.Actionname);
