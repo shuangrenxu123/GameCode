@@ -6,17 +6,31 @@ using System.Threading.Tasks;
 
 public class FileDownloader
 {
-    // 完成执行函数队列。多个httpclient完成后的回调，在主线程统一执行
+    /// <summary>
+    /// 完成执行函数队列。多个httpclient完成后的回调，在主线程统一执行
+    /// </summary>
     private static readonly List<Tuple<Action<FileDownloader>, FileDownloader>> OnCompleteQueue = new List<Tuple<Action<FileDownloader>, FileDownloader>>();
     public DownloadStatus status { get; private set; } = DownloadStatus.Downloading;
-    //通过
-    private readonly Action<FileDownloader> OnCompleted;
-    //是否主线程上执行回调
+    /// <summary>
+    /// 成功下载的回调函数
+    /// </summary>
+    private readonly Action<FileDownloader> OnSucceeded;
+    /// <summary>
+    /// 下载失败的回调函数
+    /// </summary>
+    private readonly Action<FileDownloader> OnFailed;
+    /// <summary>
+    /// 是否主线程上执行回调
+    /// </summary>
     private readonly bool MainThreadInvoke;
     public string FilePath { get; private set; }
-    //当前下载了的字节数量
+    /// <summary>
+    /// 当前下载了的字节数量
+    /// </summary>
     public int DownloadBytes { get; private set; }
-    //总共需要下载的字节数量，可以自行设置想要的数量，如果没有设置则默认为文件大小
+    /// <summary>
+    /// 总共需要下载的字节数量，可以自行设置想要的数量，如果没有设置则默认为文件大小
+    /// </summary>
     public int DownloadTotalBytes
     {
         get
@@ -35,24 +49,35 @@ public class FileDownloader
             }
         }
     }
-    //用户设置的值，但依然是通过DownloadTotalBytes来设置
+    /// <summary>
+    /// 用户设置的值，但依然是通过DownloadTotalBytes来设置
+    /// </summary>
     private int DownloadTotalBytesByUserSet = 0;
-    //从http headr获得文件大小
+    /// <summary>
+    /// 从http headr获得文件大小
+    /// </summary>
     private int DownloadTotalBytesByHeaders = 0;
     public PackInfo fileInfo = null;
-    //是否取消了下载
+    /// <summary>
+    /// 是否取消了下载
+    /// </summary>
     private bool isCanceled;
-    //取消下载
+    /// <summary>
+    /// 取消下载
+    /// </summary>
     public void Cancle()
     {
         isCanceled = true;
     }
-    public FileDownloader(Action<FileDownloader> onComleted, bool mainThreadInvoke)
+    public FileDownloader(Action<FileDownloader> OnSucceeded,Action<FileDownloader>OnFailed, bool mainThreadInvoke)
     {
-        OnCompleted = onComleted;
-        MainThreadInvoke = mainThreadInvoke;
+        this.OnSucceeded = OnSucceeded;
+        this.OnFailed = OnFailed;
+        this.MainThreadInvoke = mainThreadInvoke;
     }
-    //由于存在多个downloader，我们会将下载完毕以后的给执行
+    /// <summary>
+    /// 主线程上来执行回调函数
+    /// </summary>
     public static void Onupdate()
     {
         List<Tuple<Action<FileDownloader>, FileDownloader>> onCompletedQueue = null;
@@ -117,7 +142,11 @@ public class FileDownloader
             HttpClientPool.RecoverHttpClient(client);
         }
     }
-    //写入文件
+    /// <summary>
+    /// 写入文件
+    /// </summary>
+    /// <param name="responseStream"></param>
+    /// <returns></returns>
     private async Task StreamCopy(Stream responseStream)
     {
         //Tcp接收缓冲区大小
@@ -134,34 +163,44 @@ public class FileDownloader
             DownloadBytes += byteRead;
         }
     }
-    //下载完成后的回调
+    /// <summary>
+    /// 下载完成后的回调
+    /// </summary>
+    /// <param name="s"></param>
     private void DownloadCompleted(DownloadStatus s)
     {
         this.status = s;
+        Action<FileDownloader> action = null ;
         if (status == DownloadStatus.Succeeded)
         {
-            if (OnCompleted != null)
+            action = OnSucceeded;
+        }
+        else if(status == DownloadStatus.Failed)
+        {
+            action = OnFailed;
+        }
+        if (action != null)
+        {
+            if (MainThreadInvoke)
             {
-                if (MainThreadInvoke)
+                lock (OnCompleteQueue)
                 {
-                    lock (OnCompleteQueue)
+                    try
                     {
-                        try
-                        {
-                            OnCompleteQueue.Add(new Tuple<Action<FileDownloader>, FileDownloader>(OnCompleted, this));
-                        }
-                        catch (Exception e)
-                        {
-                            throw e;
-                        }
+                        OnCompleteQueue.Add(new Tuple<Action<FileDownloader>, FileDownloader>(action, this));
+                    }
+                    catch (Exception e)
+                    {
+                        throw e;
                     }
                 }
-                else
-                {
-                    OnCompleted.Invoke(this);
-                }
+            }
+            else
+            {
+                action.Invoke(this);
             }
         }
+        
     }
 }
 

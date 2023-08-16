@@ -6,7 +6,7 @@ public class ABEditor : MonoBehaviour
     /// <summary>
     /// AB包的输出路径
     /// </summary>
-    public static string outputPath = Application.streamingAssetsPath;
+    public static string outputPath = Application.streamingAssetsPath+"/AssetBundles";
 
     [MenuItem("AB包打包/生成ab包")]
 
