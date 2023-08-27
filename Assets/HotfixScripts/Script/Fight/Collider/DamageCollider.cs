@@ -46,7 +46,6 @@ public class DamageCollider : MonoBehaviour
             float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
             ChooseWhichDirectionDamageCameFrom(directionHitFrom);
             new DamageAction(entity, new CombatEntity[] { target }) { animator = currentDamageAnimation }.Apply(10);
-            AudioManager.Instance.PlaySound("d");
         }
     }
     protected virtual void ChooseWhichDirectionDamageCameFrom(float direction)

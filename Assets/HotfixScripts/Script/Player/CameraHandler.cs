@@ -26,7 +26,7 @@ public class CameraHandler : MonoBehaviour
     public Transform leftLockTarget;
     public Transform rightLockTarget;
     public float lookSpeed = 0.1f;
-    public float groundFollowSpeed = 10f;//该值越小，相机跟随越快
+    public float groundFollowSpeed = 1f;//该值越小，相机跟随越快
     public float aerialFollowSpeed = 1f;
     public float pivotSpeed = 0.03f;
     public Vector3 cameraFollowSpeed = Vector3.zero;
@@ -57,6 +57,10 @@ public class CameraHandler : MonoBehaviour
         enviromentLayer = LayerMask.NameToLayer("Enviroment");
         InputHandle = playerManager.inputHandle;
     }
+    /// <summary>
+    /// 跟随角色
+    /// </summary>
+    /// <param name="delta"></param>
     public void FollowTarget(float delta)
     {
         if (playerManager.isGrounded)
@@ -72,6 +76,12 @@ public class CameraHandler : MonoBehaviour
 
         HandleCameraCollisions(delta);
     }
+    /// <summary>
+    /// 处理摄像机旋转
+    /// </summary>
+    /// <param name="delta"></param>
+    /// <param name="mouseXInput"></param>
+    /// <param name="mouseYInput"></param>
     public void HandleCamerRotation(float delta, float mouseXInput, float mouseYInput)
     {
         if (InputHandle.LockFlag == false && currentLockOnTarget == null)
@@ -108,7 +118,10 @@ public class CameraHandler : MonoBehaviour
             cameraPivotTransform.localEulerAngles = eulerAngle;
         }
     }
-
+    /// <summary>
+    /// 处理摄像机遮挡
+    /// </summary>
+    /// <param name="delta"></param>
     private void HandleCameraCollisions(float delta)
     {
         targetPosition = defaultPosition;
@@ -125,10 +138,13 @@ public class CameraHandler : MonoBehaviour
         {
             targetPosition = -minimumCollisionOffset;
         }
-        cameraTransformPosition.z = Mathf.Lerp(cameraTransform.localPosition.z, targetPosition, delta / 0.2f);
+        cameraTransformPosition.z = Mathf.Lerp(cameraTransform.localPosition.z, targetPosition, delta * 10f);
         cameraTransform.localPosition = cameraTransformPosition;
     }
-
+    /// <summary>
+    /// 锁定敌人
+    /// </summary>
+    /// <returns></returns>
     public bool HandleLockOn()
     {
         float shortTargetDistance = Mathf.Infinity;
@@ -197,14 +213,12 @@ public class CameraHandler : MonoBehaviour
         currentLockOnTarget = nearestLockOnTarget;
         return true;
     }
-
     public void ClearLockTargets()
     {
         avilableTargets.Clear();
         nearestLockOnTarget = null;
         currentLockOnTarget = null;
     }
-
     public void SetCameraHeight()
     {
         Vector3 velocity = Vector3.zero;

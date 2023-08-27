@@ -11,7 +11,6 @@ public class PlayerController : CharacterLocomotionManager
     public Player player;
     public GameObject normalCamera;
 
-
     [Header("state")]
     [SerializeField]
     float movementSpeed = 5;
@@ -19,6 +18,8 @@ public class PlayerController : CharacterLocomotionManager
     float rotationSpeed = 10;
     [SerializeField]
     float sprintSpeed = 8;
+    [SerializeField]
+    float climbSpeed = 0.001f;
     private void Awake()
     {
         player = GetComponent<Player>();
@@ -44,6 +45,10 @@ public class PlayerController : CharacterLocomotionManager
     /// <param name="delta"></param>
     public void HandleRotation(float delta)
     {
+        if (player.climbLabber)
+        {
+            return;
+        }
         if (animatorHandle.canRotate)
         {
             if (inputHandle.LockFlag)
@@ -95,7 +100,7 @@ public class PlayerController : CharacterLocomotionManager
         }
     }
     /// <summary>
-    /// 具体的移动
+    /// 在地面上移动
     /// </summary>
     /// <param name="delta"></param>
     public void HandleGroundMovement(float delta)
@@ -132,6 +137,35 @@ public class PlayerController : CharacterLocomotionManager
             {
                 animatorHandle.UpdateAnimatorValues(inputHandle.moveAmount, 0, false);
             }
+        }
+    }
+    /// <summary>
+    /// 攀爬梯子
+    /// </summary>
+    /// <param name="delta"></param>
+    public void HandleLadderMovement(float delta)
+    {
+        if (inputHandle.rollFlag || player.isInAir || player.isInteracting)
+        {
+            return;
+        }
+        animatorHandle.UpdateAnimatorValues(inputHandle.vertical, 0, false);
+        if (inputHandle.vertical < -0.01 || inputHandle.vertical > 0.01)
+        {
+            animatorHandle.anim.SetBool("ClimbLaddering",true);
+
+            if (inputHandle.vertical < 0)
+            {
+                transform.position -= new Vector3(0, climbSpeed * Time.deltaTime, 0);
+            }
+            else if (inputHandle.vertical > 0)
+            {
+                transform.position += new Vector3(0, climbSpeed * Time.deltaTime, 0);
+            }
+        }
+        else
+        {
+            animatorHandle.anim.SetBool("ClimbLaddering", false);
         }
     }
     /// <summary>

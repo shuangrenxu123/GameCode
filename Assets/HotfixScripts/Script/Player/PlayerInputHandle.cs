@@ -1,4 +1,8 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
+
 public class PlayerInputHandle : MonoBehaviour
 {
     public float horizontal;
@@ -8,8 +12,8 @@ public class PlayerInputHandle : MonoBehaviour
     public float mousex;
     public float mousey;
 
-    public bool b_Input;
-    public bool e_Input;
+    public bool B_Input;
+    public bool F_Input;
 
     public bool LockFlag;
     public bool rollFlag;
@@ -60,11 +64,11 @@ public class PlayerInputHandle : MonoBehaviour
         inputAction.PlayerAction.defense.performed += i => DefenseFlag = true;
         inputAction.PlayerAction.defense.canceled += i => DefenseFlag = false;
         //交互
-        inputAction.PlayerAction.Interactable.performed += i => e_Input = true;
-        inputAction.PlayerAction.Interactable.canceled += i => e_Input = false;
+        //inputAction.PlayerAction.Interactable.performed += i => F_Input = true;
+        //inputAction.PlayerAction.Interactable.canceled += i => F_Input = false;
         //翻滚
-        inputAction.PlayerAction.Roll.performed += i => b_Input = true;
-        inputAction.PlayerAction.Roll.canceled += i => b_Input = false;
+        inputAction.PlayerAction.Roll.performed += i => B_Input = true;
+        inputAction.PlayerAction.Roll.canceled += i => B_Input = false;
         //锁定敌人
         inputAction.PlayerAction.LightAttack.performed += i => LightAttackFlag = true;
         inputAction.PlayerAction.LightAttack.canceled += i => LightAttackFlag = false;
@@ -84,6 +88,7 @@ public class PlayerInputHandle : MonoBehaviour
         EnableGameTable();
 
     }
+
     private void OnDisable()
     {
         if (inputAction != null)
@@ -108,7 +113,7 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void HanldeRollInput(float delta)
     {
-        if (b_Input)
+        if (B_Input)
         {
             rollFlag = true;
         }
@@ -161,7 +166,15 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void HandleUseItemInput()
     {
-        PlayerInventory.UseProps();
+        if (!playerManager.isInteracting && playerManager.interactable !=null)
+        {
+            playerManager.interactable.Interact(playerManager);
+            playerManager.isInteracting = true;
+        }
+        else
+        {
+            PlayerInventory.UseProps();
+        }
     }
     private void EnableGameTable()
     {

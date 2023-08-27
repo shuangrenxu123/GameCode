@@ -28,8 +28,10 @@ public class PoolManager : ModuleSingleton<PoolManager>, IModule
         {
             Debug.LogError(info.name + "已经存在");
         }
-        GameObjectGroup pool = new GameObjectGroup(info.name, info.prefab, info.size);
-        PoolMap[info.name] = pool;
+        var group = new GameObject(info.name);
+        var c = group.AddComponent<GameObjectGroup>();
+        c.Init(info.name,info.prefab,info.size,group);
+        PoolMap[info.name] = c;
     }
     public GameObjectGroup GetPool(string name)
     {
@@ -40,30 +42,41 @@ public class PoolManager : ModuleSingleton<PoolManager>, IModule
         return null;
 
     }
-
-    public GameObject GetGameObjectToPool(string Poolname, Vector3 position, Quaternion rotation)
+    /// <summary>
+    /// 从池子中获得一个物体
+    /// </summary>
+    /// <param name="Poolname">池子名称</param>
+    /// <param name="position">物体坐标</param>
+    /// <param name="rotation">旋转角度</param>
+    /// <returns></returns>
+    public PoolObject GetGameObjectToPool(string Poolname, Vector3 position, Quaternion rotation)
     {
         if (PoolMap.ContainsKey(Poolname))
         {
-            GameObject Go = PoolMap[Poolname].GetGameobject(position, rotation);
+            PoolObject Go = PoolMap[Poolname].GetGameobject(position, rotation);   
             return Go;
         }
         Debug.LogError("对象池不存在");
         return null;
     }
-
+    //回收存在时间最长的物体返回池子
     public void ReturnObjectToPool(string name)
     {
         PoolMap[name].Restore();
     }
+
+    public void ReturnObjectToPool(string name,PoolObject go)
+    {
+        PoolMap[name].Restore(go);
+    }
 }
 public class PoolInfo
 {
-    public PoolInfo(string n, int s, GameObject p)
+    public PoolInfo(string name, int size, GameObject prefab)
     {
-        prefab = p;
-        size = s;
-        name = n;
+        this.prefab = prefab;
+        this.size = size;
+        this.name = name;
     }
     public string name;
     public int size;

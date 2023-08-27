@@ -116,7 +116,7 @@ public class AnimatorHandle : AnimatorManager
     public void PropsCallBack()
     {
         inventory.currentItem.Effect(entity, equipmanager);
-        inventory.CanrReplace = true;
+        inventory.CanReplace = true;
     }
 
     public void SetHandIKForWeapon(HandIK target, bool isTwoHandlingWeapon)

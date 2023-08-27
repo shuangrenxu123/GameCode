@@ -1,4 +1,5 @@
 using Fight;
+using TMPro;
 using UnityEngine;
 public class Player : CharacterManager
 {
@@ -10,6 +11,7 @@ public class Player : CharacterManager
     public CombatEntity combatEntity;
     public NetTranform net;
     public PlayerInventory inventory;
+    public Interactable interactable;
     [Header("Player Status")]
     public bool isInteracting;
     public bool isDefense;
@@ -28,10 +30,10 @@ public class Player : CharacterManager
         characterController = GetComponent<CharacterController>();
         controller = GetComponent<PlayerController>();
         inventory = GetComponent<PlayerInventory>();
-        cameraHandler = CameraHandler.singleton;
     }
     void Start()
     {
+        cameraHandler = CameraHandler.singleton;
         combatEntity.Init(1000);
         combatInputHandle.Init();
         inputHandle.PlayerAttacker = combatInputHandle;
@@ -44,8 +46,16 @@ public class Player : CharacterManager
         isDefense = animatorHandle.GetBool("isDefense");
         animatorHandle.canRotate = animatorHandle.GetBool("canRotate");
         isStep = animatorHandle.GetBool("isStep");
+        climbLabber = animatorHandle.GetBool("ClimbLadder");
         inputHandle.TickInput(delta);
-        controller.HandleGroundMovement(delta);
+        if(climbLabber == false)
+        {
+            controller.HandleGroundMovement(delta);
+        }
+        else
+        {
+            controller.HandleLadderMovement(delta);
+        }
         controller.HandleRollingAndSprinting(delta);
         CheckForInteractableObject();
         controller.HandleRotation(delta);
@@ -66,24 +76,17 @@ public class Player : CharacterManager
         {
             if (hit.collider.CompareTag("Interactable"))
             {
-                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                interactable = hit.collider.GetComponent<Interactable>();
                 if (interactable != null)
                 {
                     WindowsManager.Instance.EnableWindow<InteractPanel>();
-                    if (inputHandle.e_Input && isInteracting == false)
-                    {
-                        interactable.Interact(this);
-                    }
-                    else if (isInteracting == true)
-                    {
-                        interactable.InteractUpdate(this);
-                    }
                 }
             }
         }
         else
         {
             WindowsManager.Instance.DisableWindow<InteractPanel>();
+            interactable = null;
         }
     }
 }

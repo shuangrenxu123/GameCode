@@ -6,12 +6,4 @@ public class Interactable : MonoBehaviour
     {
 
     }
-    public virtual void InteractUpdate(Player playerManager)
-    {
-
-    }
-    public virtual void InteractEnd(Player playerManager)
-    {
-
-    }
 }

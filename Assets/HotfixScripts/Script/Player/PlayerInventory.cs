@@ -9,7 +9,7 @@ public class PlayerInventory : MonoBehaviour
     public ItemData leftWeapon;
 
     public ConsumableItem currentItem = null;
-    public bool CanrReplace = true;
+    public bool CanReplace = true;
     private void Awake()
     {
         weaponManager = GetComponent<Equipmanager>();
@@ -22,20 +22,24 @@ public class PlayerInventory : MonoBehaviour
         panel = WindowsManager.Instance.GetUiWindow<PlayerInventoryPanel>();
 
         //----------------------Test-------------------------
-        AddItem(new FlaskItem("Flask"));
+        //AddItem(new FlaskItem("Flask"));
     }
     public void UseProps()
     {
-        if (CanrReplace == true)
+        if(currentItem == null)
+        {
+            return;
+        }
+        if (CanReplace == true)
         {
             Debug.Log("使用了道具");
-            CanrReplace = false;
+            CanReplace = false;
             currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
         }
     }
     public void ReplaceItem()
     {
-        if (CanrReplace == false)
+        if (CanReplace == false)
         {
             return;
         }

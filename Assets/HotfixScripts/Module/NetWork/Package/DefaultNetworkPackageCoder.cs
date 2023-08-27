@@ -179,11 +179,10 @@ namespace NetWork
         }
 
         protected byte[] EnCodeInternal(object obj)
-        {   //json版本
+        {   
             //string json = JsonMapper.ToJson(obj);
             //byte[] data = Encoding.UTF8.GetBytes(json);
 
-            //Protobuff版本
             byte[] data = (obj as IMessage).ToByteArray();
             //IMessage me = new PlayerInfo.login();
             //var o= me.Descriptor.Parser.ParseFrom(data) as PlayerInfo.login;

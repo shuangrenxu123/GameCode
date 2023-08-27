@@ -59,7 +59,6 @@ public class PlayerCombatInputHandle
                 lastAttackIndex += 1;
                 animatorHandle.PlayTargetAnimation(weapon.OH_light_attack_Animations[lastAttackIndex], true);
                 NetTranform.SendAction(weapon.OH_light_attack_Animations[lastAttackIndex]);
-                AudioManager.Instance.PlaySound(weapon.light_attack_audios[lastAttackIndex]);
             }
         }
 
@@ -82,7 +81,6 @@ public class PlayerCombatInputHandle
             else
             {
                 animatorHandle.PlayTargetAnimation(weapon.OH_light_attack_Animations[0], true);
-                AudioManager.Instance.PlaySound(weapon.light_attack_audios[0]);
                 lastAttackIndex = 0;
                 NetTranform.SendAction(weapon.OH_light_attack_Animations[0]);
             }

@@ -11,14 +11,16 @@ public class Main : MonoBehaviour
         MotionEngine.CreateModule<NetWorkManager>(a);
         MotionEngine.CreateModule<EventManager>();
         MotionEngine.CreateModule<WindowsManager>();
-        MotionEngine.CreateModule<AudioManager>();
         MotionEngine.CreateModule<ResourcesManager>();
         MotionEngine.CreateModule<PoolManager>();
         MotionEngine.CreateModule<VersionManager>();
+        MotionEngine.CreateModule<ConfigManager>();
+        MotionEngine.CreateModule<AudioManager>();
     }
     private void Start()
     {
         QualitySettings.vSyncCount = 0;
+
         DontDestroyOnLoad(this);
     }
     private void Update()

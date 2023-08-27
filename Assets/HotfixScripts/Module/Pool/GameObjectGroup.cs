@@ -6,11 +6,11 @@ public class GameObjectGroup : MonoBehaviour
     /// <summary>
     ///未使用的资源队列 
     /// </summary>
-    public Queue<PoolObject> pool;
+    public List<PoolObject> pool;
     /// <summary>
     /// 使用了的队列
     /// </summary>
-    public Queue<PoolObject> usePool;
+    public List<PoolObject> usePool;
     private GameObject Go;
     /// <summary>
     /// 用完后不销毁
@@ -20,46 +20,55 @@ public class GameObjectGroup : MonoBehaviour
     /// 总数
     /// </summary>
     private int capcity;
-    public GameObjectGroup(string name, GameObject prefab, int size)
+    public void Init(string name, GameObject prefab, int size,GameObject parent)
     {
         capcity = size;
-        pool = new Queue<PoolObject>();
+        pool = new List<PoolObject>(capcity * 2);
         Go = prefab;
-        usePool = new Queue<PoolObject>();
+        usePool = new List<PoolObject>(capcity * 2);
         for (int i = 0; i < capcity; i++)
         {
             GameObject a = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+            a.transform.parent = parent.transform;
+            a.GetComponent<PoolObject>().group = this;
             a.SetActive(false);
             PoolObject b = a.GetComponent<PoolObject>();
-            pool.Enqueue(b);
+            pool.Add(b);
         }
     }
     /// <summary>
     /// 取一个物体
     /// </summary>
-    public GameObject GetGameobject(Vector3 position, Quaternion rotation)
+    public PoolObject GetGameobject(Vector3 position, Quaternion rotation)
     {
         if (pool.Count == 0)
         {
             AddObject();
         }
-        var temp = pool.Dequeue();
-        usePool.Enqueue(temp);
+        var temp = pool[0];
+        pool.RemoveAt(0);
+        usePool.Add(temp);
         Debug.Log(pool.Count);
-        temp.gameObject.transform.position = position;
-        temp.gameObject.transform.rotation = rotation;
+        temp.gameObject.transform.SetPositionAndRotation(position, rotation);
         temp.gameObject.SetActive(true);
-        return temp.gameObject;
+        temp.Init();
+        return temp;
     }
     /// <summary>
     /// 回收物体
     /// </summary>
     public void Restore()
     {
-        PoolObject c = usePool.Dequeue();
-        Debug.Log("物体回收");
+        PoolObject c = usePool[0];
+        usePool.RemoveAt(0);
         c.gameObject.SetActive(false);
-        pool.Enqueue(c);
+        pool.Add(c);
+    }
+    public void Restore(PoolObject go)
+    {
+        usePool.Remove(go);
+        pool.Add(go);
+        go.gameObject.SetActive(false);
     }
     /// <summary>
     /// 销毁对象池
@@ -76,7 +85,7 @@ public class GameObjectGroup : MonoBehaviour
             GameObject a = Instantiate(Go, Vector3.zero, Quaternion.identity);
             a.SetActive(false);
             PoolObject b = a.GetComponent<PoolObject>();
-            pool.Enqueue(b);
+            pool.Add(b);
         }
         capcity += 5;
     }
