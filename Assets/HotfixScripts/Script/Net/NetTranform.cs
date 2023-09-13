@@ -11,6 +11,7 @@ public class NetTranform : MonoBehaviour
     private void Start()
     {
         InvokeRepeating("SendPosition", 0, 1f / Count);
+        player = GetComponent<Player>();
     }
     public void SendPosition()
     {

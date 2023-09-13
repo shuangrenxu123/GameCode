@@ -30,6 +30,8 @@ public class Player : CharacterManager
         characterController = GetComponent<CharacterController>();
         controller = GetComponent<PlayerController>();
         inventory = GetComponent<PlayerInventory>();
+
+        backStep = GetComponentInChildren<BackStepCollider>();
     }
     void Start()
     {

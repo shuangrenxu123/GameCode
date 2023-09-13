@@ -33,6 +33,8 @@ public class PlayerInputHandle : MonoBehaviour
     Vector2 movementInput;
     Vector2 cameraInput;
 
+
+    public Transform CriticalAttackRayCastStartPoint;
     public bool sprintFlag;
     public bool LightAttackFlag;
     private void Awake()

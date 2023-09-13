@@ -1,3 +1,6 @@
+using Fight;
+using UnityEngine;
+
 public class PlayerCombatInputHandle
 {
     public Player playerManager;
@@ -6,6 +9,8 @@ public class PlayerCombatInputHandle
     NetTranform NetTranform;
     PlayerInventory inventory;
     public int lastAttackIndex;
+
+    LayerMask backStabLayer = 1 << 9;
 
     public PlayerCombatInputHandle(Player player)
     {
@@ -35,10 +40,6 @@ public class PlayerCombatInputHandle
             HandleLightAttack(inventory.rightWeapon as WeaponItemData);
         }
     }
-    public void HandleHeavyAttack()
-    {
-
-    }
     public void HandleWeaponCombo(WeaponItemData weapon)
     {
         animatorHandle.anim.SetBool("canDoCombo", false);
@@ -65,6 +66,13 @@ public class PlayerCombatInputHandle
     }
     private void HandleLightAttack(WeaponItemData weapon)
     {
+        RaycastHit hit;
+        if (Physics.Raycast(inputHandle.CriticalAttackRayCastStartPoint.position, playerManager.transform.TransformDirection(Vector3.forward), out hit, 1f, backStabLayer))
+        {
+            AttemptBackStabOrRiposte(hit);
+            return;
+        }
+
         if (inputHandle.sprintFlag)
         {
             animatorHandle.PlayTargetAnimation(weapon.Run_Attack_1, true);
@@ -96,6 +104,28 @@ public class PlayerCombatInputHandle
         {
             animatorHandle.PlayTargetAnimation(weapon.OH_Heavy_attack_Animations[0], true);
             NetTranform.SendAction(weapon.OH_Heavy_attack_Animations[0]);
+        }
+    }
+
+    private void AttemptBackStabOrRiposte(RaycastHit hit)
+    {
+        CharacterManager enemyCharacterManager = hit.transform.GetComponent<CharacterManager>();
+        if (enemyCharacterManager != null)
+        {
+            playerManager.transform.position = enemyCharacterManager.backStep.backStabberStandPoint.position;
+            Vector3 rotationDireaction = playerManager.transform.root.eulerAngles;
+            rotationDireaction  = hit.transform.position - playerManager.transform.position;
+            rotationDireaction.y = 0;
+            rotationDireaction.Normalize();
+
+            Quaternion dir = Quaternion.LookRotation(rotationDireaction);
+            Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, dir, 500);
+
+            playerManager.transform.rotation = targetRotation;
+
+            animatorHandle.PlayTargetAnimation("BackStab",true);
+
+            enemyCharacterManager.GetComponent<AnimatorManager>().PlayTargetAnimation("BackStabbed",true);
         }
     }
     public void HandleDefense(ArmorItemData armor)

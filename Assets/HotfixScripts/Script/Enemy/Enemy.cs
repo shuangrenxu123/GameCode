@@ -4,24 +4,26 @@ using UnityEngine;
 public class Enemy : CharacterManager
 {
     public CombatEntity combatEntity;
-    public SkillSystem skillSystem;
-    public EnemyAI ai;
+    //public SkillSystem skillSystem;
+    //public EnemyAI ai;
     public bool isHit;
     public bool isDead = false;
     private void Awake()
     {
         combatEntity = GetComponent<CombatEntity>();
-        skillSystem = new SkillSystem(this);
-        skillSystem.AddSkill(Resources.Load<SkillData>("fire"), Resources.Load<GameObject>("jili"));
+        //skillSystem = new SkillSystem(this);
+        //skillSystem.AddSkill(Resources.Load<SkillData>("fire"), Resources.Load<GameObject>("jili"));
         animatorHandle = GetComponentInChildren<EnemyAnimatorHandle>();
         characterController = GetComponent<CharacterController>();
+        backStep = GetComponentInChildren<BackStepCollider>();
+
 
     }
     private void Start()
     {
         combatEntity.Init(100);
-        ai = new EnemyAI();
-        ai.Init(this, animatorHandle as EnemyAnimatorHandle, this);
+        //ai = new EnemyAI();
+        //ai.Init(this, animatorHandle as EnemyAnimatorHandle, this);
     }
     private void Update()
     {
@@ -31,7 +33,7 @@ public class Enemy : CharacterManager
         }
         else
         {
-            ai.Update();
+            //ai.Update();
         }
     }
     private void Dead()

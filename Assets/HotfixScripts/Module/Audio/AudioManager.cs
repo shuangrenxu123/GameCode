@@ -22,6 +22,15 @@ public class AudioManager : ModuleSingleton<AudioManager>, IModule
 
     }
     #region 控制
+
+    public void SetVolume(AudioLayer layer,float value)
+    {
+        layers[layer].SetVolume(value);
+    }
+    public void SetMute(AudioLayer layer,bool mute)
+    {
+        layers[layer].SetMute(mute);
+    }
     #endregion
 
     #region 播放

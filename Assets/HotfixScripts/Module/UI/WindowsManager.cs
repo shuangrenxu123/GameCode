@@ -48,4 +48,7 @@ public class WindowsManager : ModuleSingleton<WindowsManager>, IModule
         var window = GetUiWindow<T>();
         window.gameObject.SetActive(false);
     }
+    public void DisableWindow(WindowRoot window)
+    {
+    }
 }
