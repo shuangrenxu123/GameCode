@@ -45,7 +45,6 @@ public class LoadDll : MonoBehaviour
 
     private string GetWebRequestPath(string asset)
     {
-        //var path = $"{Application.streamingAssetsPath}/{asset}";
         var path = $"http://1.14.67.47/dlls/{asset}";
         if (!path.Contains("://"))
         {
