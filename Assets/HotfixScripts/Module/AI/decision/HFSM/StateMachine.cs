@@ -5,8 +5,6 @@ using UnityEngine;
 /// </summary>
 namespace HFSM
 {
-
-
     public class StateMachine : StateBase, IStateMachine
     {
         public Dictionary<string, StateBase> status = new Dictionary<string, StateBase>();
@@ -17,7 +15,7 @@ namespace HFSM
         /// <summary>
         /// 当前激活的状态
         /// </summary>
-        public StateBase activeState { get; set; }
+        public StateBase CurrentState { get; set; }
         /// <summary>
         /// 上一个状态
         /// </summary>
@@ -35,12 +33,20 @@ namespace HFSM
         /// </summary>
         private static readonly List<StateTransition> noTransitions = new(0);
 
+        private bool isRunning = false;
         /// <summary>
-        /// 运行有限状态机,注意只会在
+        /// 运行有限状态机，不然不会调用Init与Enter函数
         /// </summary>
         public void Start()
         {
+            if (!isRootMachine)
+            {
+                return;
+            }
+
             Init();
+            isRunning = true;
+            Enter();
         }
         public void AddState(string nodeName, StateBase state)
         {
@@ -92,15 +98,15 @@ namespace HFSM
         /// <param name="StateName"></param>
         public void ChangeState(string stateName)
         {
-            activeState?.Exit();
-            lastState = activeState;
+            CurrentState?.Exit();
+            lastState = CurrentState;
             if (!status.TryGetValue(stateName, out StateBase newState))
             {
                 Debug.Log("没有该状态");
             }
             activeTransitions = newState.transitions ?? noTransitions;
-            activeState = newState;
-            activeState.Enter();
+            CurrentState = newState;
+            CurrentState.Enter();
         }
         /// <summary>
         /// 修改当前状态机的默认状态
@@ -117,14 +123,12 @@ namespace HFSM
                 defaultState = state;
             }
         }
+        /// <summary>
+        /// 需要在子类实现中最后调用
+        /// </summary>
         public override void Init()
         {
             Debug.Log("Init" + name);
-            if (!isRootMachine)
-            {
-                return;
-            }
-            Enter();
         }
         public override void Enter()
         {
@@ -139,15 +143,17 @@ namespace HFSM
         public override void Exit()
         {
             base.Exit();
-            if (activeState != null)
+            if (CurrentState != null)
             {
-                activeState.Exit();
-                activeState = null;
+                CurrentState.Exit();
+                CurrentState = null;
             }
             Debug.Log("Exit" + name);
         }
         public override void Update()
         {
+            if (isRunning == false || CurrentState==null)
+                return;
             foreach (var i in activeTransitions)
             {
                 if (!CheckTransition(i))
@@ -155,8 +161,15 @@ namespace HFSM
                     break;
                 }
             }
-            activeState.Update();
+            CurrentState.Update();
 
         }
+        public override void FixUpdate()
+        {
+            if (isRunning == false || CurrentState == null)
+                return;
+            CurrentState.FixUpdate();
+        }
+
     }
 }

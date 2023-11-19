@@ -3,7 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -107,7 +107,8 @@ public class LoadDll : MonoBehaviour
         LoadMetadataForAOTAssemblies();
 
 #if !UNITY_EDITOR
-        System.Reflection.Assembly.Load(GetAssetData("Assembly-CSharp.dll"));
+        Assembly.Load(GetAssetData("Assembly-CSharp.dll"));
+        Debug.Log("加载热更DLL成功");
 #endif
 
         //3.实例化HotUpdateMain.prefab，通过HotUpdateMain.cs执行旧工程入口代码

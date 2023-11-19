@@ -132,7 +132,7 @@ namespace HTN
                 else
                 {
                     pTask = mCurTask as PrimitiveTask;
-                    if (pTask.cond.Check(mWorkingWorldState))
+                    if (pTask.CheckTaskConditions())
                     {
                         pTask.ApplyEffects(mWorkingWorldState);
                         pTask.ApplyExpectedEffects(mWorkingWorldState);

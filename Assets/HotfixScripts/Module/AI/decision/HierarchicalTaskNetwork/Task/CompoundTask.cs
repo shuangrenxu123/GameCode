@@ -4,12 +4,13 @@ namespace HTN
     public class Method
     {
         public int id;
-        public Cond cond;
+        // 这里写上一个条件可以快速跳过检测
+        public HTNCondition cond;
         /// <summary>
         /// 该Method下的子方法,因为有可能会有分支，所以应该是写Taskbase
         /// </summary>
         public List<TaskBase> SubTasks;
-        public Method(int id, Cond c = null)
+        public Method(int id, HTNCondition c = null)
         {
             cond = c;
             this.id = id;
@@ -26,14 +27,14 @@ namespace HTN
     public class CompoundTask : TaskBase
     {
         public List<Method> methods;
-        public CompoundTask(string name, TaskType type, Cond c = null) : base(name, type, c)
+        public CompoundTask(DomainBase domain, string name, TaskType type, List<HTNCondition> c = null) : base(domain, name, type, c)
         {
             methods = new List<Method>();
         }
         public void Reset()
         {
             methods.Clear();
-            cond = null;
+            conds = null;
         }
 
         public CompoundTask AddMethod(Method v)

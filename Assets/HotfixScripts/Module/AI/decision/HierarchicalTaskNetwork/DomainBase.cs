@@ -10,15 +10,10 @@ namespace HTN
     {
         public List<TaskBase> TaskList;
         public WorldState ws;
-        public CombatEntity entity;
         public DomainBase(WorldState ws)
         {
-            TaskList = new List<TaskBase>();
-        }
-        public void Init(CombatEntity entity, WorldState ws)
-        {
-            this.entity = entity;
             this.ws = ws;
+            TaskList = new List<TaskBase>();
         }
         public void AddTask(TaskBase task)
         {
