@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Mathematics;
 using UnityEngine;
 
 public class MovementState : CharacterControlStateBase
@@ -12,7 +9,7 @@ public class MovementState : CharacterControlStateBase
     public CrouchParameters crouchParameters = new CrouchParameters();
     public LookingDirectionParameters lookingDirectionParameters = new LookingDirectionParameters();
     #endregion
-    
+
     #region Animator
     [SerializeField] protected string groundParamerter = "Grounded";
     [SerializeField] protected string stableParameter = "Stable";
@@ -22,7 +19,7 @@ public class MovementState : CharacterControlStateBase
     [SerializeField] protected string verticalAxisParameter = "VerticalAxis";
     [SerializeField] protected string heightParameter = "Height";
     #endregion
-    
+
     #region Events
     /// <summary>
     /// 角色跳跃时触发的事件。
@@ -40,6 +37,9 @@ public class MovementState : CharacterControlStateBase
     public event Action<int> OnNotGroundedJumpPerformed;
 
     #endregion
+    /// <summary>
+    /// 连跳次数
+    /// </summary>
     protected int notGroundedJumpsLeft = 0;
     /// <summary>
     /// 是否允许取消跳跃
@@ -58,9 +58,11 @@ public class MovementState : CharacterControlStateBase
 
     protected Vector3 targetLookingDirection = Vector3.zero;
     protected float targetHeight = 1f;
-
+    /// <summary>
+    /// 是否要蹲下
+    /// </summary>
     protected bool wantToCrouch = false;
-    protected bool isCrouched = false;
+    public bool isCrouched = false;
     /// <summary>
     /// 是否启用重力
     /// </summary>
@@ -77,9 +79,7 @@ public class MovementState : CharacterControlStateBase
 
     public override void Init()
     {
-        CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
-        CharacterBrain = (parentMachine as CharacterStateController_New).CharacterBrain;
-        CharacterStateController = (parentMachine as CharacterStateController_New);
+        base.Init();
         notGroundedJumpsLeft = verticalMovementParameters.availableNotGroundedJumps;
 
         targetHeight = CharacterActor.DefaultBodySize.y;
@@ -95,9 +95,10 @@ public class MovementState : CharacterControlStateBase
         currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
 
         CharacterActor.UseRootMotion = false;
-        if(CharacterStateController.Animator != null && RuntimeAnimatorController != null)
+        if (CharacterStateController.Animator != null && RuntimeAnimatorController != null)
         {
-            CharacterStateController.Animator.runtimeAnimatorController = RuntimeAnimatorController;
+            var animator = new AnimatorOverrideController(RuntimeAnimatorController);
+            CharacterStateController.Animator.runtimeAnimatorController = animator;
         }
     }
     public override void Exit()
@@ -105,7 +106,7 @@ public class MovementState : CharacterControlStateBase
         CharacterActor.OnTeleport -= OnTeleport;
         reducedAirControlFlag = false;
     }
-    void OnTeleport(Vector3 position,Quaternion rotation)
+    void OnTeleport(Vector3 position, Quaternion rotation)
     {
         targetLookingDirection = CharacterActor.Forward;
         isAllowedToCancelJump = false;
@@ -115,8 +116,57 @@ public class MovementState : CharacterControlStateBase
         float dt = Time.deltaTime;
         HandleSize(dt);
         HandleVelocity(dt);
-        HandleRotation(dt); 
+        HandleRotation(dt);
     }
+    public override void Update()
+    {
+        if (CharacterActions.interact.Started)
+        {
+            database.SetData<bool>("interaction", true);
+        }
+        if(CharacterActions.roll.Started)
+        {
+            database.SetData<bool>("roll", true);
+        }
+        if (CharacterActions.attack.Started)
+        {
+            database.SetData<bool>("attack", true);
+        }
+    }
+    #region 锁敌(lock)
+    private void HandleLockEnemy()
+    {
+        float shortTargetDistance = Mathf.Infinity;
+        float shortestDistanceOfLeftTarget = Mathf.Infinity;
+        float shortestDistanceOfRightTarget = Mathf.Infinity;
+
+        Collider[] colliders = Physics.OverlapSphere(targetTransform.position, 20);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            CharacterManager character = colliders[i].GetComponent<CharacterManager>();
+            if (character != null)
+            {
+                var lockTargetDirection = character.transform.position - targetTransform.position;
+                float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
+                //求出我们看向敌人方向与摄像机的角度
+                float viewableAngle = Vector3.Angle(lockTargetDirection, cameraTransform.forward);
+
+
+                if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
+                    && viewableAngle < 60 && distanceFormTargetSqr <= maxLockDistance)
+                {
+                    if (Physics.Linecast(playerManager.LockOnTransform.position, character.LockOnTransform.position, out RaycastHit hit))
+                    {
+                        if (hit.transform.gameObject.layer != enviromentLayer)
+                        {
+                            avilableTargets.Add(character);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    #endregion
     #region 移动（movement）
     private void HandleVelocity(float dt)
     {
@@ -372,7 +422,7 @@ public class MovementState : CharacterControlStateBase
                     isAllowedToCancelJump = false;
                 }
                 //如果已经松开了跳跃键且按下的时间超越了最小的持续时间则被认定为可以进入了跳跃状态
-                else if(!CharacterActions.jump.value && CharacterActions.jump.StartedElapsedTime >= verticalMovementParameters.cancelJumpMinTime)
+                else if (!CharacterActions.jump.value && CharacterActions.jump.StartedElapsedTime >= verticalMovementParameters.cancelJumpMinTime)
                 {
                     Vector3 projectJumpVerlocity = Vector3.Project(CharacterActor.Velocity, JumpDirection);
                     CharacterActor.Velocity -= CustomUtilities.Multiply(projectJumpVerlocity, 1f - verticalMovementParameters.cancelJumpMultiplier);
@@ -410,7 +460,7 @@ public class MovementState : CharacterControlStateBase
             JumpDirection = SetJumpDirection();
 
             //只有调用该函数才能取消强制接触地面的状态，否则无法跳跃
-            if(CharacterActor.IsGrounded)
+            if (CharacterActor.IsGrounded)
                 CharacterActor.ForceNotGrounded();
 
             CharacterActor.Velocity -= Vector3.Project(CharacterActor.Velocity, JumpDirection);
@@ -438,16 +488,16 @@ public class MovementState : CharacterControlStateBase
             return false;
         if (!CharacterActor.IsStable)
             return false;
-        if(!CharacterActor.IsGroundAOneWayPlatform)
+        if (!CharacterActor.IsGroundAOneWayPlatform)
             return false;
         //是否对所在地面进行过滤（tag）
         if (verticalMovementParameters.filterByTag)
         {
-            if(!CharacterActor.gameObject.CompareTag(verticalMovementParameters.jumpDownTag))
+            if (!CharacterActor.gameObject.CompareTag(verticalMovementParameters.jumpDownTag))
                 return false;
         }
         //是否执行了跳下的行为，即是否按下按键从单项平台上下来
-        if(!ProcessJumpDownAction())
+        if (!ProcessJumpDownAction())
             return false;
 
         JumpDown(dt);
@@ -458,7 +508,7 @@ public class MovementState : CharacterControlStateBase
     {
         float groundDispalacementExtraDistance = 0f;
         Vector3 groundDisplacement = CustomUtilities.Multiply(CharacterActor.GroundVelocity, dt);
-        if(!CharacterActor.IsGroundAscending)
+        if (!CharacterActor.IsGroundAscending)
             groundDispalacementExtraDistance = groundDisplacement.magnitude;
         CharacterActor.ForceNotGrounded();
         CharacterActor.Position -= CustomUtilities.Multiply(CharacterActor.Up, CharacterConstants.ColliderMinBottomOffset + verticalMovementParameters.jumpDownDistance + groundDispalacementExtraDistance);
@@ -481,6 +531,7 @@ public class MovementState : CharacterControlStateBase
             {
                 wantToCrouch = CharacterActions.crouch.value;
             }
+
             if (!crouchParameters.notGroundedCrouch && !CharacterActor.IsGrounded)
                 wantToCrouch = false;
             if (CharacterActor.IsGrounded && wantToRun)
@@ -547,11 +598,14 @@ public class MovementState : CharacterControlStateBase
         if (!CharacterActor.IsAnimatorValid())
             return;
         CharacterStateController.Animator.SetBool(groundParamerter, CharacterActor.IsGrounded);
-        CharacterStateController.Animator.SetBool(stableParameter, CharacterActor.IsStable);
+        //CharacterStateController.Animator.SetBool(stableParameter, CharacterActor.IsStable);
         CharacterStateController.Animator.SetFloat(horizontalAxisParameter, CharacterActions.movement.value.x);
         CharacterStateController.Animator.SetFloat(verticalAxisParameter, CharacterActions.movement.value.y);
         CharacterStateController.Animator.SetFloat(heightParameter, CharacterActor.BodySize.y);
     }
+    /// <summary>
+    /// 在物理完毕之后更新动画，意味着我们在不输入速度情况下也可以处理相关动画
+    /// </summary>
     public override void PostCharacterSimulation()
     {
         if (!CharacterActor.IsAnimatorValid())

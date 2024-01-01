@@ -24,7 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dash",
+                    "name": "Roll",
                     "type": "Button",
                     "id": "f1383ef0-4c7b-41ce-b5a9-c9e6c87b1a5d",
                     "expectedControlType": "",
@@ -36,15 +36,6 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "4039f42e-e2fa-40b9-9419-d166c9c77eac",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Jet Pack",
-                    "type": "Button",
-                    "id": "1ae79ede-e504-4069-898f-9f4d680d6810",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -69,27 +60,27 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Pitch",
-                    "type": "Value",
-                    "id": "04cb3b7e-c578-4ea8-8cc1-65bf8e1073dd",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
-                    "name": "Roll",
-                    "type": "Value",
-                    "id": "73f8865c-f597-4409-a3cf-f03e410446ea",
-                    "expectedControlType": "Axis",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "Lock",
                     "type": "Button",
                     "id": "e502bb4f-8a63-408e-94f0-d803cc2023b3",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "useItem",
+                    "type": "Button",
+                    "id": "e688b60c-1b62-49ea-86a0-ddbd3bb42037",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Attack",
+                    "type": "Button",
+                    "id": "67393659-9ebc-4f39-af8f-d20a8ca1d3e1",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -100,22 +91,22 @@
                 {
                     "name": "",
                     "id": "872df1de-16ae-4d3d-bafc-df15ea9f4827",
-                    "path": "<Keyboard>/f",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
-                    "action": "Dash",
+                    "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
                     "id": "1a20c967-0a2b-4579-8d87-d14b5f14a600",
-                    "path": "<Gamepad>/buttonWest",
+                    "path": "<XInputController>/buttonEast",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad",
-                    "action": "Dash",
+                    "action": "Roll",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -132,19 +123,19 @@
                 },
                 {
                     "name": "",
-                    "id": "a96bd170-474f-4977-8ee8-fa30378d5e1b",
-                    "path": "<Keyboard>/space",
+                    "id": "565efa51-7458-40d1-a1e9-6a510636bbb7",
+                    "path": "<XInputController>/buttonNorth",
                     "interactions": "",
                     "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Jump",
+                    "groups": "",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
                 {
                     "name": "",
-                    "id": "b3e984a9-b6a1-4418-8d63-8820913f27f4",
-                    "path": "<Keyboard>/z",
+                    "id": "a96bd170-474f-4977-8ee8-fa30378d5e1b",
+                    "path": "<Keyboard>/f",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
@@ -155,7 +146,7 @@
                 {
                     "name": "",
                     "id": "9e7c481b-dedd-4ccb-997f-3f05d0677d22",
-                    "path": "<Gamepad>/buttonSouth",
+                    "path": "<XInputController>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "Gamepad;UI",
@@ -166,7 +157,7 @@
                 {
                     "name": "",
                     "id": "10228023-64d1-4f52-a2e0-081029819f3e",
-                    "path": "<Keyboard>/leftCtrl",
+                    "path": "<XInputController>/leftStickPress",
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard Mouse",
@@ -193,17 +184,6 @@
                     "processors": "",
                     "groups": "Keyboard Mouse",
                     "action": "Run",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "37c5e158-154b-4b14-a7c9-0228833e8247",
-                    "path": "<Keyboard>/x",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Jet Pack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -329,72 +309,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "QE",
-                    "id": "58270625-fcb5-4955-826e-c18b0d11c9c0",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Pitch",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "080ce640-7530-4de2-bbe1-77a130f59424",
-                    "path": "<Keyboard>/q",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Pitch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "82e0d4f7-f049-475e-92e1-8c4c2c157113",
-                    "path": "<Keyboard>/e",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Pitch",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "RT",
-                    "id": "2fbe0f88-1479-4745-9a4b-ddb2e5247430",
-                    "path": "1DAxis",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Roll",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "negative",
-                    "id": "222522b1-769e-4c8b-9e31-855f0b7768c9",
-                    "path": "<Keyboard>/r",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Roll",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "positive",
-                    "id": "0c36ef2d-c342-4484-9d1c-f8d8aec81c90",
-                    "path": "<Keyboard>/t",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard Mouse",
-                    "action": "Roll",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
                     "name": "",
                     "id": "2583d42c-7ed0-4fd9-9ac4-4e0d80d5e5b8",
                     "path": "<Keyboard>/tab",
@@ -402,6 +316,50 @@
                     "processors": "",
                     "groups": "",
                     "action": "Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8b59cd18-9fc5-4dc4-b64f-985f82a99da2",
+                    "path": "<XInputController>/rightStickPress",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Lock",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8c2a66f9-81f1-4110-8616-8a24c24a2441",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "useItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7978f57c-974e-4352-b2ed-3ecbdeda9788",
+                    "path": "<XInputController>/buttonWest",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "useItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0669e749-7586-45d9-8302-acd9ce69c300",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Attack",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

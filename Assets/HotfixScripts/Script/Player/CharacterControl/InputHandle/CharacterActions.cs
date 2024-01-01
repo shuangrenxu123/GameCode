@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public struct CharacterActions
@@ -7,13 +5,10 @@ public struct CharacterActions
     public BoolAction @jump;
     public BoolAction @run;
     public BoolAction @interact;
-    public BoolAction jetPack;
-    public BoolAction @dash;
+    public BoolAction roll;
+    public BoolAction @lock;
+    public BoolAction @attack;
     public BoolAction @crouch;
-
-    public FloatAction @pitch;
-    public FloatAction roll;
-
     public Vector2Action @movement;
 
 
@@ -22,30 +17,35 @@ public struct CharacterActions
         jump.Reset();
         run.Reset();
         interact.Reset();
-        jetPack.Reset();
-        crouch.Reset();
-        pitch.Reset();
         roll.Reset();
         movement.Reset();
-        dash.Reset();
+        @lock.Reset();
+        attack.Reset();
+        crouch.Reset();
     }
     public void InitializeActions()
     {
         @jump = new BoolAction();
         jump.Initialize();
+
         run = new BoolAction();
         run.Initialize();
+
         interact = new BoolAction();
         interact.Initialize();
-        jetPack = new BoolAction();
-        jetPack.Initialize();
+
+        roll = new BoolAction();
+        roll.Initialize();
+
+        @lock = new BoolAction();
+        @lock.Initialize();
+
+        attack = new BoolAction();
+        attack.Initialize();
+
         crouch = new BoolAction();
         crouch.Initialize();
-        dash = new BoolAction();
-        dash.Initialize();
 
-        pitch = new FloatAction();
-        roll = new FloatAction();
         movement = new Vector2Action();
     }
     public void Setvalue(CharacterActions characterActions)
@@ -53,16 +53,11 @@ public struct CharacterActions
         @jump.value = characterActions.jump.value;
         @run.value = characterActions.run.value;
         @interact.value = characterActions.interact.value;
-        @jetPack.value = characterActions.jetPack.value;
-        @dash.value = characterActions.dash.value;
-        @crouch.value = characterActions.crouch.value;
-
-        @pitch.value = characterActions.pitch.value;
-        @roll.value = characterActions.roll.value;
-
-        @pitch.value = characterActions.pitch.value;
-        @roll.value = characterActions.roll.value;
+        roll.value = characterActions.roll.value;
         @movement.value = characterActions.movement.value;
+        @lock.value = characterActions.@lock.value;
+        attack.value = characterActions.attack.value;
+        crouch.value = characterActions.crouch.value;
     }
 
     public void SetValues(InputHandler inputHandler)
@@ -73,24 +68,26 @@ public struct CharacterActions
         @jump.value = inputHandler.GetBool("Jump");
         @run.value = inputHandler.GetBool("Run");
         @interact.value = inputHandler.GetBool("Interact");
-        @jetPack.value = inputHandler.GetBool("Jet Pack");
-        @dash.value = inputHandler.GetBool("Dash");
-        @crouch.value = inputHandler.GetBool("Crouch");
-
-        @pitch.value = inputHandler.GetFloat("Pitch");
-        @roll.value = inputHandler.GetFloat("Roll");
-
+        roll.value = inputHandler.GetBool("Roll");
+        @lock.value = inputHandler.GetBool("Lock");
         @movement.value = inputHandler.GetVector2("Movement");
+        attack.value = inputHandler.GetBool("Attack");
+        crouch.value = inputHandler.GetBool("Crouch");
 
     }
+    /// <summary>
+    /// 用于记录按下时间等
+    /// </summary>
+    /// <param name="dt"></param>
     public void Update(float dt)
     {
         @jump.Update(dt);
         @run.Update(dt);
         @interact.Update(dt);
-        @jetPack.Update(dt);
-        @dash.Update(dt);
-        @crouch.Update(dt);
+        roll.Update(dt);
+        @lock.Update(dt);
+        attack.Update(dt);
+        crouch .Update(dt);
     }
 }
 [SerializeField]

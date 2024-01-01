@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using HFSM;
 using UnityEngine;
 
 public class StateManger : MonoBehaviour
@@ -8,25 +7,104 @@ public class StateManger : MonoBehaviour
     public CharacterBrain characterBrain;
     [SerializeField]
     RuntimeAnimatorController movementAnimator;
+    [SerializeField]
+    RuntimeAnimatorController ladderClimbing;
+    [SerializeField]
+    RuntimeAnimatorController interactionAnimator;
+    [SerializeField]
+    RuntimeAnimatorController rollAnimator;
+    [SerializeField]
+    RuntimeAnimatorController attackAnimator;
     private void Start()
     {
-        controller = new CharacterStateController_New();
-        controller.CharacterActor = GetComponentInParent<CharacterActor>();
-        controller.CharacterBrain = characterBrain;
+        DataBase dataBase = new();
+        controller = new CharacterStateController_New
+        {
+            CharacterActor = GetComponentInParent<CharacterActor>(),
+            CharacterBrain = characterBrain
+        };
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
-
+        controller.database = dataBase;
         controller.MovementReferenceMode = MovementReferenceParmeters.MovementReferenceMode.World;
 
-        var movementState = new MovementState();
+        var movementState = new MovementState
+        {
+            database = dataBase,
+            RuntimeAnimatorController = movementAnimator,
+        };
         movementState.lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
-        movementState.RuntimeAnimatorController = movementAnimator;
-        InitMovementParameter(movementState);
+        var ladderClimb = new LadderClimbingState
+        {
+            RuntimeAnimatorController = ladderClimbing,
+            database = dataBase
+        };
+        var interaction = new InteractionState()
+        {
+            RuntimeAnimatorController = interactionAnimator,
+            database = dataBase
+        };
+        var roll = new RollState
+        {
+            RuntimeAnimatorController = rollAnimator,
+            database = dataBase
+        };
+        var Attack = new AttackState
+        {
+            RuntimeAnimatorController = attackAnimator,
+            database = dataBase,
+        };
 
-        controller.AddState("move",movementState);
+        var moveToladder = new StateTransition("move", "ladder");
+        var moveToladderCondition = new StateCondition_Bool("ladder", dataBase, true);
+
+        var InteractionTomove = new StateTransition("interaction", "move");
+        var moveToInteraction = new StateTransition("move", "interaction");
+        var InteractionTomoveCondition = new StateCondition_Bool("interaction", dataBase, false);
+        var moveToInteractionCondition = new StateCondition_Bool("interaction", dataBase, true);
+
+        var rollTomoveCondition = new StateCondition_Bool("roll", dataBase, false);
+        var moveTorollCondition = new StateCondition_Bool("roll", dataBase, true);
+        var rollTomove = new StateTransition("roll", "move");
+        var moveToroll = new StateTransition("move", "roll");
+
+        InteractionTomove.AddCondition(InteractionTomoveCondition);
+        moveToInteraction.AddCondition(moveToInteractionCondition);
+        moveToladder.AddCondition(moveToladderCondition);
+        moveToroll.AddCondition(moveTorollCondition);
+        rollTomove.AddCondition(rollTomoveCondition);
+
+        dataBase.SetData("ladder", false);
+        dataBase.SetData("interaction", false);
+        dataBase.SetData("roll", false);
+        dataBase.SetData("attack", false);
+
+
+        controller.AddState("attack", Attack);
+        controller.AddState("move", movementState);
+        controller.AddState("ladder", ladderClimb);
+        controller.AddState("interaction", interaction);
+        controller.AddState("roll", roll);
+
+        AddCondition(controller,"attack",dataBase,"move","attack");
+        controller.AddTransition(moveToladder);
+        controller.AddTransition(moveToInteraction);
+        controller.AddTransition(InteractionTomove);
+        controller.AddTransition(moveToroll);
+        controller.AddTransition(rollTomove);
+
         controller.Start();
     }
-    public void InitMovementParameter(MovementState state)
+    private void AddCondition(CharacterStateController_New controller,string name,DataBase database, string form,string to)
     {
+        var cond = new StateCondition_Bool(name, database,true);
+        var transition = new StateTransition(form,to);
+
+        var cond2 = new StateCondition_Bool(name, database, false);
+        var transition2 = new StateTransition(to, form);
+        transition.AddCondition(cond);
+        transition2.AddCondition(cond2);
+        controller.AddTransition(transition);
+        controller.AddTransition(transition2);
     }
     private void Update()
     {

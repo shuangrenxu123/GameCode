@@ -20,7 +20,7 @@ public class GameObjectGroup : MonoBehaviour
     /// 总数
     /// </summary>
     private int capcity;
-    public void Init(string name, GameObject prefab, int size,GameObject parent)
+    public void Init(string name, GameObject prefab, int size, GameObject parent)
     {
         capcity = size;
         pool = new List<PoolObject>(capcity * 2);

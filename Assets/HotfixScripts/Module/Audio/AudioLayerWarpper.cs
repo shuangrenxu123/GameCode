@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 /// <summary>
 /// 音频播放的某个轨道的封装
@@ -36,7 +34,7 @@ public class AudioLayerWarpper
     /// <param name="mute"></param>
     public void SetMute(bool mute)
     {
-        foreach(AudioAgent agent in audioAgents)
+        foreach (AudioAgent agent in audioAgents)
         {
             agent.SetMute(mute);
         }

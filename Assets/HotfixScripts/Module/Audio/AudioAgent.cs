@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class AudioAgent : PoolObject
@@ -9,13 +8,13 @@ public class AudioAgent : PoolObject
     {
         audioSource = GetComponent<AudioSource>();
     }
-    public void PlayAudio(AudioClip clip,bool hasLoop)
+    public void PlayAudio(AudioClip clip, bool hasLoop)
     {
         audioSource.clip = clip;
         audioSource.loop = hasLoop;
         audioSource.time = 0f;
         audioSource.Play();
-        if(!hasLoop)
+        if (!hasLoop)
             StartCoroutine(FinishedPlaying(audioSource.clip.length));
     }
     /// <summary>
@@ -44,7 +43,7 @@ public class AudioAgent : PoolObject
     {
         yield return new WaitForSeconds(clipLength);
         //完成以后自己回收
-        PoolManager.Instance.ReturnObjectToPool("audio",this);
+        PoolManager.Instance.ReturnObjectToPool("audio", this);
     }
     public bool IsLoop()
     {

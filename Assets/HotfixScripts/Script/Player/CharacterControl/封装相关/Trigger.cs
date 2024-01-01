@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -37,18 +35,18 @@ public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>, IEquatable<Co
     {
         return gameObject.GetHashCode();
     }
-    public void Set(bool firstContact,Collider2D collider)
+    public void Set(bool firstContact, Collider2D collider)
     {
         if (firstContact)
             fixedTime = Time.fixedTime;
         this.firstContact = firstContact;
         collider2D = collider;
-        gameObject= collider.gameObject;
+        gameObject = collider.gameObject;
         transform = collider.transform;
     }
     public bool Equals(Trigger other)
     {
-        return gameObject== other.gameObject;
+        return gameObject == other.gameObject;
     }
 
     public bool Equals(Collider other)
@@ -59,7 +57,7 @@ public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>, IEquatable<Co
 
     public bool Equals(Collider2D other)
     {
-        if(other == null) return false;
+        if (other == null) return false;
         return collider2D == other;
     }
 

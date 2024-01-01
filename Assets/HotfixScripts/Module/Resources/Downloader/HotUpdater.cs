@@ -70,7 +70,7 @@ public class HotUpdater
         //更新下载池
         for (int i = 0; i < downloadThreads; i++)
         {
-            downloaders.Add(new FileDownloader(DownloadedCallBack,DownloadFaildCallBack,true));
+            downloaders.Add(new FileDownloader(DownloadedCallBack, DownloadFaildCallBack, true));
             downloadstates.Add(true);
         }
 

@@ -179,7 +179,7 @@ namespace NetWork
         }
 
         protected byte[] EnCodeInternal(object obj)
-        {   
+        {
             //string json = JsonMapper.ToJson(obj);
             //byte[] data = Encoding.UTF8.GetBytes(json);
 

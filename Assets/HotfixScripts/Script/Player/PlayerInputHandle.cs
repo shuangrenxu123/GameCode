@@ -164,7 +164,7 @@ public class PlayerInputHandle : MonoBehaviour
     }
     private void HandleUseItemInput()
     {
-        if (!playerManager.isInteracting && playerManager.interactable !=null)
+        if (!playerManager.isInteracting && playerManager.interactable != null)
         {
             playerManager.interactable.Interact(playerManager);
             playerManager.isInteracting = true;

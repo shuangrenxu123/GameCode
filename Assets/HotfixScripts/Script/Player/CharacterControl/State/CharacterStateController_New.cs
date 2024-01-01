@@ -1,6 +1,4 @@
 using HFSM;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterStateController_New : StateMachine
@@ -19,7 +17,7 @@ public class CharacterStateController_New : StateMachine
     public Transform ExternalReference
     {
         get => movementReferenceParmeters.externalReference;
-        set =>movementReferenceParmeters.externalReference = value;
+        set => movementReferenceParmeters.externalReference = value;
     }
 
     public MovementReferenceParmeters.MovementReferenceMode MovementReferenceMode
@@ -30,7 +28,7 @@ public class CharacterStateController_New : StateMachine
     public Vector3 MovementReferenceForward => movementReferenceParmeters.MovementReferenceForward;
     public Vector3 MovementReferenceRight => movementReferenceParmeters.MovementReferenceRight;
     #endregion
-    void PreCharacterSimulation(float dt) =>CurrentState.PreCharacterSimulation();
+    void PreCharacterSimulation(float dt) => CurrentState.PreCharacterSimulation();
     void PostCharacterSimulation(float dt) => CurrentState.PostCharacterSimulation();
 
     //bool CanCurrentStateOverideAnimatorController => CurrentState.OverrideAnimatorController && Animator != null && CurrentState.RuntimeAnimatorController != null;
@@ -40,7 +38,7 @@ public class CharacterStateController_New : StateMachine
     {
         CharacterActor.OnPreSimulation += PreCharacterSimulation;
         CharacterActor.OnPostSimulation += PostCharacterSimulation;
-        if(Animator!= null )
+        if (Animator != null)
         {
             CharacterActor.OnAnimatorIKEvent += OnAnimatorIK;
         }
@@ -51,7 +49,7 @@ public class CharacterStateController_New : StateMachine
     {
         CharacterActor.OnPreSimulation -= PreCharacterSimulation;
         CharacterActor.OnPostSimulation -= PostCharacterSimulation;
-        if(Animator!= null )    
+        if (Animator != null)
             CharacterActor.OnAnimatorIKEvent -= OnAnimatorIK;
     }
     public override void FixUpdate()
@@ -69,4 +67,8 @@ public class CharacterStateController_New : StateMachine
         CurrentState.UpdateIK(layerIndex);
     }
 
+    public void ResetIKWeights()
+    {
+        CharacterActor.ResetIKWeights();
+    }
 }

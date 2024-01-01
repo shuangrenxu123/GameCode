@@ -15,7 +15,7 @@ namespace HTN
     }
     public abstract class PrimitiveTask : TaskBase
     {
-        public PrimitiveTask(DomainBase domain, string name, TaskType t, List<HTNCondition> c = null) : base(domain,name, t, c)
+        public PrimitiveTask(DomainBase domain, string name, TaskType t, List<HTNCondition> c = null) : base(domain, name, t, c)
         {
 
         }

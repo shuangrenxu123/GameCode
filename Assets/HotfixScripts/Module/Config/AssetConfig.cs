@@ -1,7 +1,4 @@
-using LitJson;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using UnityEngine;
 
@@ -18,13 +15,13 @@ public class AssetConfig
             return Datas[id] as T;
         else
         {
-            Debug.LogError("不存在时数据 ："+id);
+            Debug.LogError("不存在时数据 ：" + id);
             return default;
         }
     }
-    public void AddData<T>(int id,T obj)
+    public void AddData<T>(int id, T obj)
     {
-        Datas.Add(id,obj);
+        Datas.Add(id, obj);
     }
     public T[] GetAllData<T>()
     {

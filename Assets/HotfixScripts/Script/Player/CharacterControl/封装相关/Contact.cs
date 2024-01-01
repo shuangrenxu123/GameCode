@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
@@ -18,12 +16,12 @@ public readonly struct Contact
     public readonly Vector3 pointVelocity;
     public readonly GameObject gameObject;
 
-    public Contact(bool firstContact,ContactPoint2D contact,Collision2D collision) :this()
+    public Contact(bool firstContact, ContactPoint2D contact, Collision2D collision) : this()
     {
         this.firstContact = firstContact;
         this.point = contact.point;
         this.normal = contact.normal;
-        this   .gameObject= collider2D.gameObject;
+        this.gameObject = collider2D.gameObject;
         this.collider2D = contact.collider;
         var contactRigidbody = this.collider2D.attachedRigidbody;
         this.relativeVelocity = collision.relativeVelocity;

@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 /// <summary>
 /// 该类包含了移动的中检测所有的常量，不建议更改
 /// </summary>

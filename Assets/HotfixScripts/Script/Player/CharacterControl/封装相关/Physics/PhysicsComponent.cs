@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 
@@ -233,7 +231,7 @@ public abstract class PhysicsComponent : MonoBehaviour
     #region Overlaps
 
     /// <summary>
-    /// Performs an OverlapSphere and returns true if any of the results is valid.
+    /// 执行 OverlapSphere，如果任何结果有效，则返回 true。
     /// </summary>
     public bool OverlapSphere(Vector3 center, float radius, in HitInfoFilter filter, HitFilterDelegate hitFilter = null)
     {
@@ -249,7 +247,7 @@ public abstract class PhysicsComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// Performs an OverlapCapsule and returns true if any of the results is valid.
+    /// 执行 OverlapCapsule，如果任何结果有效，则返回 true。
     /// </summary>
     public bool OverlapCapsule(Vector3 bottom, Vector3 top, float radius, in HitInfoFilter filter, HitFilterDelegate hitFilter = null)
     {

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class OpenDoor : Interactable
@@ -22,6 +20,6 @@ public class OpenDoor : Interactable
         Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, tr, 300 * Time.deltaTime);
         playerManager.inputHandle.transform.rotation = targetRotation;
         GetComponent<Animator>().SetBool("open", true);
-        playerManager.animatorHandle.PlayTargetAnimation("OpenDoor_Outward",true);
+        playerManager.animatorHandle.PlayTargetAnimation("OpenDoor_Outward", true);
     }
 }

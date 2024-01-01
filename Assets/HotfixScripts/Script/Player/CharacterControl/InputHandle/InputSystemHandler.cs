@@ -1,4 +1,3 @@
- using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -21,7 +20,6 @@ public class InputSystemHandler : InputHandler
 
     [SerializeField]
     string controlSchemeName = "Keyboard Mouse";
-
 
     Dictionary<string, InputAction> inputActionsDictionary = new Dictionary<string, InputAction>();
 

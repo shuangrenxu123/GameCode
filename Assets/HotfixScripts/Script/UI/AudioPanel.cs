@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class AudioPanel : WindowRoot
 {
     public override void Start()
@@ -11,6 +7,6 @@ public class AudioPanel : WindowRoot
 
     public override void Update()
     {
-        
+
     }
 }

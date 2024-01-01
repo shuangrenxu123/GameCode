@@ -1,5 +1,4 @@
 using Fight;
-using TMPro;
 using UnityEngine;
 public class Player : CharacterManager
 {
@@ -50,7 +49,7 @@ public class Player : CharacterManager
         isStep = animatorHandle.GetBool("isStep");
         climbLabber = animatorHandle.GetBool("ClimbLadder");
         inputHandle.TickInput(delta);
-        if(climbLabber == false)
+        if (climbLabber == false)
         {
             controller.HandleGroundMovement(delta);
         }

@@ -3,7 +3,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -66,15 +65,15 @@ public class LoadDll : MonoBehaviour
 
         foreach (var asset in AOTMetaAssemblyNames)
         {
-            var path = Application.streamingAssetsPath + "/MateDlls/" + asset+".bytes";
+            var path = Application.streamingAssetsPath + "/MateDlls/" + asset + ".bytes";
             if (!File.Exists(path))
             {
                 assets.Add(asset);
             }
             else
             {
-                Debug.Log(asset+" 加载成功");
-                using FileStream file = new FileStream(path,FileMode.Open,FileAccess.Read);
+                Debug.Log(asset + " 加载成功");
+                using FileStream file = new FileStream(path, FileMode.Open, FileAccess.Read);
                 byte[] bytes = new byte[file.Length];
                 file.Read(bytes, 0, bytes.Length);
                 s_assetDatas[asset] = bytes;

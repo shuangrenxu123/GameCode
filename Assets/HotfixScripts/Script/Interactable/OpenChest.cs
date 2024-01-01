@@ -15,16 +15,13 @@ public class OpenChest : Interactable
         rotationDir.y = 0;
         rotationDir.Normalize();
         Quaternion tr = Quaternion.LookRotation(rotationDir);
-        Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation,tr,300*Time.deltaTime);
+        Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, tr, 300 * Time.deltaTime);
         playerManager.inputHandle.transform.rotation = targetRotation;
-
-        GetComponent<Animator>().SetBool("Interable", true);
-        playerManager.animatorHandle.PlayTargetAnimation("OpenChest", true);
     }
 
     public void GenerateItem()
     {
         //Instantiate(Soul,transform.position,Quaternion.identity);
-        
+
     }
 }

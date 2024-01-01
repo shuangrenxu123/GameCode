@@ -8,7 +8,7 @@ public class ConfigManager : ModuleSingleton<ConfigManager>, IModule
     /// 对应的配置文件 和其对象
     /// </summary>
     private Dictionary<string, AssetConfig> assetConfigs = new Dictionary<string, AssetConfig>();
-    private string path = Application.streamingAssetsPath+"/config/";
+    private string path = Application.streamingAssetsPath + "/config/";
     public void OnCreate(object createParam)
     {
     }
@@ -17,7 +17,7 @@ public class ConfigManager : ModuleSingleton<ConfigManager>, IModule
 
     }
 
-    public void LoadConfig<T>(string name, string location)where T:class
+    public void LoadConfig<T>(string name, string location) where T : class
     {
         var path = this.path + location;
         if (assetConfigs.ContainsKey(name))
@@ -29,8 +29,8 @@ public class ConfigManager : ModuleSingleton<ConfigManager>, IModule
             foreach (JsonData data in json["members"])
             {
                 //Debug.Log(data["name"]);
-                assetConfigs[name].AddData((int)data["id"],JsonMapper.ToObject<T>(data.ToJson()));
-                
+                assetConfigs[name].AddData((int)data["id"], JsonMapper.ToObject<T>(data.ToJson()));
+
             }
         }
     }

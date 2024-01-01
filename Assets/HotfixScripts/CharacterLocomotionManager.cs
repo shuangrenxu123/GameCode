@@ -20,8 +20,8 @@ public class CharacterLocomotionManager : MonoBehaviour
     protected bool fallingVelocitySet = false;
     private void Update()
     {
-        entity.isGrounded =Physics.CheckSphere(entity.transform.position, groundCheckSphereRadius, groundLayer);
-        
+        entity.isGrounded = Physics.CheckSphere(entity.transform.position, groundCheckSphereRadius, groundLayer);
+
         entity.animatorHandle.anim.SetBool("isGround", entity.isGrounded);
         if (!entity.climbLabber)
         {

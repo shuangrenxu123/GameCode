@@ -1,13 +1,11 @@
 using HFSM;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterControlStateBase : StateBase
 {
     bool overrideAnimatorController = true;
 
-    public CharacterActor CharacterActor{ get; protected set; }
+    public CharacterActor CharacterActor { get; protected set; }
 
 
     /// <summary>
@@ -16,13 +14,22 @@ public class CharacterControlStateBase : StateBase
     public RuntimeAnimatorController RuntimeAnimatorController { get; set; }
     public bool OverrideAnimatorController => overrideAnimatorController;
     protected CharacterBrain CharacterBrain = null;
-    public CharacterActions CharacterActions{ get {
+    public CharacterActions CharacterActions
+    {
+        get
+        {
             return CharacterBrain == null ?
                 new CharacterActions() : CharacterBrain.CharacterActions;
-        } 
+        }
     }
-    public CharacterStateController_New CharacterStateController { get;protected set; }
+    public CharacterStateController_New CharacterStateController { get; protected set; }
 
+    public override void Init()
+    {
+        CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
+        CharacterBrain = (parentMachine as CharacterStateController_New).CharacterBrain;
+        CharacterStateController = (parentMachine as CharacterStateController_New);
+    }
     public virtual void UpdateIK(int layerIndex)
     {
 

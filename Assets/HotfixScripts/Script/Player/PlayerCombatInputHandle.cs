@@ -1,4 +1,3 @@
-using Fight;
 using UnityEngine;
 
 public class PlayerCombatInputHandle
@@ -114,7 +113,7 @@ public class PlayerCombatInputHandle
         {
             playerManager.transform.position = enemyCharacterManager.backStep.backStabberStandPoint.position;
             Vector3 rotationDireaction = playerManager.transform.root.eulerAngles;
-            rotationDireaction  = hit.transform.position - playerManager.transform.position;
+            rotationDireaction = hit.transform.position - playerManager.transform.position;
             rotationDireaction.y = 0;
             rotationDireaction.Normalize();
 
@@ -123,9 +122,9 @@ public class PlayerCombatInputHandle
 
             playerManager.transform.rotation = targetRotation;
 
-            animatorHandle.PlayTargetAnimation("BackStab",true);
+            animatorHandle.PlayTargetAnimation("BackStab", true);
 
-            enemyCharacterManager.GetComponent<AnimatorManager>().PlayTargetAnimation("BackStabbed",true);
+            enemyCharacterManager.GetComponent<AnimatorManager>().PlayTargetAnimation("BackStabbed", true);
         }
     }
     public void HandleDefense(ArmorItemData armor)

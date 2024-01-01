@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 public delegate bool HitFilterDelegate(Transform hitTransform);
 public delegate bool Hit2DFilterDelegate(ref RaycastHit2D hitInfo);

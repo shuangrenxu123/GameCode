@@ -26,7 +26,7 @@ public class PlayerInventory : MonoBehaviour
     }
     public void UseProps()
     {
-        if(currentItem == null)
+        if (currentItem == null)
         {
             return;
         }

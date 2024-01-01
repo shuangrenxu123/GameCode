@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -101,7 +99,7 @@ public class DataDownloader
             using (HttpResponseMessage response = await httpClient.GetAsync(url, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
             {
                 response.EnsureSuccessStatusCode();
-                if (!response.IsSuccessStatusCode) 
+                if (!response.IsSuccessStatusCode)
                     throw new Exception("HttpStatusCode : " + (int)response.StatusCode + " " + response.StatusCode);
                 DownloadTotalBytesByHeaders = response.Content.Headers.ContentLength == null ? 0 : (int)response.Content.Headers.ContentLength;
                 using Stream responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);

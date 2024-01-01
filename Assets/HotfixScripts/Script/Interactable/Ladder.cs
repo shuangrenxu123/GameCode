@@ -1,27 +1,130 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Ladder : Interactable
+public class Ladder : MonoBehaviour
 {
-    Transform targetPosition;
-    Transform dir;
-    private void Start()
+    [Header("Debug")]
+    [SerializeField]
+    bool showGizmos = true;
+
+
+    [Header("Exit points")]
+    [SerializeField]
+    Transform topReference = null;
+
+    [SerializeField]
+    Transform bottomReference = null;
+
+    [Header("Properties")]
+
+    [Min(0)]
+    [SerializeField]
+    int climbingAnimations = 1;
+
+    [SerializeField]
+    Vector3 bottomLocalPosition = Vector3.zero;
+
+    [SerializeField]
+    Direction facingDirection = Direction.Forward;
+
+
+    public int ClimbingAnimations
     {
-        targetPosition = transform.GetChild(0);
-        dir = transform.GetChild(1);
+        get
+        {
+            return climbingAnimations;
+        }
     }
-    public override void Interact(Player playerManager)
+
+    public Transform TopReference
+    {
+        get
+        {
+            return topReference;
+        }
+    }
+
+    public Transform BottomReference
+    {
+        get
+        {
+            return bottomReference;
+        }
+    }
+
+
+    public Vector3 FacingDirectionVector
+    {
+        get
+        {
+            Vector3 facingDirectionVector = transform.forward;
+
+            switch (facingDirection)
+            {
+                case Direction.Left:
+
+                    facingDirectionVector = -transform.right;
+                    break;
+
+                case Direction.Right:
+
+                    facingDirectionVector = transform.right;
+                    break;
+
+                case Direction.Up:
+
+                    facingDirectionVector = transform.up;
+                    break;
+
+                case Direction.Down:
+
+                    facingDirectionVector = -transform.up;
+                    break;
+
+                case Direction.Forward:
+
+                    facingDirectionVector = transform.forward;
+                    break;
+
+                case Direction.Back:
+
+                    facingDirectionVector = -transform.forward;
+                    break;
+
+            }
+
+            return facingDirectionVector;
+        }
+    }
+
+
+
+    void Awake()
     {
 
-        Vector3 rotationDir = dir.transform.position - playerManager.transform.position;
-        rotationDir.y = 0;
-        rotationDir.Normalize();
-        Quaternion tr = Quaternion.LookRotation(rotationDir);
-        Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, tr, 300 * Time.deltaTime);
-        playerManager.inputHandle.transform.rotation = targetRotation;
-        playerManager.transform.position = targetPosition.position;
-        playerManager.animatorHandle.anim.SetBool("ClimbLadder",true);
+    }
+
+
+    void OnDrawGizmos()
+    {
+        if (!showGizmos)
+            return;
+
+
+        if (bottomReference != null)
+        {
+            Gizmos.color = new Color(0f, 0f, 1f, 0.2f);
+            Gizmos.DrawCube(bottomReference.position, Vector3.one * 0.5f);
+        }
+
+        if (topReference != null)
+        {
+            Gizmos.color = new Color(1f, 0f, 0f, 0.2f);
+            Gizmos.DrawCube(topReference.position, Vector3.one * 0.5f);
+        }
+
+        CustomUtilities.DrawArrowGizmo(transform.position, transform.position + FacingDirectionVector, Color.blue);
+
+        Gizmos.color = Color.white;
     }
 }
 

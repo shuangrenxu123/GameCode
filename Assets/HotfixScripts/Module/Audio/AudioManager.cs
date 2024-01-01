@@ -13,7 +13,7 @@ public class AudioManager : ModuleSingleton<AudioManager>, IModule
         var agent = new GameObject("audioAgent");
         agent.AddComponent<AudioAgent>();
         agent.AddComponent<AudioSource>();
-        PoolManager.Instance.CreatePool(new PoolInfo(poolName, 10,agent));
+        PoolManager.Instance.CreatePool(new PoolInfo(poolName, 10, agent));
 
         layers.Add(AudioLayer.Music, new AudioLayerWarpper(AudioLayer.Music));
         layers.Add(AudioLayer.Voice, new AudioLayerWarpper(AudioLayer.Voice));
@@ -23,28 +23,28 @@ public class AudioManager : ModuleSingleton<AudioManager>, IModule
     }
     #region 控制
 
-    public void SetVolume(AudioLayer layer,float value)
+    public void SetVolume(AudioLayer layer, float value)
     {
         layers[layer].SetVolume(value);
     }
-    public void SetMute(AudioLayer layer,bool mute)
+    public void SetMute(AudioLayer layer, bool mute)
     {
         layers[layer].SetMute(mute);
     }
     #endregion
 
     #region 播放
-    public void PlayAudio(AudioData audioData,Vector3 position = default)
+    public void PlayAudio(AudioData audioData, Vector3 position = default)
     {
         AudioClip[] clipsToPlay = audioData.GetClips();
         AudioAgent[] audioagentrArray = new AudioAgent[clipsToPlay.Length];
 
         for (int i = 0; i < clipsToPlay.Length; i++)
         {
-            audioagentrArray[i] = (AudioAgent)PoolManager.Instance.GetGameObjectToPool(poolName,position,Quaternion.identity);
+            audioagentrArray[i] = (AudioAgent)PoolManager.Instance.GetGameObjectToPool(poolName, position, Quaternion.identity);
             if (audioagentrArray[i] != null)
             {
-                audioagentrArray[i].PlayAudio(clipsToPlay[i],audioData.looping);
+                audioagentrArray[i].PlayAudio(clipsToPlay[i], audioData.looping);
             }
         }
         layers[audioData.layer].AddAgent(audioagentrArray);

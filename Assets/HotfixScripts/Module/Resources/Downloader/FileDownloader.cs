@@ -69,7 +69,7 @@ public class FileDownloader
     {
         isCanceled = true;
     }
-    public FileDownloader(Action<FileDownloader> OnSucceeded,Action<FileDownloader>OnFailed, bool mainThreadInvoke)
+    public FileDownloader(Action<FileDownloader> OnSucceeded, Action<FileDownloader> OnFailed, bool mainThreadInvoke)
     {
         this.OnSucceeded = OnSucceeded;
         this.OnFailed = OnFailed;
@@ -170,12 +170,12 @@ public class FileDownloader
     private void DownloadCompleted(DownloadStatus s)
     {
         this.status = s;
-        Action<FileDownloader> action = null ;
+        Action<FileDownloader> action = null;
         if (status == DownloadStatus.Succeeded)
         {
             action = OnSucceeded;
         }
-        else if(status == DownloadStatus.Failed)
+        else if (status == DownloadStatus.Failed)
         {
             action = OnFailed;
         }
@@ -200,7 +200,7 @@ public class FileDownloader
                 action.Invoke(this);
             }
         }
-        
+
     }
 }
 

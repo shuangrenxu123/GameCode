@@ -16,24 +16,26 @@ namespace HTN
         /// </summary>
         public List<HTNCondition> conds;
         public DomainBase domain;
-        public WorldState WorldState =>domain.ws;
-        public TaskBase(DomainBase domain,string name, TaskType type, List<HTNCondition> c)
+        public WorldState WorldState => domain.ws;
+        public TaskBase(DomainBase domain, string name, TaskType type, List<HTNCondition> c)
         {
             this.domain = domain;
             Name = name;
             this.type = type;
             conds = c;
         }
-        public TaskBase(DomainBase domain, string name,TaskType type)
+        public TaskBase(DomainBase domain, string name, TaskType type)
         {
             this.domain = domain;
             Name = name; this.type = type;
             conds = new List<HTNCondition>();
         }
-        public void AddCondition(HTNCondition c) { 
+        public void AddCondition(HTNCondition c)
+        {
             conds.Add(c);
         }
-        public void RemoveCondition(HTNCondition c) { 
+        public void RemoveCondition(HTNCondition c)
+        {
             conds.Remove(c);
         }
         public virtual bool CheckTaskConditions()

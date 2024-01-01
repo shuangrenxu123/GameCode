@@ -1,8 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.PackageManager;
 using UnityEngine;
 [RequireComponent(typeof(CharacterBody))]
 [DefaultExecutionOrder(10)]
@@ -258,8 +255,8 @@ public class CharacterActor : PhysicsActor
         }
     }
 
-    public Vector3 GroundPosition =>  GroundRigidbody3D.position;
-    public Quaternion GroundRotation =>  GroundRigidbody3D.rotation;
+    public Vector3 GroundPosition => GroundRigidbody3D.position;
+    public Quaternion GroundRotation => GroundRigidbody3D.rotation;
     public bool IsGroundRigidbody => characterCollisionInfo.groundRigidbody3D != null;
 
     public bool IsGroundKinematicRigidbody => characterCollisionInfo.groundRigidbody3D.isKinematic;
@@ -936,7 +933,6 @@ public class CharacterActor : PhysicsActor
         if (IsGrounded)
             LastGroundedVelocity = Velocity;
     }
-
     bool IgnoreGroundResponse()
     {
         for (int i = 0; i < Contacts.Count; i++)
@@ -948,7 +944,7 @@ public class CharacterActor : PhysicsActor
             {
                 Velocity = PreSimulationVelocity;
                 return true;
-            }   
+            }
         }
         return false;
     }
@@ -1276,7 +1272,7 @@ public class CharacterActor : PhysicsActor
     }
     /// <summary>
     /// 强制字符放弃接地状态（isGrounded = false）。即放弃吸附地面
-    /// 这在使角色跳跃时很有用。
+    /// 如果想让我们的角色在Y轴上位移则必须调用该方法
     /// </summary>
     /// <param name="ignoreGroundContactFrames">为了防止角色在强制不接地调用后立即重新进入接地状态而消耗的 FixedUpdate 帧数。</param>
     public void ForceNotGrounded(int ignoreGroundContactFrames = 3)
@@ -1667,7 +1663,6 @@ public class CharacterActor : PhysicsActor
         }
         return displacement == Vector3.zero;
     }
-
 
     void OnDrawGizmos()
     {

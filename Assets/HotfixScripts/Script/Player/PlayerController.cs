@@ -152,7 +152,7 @@ public class PlayerController : CharacterLocomotionManager
         animatorHandle.UpdateAnimatorValues(inputHandle.vertical, 0, false);
         if (inputHandle.vertical < -0.01 || inputHandle.vertical > 0.01)
         {
-            animatorHandle.anim.SetBool("ClimbLaddering",true);
+            animatorHandle.anim.SetBool("ClimbLaddering", true);
 
             if (inputHandle.vertical < 0)
             {

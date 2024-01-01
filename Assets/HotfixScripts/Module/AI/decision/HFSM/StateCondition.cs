@@ -36,7 +36,7 @@ namespace HFSM
     {
         private float condition;
         private FloatOpt opt;
-        public StateCondition_Float(string name,DataBase dataBase, float cond, FloatOpt opt) : base(name, dataBase)
+        public StateCondition_Float(string name, DataBase dataBase, float cond, FloatOpt opt) : base(name, dataBase)
         {
             condition = cond;
             this.opt = opt;

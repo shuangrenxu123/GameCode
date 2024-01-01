@@ -30,7 +30,7 @@ public class PoolManager : ModuleSingleton<PoolManager>, IModule
         }
         var group = new GameObject(info.name);
         var c = group.AddComponent<GameObjectGroup>();
-        c.Init(info.name,info.prefab,info.size,group);
+        c.Init(info.name, info.prefab, info.size, group);
         PoolMap[info.name] = c;
     }
     public GameObjectGroup GetPool(string name)
@@ -53,7 +53,7 @@ public class PoolManager : ModuleSingleton<PoolManager>, IModule
     {
         if (PoolMap.ContainsKey(Poolname))
         {
-            PoolObject Go = PoolMap[Poolname].GetGameobject(position, rotation);   
+            PoolObject Go = PoolMap[Poolname].GetGameobject(position, rotation);
             return Go;
         }
         Debug.LogError("对象池不存在");
@@ -65,7 +65,7 @@ public class PoolManager : ModuleSingleton<PoolManager>, IModule
         PoolMap[name].Restore();
     }
 
-    public void ReturnObjectToPool(string name,PoolObject go)
+    public void ReturnObjectToPool(string name, PoolObject go)
     {
         PoolMap[name].Restore(go);
     }

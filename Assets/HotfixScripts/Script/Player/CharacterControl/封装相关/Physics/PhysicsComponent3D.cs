@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.PackageManager;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 public class PhysicsComponent3D : PhysicsComponent
 {
@@ -198,27 +194,27 @@ public class PhysicsComponent3D : PhysicsComponent
     protected override int InternalCapsuleCast(Vector3 bottom, Vector3 top, float radius, Vector3 castDisplacement, int layerMask, bool ignoreTriggers, bool allowOverlaps)
     {
         return Physics.CapsuleCastNonAlloc(
-    bottom,
-    top,
-    radius,
-    Vector3.Normalize(castDisplacement),
-    _hitsBuffer,
-    castDisplacement.magnitude,
-    layerMask,
-    ignoreTriggers ? QueryTriggerInteraction.Ignore : QueryTriggerInteraction.Collide
-);
+            bottom,
+            top,
+            radius,
+            Vector3.Normalize(castDisplacement),
+            _hitsBuffer,
+            castDisplacement.magnitude,
+            layerMask,
+            ignoreTriggers ? QueryTriggerInteraction.Ignore : QueryTriggerInteraction.Collide
+        );
     }
 
     protected override int InternalOverlapBox(Vector3 center, Vector3 size, Quaternion orientation, int layerMask, bool ignoreTriggers)
     {
         return Physics.OverlapBoxNonAlloc(
-    center,
-    size / 2f,
-    _overlapsBuffer,
-    orientation,
-    layerMask,
-    ignoreTriggers ? QueryTriggerInteraction.Ignore : QueryTriggerInteraction.Collide
-);
+            center,
+            size / 2f,
+            _overlapsBuffer,
+            orientation,
+            layerMask,
+            ignoreTriggers ? QueryTriggerInteraction.Ignore : QueryTriggerInteraction.Collide
+        );
     }
 
     protected override int InternalOverlapCapsule(Vector3 bottom, Vector3 top, float radius, int layerMask, bool ignoreTriggers)

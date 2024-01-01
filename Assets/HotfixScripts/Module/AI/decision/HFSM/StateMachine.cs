@@ -75,7 +75,7 @@ namespace HFSM
             }
             else
             {
-                base.AddTransition(transition);
+                Debug.LogError($"没有在状态机{name}找到状态{transition.startState}");
             }
         }
         /// <summary>
@@ -124,7 +124,7 @@ namespace HFSM
             }
         }
         /// <summary>
-        /// 需要在子类实现中最后调用
+        /// 需要在子类实现,该函数会在添加到状态机（即使状态机没有启动）时候调用
         /// </summary>
         public override void Init()
         {
@@ -152,11 +152,11 @@ namespace HFSM
         }
         public override void Update()
         {
-            if (isRunning == false || CurrentState==null)
+            if (isRunning == false || CurrentState == null)
                 return;
             foreach (var i in activeTransitions)
             {
-                if (!CheckTransition(i))
+                if (CheckTransition(i))
                 {
                     break;
                 }
