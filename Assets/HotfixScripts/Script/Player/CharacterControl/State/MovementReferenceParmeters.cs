@@ -3,7 +3,7 @@ using UnityEngine;
 [System.Serializable]
 public class MovementReferenceParmeters
 {
-    public MovementReferenceMode movementReferenceMode = MovementReferenceMode.World;
+    public MovementReferenceMode movementReferenceMode = MovementReferenceMode.External;
 
     public Transform externalReference = null;
     CharacterActor characterActor = null;

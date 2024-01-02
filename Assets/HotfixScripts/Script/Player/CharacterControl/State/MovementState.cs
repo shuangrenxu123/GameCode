@@ -134,37 +134,11 @@ public class MovementState : CharacterControlStateBase
         }
     }
     #region 锁敌(lock)
-    private void HandleLockEnemy()
+
+    public void HandleLockEnemy(Transform target)
     {
-        float shortTargetDistance = Mathf.Infinity;
-        float shortestDistanceOfLeftTarget = Mathf.Infinity;
-        float shortestDistanceOfRightTarget = Mathf.Infinity;
-
-        Collider[] colliders = Physics.OverlapSphere(targetTransform.position, 20);
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            CharacterManager character = colliders[i].GetComponent<CharacterManager>();
-            if (character != null)
-            {
-                var lockTargetDirection = character.transform.position - targetTransform.position;
-                float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
-                //求出我们看向敌人方向与摄像机的角度
-                float viewableAngle = Vector3.Angle(lockTargetDirection, cameraTransform.forward);
-
-
-                if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
-                    && viewableAngle < 60 && distanceFormTargetSqr <= maxLockDistance)
-                {
-                    if (Physics.Linecast(playerManager.LockOnTransform.position, character.LockOnTransform.position, out RaycastHit hit))
-                    {
-                        if (hit.transform.gameObject.layer != enviromentLayer)
-                        {
-                            avilableTargets.Add(character);
-                        }
-                    }
-                }
-            }
-        }
+        lookingDirectionParameters.target = target;
+        lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
     }
     #endregion
     #region 移动（movement）
@@ -287,7 +261,6 @@ public class MovementState : CharacterControlStateBase
                 }
                 break;
             case LookingDirectionParameters.LookingDirectionMode.Target:
-
                 targetLookingDirection = (lookingDirectionParameters.target.position - CharacterActor.Position);
                 targetLookingDirection.Normalize();
                 break;
@@ -518,6 +491,7 @@ public class MovementState : CharacterControlStateBase
         return isCrouched && CharacterActions.jump.Started;
     }
     #endregion
+
     void HandleSize(float dt)
     {
         if (crouchParameters.enableCrouch)

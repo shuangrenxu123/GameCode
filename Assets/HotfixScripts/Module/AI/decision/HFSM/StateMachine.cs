@@ -171,5 +171,11 @@ namespace HFSM
             CurrentState.FixUpdate();
         }
 
+        public virtual StateBase FindState(string name)
+        {
+            status.TryGetValue(name,out StateBase state);
+            return state;   
+
+        }
     }
 }

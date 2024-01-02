@@ -4,6 +4,7 @@ using UnityEngine;
 public class StateManger : MonoBehaviour
 {
     CharacterStateController_New controller;
+    public Camera3D camera;
     public CharacterBrain characterBrain;
     [SerializeField]
     RuntimeAnimatorController movementAnimator;
@@ -23,9 +24,9 @@ public class StateManger : MonoBehaviour
             CharacterActor = GetComponentInParent<CharacterActor>(),
             CharacterBrain = characterBrain
         };
+        controller.ExternalReference = camera.transform;
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
         controller.database = dataBase;
-        controller.MovementReferenceMode = MovementReferenceParmeters.MovementReferenceMode.World;
 
         var movementState = new MovementState
         {
@@ -113,6 +114,14 @@ public class StateManger : MonoBehaviour
     private void FixedUpdate()
     {
         controller.FixUpdate();
+    }
+    public void HandleLock()
+    {
+        var movestate = controller.FindState("move") as MovementState;
+        if(movestate != null)
+        {
+            movestate.HandleLockEnemy(camera.currentLockOnTarget);
+        }
     }
 
 }

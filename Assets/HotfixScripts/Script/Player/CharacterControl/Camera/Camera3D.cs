@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [DefaultExecutionOrder(110)]
@@ -20,7 +21,8 @@ public class Camera3D : MonoBehaviour
     [Tooltip("摄像机所对焦的点。默认情况下应该为我们所控制的角色的Graphics节点")]
     [SerializeField]
     Transform targetTransform = null;
-
+    [SerializeField]
+    StateManger stataManager;
     [SerializeField]
     Vector3 offsetFromHead = Vector3.zero;
 
@@ -45,7 +47,13 @@ public class Camera3D : MonoBehaviour
 
     public float yawSpeed = 180f;
 
-
+    [Header("锁定")]
+    [SerializeField] float lockDistance = 20f;
+    [SerializeField] float lockEnemyMaxDistance = 30f;
+    [SerializeField] string lockEnemyTag = "Enemy";
+    public LayerMask lockMask;
+    Transform nearestLockOnTarget;
+    public Transform currentLockOnTarget;
     [Header("Pitch")]
 
     public bool updatePitch = true;
@@ -96,10 +104,6 @@ public class Camera3D : MonoBehaviour
     public bool considerKinematicRigidbodies = true;
     public bool considerDynamicRigidbodies = true;
 
-    // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-    // ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-
 
     CharacterActor characterActor = null;
     Rigidbody characterRigidbody = null;
@@ -119,6 +123,7 @@ public class Camera3D : MonoBehaviour
     RaycastHit[] validHits = new RaycastHit[10];
     Vector3 characterPosition = default(Vector3);
     float lerpedHeight;
+
 
     public enum CameraMode
     {
@@ -190,7 +195,6 @@ public class Camera3D : MonoBehaviour
 
     void Start()
     {
-
         characterPosition = targetTransform.position;
 
         previousLerpedCharacterUp = targetTransform.up;
@@ -285,8 +289,6 @@ public class Camera3D : MonoBehaviour
                     {
                         bodyRenderers[i].enabled = true;
                     }
-
-
                 }
         }
     }
@@ -358,7 +360,11 @@ public class Camera3D : MonoBehaviour
             finalPosition = targetPosition + displacement;
         }
 
-
+        var lockbutton = inputHandlerSettings.InputHandler.GetBool("Lock");
+        if( lockbutton)
+        {
+            HandleLockOn();
+        }
         transform.position = finalPosition;
         transform.rotation = viewReference.rotation;
 
@@ -424,5 +430,47 @@ public class Camera3D : MonoBehaviour
         return true;
     }
 
+    void HandleLockOn()
+    {
+        List<CharacterManager> avilableTargets = new List<CharacterManager>();
+        float shortTargetDistance = Mathf.Infinity;
+
+        Collider[] colliders = Physics.OverlapSphere(targetTransform.position, lockDistance, lockMask);
+        Debug.Log("colliders :" +colliders.Length);
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            CharacterManager character = colliders[i].GetComponent<CharacterManager>();
+            if (character != null)
+            {
+                var lockTargetDirection = character.transform.position - targetTransform.position;
+                float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
+                //求出我们看向敌人方向与摄像机的角度
+                float viewableAngle = Vector3.Angle(lockTargetDirection, transform.forward);
+
+                if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
+                    && viewableAngle < 60 && distanceFormTargetSqr <= lockDistance)
+                {
+                    avilableTargets.Add(character);
+                }
+            }
+        }
+        Debug.Log("TargetCount :" +avilableTargets.Count);
+        for (int i = 0;i < avilableTargets.Count;i++)
+        {
+            if (avilableTargets[i].tag != lockEnemyTag)
+                continue;
+            float distance = Vector3.Distance(targetTransform.position, avilableTargets[i].transform.position);
+            if (distance < shortTargetDistance)
+            {
+                shortTargetDistance = distance;
+                nearestLockOnTarget = avilableTargets[i].LockOnTransform;
+            }
+        }
+        currentLockOnTarget = nearestLockOnTarget;
+        if(currentLockOnTarget != null)
+        {
+            stataManager.HandleLock();
+        }
+    }
 
 }

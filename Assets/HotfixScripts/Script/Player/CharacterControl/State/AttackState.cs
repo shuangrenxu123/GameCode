@@ -27,6 +27,14 @@ public class AttackState : CharacterControlStateBase
             Debug.Log("111");
         }
     }
+    public override void Update()
+    {
+        AnimatorStateInfo info = CharacterStateController.Animator.GetCurrentAnimatorStateInfo(0);
 
+        if (info.normalizedTime >= 1.0f)
+        {
+            database.SetData<bool>("attack", false);
+        }
+    }
 
 }
