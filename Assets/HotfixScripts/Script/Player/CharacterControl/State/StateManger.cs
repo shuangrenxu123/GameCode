@@ -80,13 +80,13 @@ public class StateManger : MonoBehaviour
         dataBase.SetData("attack", false);
 
 
-        controller.AddState("attack", Attack);
+        //controller.AddState("attack", Attack);
         controller.AddState("move", movementState);
         controller.AddState("ladder", ladderClimb);
         controller.AddState("interaction", interaction);
         controller.AddState("roll", roll);
 
-        AddCondition(controller,"attack",dataBase,"move","attack");
+       // AddCondition(controller,"attack",dataBase,"move","attack");
         controller.AddTransition(moveToladder);
         controller.AddTransition(moveToInteraction);
         controller.AddTransition(InteractionTomove);
@@ -118,10 +118,7 @@ public class StateManger : MonoBehaviour
     public void HandleLock()
     {
         var movestate = controller.FindState("move") as MovementState;
-        if(movestate != null)
-        {
-            movestate.HandleLockEnemy(camera.currentLockOnTarget);
-        }
+        movestate?.HandleLockEnemy(camera.currentLockOnTarget);
     }
 
 }

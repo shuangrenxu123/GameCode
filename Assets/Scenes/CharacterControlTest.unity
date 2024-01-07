@@ -144,7 +144,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 510489106}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -160,7 +160,7 @@ Transform:
   m_GameObject: {fileID: 510489105}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: -0.494}
+  m_LocalPosition: {x: 0, y: 0.007, z: -0.494}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -402,9 +402,10 @@ GameObject:
   - component: {fileID: 1669258568}
   - component: {fileID: 1669258567}
   - component: {fileID: 1669258571}
-  m_Layer: 0
+  - component: {fileID: 1669258572}
+  m_Layer: 7
   m_Name: Ladder
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -515,6 +516,25 @@ MonoBehaviour:
   climbingAnimations: 2
   bottomLocalPosition: {x: 0, y: 0, z: 0}
   facingDirection: 4
+--- !u!114 &1669258572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1669258566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35ab85ad6a1bf0f4dbe0cc52be2a3735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LockOnTransform: {fileID: 510489106}
+  backStepCollider: {fileID: 0}
+  backStep: {fileID: 0}
+  animatorHandle: {fileID: 0}
+  isGrounded: 0
+  climbLabber: 0
+  characterController: {fileID: 0}
 --- !u!4 &1748210921 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 669159613489647311, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
@@ -530,7 +550,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1819810457}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: down
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -570,6 +590,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e48d82488f02148bb092a7e483acb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camera: {fileID: 1959177997}
   characterBrain: {fileID: 327739441}
   movementAnimator: {fileID: 9100000, guid: e686db094ee66c64b8e6e818e0e2cb39, type: 2}
   ladderClimbing: {fileID: 9100000, guid: c05eaf7a07734ad4f8e19f2263be5efc, type: 2}
@@ -582,6 +603,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 5051012056401252772}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1959177997 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+    type: 3}
+  m_PrefabInstance: {fileID: 5051012056401252772}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bb22738fdb13bb340907cfeeca977dda, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5051012056401252772
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -647,9 +680,64 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
         type: 3}
+      propertyPath: updateRoll
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: stataManager
+      value: 
+      objectReference: {fileID: 1857044814}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: zoomInOutSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: lockMask.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
       propertyPath: targetTransform
       value: 
       objectReference: {fileID: 1748210921}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: distanceToTarget
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: collisionDetection
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: zoomInOutLerpSpeed
+      value: 1.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: lockOffsetPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: lockOffsetPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: lockOffsetPosition.z
+      value: -2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: lockEnemyCameraMoveSpeed
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

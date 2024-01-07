@@ -41,7 +41,7 @@ public class Camera3D : MonoBehaviour
     [SerializeField]
     GameObject bodyObject = null;
 
-    [Header("Yaw")]
+    [Header("竖直旋转")]
 
     public bool updateYaw = true;
 
@@ -50,11 +50,14 @@ public class Camera3D : MonoBehaviour
     [Header("锁定")]
     [SerializeField] float lockDistance = 20f;
     [SerializeField] float lockEnemyMaxDistance = 30f;
+    [SerializeField] float lockEnemyCameraMoveSpeed =10f;
     [SerializeField] string lockEnemyTag = "Enemy";
+    [SerializeField] Vector3 lockOffsetPosition;
+    private bool lockFlag =false;
     public LayerMask lockMask;
     Transform nearestLockOnTarget;
     public Transform currentLockOnTarget;
-    [Header("Pitch")]
+    [Header("水平移动")]
 
     public bool updatePitch = true;
 
@@ -69,12 +72,7 @@ public class Camera3D : MonoBehaviour
     [Range(1f, 85f)]
     public float minPitchAngle = 80f;
 
-
-    [Header("缩放")]
-    public bool updateRoll = false;
-
-
-    [Header("Zoom (Third person)")]
+    [Header("镜头缩放")]
 
     public bool updateZoom = true;
 
@@ -131,14 +129,6 @@ public class Camera3D : MonoBehaviour
         ThirdPerson,
     }
 
-
-    public void ToggleCameraMode()
-    {
-        cameraMode = cameraMode == CameraMode.FirstPerson ? CameraMode.ThirdPerson : CameraMode.FirstPerson;
-    }
-
-
-
     void OnValidate()
     {
         initialPitch = Mathf.Clamp(initialPitch, -minPitchAngle, maxPitchAngle);
@@ -191,8 +181,6 @@ public class Camera3D : MonoBehaviour
         characterActor.OnTeleport -= OnTeleport;
     }
 
-
-
     void Start()
     {
         characterPosition = targetTransform.position;
@@ -218,18 +206,7 @@ public class Camera3D : MonoBehaviour
             this.enabled = false;
             return;
         }
-
-        Vector2 cameraAxes = inputHandlerSettings.InputHandler.GetVector2(axes);
-
-        if (updatePitch)
-            deltaPitch = -cameraAxes.y;
-
-        if (updateYaw)
-            deltaYaw = cameraAxes.x;
-
-        if (updateZoom)
-            deltaZoom = -inputHandlerSettings.InputHandler.GetFloat(zoomAxis);
-
+        UpdateInputValue();
         // An input axis value (e.g. mouse x) usually gets accumulated over time. So, the higher the frame rate the smaller the value returned.
         // In order to prevent inconsistencies due to frame rate changes, the camera movement uses a fixed delta time, instead of the old regular
         // delta time.
@@ -251,53 +228,103 @@ public class Camera3D : MonoBehaviour
 
     Vector3 previousLerpedCharacterUp = Vector3.up;
 
+    /// <summary>
+    /// 更新角色输入
+    /// </summary>
+    void UpdateInputValue()
+    {
+        Vector2 cameraAxes = inputHandlerSettings.InputHandler.GetVector2(axes);
+
+        if (updatePitch)
+            deltaPitch = -cameraAxes.y;
+
+        if (updateYaw)
+            deltaYaw = cameraAxes.x;
+
+        if (updateZoom)
+            deltaZoom = -inputHandlerSettings.InputHandler.GetFloat(zoomAxis);
+
+    }
     void HandleBodyVisibility()
     {
-        if (cameraMode == CameraMode.FirstPerson)
-        {
-            if (bodyRenderers != null)
-                for (int i = 0; i < bodyRenderers.Length; i++)
+ 
+        if (bodyRenderers != null)
+            for (int i = 0; i < bodyRenderers.Length; i++)
+            {
+                if (bodyRenderers[i] == null)
+                    continue;
+                if (bodyRenderers[i].GetType().IsSubclassOf(typeof(SkinnedMeshRenderer)))
                 {
-                    if (bodyRenderers[i].GetType().IsSubclassOf(typeof(SkinnedMeshRenderer)))
-                    {
-                        SkinnedMeshRenderer skinnedMeshRenderer = (SkinnedMeshRenderer)bodyRenderers[i];
-                        if (skinnedMeshRenderer != null)
-                            skinnedMeshRenderer.forceRenderingOff = hideBody;
-                    }
-                    else
-                    {
-                        bodyRenderers[i].enabled = !hideBody;
-                    }
+                    SkinnedMeshRenderer skinnedMeshRenderer = (SkinnedMeshRenderer)bodyRenderers[i];
+                    if (skinnedMeshRenderer != null)
+                        skinnedMeshRenderer.forceRenderingOff = false;
                 }
-
-        }
-        else
-        {
-            if (bodyRenderers != null)
-                for (int i = 0; i < bodyRenderers.Length; i++)
+                else
                 {
-                    if (bodyRenderers[i] == null)
-                        continue;
-
-                    if (bodyRenderers[i].GetType().IsSubclassOf(typeof(SkinnedMeshRenderer)))
-                    {
-                        SkinnedMeshRenderer skinnedMeshRenderer = (SkinnedMeshRenderer)bodyRenderers[i];
-                        if (skinnedMeshRenderer != null)
-                            skinnedMeshRenderer.forceRenderingOff = false;
-                    }
-                    else
-                    {
-                        bodyRenderers[i].enabled = true;
-                    }
+                    bodyRenderers[i].enabled = true;
                 }
-        }
+            }
+        
     }
-
     void UpdateCamera(float dt)
     {
         // Body visibility ---------------------------------------------------------------------
         HandleBodyVisibility();
 
+        //聚焦移动至角色处
+        characterPosition = targetTransform.position;
+
+        lerpedHeight = Mathf.Lerp(lerpedHeight, characterActor.BodySize.y, heightLerpSpeed * dt);
+        Vector3 targetPosition = characterPosition + targetTransform.up * lerpedHeight + targetTransform.TransformDirection(offsetFromHead);
+        viewReference.position = targetPosition;
+
+        Vector3 finalPosition = viewReference.position;
+
+        UpdateRotation(dt);
+        // ------------------------------------------------------------------------------------------------------
+ 
+         currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
+         currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
+
+         smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * dt);
+         Vector3 displacement = -viewReference.forward * smoothedDistanceToTarget;
+
+         if (collisionDetection)
+         {
+             bool hit = DetectCollisions(ref displacement, targetPosition);
+
+             if (collisionAffectsZoom && hit)
+             {
+                 currentDistanceToTarget = smoothedDistanceToTarget = displacement.magnitude;
+             }
+         }
+
+         finalPosition = targetPosition + displacement;
+        
+
+        var lockbutton = inputHandlerSettings.InputHandler.GetBool("Lock");
+        if(lockbutton)
+        {
+           lockFlag = HandleLockOn();
+        }
+
+        if (lockFlag)
+        {
+            updatePitch = updateYaw = false;
+            HandleCamreaLock(dt);
+        }
+        transform.position = finalPosition;
+        transform.rotation = viewReference.rotation;
+
+    }
+    void HandleZoom()
+    {
+
+    }
+    #region Rotation
+
+    void UpdateRotation(float dt)
+    {
         // Rotation -----------------------------------------------------------------------------------------
         lerpedCharacterUp = targetTransform.up;
 
@@ -307,9 +334,7 @@ public class Camera3D : MonoBehaviour
 
         viewReference.rotation = deltaRotation * viewReference.rotation;
 
-
-
-        // Yaw rotation -----------------------------------------------------------------------------------------        
+        // 竖直旋转 -----------------------------------------------------------------------------------------        
         viewReference.Rotate(lerpedCharacterUp, deltaYaw * yawSpeed * dt, Space.World);
 
         // Pitch rotation -----------------------------------------------------------------------------------------            
@@ -323,52 +348,8 @@ public class Camera3D : MonoBehaviour
         float pitchAngle = Mathf.Clamp(deltaPitch * pitchSpeed * dt, minPitch, maxPitch);
         viewReference.Rotate(Vector3.right, pitchAngle);
 
-        // Roll rotation -----------------------------------------------------------------------------------------    
-        if (updateRoll)
-        {
-            viewReference.up = lerpedCharacterUp;
-        }
-
-        // Position of the target -----------------------------------------------------------------------
-        characterPosition = targetTransform.position;
-
-        lerpedHeight = Mathf.Lerp(lerpedHeight, characterActor.BodySize.y, heightLerpSpeed * dt);
-        Vector3 targetPosition = characterPosition + targetTransform.up * lerpedHeight + targetTransform.TransformDirection(offsetFromHead);
-        viewReference.position = targetPosition;
-
-        Vector3 finalPosition = viewReference.position;
-
-        // ------------------------------------------------------------------------------------------------------
-        if (cameraMode == CameraMode.ThirdPerson)
-        {
-            currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
-            currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
-
-            smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * dt);
-            Vector3 displacement = -viewReference.forward * smoothedDistanceToTarget;
-
-            if (collisionDetection)
-            {
-                bool hit = DetectCollisions(ref displacement, targetPosition);
-
-                if (collisionAffectsZoom && hit)
-                {
-                    currentDistanceToTarget = smoothedDistanceToTarget = displacement.magnitude;
-                }
-            }
-
-            finalPosition = targetPosition + displacement;
-        }
-
-        var lockbutton = inputHandlerSettings.InputHandler.GetBool("Lock");
-        if( lockbutton)
-        {
-            HandleLockOn();
-        }
-        transform.position = finalPosition;
-        transform.rotation = viewReference.rotation;
-
     }
+    #endregion
 
     bool DetectCollisions(ref Vector3 displacement, Vector3 lookAtPosition)
     {
@@ -429,33 +410,52 @@ public class Camera3D : MonoBehaviour
 
         return true;
     }
-
-    void HandleLockOn()
+    #region lock
+    bool HandleLockOn()
+    {
+        bool result =  FindLockObject();
+        if(result)
+        {
+            stataManager.HandleLock();
+        }
+        return result;
+    }
+    void HandleCamreaLock(float dt)
+    {
+        var targetPosition =  viewReference.position + lockOffsetPosition;
+        Vector3 deltaPosition = Vector3.Lerp(viewReference.position,targetPosition,lockEnemyCameraMoveSpeed *dt);
+        viewReference.position = deltaPosition;
+        Vector3 direction = currentLockOnTarget.position - viewReference.position;
+        direction.Normalize();
+        var targetRotation = Quaternion.LookRotation(direction);
+        viewReference.rotation= targetRotation;
+    }
+    bool FindLockObject()
     {
         List<CharacterManager> avilableTargets = new List<CharacterManager>();
         float shortTargetDistance = Mathf.Infinity;
 
         Collider[] colliders = Physics.OverlapSphere(targetTransform.position, lockDistance, lockMask);
-        Debug.Log("colliders :" +colliders.Length);
+        Debug.Log("colliders :" + colliders.Length);
         for (int i = 0; i < colliders.Length; i++)
         {
             CharacterManager character = colliders[i].GetComponent<CharacterManager>();
             if (character != null)
             {
-                var lockTargetDirection = character.transform.position - targetTransform.position;
+                var lockTargetDirection = Vector3.ProjectOnPlane((character.transform.position - targetTransform.position), targetTransform.up);
                 float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
+                lockTargetDirection.Normalize();
                 //求出我们看向敌人方向与摄像机的角度
-                float viewableAngle = Vector3.Angle(lockTargetDirection, transform.forward);
-
+                float viewableAngle = Vector3.Angle(lockTargetDirection, targetTransform.forward);
                 if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
-                    && viewableAngle < 60 && distanceFormTargetSqr <= lockDistance)
+                    && viewableAngle < 60 && distanceFormTargetSqr <= lockDistance * lockDistance)
                 {
                     avilableTargets.Add(character);
                 }
             }
         }
-        Debug.Log("TargetCount :" +avilableTargets.Count);
-        for (int i = 0;i < avilableTargets.Count;i++)
+        Debug.Log("TargetCount :" + avilableTargets.Count);
+        for (int i = 0; i < avilableTargets.Count; i++)
         {
             if (avilableTargets[i].tag != lockEnemyTag)
                 continue;
@@ -466,11 +466,15 @@ public class Camera3D : MonoBehaviour
                 nearestLockOnTarget = avilableTargets[i].LockOnTransform;
             }
         }
-        currentLockOnTarget = nearestLockOnTarget;
-        if(currentLockOnTarget != null)
+        if(nearestLockOnTarget != null)
         {
-            stataManager.HandleLock();
+            currentLockOnTarget = nearestLockOnTarget;
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
-
+    #endregion
 }

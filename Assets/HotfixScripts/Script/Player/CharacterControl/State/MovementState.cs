@@ -46,6 +46,7 @@ public class MovementState : CharacterControlStateBase
     /// </summary>
     protected bool isAllowedToCancelJump = false;
     protected bool wantToRun = false;
+    protected bool lockFlag = false;
     protected float currentPlanarSpeedLimit = 0f;
     /// <summary>
     /// 当前地面是否可以跳跃
@@ -139,6 +140,7 @@ public class MovementState : CharacterControlStateBase
     {
         lookingDirectionParameters.target = target;
         lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
+        lockFlag = true;
     }
     #endregion
     #region 移动（movement）
@@ -261,8 +263,7 @@ public class MovementState : CharacterControlStateBase
                 }
                 break;
             case LookingDirectionParameters.LookingDirectionMode.Target:
-                targetLookingDirection = (lookingDirectionParameters.target.position - CharacterActor.Position);
-                targetLookingDirection.Normalize();
+                targetLookingDirection = Vector3.ProjectOnPlane(lookingDirectionParameters.target.position - CharacterActor.Position, CharacterActor.Up).normalized;
                 break;
             case LookingDirectionParameters.LookingDirectionMode.ExternalReference:
                 targetLookingDirection = CharacterStateController.MovementReferenceForward;
@@ -576,6 +577,7 @@ public class MovementState : CharacterControlStateBase
         CharacterStateController.Animator.SetFloat(horizontalAxisParameter, CharacterActions.movement.value.x);
         CharacterStateController.Animator.SetFloat(verticalAxisParameter, CharacterActions.movement.value.y);
         CharacterStateController.Animator.SetFloat(heightParameter, CharacterActor.BodySize.y);
+        CharacterStateController.Animator.SetBool("lock", lockFlag);
     }
     /// <summary>
     /// 在物理完毕之后更新动画，意味着我们在不输入速度情况下也可以处理相关动画

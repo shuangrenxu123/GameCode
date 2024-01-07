@@ -249,7 +249,7 @@ public abstract class PhysicsActor : MonoBehaviour
         Rotation = Quaternion.LookRotation(forward, up);
     }
     /// <summary>
-    /// 通过偏航旋转（围绕其“up”轴）来旋转角色。 四元数中* 则等同于继续旋转
+    ///
     /// </summary>
     /// <param name="deltaRotation"></param>
     /// <param name="pivot"></param>
@@ -260,12 +260,16 @@ public abstract class PhysicsActor : MonoBehaviour
         Vector3 postReferEnceToPivot = deltaRotation * preReferenceToPivot;
         Position += preReferenceToPivot - postReferEnceToPivot;
     }
+    /// <summary>
+    /// 参数为一个要朝向的向量，本质还是旋转一个角度，可以看作Rotate的重载
+    /// </summary>
+    /// <param name="forward"></param>
     public virtual void SetYaw(Vector3 forward)
     {
         Rotation = Quaternion.AngleAxis(Vector3.SignedAngle(Forward, forward, Up), Up) * Rotation;
     }
     /// <summary>
-    /// 通过偏航旋转（围绕其“up”轴）来旋转角色。
+    /// 绕着Up轴来旋转一个角度
     /// </summary>
     /// <param name="angle"></param>
     public virtual void RotateYaw(float angle)
