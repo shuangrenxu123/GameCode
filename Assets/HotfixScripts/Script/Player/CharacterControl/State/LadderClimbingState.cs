@@ -54,11 +54,6 @@ public class LadderClimbingState : CharacterControlStateBase
         CharacterActor.Animator.SetTrigger(isBottom ? bottomDownParmeter : topDownParameter);
 
         state = LadderClimbState.Entering;
-
-        if (CharacterStateController.Animator != null && RuntimeAnimatorController != null)
-        {
-            CharacterStateController.Animator.runtimeAnimatorController = RuntimeAnimatorController;
-        }
     }
     public override void Exit()
     {

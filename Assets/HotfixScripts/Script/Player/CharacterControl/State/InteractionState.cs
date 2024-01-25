@@ -1,35 +1,31 @@
+using Animancer;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractionState : CharacterControlStateBase
 {
-    #region Animator
-    public string type = "type";
-    #endregion
     private Interactable interactable;
+    private AnimancerState state;
     public override void Init()
     {
         base.Init();
     }
     public override void Enter()
     {
-        interactable = database.GetData<Interactable>("interactable");
-        CharacterActor.Velocity = Vector3.zero;
-        CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-        if (RuntimeAnimatorController != null)
-        {
-            var animator = new AnimatorOverrideController(RuntimeAnimatorController);
-            CharacterStateController.Animator.runtimeAnimatorController = animator;
-        }
-        CharacterActor.Animator.SetFloat("type",(int)interactable.InteractableType);
-    }
-    public override void Update()
-    {
-        AnimatorStateInfo info = CharacterStateController.Animator.GetCurrentAnimatorStateInfo(0);
-
-        if (info.normalizedTime >= 1.0f)
+        //interactable = database.GetData<Interactable>("interactable");
+        if(interactable == null)
         {
             database.SetData<bool>("interaction", false);
         }
+        CharacterActor.Velocity = Vector3.zero;
+        CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+        state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
+        state.Events.OnEnd += OnAnimatorEnd;
+    }
+    private void OnAnimatorEnd()
+    {
+        database.SetData<bool>("interaction", false);
+        state.Events.OnEnd -= OnAnimatorEnd;
     }
 }
 public enum InteractableType

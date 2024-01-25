@@ -1,5 +1,6 @@
 using Fight;
 using UnityEngine;
+
 public class Player : CharacterManager
 {
     [Header("InputHandle")]

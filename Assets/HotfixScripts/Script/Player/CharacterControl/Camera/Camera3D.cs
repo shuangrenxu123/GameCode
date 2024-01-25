@@ -29,18 +29,6 @@ public class Camera3D : MonoBehaviour
     [Tooltip("The interpolation speed used when the height of the character changes.")]
     [SerializeField]
     float heightLerpSpeed = 10f;
-
-    [Header("View")]
-
-    public CameraMode cameraMode = CameraMode.ThirdPerson;
-
-    [Header("第一人称")]
-
-    public bool hideBody = true;
-
-    [SerializeField]
-    GameObject bodyObject = null;
-
     [Header("竖直旋转")]
 
     public bool updateYaw = true;
@@ -56,6 +44,7 @@ public class Camera3D : MonoBehaviour
     private bool lockFlag =false;
     public LayerMask lockMask;
     Transform nearestLockOnTarget;
+    bool lockbutton;
     public Transform currentLockOnTarget;
     [Header("水平移动")]
 
@@ -116,18 +105,10 @@ public class Camera3D : MonoBehaviour
     Vector3 lerpedCharacterUp = Vector3.up;
 
     Transform viewReference = null;
-    Renderer[] bodyRenderers = null;
     RaycastHit[] hitsBuffer = new RaycastHit[10];
     RaycastHit[] validHits = new RaycastHit[10];
     Vector3 characterPosition = default(Vector3);
     float lerpedHeight;
-
-
-    public enum CameraMode
-    {
-        FirstPerson,
-        ThirdPerson,
-    }
 
     void OnValidate()
     {
@@ -158,9 +139,6 @@ public class Camera3D : MonoBehaviour
 
         GameObject referenceObject = new GameObject("Camera reference");
         viewReference = referenceObject.transform;
-
-        if (bodyObject != null)
-            bodyRenderers = bodyObject.GetComponentsInChildren<Renderer>();
 
         return true;
     }
@@ -198,7 +176,6 @@ public class Camera3D : MonoBehaviour
         lerpedHeight = characterActor.BodySize.y;
     }
 
-
     void Update()
     {
         if (targetTransform == null)
@@ -214,7 +191,6 @@ public class Camera3D : MonoBehaviour
 
         UpdateCamera(dt);
     }
-
     void OnTeleport(Vector3 position, Quaternion rotation)
     {
         viewReference.rotation = rotation;
@@ -244,32 +220,11 @@ public class Camera3D : MonoBehaviour
         if (updateZoom)
             deltaZoom = -inputHandlerSettings.InputHandler.GetFloat(zoomAxis);
 
-    }
-    void HandleBodyVisibility()
-    {
- 
-        if (bodyRenderers != null)
-            for (int i = 0; i < bodyRenderers.Length; i++)
-            {
-                if (bodyRenderers[i] == null)
-                    continue;
-                if (bodyRenderers[i].GetType().IsSubclassOf(typeof(SkinnedMeshRenderer)))
-                {
-                    SkinnedMeshRenderer skinnedMeshRenderer = (SkinnedMeshRenderer)bodyRenderers[i];
-                    if (skinnedMeshRenderer != null)
-                        skinnedMeshRenderer.forceRenderingOff = false;
-                }
-                else
-                {
-                    bodyRenderers[i].enabled = true;
-                }
-            }
-        
+        lockbutton = inputHandlerSettings.InputHandler.GetBool("Lock");
+
     }
     void UpdateCamera(float dt)
     {
-        // Body visibility ---------------------------------------------------------------------
-        HandleBodyVisibility();
 
         //聚焦移动至角色处
         characterPosition = targetTransform.position;
@@ -300,9 +255,7 @@ public class Camera3D : MonoBehaviour
          }
 
          finalPosition = targetPosition + displacement;
-        
-
-        var lockbutton = inputHandlerSettings.InputHandler.GetBool("Lock");
+       
         if(lockbutton)
         {
            lockFlag = HandleLockOn();
@@ -315,10 +268,6 @@ public class Camera3D : MonoBehaviour
         }
         transform.position = finalPosition;
         transform.rotation = viewReference.rotation;
-
-    }
-    void HandleZoom()
-    {
 
     }
     #region Rotation
@@ -422,13 +371,18 @@ public class Camera3D : MonoBehaviour
     }
     void HandleCamreaLock(float dt)
     {
-        var targetPosition =  viewReference.position + lockOffsetPosition;
-        Vector3 deltaPosition = Vector3.Lerp(viewReference.position,targetPosition,lockEnemyCameraMoveSpeed *dt);
-        viewReference.position = deltaPosition;
         Vector3 direction = currentLockOnTarget.position - viewReference.position;
+        if(direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
+        {
+            currentLockOnTarget = null;
+            stataManager.HandleLock();
+            lockFlag = false;
+            updatePitch = updateYaw = true;
+            return;
+        }
         direction.Normalize();
         var targetRotation = Quaternion.LookRotation(direction);
-        viewReference.rotation= targetRotation;
+        viewReference.rotation = targetRotation;
     }
     bool FindLockObject()
     {

@@ -1,4 +1,6 @@
+using Animancer;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class MovementState : CharacterControlStateBase
@@ -11,13 +13,13 @@ public class MovementState : CharacterControlStateBase
     #endregion
 
     #region Animator
-    [SerializeField] protected string groundParamerter = "Grounded";
-    [SerializeField] protected string stableParameter = "Stable";
-    [SerializeField] protected string verticalSpeedParameter = "VerticalSpeed";
-    [SerializeField] protected string planarSpeedParmeter = "PlanarSpeed";
-    [SerializeField] protected string horizontalAxisParameter = "HorizontalAxis";
-    [SerializeField] protected string verticalAxisParameter = "VerticalAxis";
-    [SerializeField] protected string heightParameter = "Height";
+    public LinearMixerTransition normalMoveAnimator;
+    public LinearMixerTransition crouchMoveAnimator;
+    public LinearMixerTransition currentAnimator;
+
+    private const string jump = "Jump";
+    private const string jumpFall = "JumpFall";
+    private const string jumpEnd = "JumpEnd";
     #endregion
 
     #region Events
@@ -92,15 +94,12 @@ public class MovementState : CharacterControlStateBase
     {
         CharacterActor.alwaysNotGrounded = false;
         targetLookingDirection = CharacterActor.Forward;
-
+        currentAnimator = normalMoveAnimator;
+        Animancer.Play(currentAnimator);
         currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
-
         CharacterActor.UseRootMotion = false;
-        if (CharacterStateController.Animator != null && RuntimeAnimatorController != null)
-        {
-            var animator = new AnimatorOverrideController(RuntimeAnimatorController);
-            CharacterStateController.Animator.runtimeAnimatorController = animator;
-        }
+
+        CharacterActor.OnGroundedStateEnter += HandleJumpEnterGround;
     }
     public override void Exit()
     {
@@ -125,7 +124,7 @@ public class MovementState : CharacterControlStateBase
         {
             database.SetData<bool>("interaction", true);
         }
-        if(CharacterActions.roll.Started)
+        if(CharacterActions.roll.Started && CharacterActor.IsGrounded)
         {
             database.SetData<bool>("roll", true);
         }
@@ -138,9 +137,19 @@ public class MovementState : CharacterControlStateBase
 
     public void HandleLockEnemy(Transform target)
     {
-        lookingDirectionParameters.target = target;
-        lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
-        lockFlag = true;
+        if(target == null)
+        {
+            lookingDirectionParameters.target = null;
+            lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
+            lockFlag = false;
+        }
+        else
+        {
+            lookingDirectionParameters.target = target;
+            lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
+            lockFlag = true;
+        }
+
     }
     #endregion
     #region 移动（movement）
@@ -168,6 +177,7 @@ public class MovementState : CharacterControlStateBase
         float speedMultiplier = 1;
         //是否需要加速
         bool needToAccalerate = CustomUtilities.Multiply(CharacterStateController.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude >= CharacterActor.PlanarVelocity.sqrMagnitude;
+        //目标速度
         Vector3 targetPlanarVelocity = default;
         switch (CharacterActor.CurrentState)
         {
@@ -209,6 +219,7 @@ public class MovementState : CharacterControlStateBase
 
         SetMotionValues(targetPlanarVelocity);
         float acceleration = currentMotion.acceleration;
+        //启用加速度
         if (needToAccalerate)
         {
             acceleration *= currentMotion.angleAccelerationMultiplier;
@@ -315,7 +326,11 @@ public class MovementState : CharacterControlStateBase
             crouchParameters.sizeLerpSpeed * dt, sizeReferenceType);
 
         if (validSize)
+        {
             isCrouched = true;
+            currentAnimator = crouchMoveAnimator;
+            Animancer.Play(currentAnimator);
+        }
     }
     /// <summary>
     /// 起立
@@ -326,9 +341,11 @@ public class MovementState : CharacterControlStateBase
         SizeReferenceType sizeReferenceType = CharacterActor.IsGrounded ? SizeReferenceType.Bottom : crouchParameters.notGroundedReference;
 
         bool validSize = CharacterActor.CheckAndInterpolateHeight(CharacterActor.DefaultBodySize.y, crouchParameters.sizeLerpSpeed * dt, sizeReferenceType);
-        if (validSize)
+        if (validSize && isCrouched)
         {
             isCrouched = false;
+            currentAnimator = normalMoveAnimator;
+            Animancer.Play(currentAnimator);
         }
 
     }
@@ -439,7 +456,7 @@ public class MovementState : CharacterControlStateBase
 
             CharacterActor.Velocity -= Vector3.Project(CharacterActor.Velocity, JumpDirection);
             CharacterActor.Velocity += CustomUtilities.Multiply(JumpDirection, verticalMovementParameters.jumpSpeed);
-
+            Animancer.Play(animators[jump]);
             if (verticalMovementParameters.cancelJumpOnRelease)
             {
                 isAllowedToCancelJump = true;
@@ -449,6 +466,12 @@ public class MovementState : CharacterControlStateBase
 
     }
 
+
+    private void HandleJumpEnterGround(Vector3 speed)
+    {
+        Animancer.Play(animators[jumpEnd]).Events.OnEnd = ()=> { Animancer.Play(currentAnimator); };
+    }
+
     /// <summary>
     /// 返回跳跃的方向，目前是角色头顶，可以后续从斜坡上起跳等
     /// </summary>
@@ -456,6 +479,11 @@ public class MovementState : CharacterControlStateBase
     {
         return CharacterActor.Up;
     }
+    /// <summary>
+    /// 处理自身的下落，如从单向平台下落等
+    /// </summary>
+    /// <param name="dt"></param>
+    /// <returns></returns>
     private bool ProcessJumpDown(float dt)
     {
         if (!verticalMovementParameters.canJumpDown)
@@ -525,6 +553,10 @@ public class MovementState : CharacterControlStateBase
             StandUp(dt);
         }
     }
+    /// <summary>
+    /// 处理加速度相关
+    /// </summary>
+    /// <param name="targetPlanarVelocity"></param>
     void SetMotionValues(Vector3 targetPlanarVelocity)
     {
         float angleCurrentTargetVelocity = Vector3.Angle(CharacterActor.PlanarVelocity, targetPlanarVelocity);
@@ -568,28 +600,34 @@ public class MovementState : CharacterControlStateBase
         }
     }
     #region 更新动画(Update Animator Parmeters)
-    public override void PreCharacterSimulation()
-    {
-        if (!CharacterActor.IsAnimatorValid())
-            return;
-        CharacterStateController.Animator.SetBool(groundParamerter, CharacterActor.IsGrounded);
-        //CharacterStateController.Animator.SetBool(stableParameter, CharacterActor.IsStable);
-        CharacterStateController.Animator.SetFloat(horizontalAxisParameter, CharacterActions.movement.value.x);
-        CharacterStateController.Animator.SetFloat(verticalAxisParameter, CharacterActions.movement.value.y);
-        CharacterStateController.Animator.SetFloat(heightParameter, CharacterActor.BodySize.y);
-        CharacterStateController.Animator.SetBool("lock", lockFlag);
-    }
     /// <summary>
     /// 在物理完毕之后更新动画，意味着我们在不输入速度情况下也可以处理相关动画
     /// </summary>
     public override void PostCharacterSimulation()
     {
-        if (!CharacterActor.IsAnimatorValid())
+        //if (!CharacterActor.IsAnimatorValid())
+        //{
+        //    return;
+        //}
+        // CharacterStateController.Animator.SetFloat(verticalSpeedParameter, CharacterActor.LocalVelocity.y);
+        // CharacterStateController.Animator.SetFloat(planarSpeedParmeter, CharacterActor.PlanarVelocity.magnitude);
+        if (CharacterActor.IsStable)
         {
-            return;
+            currentAnimator.State.Parameter = CharacterActor.PlanarVelocity.magnitude;
         }
-        CharacterStateController.Animator.SetFloat(verticalSpeedParameter, CharacterActor.LocalVelocity.y);
-        CharacterStateController.Animator.SetFloat(planarSpeedParmeter, CharacterActor.PlanarVelocity.magnitude);
+        else 
+        {
+ 
+            if (CharacterActor.Velocity.y > 0)
+            {
+                Animancer.Play(animators[jump]);
+            }
+            else if(CharacterActor.Velocity.y < 0)
+            {
+                Animancer.Play(animators[jumpFall]);
+            }
+        }
+
     }
     #endregion
 }

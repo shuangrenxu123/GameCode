@@ -1,22 +1,27 @@
+using Animancer;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AttackState : CharacterControlStateBase
 {
     private CharacterControlStateBase lastState;
+    public CharacterWeaponAnimator animator;
+    private AnimancerState state;
+
+    private List<AnimancerEvent.Sequence> lightEvents;
+    private List<AnimancerEvent.Sequence> HeaveEvents;
+    private WeaponType currentWeaponType;
     public override void Init()
     {
         base.Init();
+        lightEvents = new List<AnimancerEvent.Sequence>(3);
+        HeaveEvents = new List<AnimancerEvent.Sequence>(3);
     }
     public override void Enter()
     {
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         lastState = (CharacterControlStateBase)CharacterStateController.lastState;
-        if (RuntimeAnimatorController != null)
-        {
-            var animator = new AnimatorOverrideController(RuntimeAnimatorController);
-            CharacterStateController.Animator.runtimeAnimatorController = animator;
-        }
         var movestate = (lastState as MovementState);
         if ( movestate!= null)
         {
@@ -26,15 +31,29 @@ public class AttackState : CharacterControlStateBase
             }
             Debug.Log("111");
         }
+        state = Animancer.Play(animator.animators[0].lightAttackAnimator_OH[0]);
+        state.Events.OnEnd += OnAnimatorEnd;
     }
-    public override void Update()
+
+    private void OnAnimatorEnd()
     {
-        AnimatorStateInfo info = CharacterStateController.Animator.GetCurrentAnimatorStateInfo(0);
-
-        if (info.normalizedTime >= 1.0f)
-        {
-            database.SetData<bool>("attack", false);
-        }
+        database.SetData<bool>("attack", false);
+        state.Events.OnEnd -= OnAnimatorEnd;
     }
+    private void CanDoCombo()
+    {
 
+    }
+    private void EndDoCombo()
+    {
+
+    }
+    private void OpenWeaponCollider()
+    {
+
+    }
+    private void CloseWeaponCollider()
+    {
+
+    }
 }

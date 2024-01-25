@@ -592,11 +592,140 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   camera: {fileID: 1959177997}
   characterBrain: {fileID: 327739441}
-  movementAnimator: {fileID: 9100000, guid: e686db094ee66c64b8e6e818e0e2cb39, type: 2}
-  ladderClimbing: {fileID: 9100000, guid: c05eaf7a07734ad4f8e19f2263be5efc, type: 2}
-  interactionAnimator: {fileID: 9100000, guid: ca38f5fd1c79c6f45ba4c256dda79837, type: 2}
-  rollAnimator: {fileID: 9100000, guid: 7d36082770eda0f439839a6b78f3bd1f, type: 2}
-  attackAnimator: {fileID: 9100000, guid: 5d28007844261d3479cd4f2522e8491a, type: 2}
+  Animancer: {fileID: 6812912623971925483}
+  normalMoveAnimator:
+    _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Speed: 1
+    _Animations:
+    - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+    - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
+    - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
+    _Speeds: []
+    _SynchronizeChildren: 
+    _Thresholds:
+    - 0
+    - 3
+    - 6
+    _DefaultParameter: 0
+    _ExtrapolateSpeed: 1
+  crouchMoveAniamtor:
+    _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Speed: 1
+    _Animations:
+    - {fileID: 7400000, guid: ecfb6959ea35077469d921cde7022de1, type: 2}
+    - {fileID: 7400000, guid: c73441d565ad67d4c819a5c1cb78cc27, type: 2}
+    _Speeds: []
+    _SynchronizeChildren: 
+    _Thresholds:
+    - 0
+    - 2
+    _DefaultParameter: 0
+    _ExtrapolateSpeed: 1
+  lockMovementAnimator:
+    _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 0}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+    _AnimationSet: {fileID: 0}
+  jumpAnimator:
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 7400000, guid: d291a98131443b74fb62361d9d6ab34b, type: 2}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 7400000, guid: 860228f57ffe2d649a5a025b57b464e8, type: 2}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 7400000, guid: 7a41ab7a37086fa408ef02bd3dddd51c, type: 2}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  InterctionTransition:
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: -8024166766231005104, guid: c5f5f86bafa384c4784bd54a54c0019b,
+      type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: -8237482108326870749, guid: ca9a547d114f2be4d8c25167452e8ebb,
+      type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: -869818814183701303, guid: da9f82a65d548d84c925328a29420f8c, type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 6456316685503285685, guid: 86884e72f81ed064780f8cc063769cf8, type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: -484074203470291469, guid: a34922bca7029114d8a8561acf444fc9, type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: -8736212980521227050, guid: bbd5a27800b53624f9c2cbe98aa52c0d,
+      type: 3}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  rollAnimator:
+  - _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Clip: {fileID: 7400000, guid: 66b9a73903ab32143bf4fc644b79635a, type: 2}
+    _Speed: 1
+    _NormalizedStartTime: NaN
+  attackAnimator: {fileID: 11400000, guid: 327297952d82c5a4dbfd089b1e926ea1, type: 2}
 --- !u!4 &1959177995 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 635713640660876479, guid: b1adfd9082fc7ff46a30e50f4fac305e,
@@ -707,6 +836,11 @@ PrefabInstance:
         type: 3}
       propertyPath: distanceToTarget
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: layerMask.m_Bits
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
         type: 3}
@@ -877,11 +1011,41 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4115132790863854469, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6812912623971925483}
     - targetCorrespondingSourceObject: {fileID: 5877329984462569581, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1857044814}
   m_SourcePrefab: {fileID: 100100000, guid: 8f20aaf7766e5b946b15aa68a0f975e8, type: 3}
+--- !u!95 &6812912623971925481 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4057231286043167607, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6812912623971925480}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &6812912623971925482 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4115132790863854469, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6812912623971925480}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6812912623971925483
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6812912623971925482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad50f81b1d25c441943c37a89ba23f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _Animator: {fileID: 6812912623971925481}
+  _ActionOnDisable: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

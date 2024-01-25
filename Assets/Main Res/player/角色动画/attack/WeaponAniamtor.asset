@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13574fe009a1d3544bb84bcb8692859a, type: 3}
+  m_Name: WeaponAniamtor
+  m_EditorClassIdentifier: 
+  animators:
+  - type: 0
+    lightAttackAnimator_OH:
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Clip: {fileID: 7400000, guid: 745e10b909b24b04c9c65cd358de3a0d, type: 2}
+      _Speed: 1
+      _NormalizedStartTime: NaN
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Clip: {fileID: 7400000, guid: 543f53b31a11f1148ace37ecf4904711, type: 2}
+      _Speed: 1
+      _NormalizedStartTime: NaN
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Clip: {fileID: 7400000, guid: fefe0dee828a27844ba6ca041e90dd09, type: 2}
+      _Speed: 1
+      _NormalizedStartTime: NaN
+    heavyAttackAnimator_OH: []
+    lightAttackAnimator_TH: []
+    heavyAttackAnimator_TH: []

@@ -22,7 +22,6 @@ public class InputSystemHandler : InputHandler
     string controlSchemeName = "Keyboard Mouse";
 
     Dictionary<string, InputAction> inputActionsDictionary = new Dictionary<string, InputAction>();
-
     protected virtual void Awake()
     {
 
@@ -73,9 +72,8 @@ public class InputSystemHandler : InputHandler
 
     public override bool GetBool(string actionName)
     {
-        InputAction inputAction;
 
-        if (!inputActionsDictionary.TryGetValue(actionName, out inputAction))
+        if (!inputActionsDictionary.TryGetValue(actionName, out InputAction inputAction))
             return false;
 
         return inputActionsDictionary[actionName].ReadValue<float>() >= InputSystem.settings.defaultButtonPressPoint;
@@ -83,9 +81,8 @@ public class InputSystemHandler : InputHandler
 
     public override float GetFloat(string actionName)
     {
-        InputAction inputAction;
 
-        if (!inputActionsDictionary.TryGetValue(actionName, out inputAction))
+        if (!inputActionsDictionary.TryGetValue(actionName, out InputAction inputAction))
             return 0f;
 
         return inputAction.ReadValue<float>();
@@ -93,9 +90,8 @@ public class InputSystemHandler : InputHandler
 
     public override Vector2 GetVector2(string actionName)
     {
-        InputAction inputAction;
 
-        if (!inputActionsDictionary.TryGetValue(actionName, out inputAction))
+        if (!inputActionsDictionary.TryGetValue(actionName, out InputAction inputAction))
             return Vector2.zero;
 
         return inputActionsDictionary[actionName].ReadValue<Vector2>();

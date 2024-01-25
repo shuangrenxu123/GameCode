@@ -39,10 +39,10 @@ public class PlanarMovementParameters
     [System.Serializable]
     public struct PlanarMovementProperties
     {
-        [Tooltip("角色增加当前速度的速度。")]
+        [Tooltip("移动加速度")]
         public float acceleration;
 
-        [Tooltip("How fast the character reduces its current velocity.")]
+        [Tooltip("移动减速度")]
         public float deceleration;
 
         [Tooltip("How fast the character reduces its current velocity.")]

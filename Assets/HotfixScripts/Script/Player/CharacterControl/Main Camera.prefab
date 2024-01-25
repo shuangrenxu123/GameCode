@@ -157,21 +157,27 @@ MonoBehaviour:
   axes: Camera
   zoomAxis: Camera Zoom
   targetTransform: {fileID: 0}
+  stataManager: {fileID: 0}
   offsetFromHead: {x: 0, y: 0, z: 0}
   heightLerpSpeed: 10
-  cameraMode: 1
-  hideBody: 1
-  bodyObject: {fileID: 0}
   updateYaw: 1
   yawSpeed: 180
+  lockDistance: 20
+  lockEnemyMaxDistance: 30
+  lockEnemyCameraMoveSpeed: 10
+  lockEnemyTag: Enemy
+  lockOffsetPosition: {x: 0, y: 0, z: 0}
+  lockMask:
+    serializedVersion: 2
+    m_Bits: 0
+  currentLockOnTarget: {fileID: 0}
   updatePitch: 1
   initialPitch: 45
   pitchSpeed: 180
   maxPitchAngle: 80
   minPitchAngle: 80
-  updateRoll: 0
   updateZoom: 1
-  distanceToTarget: 5
+  distanceToTarget: 2
   zoomInOutSpeed: 40
   zoomInOutLerpSpeed: 5
   minZoom: 2

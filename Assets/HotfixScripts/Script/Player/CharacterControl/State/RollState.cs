@@ -1,9 +1,13 @@
+using Animancer;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class RollState : CharacterControlStateBase
 {
+    #region animatorName
+    public const string roll = "Roll";
+    #endregion
     public enum RollEnum
     {
 
@@ -20,6 +24,7 @@ public class RollState : CharacterControlStateBase
         /// </summary>
         InputDirection,
     }
+    private AnimancerState state;
     public override void Init()
     {
         base.Init();
@@ -28,18 +33,12 @@ public class RollState : CharacterControlStateBase
     {
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-        if (RuntimeAnimatorController != null)
-        {
-            CharacterStateController.Animator.runtimeAnimatorController = RuntimeAnimatorController;
-        }
+        state = Animancer.Play(animators[roll]);
+        state.Events.OnEnd += OnAnimatorEnd;
     }
-    public override void FixUpdate()
+    private void OnAnimatorEnd()
     {
-        AnimatorStateInfo info = CharacterStateController.Animator.GetCurrentAnimatorStateInfo(0);
-
-        if (info.normalizedTime >= 1.0f)
-        {
-            database.SetData<bool>("roll", false);
-        }
+        database.SetData<bool>("roll", false);
+        state.Events.OnEnd -= OnAnimatorEnd;    
     }
 }

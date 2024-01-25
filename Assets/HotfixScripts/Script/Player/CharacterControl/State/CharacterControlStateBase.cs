@@ -1,18 +1,12 @@
+using Animancer;
 using HFSM;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CharacterControlStateBase : StateBase
 {
-    bool overrideAnimatorController = true;
-
     public CharacterActor CharacterActor { get; protected set; }
-
-
-    /// <summary>
-    /// 获得动画控制器
-    /// </summary>
-    public RuntimeAnimatorController RuntimeAnimatorController { get; set; }
-    public bool OverrideAnimatorController => overrideAnimatorController;
+    public AnimancerComponent Animancer { get; set ; }
     protected CharacterBrain CharacterBrain = null;
     public CharacterActions CharacterActions
     {
@@ -24,6 +18,7 @@ public class CharacterControlStateBase : StateBase
     }
     public CharacterStateController_New CharacterStateController { get; protected set; }
 
+    public Dictionary<string, ClipTransition> animators;
     public override void Init()
     {
         CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
@@ -60,5 +55,18 @@ public class CharacterControlStateBase : StateBase
     public virtual void PostCharacterSimulation()
     {
     }
-
+    public void AddStateAnimators(List<ClipTransition> anims)
+    {
+        if(anims == null || anims.Count == 0)
+        {
+            Debug.LogError("添加动画失败"+ name);
+            return;
+        }
+        if(animators == null)
+            animators = new Dictionary<string, ClipTransition>(anims.Count);
+        for (int i = 0; i < anims.Count; i++)
+        {
+            animators.Add(anims[i].Clip.name, anims[i]);
+        }
+    }
 }

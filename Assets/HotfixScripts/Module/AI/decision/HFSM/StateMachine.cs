@@ -102,7 +102,7 @@ namespace HFSM
             lastState = CurrentState;
             if (!status.TryGetValue(stateName, out StateBase newState))
             {
-                Debug.Log("没有该状态");
+                Debug.Log("没有该状态" + stateName);
             }
             activeTransitions = newState.transitions ?? noTransitions;
             CurrentState = newState;

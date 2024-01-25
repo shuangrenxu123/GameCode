@@ -2,7 +2,7 @@
 namespace Fight
 {
     /// <summary>
-    /// 一次行为
+    /// 对战斗结果的封装
     /// </summary>
     public abstract class CombatAction
     {
