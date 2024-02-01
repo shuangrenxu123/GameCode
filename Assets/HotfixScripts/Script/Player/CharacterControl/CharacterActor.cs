@@ -531,7 +531,7 @@ public class CharacterActor : PhysicsActor
     /// </summary>
     public Vector3 PostSimulationVelocity { get; private set; }
     /// <summary>
-    /// 最终速度
+    /// 外界所提供的速度
     /// </summary>
     public Vector3 ExternalVelocity { get; private set; }
     /// <summary>

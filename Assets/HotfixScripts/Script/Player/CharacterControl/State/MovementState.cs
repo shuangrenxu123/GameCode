@@ -1,6 +1,7 @@
 using Animancer;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class MovementState : CharacterControlStateBase
@@ -15,7 +16,9 @@ public class MovementState : CharacterControlStateBase
     #region Animator
     public LinearMixerTransition normalMoveAnimator;
     public LinearMixerTransition crouchMoveAnimator;
-    public LinearMixerTransition currentAnimator;
+    public MixerState<Vector2> lockEnemyAnimator;
+
+    private LinearMixerTransition currentAnimator;
 
     private const string jump = "Jump";
     private const string jumpFall = "JumpFall";
@@ -24,7 +27,7 @@ public class MovementState : CharacterControlStateBase
 
     #region Events
     /// <summary>
-    /// 角色跳跃时触发的事件。
+    /// 角色跳跃时触发的事件。（只要跳跃了就会触发）
     /// </summary>
     public event Action OnJumpPerformed;
 
@@ -34,7 +37,7 @@ public class MovementState : CharacterControlStateBase
     public event Action<bool> OnGroundedJumpPerformed;
 
     /// <summary>
-    /// 角色跳跃时触发的事件。
+    /// 角色跳跃连跳时触发的事件（即不在地面时跳跃）。
     /// </summary>
     public event Action<int> OnNotGroundedJumpPerformed;
 
@@ -48,6 +51,7 @@ public class MovementState : CharacterControlStateBase
     /// </summary>
     protected bool isAllowedToCancelJump = false;
     protected bool wantToRun = false;
+    public bool IsRun { get => wantToRun; }
     protected bool lockFlag = false;
     protected float currentPlanarSpeedLimit = 0f;
     /// <summary>
@@ -142,12 +146,14 @@ public class MovementState : CharacterControlStateBase
             lookingDirectionParameters.target = null;
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
             lockFlag = false;
+            Animancer.Play(currentAnimator);
         }
         else
         {
             lookingDirectionParameters.target = target;
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
             lockFlag = true;
+            Animancer.Play(lockEnemyAnimator);
         }
 
     }
@@ -465,8 +471,6 @@ public class MovementState : CharacterControlStateBase
         }
 
     }
-
-
     private void HandleJumpEnterGround(Vector3 speed)
     {
         Animancer.Play(animators[jumpEnd]).Events.OnEnd = ()=> { Animancer.Play(currentAnimator); };
@@ -614,6 +618,11 @@ public class MovementState : CharacterControlStateBase
         if (CharacterActor.IsStable)
         {
             currentAnimator.State.Parameter = CharacterActor.PlanarVelocity.magnitude;
+
+            if (lockFlag)
+            {
+                lockEnemyAnimator.Parameter = new Vector2(CharacterActor.LocalVelocity.y,CharacterActor.LocalVelocity.x).normalized;
+            }
         }
         else 
         {

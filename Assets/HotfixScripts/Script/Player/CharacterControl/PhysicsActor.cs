@@ -44,7 +44,7 @@ public abstract class PhysicsActor : MonoBehaviour
     public abstract RigidbodyComponent RigidbodyComponent { get; }
     public Animator Animator { get; private set; }
     /// <summary>
-    /// 实际速度值
+    /// 世界坐标下速度值
     /// </summary>
     public Vector3 Velocity
     {
@@ -52,7 +52,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => RigidbodyComponent.Velocity = value;
     }
     /// <summary>
-    /// 投影速度值
+    /// 世界坐标下的水平速度值
     /// </summary>
     public Vector3 PlanarVelocity
     {
@@ -60,7 +60,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => LocalPlanarVelocity = transform.InverseTransformDirection(value);
     }
     /// <summary>
-    /// 获取/设置投影到其向上方向的刚体速度
+    /// 世界坐标下的垂直速度值
     /// </summary>
     public Vector3 VerticalVelocity
     {

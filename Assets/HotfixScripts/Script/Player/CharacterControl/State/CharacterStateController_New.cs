@@ -55,9 +55,7 @@ public class CharacterStateController_New : StateMachine
     public override void FixUpdate()
     {
         MovementReferenceParmeters.UpdateData(CharacterBrain.CharacterActions.movement.value);
-        CurrentState.PreCharacterSimulation();
         CurrentState.FixUpdate();
-        CurrentState.PostCharacterSimulation();
     }
     void OnAnimatorIK(int layerIndex)
     {

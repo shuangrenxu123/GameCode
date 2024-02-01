@@ -1,4 +1,5 @@
 using Animancer;
+using Animancer.Examples.FineControl;
 using HFSM;
 using PlayerInfo;
 using System.Collections.Generic;
@@ -15,8 +16,8 @@ public class StateManger : MonoBehaviour
     private LinearMixerTransition normalMoveAnimator;
     [SerializeField]
     private LinearMixerTransition crouchMoveAniamtor;
-    [SerializeField]
-    private DirectionalClipTransition lockMovementAnimator;
+    [SerializeReference]
+    private ITransition lockMovementAnimator;
     [SerializeField]
     private List<ClipTransition> jumpAnimator;
     [Header("½»»¥¶¯»­")]
@@ -29,9 +30,12 @@ public class StateManger : MonoBehaviour
     [Header("¹¥»÷¶¯»­")]
     [SerializeField]
     private CharacterWeaponAnimator attackAnimator;
+
+    private CharacterActor CharacterActor;
     private void Start()
     {
         DataBase dataBase = new();
+        CharacterActor = GetComponentInParent<CharacterActor>();
         controller = new CharacterStateController_New
         {
             CharacterActor = GetComponentInParent<CharacterActor>(),
@@ -40,14 +44,19 @@ public class StateManger : MonoBehaviour
         controller.ExternalReference = camera.transform;
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
         controller.database = dataBase;
-
+        var state = Animancer.States.GetOrCreate(lockMovementAnimator);
         var movementState = new MovementState
         {
             database = dataBase,
             Animancer = Animancer,
             normalMoveAnimator = normalMoveAnimator,
-            crouchMoveAnimator = crouchMoveAniamtor
+            crouchMoveAnimator = crouchMoveAniamtor,
+            
+            lockEnemyAnimator = (MixerState<Vector2>)state
+
         };
+
+
         movementState.AddStateAnimators(jumpAnimator);
 
         movementState.lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
@@ -144,4 +153,10 @@ public class StateManger : MonoBehaviour
         movestate?.HandleLockEnemy(camera.currentLockOnTarget);
     }
 
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        if(CharacterActor != null)
+            Gizmos.DrawLine(transform.position,transform.position + this.CharacterActor.PlanarVelocity.normalized);
+    }
 }
