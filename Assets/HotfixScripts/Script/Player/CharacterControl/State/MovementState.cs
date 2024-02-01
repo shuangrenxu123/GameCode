@@ -621,7 +621,7 @@ public class MovementState : CharacterControlStateBase
 
             if (lockFlag)
             {
-                lockEnemyAnimator.Parameter = new Vector2(CharacterActor.LocalVelocity.y,CharacterActor.LocalVelocity.x).normalized;
+                lockEnemyAnimator.Parameter = new Vector2(CharacterActor.LocalVelocity.z,CharacterActor.LocalVelocity.x).normalized;
             }
         }
         else 

@@ -33,7 +33,6 @@ public class AttackState : CharacterControlStateBase
 
         PlayFirstAnimator();
 
-
     }
 
     private void PlayFirstAnimator()
@@ -48,12 +47,12 @@ public class AttackState : CharacterControlStateBase
         //ÏÂ¶×¹¥»÷
         if (movestate.isCrouched)
         {
-
+            database.SetData<bool>("attack", false);
         }
         //ÂäÏÂ¹¥»÷
         else if (CharacterActor.IsGrounded == false)
         {
-            
+            database.SetData<bool>("attack", false);
         }
         // ÅÜ²½¹¥»÷
         else if (movestate.IsRun)
@@ -86,8 +85,8 @@ public class AttackState : CharacterControlStateBase
             {
                 state.Events.Clear();
                 currentAnimatorIndex += 1;
-                AddAnimatorEvent();
-               
+                EndDoCombo();
+                CloseWeaponCollider();
                 state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;

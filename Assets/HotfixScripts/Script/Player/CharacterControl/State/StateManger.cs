@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class StateManger : MonoBehaviour
 {
-    CharacterStateController_New controller;
+    public CharacterStateController_New controller;
     public Camera3D camera;
     public CharacterBrain characterBrain;
     public AnimancerComponent Animancer;
