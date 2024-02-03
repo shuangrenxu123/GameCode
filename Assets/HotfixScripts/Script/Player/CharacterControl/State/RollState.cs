@@ -31,6 +31,7 @@ public class RollState : CharacterControlStateBase
     }
     public override void Enter()
     {
+        //todo ： 朝着面朝方向翻滚
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         state = Animancer.Play(animators[roll]);

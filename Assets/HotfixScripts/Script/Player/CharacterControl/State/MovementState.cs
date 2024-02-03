@@ -1,4 +1,5 @@
 using Animancer;
+using Animancer.Examples.FineControl;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,17 +94,24 @@ public class MovementState : CharacterControlStateBase
         float minCrouchHeightRatio = CharacterActor.BodySize.x / CharacterActor.BodySize.y;
         crouchParameters.heightRatio = Mathf.Max(minCrouchHeightRatio, crouchParameters.heightRatio);
         CharacterActor.OnTeleport += OnTeleport;
+        CharacterActor.OnGroundedStateEnter += HandleJumpEnterGround;
     }
     public override void Enter()
     {
         CharacterActor.alwaysNotGrounded = false;
         targetLookingDirection = CharacterActor.Forward;
         currentAnimator = normalMoveAnimator;
-        Animancer.Play(currentAnimator);
         currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
         CharacterActor.UseRootMotion = false;
-
-        CharacterActor.OnGroundedStateEnter += HandleJumpEnterGround;
+        
+        if (lockFlag)
+        {
+            Animancer.Play(lockEnemyAnimator);
+        }
+        else
+        {
+            Animancer.Play(currentAnimator);
+        }
     }
     public override void Exit()
     {
@@ -124,10 +132,6 @@ public class MovementState : CharacterControlStateBase
     }
     public override void Update()
     {
-        if (CharacterActions.interact.Started)
-        {
-            database.SetData<bool>("interaction", true);
-        }
         if(CharacterActions.roll.Started && CharacterActor.IsGrounded)
         {
             database.SetData<bool>("roll", true);
@@ -136,17 +140,19 @@ public class MovementState : CharacterControlStateBase
         {
             database.SetData<bool>("attack", true);
         }
+        CheckForInteractableObject();
     }
     #region 锁敌(lock)
 
-    public void HandleLockEnemy(Transform target)
+    public bool HandleLockEnemy(Transform target)
     {
-        if(target == null)
+        if(target == null || lockFlag)
         {
             lookingDirectionParameters.target = null;
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
             lockFlag = false;
             Animancer.Play(currentAnimator);
+            return false;
         }
         else
         {
@@ -154,6 +160,7 @@ public class MovementState : CharacterControlStateBase
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
             lockFlag = true;
             Animancer.Play(lockEnemyAnimator);
+            return true;
         }
 
     }
@@ -473,7 +480,14 @@ public class MovementState : CharacterControlStateBase
     }
     private void HandleJumpEnterGround(Vector3 speed)
     {
-        Animancer.Play(animators[jumpEnd]).Events.OnEnd = ()=> { Animancer.Play(currentAnimator); };
+        if (lockFlag)
+        {
+            Animancer.Play(animators[jumpEnd]).Events.OnEnd = ()=> { Animancer.Play(lockEnemyAnimator); };
+        }
+        else
+        {
+            Animancer.Play(animators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(currentAnimator); };
+        }
     }
 
     /// <summary>
@@ -524,7 +538,36 @@ public class MovementState : CharacterControlStateBase
         return isCrouched && CharacterActions.jump.Started;
     }
     #endregion
+    #region 切换状态(Transform)
+    /// <summary>
+    /// 切换到与物品交互状态(不可移动)
+    /// </summary>
+    private void CheckForInteractableObject()
+    {
+        RaycastHit hit;
+        if (Physics.SphereCast(CharacterActor.transform.position, 0.3f, CharacterActor.transform.forward, out hit, 1f))
+        {
+            if (hit.collider.CompareTag("Interactable"))
+            {
+                var interactable = hit.collider.GetComponent<Interactable>();
+                if (interactable != null)
+                {
+                    WindowsManager.Instance.EnableWindow<InteractPanel>();
+                    if (CharacterActions.interact.Started)
+                    {
+                        database.SetData("interaction", true);
+                        database.SetData("interactable", interactable);
+                    }
+                }
+            }
+        }
+        else
+        {
+            WindowsManager.Instance.DisableWindow<InteractPanel>();
 
+        }
+    }
+    #endregion
     void HandleSize(float dt)
     {
         if (crouchParameters.enableCrouch)

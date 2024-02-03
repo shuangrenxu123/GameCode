@@ -1,6 +1,8 @@
 using Fight;
 using UnityEngine;
-
+/// <summary>
+/// 可消耗物品
+/// </summary>
 public abstract class ConsumableItem
 {
     public ConsumableItemData data;
@@ -10,17 +12,17 @@ public abstract class ConsumableItem
     {
         data = Resources.Load<ConsumableItemData>(name);
     }
-    public virtual void AttemptToConsumeItem(AnimatorHandle animator, Equipmanager equipmanager)
+    public virtual void AttemptToConsumeItem(Equipmanager equipmanager)
     {
         if (currentItemAmount > 0)
         {
-            animator.PlayTargetAnimation(data.consumeAnimation, data.isInteracting);
+            //animator.PlayTargetAnimation(data.consumeAnimation, data.isInteracting);
             go = Object.Instantiate(data.modelPrefab, equipmanager.rightSlot.transform);
             equipmanager.rightSlot.UnloadWeapon();
         }
         else
         {
-            animator.PlayTargetAnimation(data.UsageFailedAnimation, true);
+            //animator.PlayTargetAnimation(data.UsageFailedAnimation, true);
         }
     }
     public abstract void Effect(CombatEntity me, Equipmanager equipmanager);

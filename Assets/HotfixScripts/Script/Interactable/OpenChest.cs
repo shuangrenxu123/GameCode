@@ -16,7 +16,7 @@ public class OpenChest : Interactable
         rotationDir.Normalize();
         Quaternion tr = Quaternion.LookRotation(rotationDir);
         Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, tr, 300 * Time.deltaTime);
-        playerManager.inputHandle.transform.rotation = targetRotation;
+        //playerManager.inputHandle.transform.rotation = targetRotation;
     }
 
     public void GenerateItem()

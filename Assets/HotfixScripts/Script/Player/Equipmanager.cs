@@ -1,13 +1,13 @@
 using UnityEngine;
-
+/// <summary>
+/// 装备管理器
+/// </summary>
 public class Equipmanager : MonoBehaviour
 {
     public Player player;
     public PlayerInventory inventory;
     public WeaponHolderSlot leftSlot;
     public WeaponHolderSlot rightSlot;
-    public PlayerInputHandle inputHandle;
-    public AnimatorHandle animatorHandle;
     DamageCollider leftCollider;
     DamageCollider rightCollider;
     HandIK handIK;
@@ -15,8 +15,6 @@ public class Equipmanager : MonoBehaviour
     {
         player = GetComponent<Player>();
         inventory = GetComponent<PlayerInventory>();
-        inputHandle = GetComponent<PlayerInputHandle>();
-        animatorHandle = GetComponent<AnimatorHandle>();
         WeaponHolderSlot[] weaponHolderSlots = GetComponentsInChildren<WeaponHolderSlot>();
 
         foreach (var i in weaponHolderSlots)
@@ -44,15 +42,8 @@ public class Equipmanager : MonoBehaviour
         }
         else
         {
-            animatorHandle.anim.CrossFade("Both Empty", 0.2f);
-
-            if (inputHandle.TwoHandFlag)
-            {
-                animatorHandle.anim.CrossFade(((WeaponItemData)item).TH_Idle, 0.2f);
-            }
             rightSlot.LoadModel(item);
             LoadRightWeaponDamageCollider();
-            LoadRightHandIK(inputHandle.TwoHandFlag);
         }
     }
     public void LoadBothWeaponOnSlots()
@@ -87,6 +78,6 @@ public class Equipmanager : MonoBehaviour
     public void LoadRightHandIK(bool isTwoHandWeapon)
     {
         handIK = rightSlot.currentModel.GetComponentInChildren<HandIK>();
-        animatorHandle.SetHandIKForWeapon(handIK, isTwoHandWeapon);
+        //animatorHandle.SetHandIKForWeapon(handIK, isTwoHandWeapon);
     }
 }

@@ -1,8 +1,10 @@
 using UnityEngine;
 
+/// <summary>
+/// 角色背包管理器
+/// </summary>
 public class PlayerInventory : MonoBehaviour
 {
-    AnimatorHandle animtorHandle;
     Equipmanager weaponManager;
     PlayerInventoryPanel panel;
     public ItemData rightWeapon;
@@ -13,7 +15,6 @@ public class PlayerInventory : MonoBehaviour
     private void Awake()
     {
         weaponManager = GetComponent<Equipmanager>();
-        animtorHandle = GetComponent<AnimatorHandle>();
     }
     private void Start()
     {
@@ -34,17 +35,24 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("使用了道具");
             CanReplace = false;
-            currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
+           //currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
         }
     }
+    /// <summary>
+    /// 替换道具
+    /// </summary>
     public void ReplaceItem()
     {
+        
         if (CanReplace == false)
         {
             return;
         }
     }
-
+    /// <summary>
+    /// 添加道具
+    /// </summary>
+    /// <param name="item"></param>
     public void AddItem(ConsumableItem item)
     {
         panel.UpdateProp(item);
