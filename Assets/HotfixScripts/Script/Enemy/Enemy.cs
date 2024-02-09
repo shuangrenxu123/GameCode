@@ -1,7 +1,7 @@
 using Fight;
 using UnityEngine;
 
-public class Enemy : CharacterManager
+public class Enemy : MonoBehaviour
 {
     public CombatEntity combatEntity;
     //public SkillSystem skillSystem;
@@ -13,10 +13,6 @@ public class Enemy : CharacterManager
         combatEntity = GetComponent<CombatEntity>();
         //skillSystem = new SkillSystem(this);
         //skillSystem.AddSkill(Resources.Load<SkillData>("fire"), Resources.Load<GameObject>("jili"));
-        animatorHandle = GetComponentInChildren<EnemyAnimatorHandle>();
-        characterController = GetComponent<CharacterController>();
-        backStep = GetComponentInChildren<BackStepCollider>();
-
 
     }
     private void Start()

@@ -18,8 +18,6 @@ public class Main : MonoBehaviour
         MotionEngine.CreateModule<ConfigManager>();
         MotionEngine.CreateModule<AudioManager>();
 
-        Debug.Log("22222");
-        Debug.Log(4444);
     }
     private void Start()
     {

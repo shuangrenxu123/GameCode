@@ -7,7 +7,7 @@ public class DamageCollider : MonoBehaviour
     Collider damageCollider;
     CombatEntity entity;
     //WeaponItemData weaponItem;
-    List<CharacterManager> characterDamagedDuringThisCalculation;
+    //List<CharacterManager> characterDamagedDuringThisCalculation;
     public string currentDamageAnimation;
     LayerMask Enemylayer;
     public string EnemyTag;
@@ -17,7 +17,7 @@ public class DamageCollider : MonoBehaviour
         damageCollider.gameObject.SetActive(true);
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
-        characterDamagedDuringThisCalculation = new List<CharacterManager>();
+        //characterDamagedDuringThisCalculation = new List<CharacterManager>();
         Enemylayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
     }
@@ -25,7 +25,7 @@ public class DamageCollider : MonoBehaviour
     {
         entity = GetComponentInParent<CombatEntity>();
         damageCollider.enabled = true;
-        characterDamagedDuringThisCalculation.Clear();
+        //characterDamagedDuringThisCalculation.Clear();
     }
     public void DisableDamageCollider()
     {
@@ -36,16 +36,16 @@ public class DamageCollider : MonoBehaviour
         if (other.gameObject.layer == Enemylayer)
         {
             Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
-            if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
-            {
-                return;
-            }
-            characterDamagedDuringThisCalculation.Add(enemy);
+           //if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
+           //{
+           //    return;
+           //}
+           //characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             //Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
-            ChooseWhichDirectionDamageCameFrom(directionHitFrom);
-            new DamageAction(entity, new CombatEntity[] { target }) { animator = currentDamageAnimation }.Apply(10);
+            //float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
+            //ChooseWhichDirectionDamageCameFrom(directionHitFrom);
+            //new DamageAction(entity, new CombatEntity[] { target }) { animator = currentDamageAnimation }.Apply(10);
         }
     }
     protected virtual void ChooseWhichDirectionDamageCameFrom(float direction)

@@ -1,16 +1,16 @@
 using Animancer;
-using Animancer.Examples.FineControl;
 using HFSM;
-using PlayerInfo;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class StateManger : MonoBehaviour
 {
     public CharacterStateController_New controller;
-    public Camera3D camera;
+    public Player player;
+    public new Camera3D camera;
     public CharacterBrain characterBrain;
     public AnimancerComponent Animancer;
+    public AnimactorHelper AnimancerHelper;
     [Header("»ù´¡ÒÆ¶¯¶¯»­")]
     [SerializeField]
     private LinearMixerTransition normalMoveAnimator;
@@ -32,14 +32,21 @@ public class StateManger : MonoBehaviour
     private CharacterWeaponAnimator attackAnimator;
 
     private CharacterActor CharacterActor;
+    
+    private void Awake()
+    {
+        AnimancerHelper =new AnimactorHelper(Animancer);
+    }
     private void Start()
     {
         DataBase dataBase = new();
         CharacterActor = GetComponentInParent<CharacterActor>();
+        player = GetComponentInParent<Player>();
         controller = new CharacterStateController_New
         {
             CharacterActor = GetComponentInParent<CharacterActor>(),
-            CharacterBrain = characterBrain
+            CharacterBrain = characterBrain,
+            stateManger = this,
         };
         controller.ExternalReference = camera.transform;
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
@@ -48,7 +55,7 @@ public class StateManger : MonoBehaviour
         var movementState = new MovementState
         {
             database = dataBase,
-            Animancer = Animancer,
+            Animancer = AnimancerHelper,
             normalMoveAnimator = normalMoveAnimator,
             crouchMoveAnimator = crouchMoveAniamtor,
             
@@ -69,21 +76,21 @@ public class StateManger : MonoBehaviour
         var interaction = new InteractionState()
         {
             database = dataBase,
-            Animancer = this.Animancer
+            Animancer = this.AnimancerHelper
         };
         interaction.AddStateAnimators(InterctionTransition);
         
         var roll = new RollState
         {
             database = dataBase,
-            Animancer = this.Animancer,
+            Animancer = this.AnimancerHelper,
         };
         roll.AddStateAnimators(rollAnimator);
 
         var Attack = new AttackState
         {
             database = dataBase,
-            Animancer = this.Animancer,
+            Animancer = this.AnimancerHelper,
             animator = attackAnimator
         };
 

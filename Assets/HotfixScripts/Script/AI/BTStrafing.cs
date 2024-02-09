@@ -4,7 +4,6 @@ using Utility;
 
 public class BTStrafing : BTAction
 {
-    private EnemyAnimatorHandle anim;
     private Enemy enemy;
     private float verticalMovementValue = 0;
     private float horizontalMovementValue = 0;
@@ -12,17 +11,14 @@ public class BTStrafing : BTAction
     private float insideDistanceSql = 100;
     private float timer;
     private float time = 2f;
-    public BTStrafing(string name, EnemyAnimatorHandle anim, Enemy enemy) : base(name)
+    public BTStrafing(string name,Enemy enemy) : base(name)
     {
-        this.anim = anim;
         this.enemy = enemy;
     }
     protected override void Enter()
     {
         verticalMovementValue = Random.Range(-0.5f, 1);
         horizontalMovementValue = Random.Range(-1f, 1f);
-        anim.anim.SetFloat("vertical", verticalMovementValue);
-        anim.anim.SetFloat("horizontal", horizontalMovementValue);
     }
     protected override BTResult Execute()
     {

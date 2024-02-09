@@ -4,6 +4,7 @@ using UnityEngine;
 public class CharacterStateController_New : StateMachine
 {
     MovementReferenceParmeters movementReferenceParmeters = new MovementReferenceParmeters();
+    public StateManger stateManger;
     public MovementReferenceParmeters MovementReferenceParmeters => movementReferenceParmeters;
     public CharacterActor CharacterActor { get; set; }
     public Animator Animator { get; set; }
@@ -30,9 +31,6 @@ public class CharacterStateController_New : StateMachine
     #endregion
     void PreCharacterSimulation(float dt) => CurrentState.PreCharacterSimulation();
     void PostCharacterSimulation(float dt) => CurrentState.PostCharacterSimulation();
-
-    //bool CanCurrentStateOverideAnimatorController => CurrentState.OverrideAnimatorController && Animator != null && CurrentState.RuntimeAnimatorController != null;
-
 
     public override void Init()
     {

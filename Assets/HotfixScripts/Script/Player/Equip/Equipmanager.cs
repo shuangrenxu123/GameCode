@@ -1,3 +1,4 @@
+using Fight;
 using UnityEngine;
 /// <summary>
 /// 装备管理器
@@ -8,6 +9,7 @@ public class Equipmanager : MonoBehaviour
     public PlayerInventory inventory;
     public WeaponHolderSlot leftSlot;
     public WeaponHolderSlot rightSlot;
+    private CombatEntity PlayerCombatEntity => player.CombatEntity;
     DamageCollider leftCollider;
     DamageCollider rightCollider;
     HandIK handIK;
@@ -28,10 +30,6 @@ public class Equipmanager : MonoBehaviour
                 rightSlot = i;
             }
         }
-    }
-    private void Start()
-    {
-
     }
     public void LoadWeaponOnSlot(ItemData item, bool isLeft)
     {
@@ -79,5 +77,10 @@ public class Equipmanager : MonoBehaviour
     {
         handIK = rightSlot.currentModel.GetComponentInChildren<HandIK>();
         //animatorHandle.SetHandIKForWeapon(handIK, isTwoHandWeapon);
+    }
+    
+    public void ReplaceEquip()
+    {
+
     }
 }

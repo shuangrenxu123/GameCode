@@ -10,7 +10,6 @@ namespace Fight
         public HealthPoint hp;
         public ActionPointManager ActionPointManager;
         public CombatNumberBox numberBox;
-        public AnimatorManager animator;
         public BuffManager buffManager;
         public virtual void Awake()
         {
@@ -18,7 +17,6 @@ namespace Fight
             ActionPointManager = new ActionPointManager();
             numberBox = new CombatNumberBox();
             buffManager = new BuffManager(this);
-            animator = GetComponent<AnimatorManager>();
             ActionPointManager.Init();
 
         }

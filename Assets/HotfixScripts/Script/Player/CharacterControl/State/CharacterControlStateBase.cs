@@ -6,7 +6,7 @@ using UnityEngine;
 public class CharacterControlStateBase : StateBase
 {
     public CharacterActor CharacterActor { get; protected set; }
-    public AnimancerComponent Animancer { get; set ; }
+    public AnimactorHelper Animancer { get; set ; }
     protected CharacterBrain CharacterBrain = null;
     public CharacterActions CharacterActions
     {

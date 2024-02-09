@@ -1,8 +1,5 @@
-public class EnemyController : CharacterLocomotionManager
-{
-    private void Awake()
-    {
-        entity = GetComponent<Enemy>();
+using UnityEngine;
 
-    }
+public class EnemyController :MonoBehaviour
+{
 }

@@ -12,7 +12,7 @@ public class InteractionState : CharacterControlStateBase
     }
     public override void Enter()
     {
-        //interactable = database.GetData<Interactable>("interactable");
+        interactable = database.GetData<Interactable>("interactable");
         if(interactable == null)
         {
             database.SetData<bool>("interaction", false);
@@ -21,11 +21,17 @@ public class InteractionState : CharacterControlStateBase
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
         state.Events.OnEnd += OnAnimatorEnd;
+        interactable.StartInteract(CharacterStateController.stateManger.player);
     }
     private void OnAnimatorEnd()
     {
         database.SetData<bool>("interaction", false);
+        interactable.EndInteract(CharacterStateController.stateManger.player);
         state.Events.OnEnd -= OnAnimatorEnd;
+    }
+    public void OnInteract()
+    {
+        interactable.Interact(CharacterStateController.stateManger.player);
     }
 }
 public enum InteractableType
@@ -35,4 +41,5 @@ public enum InteractableType
     Door_Outward = 3,
     Chest=4,
     Lever=5,
+    Item=6
 }

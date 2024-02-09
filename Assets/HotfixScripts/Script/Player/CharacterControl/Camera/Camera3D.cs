@@ -386,14 +386,14 @@ public class Camera3D : MonoBehaviour
     }
     bool FindLockObject()
     {
-        List<CharacterManager> avilableTargets = new List<CharacterManager>();
+        List<Enemy> avilableTargets = new List<Enemy>();
         float shortTargetDistance = Mathf.Infinity;
 
         Collider[] colliders = Physics.OverlapSphere(targetTransform.position, lockDistance, lockMask);
         Debug.Log("colliders :" + colliders.Length);
         for (int i = 0; i < colliders.Length; i++)
         {
-            CharacterManager character = colliders[i].GetComponent<CharacterManager>();
+            Enemy character = colliders[i].GetComponent<Enemy>();
             if (character != null)
             {
                 var lockTargetDirection = Vector3.ProjectOnPlane((character.transform.position - targetTransform.position), targetTransform.up);
@@ -417,7 +417,7 @@ public class Camera3D : MonoBehaviour
             if (distance < shortTargetDistance)
             {
                 shortTargetDistance = distance;
-                nearestLockOnTarget = avilableTargets[i].LockOnTransform;
+                nearestLockOnTarget = avilableTargets[i].transform;
             }
         }
         if(nearestLockOnTarget != null)

@@ -2,7 +2,7 @@ using Fight;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterActor))]
-public class Player : CharacterManager
+public class Player : MonoBehaviour
 {
     public CombatEntity CombatEntity { get; private set; }
     public NetTranform Net { get; private set; }
@@ -18,7 +18,7 @@ public class Player : CharacterManager
         Net = GetComponent<NetTranform>();
         Inventory = GetComponent<PlayerInventory>();
 
-        backStep = GetComponentInChildren<BackStepCollider>();
+        //backStep = GetComponentInChildren<BackStepCollider>();
     }
     void Start()
     {

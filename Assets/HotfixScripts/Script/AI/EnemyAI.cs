@@ -3,14 +3,11 @@ using UnityEngine;
 
 public class EnemyAI : BTTree
 {
-    public EnemyAnimatorHandle animator;
     Transform transform;
     public Enemy enemy;
-    public void Init(Enemy enemy, EnemyAnimatorHandle anim, Enemy e, DataBase dataBase = null)
+    public void Init(Enemy enemy, Enemy e, DataBase dataBase = null)
     {
         this.enemy = enemy;
-        transform = enemy.transform;
-        animator = anim;
         Init(enemy, e, database);
     }
     public override void SetNode()
@@ -23,13 +20,10 @@ public class EnemyAI : BTTree
 
         .AddChild(new BTSelector()
             .AddChild(new BTSequence()
-                .AddChild(new BTStrafing("围绕", animator, enemy))
+                .AddChild(new BTStrafing("围绕", enemy))
                 .AddChild(new BTParallel(ParallelType.Or)
                     .AddChild(new BTMoveAction("追击敌人移动节点", transform, 1f, "targetTransform", 16))
-                    .AddChild(new BTAnimatorAction("追击敌人跑步动画", animator, "Walk", true))
                     )
-
-                .AddChild(new BTAnimatorAction("攻击动画", animator, "attack"))
                 )
         ));
 

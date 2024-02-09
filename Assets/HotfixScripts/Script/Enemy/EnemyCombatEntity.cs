@@ -22,7 +22,7 @@ public class EnemyCombatEntity : CombatEntity
         }
         else
         {
-            animator.PlayTargetAnimation(animatorName, false);
+            //animator.PlayTargetAnimation(animatorName, false);
         }
         if (enemy.isDead)
         {
@@ -30,7 +30,7 @@ public class EnemyCombatEntity : CombatEntity
         }
         if (hp.Value <= 0)
         {
-            animator.PlayTargetAnimation("dead", false);
+            //animator.PlayTargetAnimation("dead", false);
             enemy.isDead = true;
             return;
         }

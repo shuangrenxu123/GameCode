@@ -19,7 +19,5 @@ public class OpenTwoDoor : Interactable
         Quaternion tr = Quaternion.LookRotation(rotationDir);
         Quaternion targetRotation = Quaternion.Slerp(playerManager.transform.rotation, tr, 300 * Time.deltaTime);
         //playerManager.inputHandle.transform.rotation = targetRotation;
-        GetComponent<Animator>().SetBool("open", true);
-        playerManager.animatorHandle.PlayTargetAnimation("OpenDoor_DoubleDoors", true);
     }
 }
