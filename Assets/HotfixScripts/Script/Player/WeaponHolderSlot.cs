@@ -32,7 +32,7 @@ public class WeaponHolderSlot : HolderSlot
             currentModel.SetActive(true);
             return;
         }
-        GameObject model = Instantiate(weaponItem.modelPrefab);
+        GameObject model = Instantiate((weaponItem as EquipItemData).modelPrefab);
         if (model != null)
         {
             if (parentOverride != null)

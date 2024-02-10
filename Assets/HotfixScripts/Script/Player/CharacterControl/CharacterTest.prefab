@@ -2485,6 +2485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 59e48d82488f02148bb092a7e483acb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  player: {fileID: 0}
   camera: {fileID: 0}
   characterBrain: {fileID: 3721988805285894471}
   Animancer: {fileID: 5369199116379182038}
@@ -2803,6 +2804,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sourceSkin: {fileID: 2284519289231273717}
   targetSkin: {fileID: 1517103652100770453}
+  targetmesh: []
 --- !u!1 &6434384248299550531
 GameObject:
   m_ObjectHideFlags: 0
@@ -3388,7 +3390,6 @@ GameObject:
   - component: {fileID: 1291577414195322409}
   - component: {fileID: 6062702125372506353}
   - component: {fileID: 6232021738972680007}
-  - component: {fileID: 7396881605988788154}
   m_Layer: 0
   m_Name: CharacterTest
   m_TagString: Untagged
@@ -3505,28 +3506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80ecc506c14b60043a2171c78a6c4750, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LockOnTransform: {fileID: 0}
-  backStepCollider: {fileID: 0}
-  backStep: {fileID: 0}
-  animatorHandle: {fileID: 0}
-  isGrounded: 0
-  climbLabber: 0
-  characterController: {fileID: 0}
   id: 
---- !u!114 &7396881605988788154
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7374439972521900437}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bd6d65b2eb1701348a8789bdcd033226, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  stateUI: {fileID: 0}
-  animator: {fileID: 0}
 --- !u!1 &7394862845179485229
 GameObject:
   m_ObjectHideFlags: 0
