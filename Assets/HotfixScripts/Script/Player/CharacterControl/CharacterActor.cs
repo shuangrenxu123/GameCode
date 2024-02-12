@@ -779,13 +779,18 @@ public class CharacterActor : PhysicsActor
             rotation = Quaternion.LookRotation(forward, Up);
         }
     }
-
+    /// <summary>
+    /// 更新当前地面的速度
+    /// </summary>
     void UpdateGroundVelocity()
     {
         PreviousGroundVelocity = GroundVelocity;
         GroundVelocity = GetGroundPointVelocity(GroundContactPoint);
     }
-
+    /// <summary>
+    /// 处理动态地面上的移动
+    /// </summary>
+    /// <param name="dt"></param>
     void ProcessDynamicGroundMovement(float dt)
     {
         if (!IsAllowedToFollowRiggidbodyReference())
@@ -865,7 +870,6 @@ public class CharacterActor : PhysicsActor
 
         bool overlapDetected = false;
         var rotation = Rotation;
-
         do
         {
             iterationOverlapDetected = ColliderComponent.ComputePenetration(ref position, ref rotation, _removePenetrationAction);
@@ -1304,6 +1308,12 @@ public class CharacterActor : PhysicsActor
         }
         return true;
     }
+    /// <summary>
+    /// 稳定地面的物理模拟
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="displacement"></param>
+    /// <param name="useFullBody"></param>
     protected void StableCollideAndSlide(ref Vector3 position, Vector3 displacement, bool useFullBody)
     {
         Vector3 groundPlaneNormal = GroundStableNormal;

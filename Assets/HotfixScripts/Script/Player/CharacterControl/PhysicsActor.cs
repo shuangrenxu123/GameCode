@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 /// <summary>
 /// 角色的控制核心
@@ -15,6 +16,7 @@ public abstract class PhysicsActor : MonoBehaviour
     //在爬梯子等情况下我们会需要用到rootmotion
     [Tooltip("是否启用了RootMotion")]
     public bool UseRootMotion = false;
+
     [Tooltip("是否启用rootmotion中传递坐标")]
     public bool UpdateRootPosition = true;
     [Tooltip("是否启用rootmotion中传递旋转")]
@@ -587,8 +589,7 @@ public abstract class PhysicsActor : MonoBehaviour
         float dt = Time.deltaTime;
         PreSimulationUpdate(dt);
         OnPreSimulation?.Invoke(dt);
-        //手动同步，以防转换组件值被污染。
-        //Manual sync in case the Transform component is "dirty".
+        //手动同步，防止坐标值被污染。
         transform.SetLocalPositionAndRotation(Position, Rotation);
 
     }

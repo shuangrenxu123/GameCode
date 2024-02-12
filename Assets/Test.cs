@@ -7,8 +7,9 @@ public class Test : MonoBehaviour
 
     public Transform sourceSkin;
     public Transform targetSkin;
-    public Mesh targetmesh;
+    public List<Mesh> targetmesh;
     SkinnedMeshRenderer targetSkinMeshRender;
+    int index = 0;
 
     void Start()
     {
@@ -17,7 +18,7 @@ public class Test : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKey(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             changeSkinnedMesh();
         }
@@ -39,8 +40,13 @@ public class Test : MonoBehaviour
         //targetSkinMeshRender.bounds = sourceSkinMeshRender.bounds;
         //targetSkinMeshRender.rootBone = sourceSkinMeshRender.rootBone;
         //targetSkinMeshRender.sharedMaterials = sourceSkinMeshRender.sharedMaterials;  //Ìæ»»²ÄÖÊ
-        sourceSkinMeshRender.sharedMesh = targetmesh;
-        sourceSkinMeshRender.bounds = targetmesh.bounds;
+        index++;
+        if (index >= targetmesh.Count)
+        {
+            index = 0;
+        }
+        sourceSkinMeshRender.sharedMesh = targetmesh[index];
+        //sourceSkinMeshRender.bounds = targetmesh.bounds;
         //sourceSkin.gameObject.SetActive(false);
     }
 
