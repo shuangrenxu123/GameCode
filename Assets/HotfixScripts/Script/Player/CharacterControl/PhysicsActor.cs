@@ -1,5 +1,5 @@
+using Utilities;
 using System.Collections;
-using System.Diagnostics;
 using UnityEngine;
 /// <summary>
 /// 角色的控制核心
@@ -16,13 +16,15 @@ public abstract class PhysicsActor : MonoBehaviour
     //在爬梯子等情况下我们会需要用到rootmotion
     [Tooltip("是否启用了RootMotion")]
     public bool UseRootMotion = false;
-
+    [Condition("UseRootMotion",ConditionAttribute.ConditionType.IsTrue,ConditionAttribute.VisibilityType.NotEditable)]
     [Tooltip("是否启用rootmotion中传递坐标")]
     public bool UpdateRootPosition = true;
     [Tooltip("是否启用rootmotion中传递旋转")]
+    [Condition("UseRootMotion", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool UpdateRootRotation = true;
-
+    [Condition(new string[] {"UseRootMotion","UpdateRootPosition"},new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsTrue },new float[] { 0,0},ConditionAttribute.VisibilityType.NotEditable)]
     public RootMotionVelocityType rootMotionVelocityType = RootMotionVelocityType.SetVelocity;
+    [Condition(new string[] { "UseRootMotion", "UpdateRootRotation" }, new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsTrue }, new float[] { 0, 0 },ConditionAttribute.VisibilityType.NotEditable)]
     public RootMotionRotationType rootMotionRotationType = RootMotionRotationType.SetRotation;
 
     /// <summary>

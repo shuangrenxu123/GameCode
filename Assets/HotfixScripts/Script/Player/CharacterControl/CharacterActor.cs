@@ -1,3 +1,4 @@
+using Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -33,8 +34,11 @@ public class CharacterActor : PhysicsActor
     [Header("Grounding")]
     [Tooltip("“防止Character进入接地状态（IsGrounded 将是false")]
     public bool alwaysNotGrounded = false;
+
     [Tooltip("该值会在游戏开始的时候进行地面检测，如果没检测到那么IsGround将会是false")]
+    [Condition("alwaysNotGrounded", ConditionAttribute.ConditionType.IsFalse)]
     public bool forceGroundedAtStart = true;
+
     [Tooltip("是否启用OnTrigger等触发器函数（与地面），一般来说他们不会被触发，因为我们的角色是悬空的")]
     public bool useGroundTrigger = true;
     [Tooltip("启用该值以后，角色底部的将会被模拟为圆柱体，仅在边缘时候有效")]
@@ -78,22 +82,42 @@ public class CharacterActor : PhysicsActor
     [Header("Rotation")]
     [Tooltip("该组件是否需要重新定义角色的坐标轴")]
     public bool constraintRotation = true;
+
     /// <summary>
     /// 如果需要重新定义坐标轴，对向上的Transform的引用
     /// </summary>
+    [Condition("constraintRotation", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public Transform upDirectionReference = null;
+
+
+    [Condition(
+    new string[] { "constraintRotation", "upDirectionReference" },
+    new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsNull },
+    new float[] { 0f, 0f },
+    ConditionAttribute.VisibilityType.Hidden)]
     /// <summary>
     /// 所需的向上方向
     /// </summary>
     public Vector3 constraintUpDirection = Vector3.up;
 
+
+    [Condition(
+     new string[] { "constraintRotation", "upDirectionReference" },
+     new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsNotNull },
+     new float[] { 0f, 0f },
+     ConditionAttribute.VisibilityType.Hidden)]
     public VerticalAlignmentSettings.VerticalReferenceMode upDirectionReferenceMode = VerticalAlignmentSettings.VerticalReferenceMode.Away;
+
+
     [Header("Physics")]
     public bool CanPushDynamicRigidbodies = true;
-    public bool applyWeightToGround = true;
+    [Condition("CanPushDynamicRigidbodies", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public LayerMask pushableRigidbodyLayerMask = -1;
 
+    public bool applyWeightToGround = true;
+    [Condition("applyWeightToGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public LayerMask applyWeightLayerMask = -1;
+    [Condition("applyWeightToGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float weightGravity = CharacterConstants.DefaultGravity;
 
     Vector3 groundToCharacter;
