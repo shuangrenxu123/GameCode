@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -12,6 +13,11 @@ public class PlayerInventory : MonoBehaviour
 
     public ConsumableItem currentItem = null;
     public bool CanReplace = true;
+
+    #region Event 
+    public event Action<ItemData> OnItemAdd;
+    public event Action<ItemData> OnItemRemove;
+    #endregion
     private void Awake()
     {
         weaponManager = GetComponent<Equipmanager>();

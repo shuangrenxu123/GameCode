@@ -8,7 +8,7 @@ using UnityEngine;
 public class MovementState : CharacterControlStateBase
 {
     #region parameters
-    public PlanarMovementParameters planarMovementParameters = new PlanarMovementParameters();
+    public PlanarMovementParameters planarMovementParameters = new  ();
     public VerticalMovementParameters verticalMovementParameters = new VerticalMovementParameters();
     public CrouchParameters crouchParameters = new CrouchParameters();
     public LookingDirectionParameters lookingDirectionParameters = new LookingDirectionParameters();
@@ -43,6 +43,8 @@ public class MovementState : CharacterControlStateBase
     public event Action<int> OnNotGroundedJumpPerformed;
 
     #endregion
+
+    public MaterialControl MaterialControl;
     /// <summary>
     /// 连跳次数
     /// </summary>
@@ -187,8 +189,7 @@ public class MovementState : CharacterControlStateBase
     /// <param name="dt"></param>
     private void ProcessPlanarMovement(float dt)
     {
-        float speedMultiplier = 1;
-        //是否需要加速
+        float speedMultiplier = MaterialControl == null ? 1f : MaterialControl.CurrentSurface.speedMultiplier * MaterialControl.CurrentVolume.speedMultiplier;
         bool needToAccalerate = CustomUtilities.Multiply(CharacterStateController.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude >= CharacterActor.PlanarVelocity.sqrMagnitude;
         //目标速度
         Vector3 targetPlanarVelocity = default;
@@ -252,7 +253,10 @@ public class MovementState : CharacterControlStateBase
 
         //todo  材质所带来的重力相关
         float gravityMutiplier = 1f;
-
+        if (MaterialControl != null)
+            gravityMutiplier = CharacterActor.LocalVelocity.y >= 0 ?
+                MaterialControl.CurrentVolume.gravityAscendingMultiplier :
+                MaterialControl.CurrentVolume.gravityDescendingMultiplier;
         float gravity = gravityMutiplier * verticalMovementParameters.gravity;
         if (!CharacterActor.IsStable)
             CharacterActor.VerticalVelocity += CustomUtilities.Multiply(-CharacterActor.Up, gravity, dt);
@@ -644,6 +648,20 @@ public class MovementState : CharacterControlStateBase
                 currentMotion.angleAccelerationMultiplier = planarMovementParameters.unstableGroundedAngleAccelerationBoost.Evaluate(angleCurrentTargetVelocity);
                 break;
 
+        }
+
+        if (MaterialControl != null)
+        {
+            if (CharacterActor.IsGrounded)
+            {
+                currentMotion.acceleration *= MaterialControl.CurrentSurface.accelerationMultiplier;
+                currentMotion.deceleration *= MaterialControl.CurrentSurface.decelerationMultiplier;
+            }
+            else
+            {
+                currentMotion.acceleration *= MaterialControl.CurrentVolume.accelerationMultiplier;
+                currentMotion.deceleration *= MaterialControl.CurrentVolume.decelerationMultiplier;
+            }
         }
     }
     #region 更新动画(Update Animator Parmeters)

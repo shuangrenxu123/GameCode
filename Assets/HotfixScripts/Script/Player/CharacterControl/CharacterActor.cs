@@ -53,20 +53,24 @@ public class CharacterActor : PhysicsActor
     [Header("Dynamic ground")]
     [Tooltip("角色是否应该受到地面运动的影响")]
     public bool supportDynamicGround = true;
-
     public LayerMask dynamicGroundLayerMask = -1;
     [Tooltip("角色的正方向会不会受到地面移动的影响")]
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool rotateForwardDirection = true;
     [Tooltip("这是角色能忍受的最大地面速度，如果地面速度太快，角色将会停止移动")]
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float maxGroundVelocityChange = 30f;
-    [Tooltip("当角色未在地面上时，部分地面速度将会可以转化为自身速度。该值代表了所需地面速度最小值")]
+    [Tooltip("继承动态地面速度所需的最小值（转化为水平速度）")]
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlannarlVelocityThreshold = 2f;
-
-    [Tooltip("当角色未在地面上时，")]
+    [Tooltip("继承动态地面速度的系数（转化为水平速度）")]
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlanarVelocityMultiplier = 1f;
-
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
+    [Tooltip("继承动态地面速度的系数（转化为垂直速度）")]
     public float inheritedGroundVerticalVelocityThreshold = 2f;
-
+    [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
+    [Tooltip("继承动态地面速度的系数（转化为垂直速度）")]
     public float inheritedGroundVerticalVelocityMultiplier = 1f;
 
     [Header("Velocity")]

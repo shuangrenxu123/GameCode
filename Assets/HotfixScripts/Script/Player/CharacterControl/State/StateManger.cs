@@ -11,6 +11,7 @@ public class StateManger : MonoBehaviour
     public CharacterBrain characterBrain;
     public AnimancerComponent Animancer;
     public AnimactorHelper AnimancerHelper;
+    public MaterialControl materialControl;
     [Header("»ù´¡ÒÆ¶¯¶¯»­")]
     [SerializeField]
     private LinearMixerTransition normalMoveAnimator;
@@ -58,7 +59,7 @@ public class StateManger : MonoBehaviour
             Animancer = AnimancerHelper,
             normalMoveAnimator = normalMoveAnimator,
             crouchMoveAnimator = crouchMoveAniamtor,
-            
+            MaterialControl = materialControl,  
             lockEnemyAnimator = (MixerState<Vector2>)state
 
         };
