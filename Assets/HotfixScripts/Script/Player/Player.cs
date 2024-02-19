@@ -2,6 +2,7 @@ using Fight;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterActor))]
+[RequireComponent(typeof(PlayerInventory))]
 public class Player : MonoBehaviour
 {
     public CombatEntity CombatEntity { get; private set; }
@@ -17,7 +18,6 @@ public class Player : MonoBehaviour
         CombatEntity = GetComponent<CombatEntity>();
         Net = GetComponent<NetTranform>();
         Inventory = GetComponent<PlayerInventory>();
-
         //backStep = GetComponentInChildren<BackStepCollider>();
     }
     void Start()

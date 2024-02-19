@@ -1,4 +1,5 @@
 using Fight;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// 装备管理器
@@ -13,6 +14,10 @@ public class Equipmanager : MonoBehaviour
     DamageCollider leftCollider;
     DamageCollider rightCollider;
     HandIK handIK;
+
+    Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;
+
+
     private void Awake()
     {
         player = GetComponent<Player>();

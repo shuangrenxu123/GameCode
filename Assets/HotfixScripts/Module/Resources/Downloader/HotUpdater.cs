@@ -13,8 +13,8 @@ using UnityEngine;
 using UnityEngine.Networking;
 public class HotUpdater
 {
-    private Queue<PackInfo> readyList = new Queue<PackInfo>();
-    private List<FileDownloader> downloaders = new List<FileDownloader>(5);
+    private Queue<PackInfo> readyList = new();
+    private List<FileDownloader> downloaders = new(5);
     //下载器是否空闲
     private List<bool> downloadstates = new List<bool>(10);
 
@@ -320,12 +320,18 @@ public class HotUpdater
     }
     #endregion
 }
-//版本号信息
+/// <summary>
+/// 版本号信息
+/// </summary>
 public class UpdateInfo
 {
-    //版本的版本号
+    /// <summary>
+    /// 版本的版本号
+    /// </summary>
     public string appVersion;
-    //版本所包含的资源包
+    /// <summary>
+    /// 版本所包含的资源包
+    /// </summary>
     public List<PackInfo> updateList = new List<PackInfo>();
 }
 //每个文件的信息

@@ -42,7 +42,7 @@ public class MovementState : CharacterControlStateBase
     /// </summary>
     public event Action<int> OnNotGroundedJumpPerformed;
 
-    #endregion
+    #endregion 
 
     public MaterialControl MaterialControl;
     /// <summary>
@@ -82,7 +82,7 @@ public class MovementState : CharacterControlStateBase
         set => verticalMovementParameters.useGravity = value;
     }
 
-    protected PlanarMovementParameters.PlanarMovementProperties currentMotion = new PlanarMovementParameters.PlanarMovementProperties();
+    protected PlanarMovementParameters.PlanarMovementProperties currentMotion = new();
     bool reducedAirControlFlag = false;
     float reducedAirControlInitialTime = 0f;
     float reductionDuration = 0.5f;

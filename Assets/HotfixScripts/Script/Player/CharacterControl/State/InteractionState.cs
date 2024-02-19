@@ -19,15 +19,20 @@ public class InteractionState : CharacterControlStateBase
         }
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+
+
         state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
+
+
         state.Events.OnEnd += OnAnimatorEnd;
+        state.Events.Add(0.6f,OnInteract);
         interactable.StartInteract(CharacterStateController.stateManger.player);
     }
     private void OnAnimatorEnd()
     {
         database.SetData<bool>("interaction", false);
         interactable.EndInteract(CharacterStateController.stateManger.player);
-        state.Events.OnEnd -= OnAnimatorEnd;
+        state.Events.Clear();
     }
     public void OnInteract()
     {

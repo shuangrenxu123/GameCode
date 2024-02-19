@@ -1,22 +1,30 @@
 using UnityEngine;
-
+[CreateAssetMenu(menuName = "Items/TestItem")]
 public class ItemData : ScriptableObject
 {
-    public int id { get; private set; }
-    public Sprite Icon { get; private set; }
-    public string Name { get; private set; }
-    public string Description { get; private set; }
-    public ItemType Type { get; private set; }
+    public int id;
+    public Sprite Icon;
+    public string Name;
+    public string Description;
+    public ItemType Type;
 
 }
 public enum ItemType
 {
+    /// <summary>
+    /// 消耗品
+    /// </summary>
     Consumable,
+    /// <summary>
+    /// 装备
+    /// </summary>
     Equip,
-    other
-}
-public enum EquipItemType
-{
+    /// <summary>
+    /// 武器
+    /// </summary>
     Weapon,
-    Equipe
+    /// <summary>
+    /// 其他
+    /// </summary>
+    other
 }
