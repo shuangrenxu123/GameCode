@@ -382,7 +382,7 @@ namespace Animancer.Editor
                     }
                 }
 
-                FoundBestMatch:
+            FoundBestMatch:
                 if (bestMatchIndex >= 0)
                     return models[bestMatchIndex].transform;
                 else

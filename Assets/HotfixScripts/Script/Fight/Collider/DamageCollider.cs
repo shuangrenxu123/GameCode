@@ -1,5 +1,4 @@
 using Fight;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
@@ -36,11 +35,11 @@ public class DamageCollider : MonoBehaviour
         if (other.gameObject.layer == Enemylayer)
         {
             Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
-           //if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
-           //{
-           //    return;
-           //}
-           //characterDamagedDuringThisCalculation.Add(enemy);
+            //if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
+            //{
+            //    return;
+            //}
+            //characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             //Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             //float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));

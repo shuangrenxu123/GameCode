@@ -213,8 +213,8 @@ namespace Animancer
 
                 return;
 
-                // If the value is 0, we can set the child times more efficiently.
-                ZeroTime:
+            // If the value is 0, we can set the child times more efficiently.
+            ZeroTime:
                 for (int i = _ChildCount - 1; i >= 0; i--)
                     ChildStates[i].TimeD = 0;
             }

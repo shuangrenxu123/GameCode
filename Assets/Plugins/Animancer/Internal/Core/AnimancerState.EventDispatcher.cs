@@ -534,7 +534,7 @@ namespace Animancer
 
                     var loopStartIndex = _NextEventIndex;
 
-                    Invoke:
+                Invoke:
                     animancerEvent.Invoke(_State);
 
                     if (!NextEventLooped(playDirectionInt) ||

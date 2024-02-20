@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class MaterialControl : MonoBehaviour
@@ -23,12 +20,12 @@ public class MaterialControl : MonoBehaviour
     private void Awake()
     {
         characterActor = GetComponentInParent<CharacterActor>();
-        if(characterActor == null)
+        if (characterActor == null)
         {
             Debug.LogError("Character is Null");
             return;
         }
-        GetSurfaceData(); 
+        GetSurfaceData();
     }
     private void FixedUpdate()
     {
@@ -44,9 +41,9 @@ public class MaterialControl : MonoBehaviour
         else
         {
             var ground = characterActor.GroundObject;
-            if(ground != null)
+            if (ground != null)
             {
-                bool validSurface = MaterialsProperties.GetSurface(ground,out Surface surface);
+                bool validSurface = MaterialsProperties.GetSurface(ground, out Surface surface);
                 if (validSurface)
                 {
                     SetCurrentSurfaceData(surface);
@@ -67,7 +64,7 @@ public class MaterialControl : MonoBehaviour
         {
             OnSurfaceExit?.Invoke(CurrentSurface);
             CurrentSurface = surface;
-            OnSurfaceEnter?.Invoke(CurrentSurface); 
+            OnSurfaceEnter?.Invoke(CurrentSurface);
         }
     }
     void GetVolumeData()
@@ -99,9 +96,9 @@ public class MaterialControl : MonoBehaviour
     }
     void SetCurrentVolumeDate(Volume volume)
     {
-        if(volume != CurrentVolume)
+        if (volume != CurrentVolume)
         {
-            OnVolumeExit?.Invoke(volume);   
+            OnVolumeExit?.Invoke(volume);
             CurrentVolume = volume;
             OnVolumeEnter?.Invoke(volume);
         }

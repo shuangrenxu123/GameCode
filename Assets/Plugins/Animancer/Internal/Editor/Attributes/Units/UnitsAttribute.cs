@@ -2,9 +2,9 @@
 
 #if UNITY_EDITOR
 using Animancer.Editor;
+using System;
 using UnityEditor;
 using UnityEngine;
-using System;
 #endif
 
 namespace Animancer.Units

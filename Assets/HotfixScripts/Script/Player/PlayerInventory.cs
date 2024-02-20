@@ -16,7 +16,7 @@ public class PlayerInventory : MonoBehaviour
     public ConsumableItem currentItem = null;
     public bool CanReplace = true;
 
-    public Dictionary<int,(ItemData,int)> items = new(30); 
+    public Dictionary<int, (ItemData, int)> items = new(30);
     #region Event 
     public event Action<ItemData> OnItemAdd;
     public event Action<ItemData> OnItemRemove;
@@ -27,8 +27,8 @@ public class PlayerInventory : MonoBehaviour
     }
     private void Start()
     {
-       // weaponManager.LoadWeaponOnSlot(rightWeapon, false);
-       // weaponManager.LoadWeaponOnSlot(leftWeapon, true);
+        // weaponManager.LoadWeaponOnSlot(rightWeapon, false);
+        // weaponManager.LoadWeaponOnSlot(leftWeapon, true);
         panel = WindowsManager.Instance.GetUiWindow<PlayerInventoryPanel>();
         bagPanel = WindowsManager.Instance.GetUiWindow<BagPanel>();
 
@@ -45,23 +45,50 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("使用了道具");
             CanReplace = false;
-           //currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
+            //currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
         }
     }
+    /// <summary>
+    /// 从背包中使用道具
+    /// </summary>
+    /// <param name="item"></param>
     public void UseItem(ItemData item)
     {
-
+        
     }
     /// <summary>
     /// 替换道具
     /// </summary>
     public void ReplaceItem()
     {
-        
+
         if (CanReplace == false)
         {
             return;
         }
+    }
+
+    public void ReplaceLeftWeapon()
+    {
+
+    }
+    public void ReplaceRightWeapon()
+    {
+
+    }
+    /// <summary>
+    /// 放置道具
+    /// </summary>
+    public void PutItem()
+    {
+
+    }
+    /// <summary>
+    /// 拆分道具
+    /// </summary>
+    public void SplitItme()
+    {
+
     }
     /// <summary>
     /// 添加道具
@@ -77,7 +104,7 @@ public class PlayerInventory : MonoBehaviour
         }
         else
         {
-            items.Add(item.id,(item,1));
+            items.Add(item.id, (item, 1));
             bagPanel.AddItem(item);
         }
         //currentItem = item;

@@ -2,9 +2,9 @@
 
 #if UNITY_EDITOR
 
+using System;
 using UnityEditor;
 using UnityEngine;
-using System;
 
 #if UNITY_2D_SPRITE
 using UnityEditor.U2D.Sprites;

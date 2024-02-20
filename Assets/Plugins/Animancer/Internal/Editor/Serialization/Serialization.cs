@@ -494,7 +494,7 @@ namespace Animancer.Editor
             }
             while (from.Next(false) && from.depth > depth);
 
-            LogResults:
+        LogResults:
             if (copyCount < totalCount)
                 Debug.Log($"Copied {copyCount} / {totalCount} values from '{fromPath}' to '{to.propertyPath}': {issues}");
 

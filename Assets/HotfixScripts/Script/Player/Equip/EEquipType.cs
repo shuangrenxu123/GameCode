@@ -1,4 +1,4 @@
-public enum EquipType 
+public enum EquipType
 {
 
     /// <summary>

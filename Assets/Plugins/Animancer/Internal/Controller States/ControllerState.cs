@@ -2,11 +2,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Animations;
 using UnityEngine.Playables;
 using Object = UnityEngine.Object;
-using System.Runtime.CompilerServices;
 
 namespace Animancer
 {

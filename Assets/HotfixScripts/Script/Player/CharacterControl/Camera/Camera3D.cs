@@ -38,10 +38,10 @@ public class Camera3D : MonoBehaviour
     [Header("Ëø¶¨")]
     [SerializeField] float lockDistance = 20f;
     [SerializeField] float lockEnemyMaxDistance = 30f;
-    [SerializeField] float lockEnemyCameraMoveSpeed =10f;
+    [SerializeField] float lockEnemyCameraMoveSpeed = 10f;
     [SerializeField] string lockEnemyTag = "Enemy";
     [SerializeField] Vector3 lockOffsetPosition;
-    private bool lockFlag =false;
+    private bool lockFlag = false;
     public LayerMask lockMask;
     Transform nearestLockOnTarget;
     bool lockbutton;
@@ -237,28 +237,28 @@ public class Camera3D : MonoBehaviour
 
         UpdateRotation(dt);
         // ------------------------------------------------------------------------------------------------------
- 
-         currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
-         currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
 
-         smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * dt);
-         Vector3 displacement = -viewReference.forward * smoothedDistanceToTarget;
+        currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
+        currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
 
-         if (collisionDetection)
-         {
-             bool hit = DetectCollisions(ref displacement, targetPosition);
+        smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * dt);
+        Vector3 displacement = -viewReference.forward * smoothedDistanceToTarget;
 
-             if (collisionAffectsZoom && hit)
-             {
-                 currentDistanceToTarget = smoothedDistanceToTarget = displacement.magnitude;
-             }
-         }
-
-         finalPosition = targetPosition + displacement;
-       
-        if(lockbutton)
+        if (collisionDetection)
         {
-           lockFlag = HandleLockOn();
+            bool hit = DetectCollisions(ref displacement, targetPosition);
+
+            if (collisionAffectsZoom && hit)
+            {
+                currentDistanceToTarget = smoothedDistanceToTarget = displacement.magnitude;
+            }
+        }
+
+        finalPosition = targetPosition + displacement;
+
+        if (lockbutton)
+        {
+            lockFlag = HandleLockOn();
         }
 
         if (lockFlag)
@@ -362,8 +362,8 @@ public class Camera3D : MonoBehaviour
     #region lock
     bool HandleLockOn()
     {
-        bool result =  FindLockObject();
-        if(result)
+        bool result = FindLockObject();
+        if (result)
         {
             stataManager.HandleLock();
         }
@@ -372,7 +372,7 @@ public class Camera3D : MonoBehaviour
     void HandleCamreaLock(float dt)
     {
         Vector3 direction = currentLockOnTarget.position - viewReference.position;
-        if(direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
+        if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
         {
             currentLockOnTarget = null;
             stataManager.HandleLock();
@@ -420,7 +420,7 @@ public class Camera3D : MonoBehaviour
                 nearestLockOnTarget = avilableTargets[i].transform;
             }
         }
-        if(nearestLockOnTarget != null)
+        if (nearestLockOnTarget != null)
         {
             currentLockOnTarget = nearestLockOnTarget;
             return true;

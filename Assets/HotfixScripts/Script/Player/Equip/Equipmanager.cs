@@ -41,12 +41,12 @@ public class Equipmanager : MonoBehaviour
         if (isLeft)
         {
             leftSlot.LoadModel(item);
-            LoadLeftWeaponDamageCollider();
+            //LoadLeftWeaponDamageCollider();
         }
         else
         {
             rightSlot.LoadModel(item);
-            LoadRightWeaponDamageCollider();
+            //LoadRightWeaponDamageCollider();
         }
     }
     public void LoadBothWeaponOnSlots()
@@ -54,37 +54,12 @@ public class Equipmanager : MonoBehaviour
         LoadWeaponOnSlot(inventory.rightWeapon, false);
         LoadWeaponOnSlot(inventory.leftWeapon, true);
     }
-    private void LoadLeftWeaponDamageCollider()
-    {
-        leftCollider = leftSlot.currentModel.GetComponentInChildren<DamageCollider>();
-    }
-    private void LoadRightWeaponDamageCollider()
-    {
-        rightCollider = rightSlot.currentModel.GetComponentInChildren<DamageCollider>();
-    }
-    public void OpenLeftCollider()
-    {
-        leftCollider.EnableDamageCollider();
-    }
-    public void OpenRightCollider()
-    {
-        rightCollider.EnableDamageCollider();
-    }
-    public void CloseLeftCollider()
-    {
-        leftCollider.DisableDamageCollider();
-    }
-    public void CloseRightCollider()
-    {
-        rightCollider.DisableDamageCollider();
-    }
-    public void LoadRightHandIK(bool isTwoHandWeapon)
-    {
-        handIK = rightSlot.currentModel.GetComponentInChildren<HandIK>();
-        //animatorHandle.SetHandIKForWeapon(handIK, isTwoHandWeapon);
-    }
-    
-    public void ReplaceEquip()
+    /// <summary>
+    /// 替换部位装备
+    /// </summary>
+    /// <param name="qeuipType"></param>
+    /// <param name="datas"></param>
+    public void ReplaceEquip(EquipType qeuipType, EquipItemData datas)
     {
 
     }

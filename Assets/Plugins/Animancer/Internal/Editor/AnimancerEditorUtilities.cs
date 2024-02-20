@@ -445,7 +445,7 @@ namespace Animancer.Editor
             // Type Name.
             AppendNameAndGenericArguments(text, type, fullName, genericArguments);
 
-            Return:// Remember and return the name.
+        Return:// Remember and return the name.
             name = text.ReleaseToString();
             names.Add(type, name);
             return name;

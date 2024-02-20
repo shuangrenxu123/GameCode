@@ -87,7 +87,7 @@ public struct CharacterActions
         roll.Update(dt);
         @lock.Update(dt);
         attack.Update(dt);
-        crouch .Update(dt);
+        crouch.Update(dt);
     }
 }
 [SerializeField]

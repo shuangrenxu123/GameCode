@@ -608,7 +608,7 @@ namespace Animancer
                 cloneCount++;
             }
 
-            GotState:
+        GotState:
 
             state.TimeD = 0;
 

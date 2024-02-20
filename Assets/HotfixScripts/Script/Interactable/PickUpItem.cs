@@ -6,13 +6,12 @@ public class PickUpItem : Interactable
     ItemData ItemDataConfig;
     public override void Interact(Player playerManager)
     {
-        if(ItemDataConfig == null)
+        if (ItemDataConfig == null)
         {
             Debug.LogError("物品没有配置相关数据");
             return;
         }
         Debug.Log($"与物体{name}产生了交互");
-        //todo 将物品添加到背包中
         playerManager.Inventory.AddItem(ItemDataConfig);
         Destroy(gameObject);
     }

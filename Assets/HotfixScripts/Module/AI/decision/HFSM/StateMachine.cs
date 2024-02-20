@@ -173,8 +173,8 @@ namespace HFSM
 
         public virtual StateBase FindState(string name)
         {
-            status.TryGetValue(name,out StateBase state);
-            return state;   
+            status.TryGetValue(name, out StateBase state);
+            return state;
 
         }
     }

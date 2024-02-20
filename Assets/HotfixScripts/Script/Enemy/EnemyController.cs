@@ -1,5 +1,5 @@
 using UnityEngine;
 
-public class EnemyController :MonoBehaviour
+public class EnemyController : MonoBehaviour
 {
 }

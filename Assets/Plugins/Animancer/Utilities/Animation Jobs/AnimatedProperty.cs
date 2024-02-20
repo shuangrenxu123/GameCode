@@ -1,9 +1,9 @@
 // Animancer // https://kybernetik.com.au/animancer // Copyright 2018-2023 Kybernetik //
 
 using System;
+using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Animations;
-using Unity.Collections;
 
 namespace Animancer
 {

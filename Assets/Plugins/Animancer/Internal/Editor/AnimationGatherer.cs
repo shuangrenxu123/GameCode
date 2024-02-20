@@ -196,7 +196,7 @@ namespace Animancer.Editor
         private void GatherFromComponents(List<MonoBehaviour> components)
         {
             var i = components.Count;
-            GatherClips:
+        GatherClips:
             try
             {
                 while (--i >= 0)

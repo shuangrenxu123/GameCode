@@ -1,7 +1,7 @@
-using Utilities;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Utilities;
 [RequireComponent(typeof(CharacterBody))]
 [DefaultExecutionOrder(10)]
 public class CharacterActor : PhysicsActor

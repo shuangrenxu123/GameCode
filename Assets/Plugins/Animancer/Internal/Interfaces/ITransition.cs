@@ -1,7 +1,5 @@
 // Animancer // https://kybernetik.com.au/animancer // Copyright 2018-2023 Kybernetik //
 
-using Object = UnityEngine.Object;
-
 namespace Animancer
 {
     /// <summary>An object which can create an <see cref="AnimancerState"/> and set its details.</summary>

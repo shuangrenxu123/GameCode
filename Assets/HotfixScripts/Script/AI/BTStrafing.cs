@@ -11,7 +11,7 @@ public class BTStrafing : BTAction
     private float insideDistanceSql = 100;
     private float timer;
     private float time = 2f;
-    public BTStrafing(string name,Enemy enemy) : base(name)
+    public BTStrafing(string name, Enemy enemy) : base(name)
     {
         this.enemy = enemy;
     }

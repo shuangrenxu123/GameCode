@@ -1,7 +1,5 @@
 using Animancer;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class AnimactorHelper
 {
@@ -20,11 +18,11 @@ public class AnimactorHelper
     {
         return Animancer.Play(clip);
     }
-    public AnimancerState Play(ITransition transition,int layer = 0)
+    public AnimancerState Play(ITransition transition, int layer = 0)
     {
         return Animancer.Play(transition);
     }
-    public AnimancerState Play(AnimancerState state,int layer = 0)
+    public AnimancerState Play(AnimancerState state, int layer = 0)
     {
         return Animancer.Play(state);
     }

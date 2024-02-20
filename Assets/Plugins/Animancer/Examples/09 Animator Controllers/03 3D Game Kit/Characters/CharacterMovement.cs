@@ -3,7 +3,6 @@
 #pragma warning disable CS0649 // Field is never assigned to, and will always have its default value.
 
 using Animancer.Units;
-using System;
 using UnityEngine;
 using static Animancer.Validate;
 

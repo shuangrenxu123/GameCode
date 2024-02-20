@@ -693,7 +693,7 @@ namespace Animancer.Editor
 
                     var binding = sortedBindings[index];
 
-                    CheckFlags:
+                CheckFlags:
 
                     switch (binding.propertyName)
                     {
@@ -722,7 +722,7 @@ namespace Animancer.Editor
                         bindings = null;
                         anyExists = exists;
                     }
-                    SkipFlagExistence:
+                SkipFlagExistence:
 
                     if (index + 1 < sortedBindings.Count)
                     {
@@ -926,7 +926,7 @@ namespace Animancer.Editor
 
             return;
 
-            Hide:
+        Hide:
             GUI.Button(default, GUIContent.none, ButtonStyle);
         }
 

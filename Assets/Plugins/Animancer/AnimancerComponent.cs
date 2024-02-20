@@ -80,7 +80,7 @@ namespace Animancer
         }
 
         /// <summary>Indicates whether the <see cref="Playable"/> has been initialized.</summary>
-        public bool IsPlayableInitialized 
+        public bool IsPlayableInitialized
             => _Playable != null && _Playable.IsValid;
 
         /************************************************************************************************************************/
@@ -90,15 +90,15 @@ namespace Animancer
             => Playable.States;
 
         /// <summary>The layers which each manage their own set of animations.</summary>
-        public AnimancerPlayable.LayerList Layers 
+        public AnimancerPlayable.LayerList Layers
             => Playable.Layers;
 
         /// <summary>Returns the <see cref="Playable"/>.</summary>
-        public static implicit operator AnimancerPlayable(AnimancerComponent animancer) 
+        public static implicit operator AnimancerPlayable(AnimancerComponent animancer)
             => animancer.Playable;
 
         /// <summary>Returns layer 0.</summary>
-        public static implicit operator AnimancerLayer(AnimancerComponent animancer) 
+        public static implicit operator AnimancerLayer(AnimancerComponent animancer)
             => animancer.Playable.Layers[0];
 
         /************************************************************************************************************************/
@@ -125,7 +125,7 @@ namespace Animancer
         /// (i.e. in <see cref="OnDisable"/>).
         /// </summary>
         /// <remarks>The default value is <see cref="DisableAction.Stop"/>.</remarks>
-        public ref DisableAction ActionOnDisable 
+        public ref DisableAction ActionOnDisable
             => ref _ActionOnDisable;
 
         /// <inheritdoc/>
@@ -453,7 +453,7 @@ namespace Animancer
         /// This method is used to determine the dictionary key to use for an animation when none is specified by the
         /// caller, such as in <see cref="Play(AnimationClip)"/>.
         /// </remarks>
-        public virtual object GetKey(AnimationClip clip) 
+        public virtual object GetKey(AnimationClip clip)
             => clip;
 
         /************************************************************************************************************************/
@@ -596,13 +596,13 @@ namespace Animancer
         /// Gets the state registered with the <see cref="IHasKey.Key"/>, stops and rewinds it to the start, then
         /// returns it.
         /// </summary>
-        public AnimancerState Stop(IHasKey hasKey) 
+        public AnimancerState Stop(IHasKey hasKey)
             => _Playable?.Stop(hasKey);
 
         /// <summary>
         /// Gets the state associated with the `key`, stops and rewinds it to the start, then returns it.
         /// </summary>
-        public AnimancerState Stop(object key) 
+        public AnimancerState Stop(object key)
             => _Playable?.Stop(key);
 
         /// <summary>Stops all animations and rewinds them to the start.</summary>
@@ -632,8 +632,8 @@ namespace Animancer
         /// <summary>
         /// Returns true if a state is registered with the `key` and it is currently playing.
         /// </summary>
-        public bool IsPlaying(object key) 
-            => IsPlayableInitialized 
+        public bool IsPlaying(object key)
+            => IsPlayableInitialized
             && _Playable.IsPlaying(key);
 
         /// <summary>
@@ -651,8 +651,8 @@ namespace Animancer
         /// This method is inefficient because it searches through every state to find any that are playing the `clip`,
         /// unlike <see cref="IsPlaying(AnimationClip)"/> which only checks the state registered using the `clip`s key.
         /// </summary>
-        public bool IsPlayingClip(AnimationClip clip) 
-            => IsPlayableInitialized 
+        public bool IsPlayingClip(AnimationClip clip)
+            => IsPlayableInitialized
             && _Playable.IsPlayingClip(clip);
 
         /************************************************************************************************************************/
@@ -660,14 +660,14 @@ namespace Animancer
         /// <summary>
         /// Immediately applies the current states of all animations to the animated objects.
         /// </summary>
-        public void Evaluate() 
+        public void Evaluate()
             => Playable.Evaluate();
 
         /// <summary>
         /// Advances time by the specified value (in seconds) and immediately applies the current states of all
         /// animations to the animated objects.
         /// </summary>
-        public void Evaluate(float deltaTime) 
+        public void Evaluate(float deltaTime)
             => Playable.Evaluate(deltaTime);
 
         /************************************************************************************************************************/
@@ -694,7 +694,7 @@ namespace Animancer
         /// Just check <see cref="AnimancerState.IsPlaying"/>.
         /// </summary>
         [Obsolete("You should not use an AnimancerState as a key. Just check AnimancerState.IsPlaying.", true)]
-        public bool IsPlaying(AnimancerState key) 
+        public bool IsPlaying(AnimancerState key)
             => key.IsPlaying;
 
         /************************************************************************************************************************/

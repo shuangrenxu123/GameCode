@@ -3,9 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Playables;
 using Object = UnityEngine.Object;
-using Animancer.Units;
 
 #if UNITY_EDITOR
 using UnityEditor;

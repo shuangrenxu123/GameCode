@@ -1,5 +1,4 @@
 using Animancer;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class InteractionState : CharacterControlStateBase
@@ -13,7 +12,7 @@ public class InteractionState : CharacterControlStateBase
     public override void Enter()
     {
         interactable = database.GetData<Interactable>("interactable");
-        if(interactable == null)
+        if (interactable == null)
         {
             database.SetData<bool>("interaction", false);
         }
@@ -25,7 +24,7 @@ public class InteractionState : CharacterControlStateBase
 
 
         state.Events.OnEnd += OnAnimatorEnd;
-        state.Events.Add(0.6f,OnInteract);
+        state.Events.Add(0.6f, OnInteract);
         interactable.StartInteract(CharacterStateController.stateManger.player);
     }
     private void OnAnimatorEnd()
@@ -44,7 +43,7 @@ public enum InteractableType
     Door_Double = 1,
     Door_Up = 2,
     Door_Outward = 3,
-    Chest=4,
-    Lever=5,
-    Item=6
+    Chest = 4,
+    Lever = 5,
+    Item = 6
 }

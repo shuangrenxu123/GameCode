@@ -1,14 +1,11 @@
 using Animancer;
-using Animancer.Examples.FineControl;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class MovementState : CharacterControlStateBase
 {
     #region parameters
-    public PlanarMovementParameters planarMovementParameters = new  ();
+    public PlanarMovementParameters planarMovementParameters = new();
     public VerticalMovementParameters verticalMovementParameters = new VerticalMovementParameters();
     public CrouchParameters crouchParameters = new CrouchParameters();
     public LookingDirectionParameters lookingDirectionParameters = new LookingDirectionParameters();
@@ -105,7 +102,7 @@ public class MovementState : CharacterControlStateBase
         currentAnimator = normalMoveAnimator;
         currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
         CharacterActor.UseRootMotion = false;
-        
+
         if (lockFlag)
         {
             Animancer.Play(lockEnemyAnimator);
@@ -134,7 +131,7 @@ public class MovementState : CharacterControlStateBase
     }
     public override void Update()
     {
-        if(CharacterActions.roll.Started && CharacterActor.IsGrounded)
+        if (CharacterActions.roll.Started && CharacterActor.IsGrounded)
         {
             database.SetData<bool>("roll", true);
         }
@@ -148,7 +145,7 @@ public class MovementState : CharacterControlStateBase
 
     public bool HandleLockEnemy(Transform target)
     {
-        if(target == null || lockFlag)
+        if (target == null || lockFlag)
         {
             lookingDirectionParameters.target = null;
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
@@ -486,7 +483,7 @@ public class MovementState : CharacterControlStateBase
     {
         if (lockFlag)
         {
-            Animancer.Play(animators[jumpEnd]).Events.OnEnd = ()=> { Animancer.Play(lockEnemyAnimator); };
+            Animancer.Play(animators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(lockEnemyAnimator); };
         }
         else
         {
@@ -682,17 +679,17 @@ public class MovementState : CharacterControlStateBase
 
             if (lockFlag)
             {
-                lockEnemyAnimator.Parameter = new Vector2(CharacterActor.LocalVelocity.z,CharacterActor.LocalVelocity.x).normalized;
+                lockEnemyAnimator.Parameter = new Vector2(CharacterActor.LocalVelocity.z, CharacterActor.LocalVelocity.x).normalized;
             }
         }
-        else 
+        else
         {
- 
+
             if (CharacterActor.Velocity.y > 0)
             {
                 Animancer.Play(animators[jump]);
             }
-            else if(CharacterActor.Velocity.y < 0)
+            else if (CharacterActor.Velocity.y < 0)
             {
                 Animancer.Play(animators[jumpFall]);
             }

@@ -333,7 +333,7 @@ namespace Animancer
             private void DoBindingGUI(Rect area, SerializedProperty property, GUIContent label,
                 IEnumerator<PlayableBinding> outputEnumerator, int trackIndex)
             {
-                CheckIfSkip:
+            CheckIfSkip:
                 PlayableAssetState.GetBindingDetails(
                     outputEnumerator.Current, out var name, out var bindingType, out var isMarkers);
 

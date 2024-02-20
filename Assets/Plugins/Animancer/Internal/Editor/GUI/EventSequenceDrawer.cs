@@ -6,8 +6,8 @@ using System;
 using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
-using Sequence = Animancer.AnimancerEvent.Sequence;
 using Object = UnityEngine.Object;
+using Sequence = Animancer.AnimancerEvent.Sequence;
 
 namespace Animancer.Editor
 {

@@ -123,7 +123,7 @@ namespace Animancer.Units
             DefaultValue = nextDefaultValue;
             DoFieldGUI(area, label, ref value);
 
-            Return:
+        Return:
             nextDefaultValue = float.NaN;
         }
 

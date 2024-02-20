@@ -9,7 +9,7 @@ public class FlaskItem : ConsumableItem
     public override void Effect(CombatEntity me, Equipmanager equipmanager)
     {
         new RegenerationAction(me, new CombatEntity[] { me }).Apply(30);
-        equipmanager.LoadBothWeaponOnSlots();
+        //equipmanager.LoadBothWeaponOnSlots();
         Object.Destroy(go);
     }
 }

@@ -6,8 +6,8 @@ using System;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
-using Object = UnityEngine.Object;
 using static Animancer.Editor.AnimancerGUI;
+using Object = UnityEngine.Object;
 
 namespace Animancer.Editor
 {
@@ -202,7 +202,7 @@ namespace Animancer.Editor
                     sibling.Weight *= siblingWeightMultiplier;
             }
 
-            JustSetWeight:
+        JustSetWeight:
             Target.Weight = weight;
         }
 

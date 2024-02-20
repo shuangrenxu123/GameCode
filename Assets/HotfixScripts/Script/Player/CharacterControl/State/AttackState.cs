@@ -1,5 +1,4 @@
 using Animancer;
-using Animancer.Examples.StateMachines;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -38,7 +37,7 @@ public class AttackState : CharacterControlStateBase
     private void PlayFirstAnimator()
     {
         var movestate = (lastState as MovementState);
-        if(movestate == null)
+        if (movestate == null)
         {
             return;
         }
@@ -65,7 +64,7 @@ public class AttackState : CharacterControlStateBase
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
             state.Events.AddRange(lightEvents[currentAnimatorIndex]);
         }
-        if(state == null)
+        if (state == null)
         {
             return;
         }
@@ -77,7 +76,7 @@ public class AttackState : CharacterControlStateBase
         if (CharacterActions.attack.Started)
         {
             //todo ÅÐ¶ÏÇáÖØ¹¥»÷
-            if(currentAnimatorIndex == 2)
+            if (currentAnimatorIndex == 2)
             {
                 return;
             }
@@ -96,11 +95,11 @@ public class AttackState : CharacterControlStateBase
     public override void Exit()
     {
         lightEvents.Clear();
-        if(state == null)
+        if (state == null)
         {
             return;
         }
-        state.Events = null;    
+        state.Events = null;
         currentAnimatorIndex = 0;
         canDoCombo = false;
     }
@@ -108,7 +107,7 @@ public class AttackState : CharacterControlStateBase
     {
         if (CheckinWeaponType())
         {
-            foreach (var clip in currentWeaponAnimator.lightAttackAnimator_OH) 
+            foreach (var clip in currentWeaponAnimator.lightAttackAnimator_OH)
             {
                 var sequeue = new AnimancerEvent.Sequence(4)
                 {

@@ -4,10 +4,6 @@ using System;
 
 #if UNITY_EDITOR
 using Animancer.Editor;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEditor;
-using UnityEngine;
 using System.Collections;
 #endif
 
@@ -207,7 +203,7 @@ namespace Animancer
 
             throw new ArgumentException($"{type.GetNameCS()} does not contain a member named '{name}'");
 
-            GotCollection:
+        GotCollection:
             if (obj == null)
                 throw new ArgumentException($"The collection retrieved from {type.GetNameCS()}.{name} is null");
             if (!(obj is IEnumerable collection))

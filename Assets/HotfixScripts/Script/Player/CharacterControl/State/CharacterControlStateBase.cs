@@ -6,7 +6,7 @@ using UnityEngine;
 public class CharacterControlStateBase : StateBase
 {
     public CharacterActor CharacterActor { get; protected set; }
-    public AnimactorHelper Animancer { get; set ; }
+    public AnimactorHelper Animancer { get; set; }
     protected CharacterBrain CharacterBrain = null;
     public CharacterActions CharacterActions
     {
@@ -57,12 +57,12 @@ public class CharacterControlStateBase : StateBase
     }
     public void AddStateAnimators(List<ClipTransition> anims)
     {
-        if(anims == null || anims.Count == 0)
+        if (anims == null || anims.Count == 0)
         {
-            Debug.LogError("Ìí¼Ó¶¯»­Ê§°Ü"+ name);
+            Debug.LogError("Ìí¼Ó¶¯»­Ê§°Ü" + name);
             return;
         }
-        if(animators == null)
+        if (animators == null)
             animators = new Dictionary<string, ClipTransition>(anims.Count);
         for (int i = 0; i < anims.Count; i++)
         {

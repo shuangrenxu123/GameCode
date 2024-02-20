@@ -189,7 +189,7 @@ namespace Animancer.Editor
                         // Not exponential.
                         return valueString.Substring(0, characterCount) + ApproximateSuffix;
 
-                        IsExponential:
+                    IsExponential:
                         var digits = Math.Max(0, characterCount - ApproximateSuffix.Length - 1);
                         var format = GetExponentialFormat(digits);
                         valueString = value.ToString(format);

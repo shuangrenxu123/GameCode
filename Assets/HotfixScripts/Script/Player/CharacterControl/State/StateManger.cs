@@ -33,10 +33,10 @@ public class StateManger : MonoBehaviour
     private CharacterWeaponAnimator attackAnimator;
 
     private CharacterActor CharacterActor;
-    
+
     private void Awake()
     {
-        AnimancerHelper =new AnimactorHelper(Animancer);
+        AnimancerHelper = new AnimactorHelper(Animancer);
     }
     private void Start()
     {
@@ -59,7 +59,7 @@ public class StateManger : MonoBehaviour
             Animancer = AnimancerHelper,
             normalMoveAnimator = normalMoveAnimator,
             crouchMoveAnimator = crouchMoveAniamtor,
-            MaterialControl = materialControl,  
+            MaterialControl = materialControl,
             lockEnemyAnimator = (MixerState<Vector2>)state
 
         };
@@ -80,7 +80,7 @@ public class StateManger : MonoBehaviour
             Animancer = this.AnimancerHelper
         };
         interaction.AddStateAnimators(InterctionTransition);
-        
+
         var roll = new RollState
         {
             database = dataBase,
@@ -110,10 +110,10 @@ public class StateManger : MonoBehaviour
 
         InteractionTomove.AddCondition(InteractionTomoveCondition);
         moveToInteraction.AddCondition(moveToInteractionCondition);
-       //moveToladder.AddCondition(moveToladderCondition);
+        //moveToladder.AddCondition(moveToladderCondition);
         moveToroll.AddCondition(moveTorollCondition);
         rollTomove.AddCondition(rollTomoveCondition);
-      
+
         dataBase.SetData("ladder", false);
         dataBase.SetData("interaction", false);
         dataBase.SetData("roll", false);
@@ -126,19 +126,19 @@ public class StateManger : MonoBehaviour
         controller.AddState("interaction", interaction);
         controller.AddState("roll", roll);
 
-       AddCondition(controller,"attack",dataBase,"move","attack");
-       //controller.AddTransition(moveToladder);
-       controller.AddTransition(moveToInteraction);
-       controller.AddTransition(InteractionTomove);
-       controller.AddTransition(moveToroll);
-       controller.AddTransition(rollTomove);
+        AddCondition(controller, "attack", dataBase, "move", "attack");
+        //controller.AddTransition(moveToladder);
+        controller.AddTransition(moveToInteraction);
+        controller.AddTransition(InteractionTomove);
+        controller.AddTransition(moveToroll);
+        controller.AddTransition(rollTomove);
 
         controller.Start();
     }
-    private void AddCondition(CharacterStateController_New controller,string name,DataBase database, string form,string to)
+    private void AddCondition(CharacterStateController_New controller, string name, DataBase database, string form, string to)
     {
-        var cond = new StateCondition_Bool(name, database,true);
-        var transition = new StateTransition(form,to);
+        var cond = new StateCondition_Bool(name, database, true);
+        var transition = new StateTransition(form, to);
 
         var cond2 = new StateCondition_Bool(name, database, false);
         var transition2 = new StateTransition(to, form);
@@ -164,7 +164,7 @@ public class StateManger : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
-        if(CharacterActor != null)
-            Gizmos.DrawLine(transform.position,transform.position + this.CharacterActor.PlanarVelocity.normalized);
+        if (CharacterActor != null)
+            Gizmos.DrawLine(transform.position, transform.position + this.CharacterActor.PlanarVelocity.normalized);
     }
 }

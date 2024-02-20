@@ -1,6 +1,4 @@
 using Animancer;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class RollState : CharacterControlStateBase
@@ -44,6 +42,6 @@ public class RollState : CharacterControlStateBase
     private void OnAnimatorEnd()
     {
         database.SetData<bool>("roll", false);
-        state.Events.OnEnd -= OnAnimatorEnd;    
+        state.Events.OnEnd -= OnAnimatorEnd;
     }
 }
