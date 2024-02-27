@@ -30,7 +30,11 @@ namespace PlayerInfo {
             "SW5mby52ZWN0b3IzEgkKAWgYBCABKAISCQoBdhgFIAEoAiIqCgd2ZWN0b3Iz",
             "EgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgCIhUKBHBpbmcSDQoF",
             "dGltZXIYASABKAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAkiHAoGQWN0",
-            "aW9uEhIKCmFjdGlvbm5hbWUYASABKAliBnByb3RvMw=="));
+            "aW9uEhIKCmFjdGlvbm5hbWUYASABKAkilAEKBUxvZ2luEhQKDGxlZnRXZWFw",
+            "b25pZBgBIAEoBRIVCg1yaWdodFdlYXBvbmlkGAIgASgFEg4KBmhlYWRpZBgD",
+            "IAEoBRIOCgZib2R5aWQYBCABKAUSEAoIdHJvdXNlcnMYBSABKAUSDQoFbGVn",
+            "aWQYBiABKAUSDQoFYXJtaWQYByABKAUSDgoGaGFuZGlkGAggASgFYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -38,7 +42,8 @@ namespace PlayerInfo {
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.vector3), global::PlayerInfo.vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Timer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Action), global::PlayerInfo.Action.Parser, new[]{ "Actionname" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Action), global::PlayerInfo.Action.Parser, new[]{ "Actionname" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Login), global::PlayerInfo.Login.Parser, new[]{ "LeftWeaponid", "RightWeaponid", "Headid", "Bodyid", "Trousers", "Legid", "Armid", "Handid" }, null, null, null)
           }));
     }
     #endregion
@@ -871,6 +876,331 @@ namespace PlayerInfo {
             break;
           case 10: {
             Actionname = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class Login : pb::IMessage<Login> {
+    private static readonly pb::MessageParser<Login> _parser = new pb::MessageParser<Login>(() => new Login());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<Login> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[5]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Login() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Login(Login other) : this() {
+      leftWeaponid_ = other.leftWeaponid_;
+      rightWeaponid_ = other.rightWeaponid_;
+      headid_ = other.headid_;
+      bodyid_ = other.bodyid_;
+      trousers_ = other.trousers_;
+      legid_ = other.legid_;
+      armid_ = other.armid_;
+      handid_ = other.handid_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public Login Clone() {
+      return new Login(this);
+    }
+
+    /// <summary>Field number for the "leftWeaponid" field.</summary>
+    public const int LeftWeaponidFieldNumber = 1;
+    private int leftWeaponid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int LeftWeaponid {
+      get { return leftWeaponid_; }
+      set {
+        leftWeaponid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "rightWeaponid" field.</summary>
+    public const int RightWeaponidFieldNumber = 2;
+    private int rightWeaponid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int RightWeaponid {
+      get { return rightWeaponid_; }
+      set {
+        rightWeaponid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "headid" field.</summary>
+    public const int HeadidFieldNumber = 3;
+    private int headid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Headid {
+      get { return headid_; }
+      set {
+        headid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "bodyid" field.</summary>
+    public const int BodyidFieldNumber = 4;
+    private int bodyid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Bodyid {
+      get { return bodyid_; }
+      set {
+        bodyid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "trousers" field.</summary>
+    public const int TrousersFieldNumber = 5;
+    private int trousers_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Trousers {
+      get { return trousers_; }
+      set {
+        trousers_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "legid" field.</summary>
+    public const int LegidFieldNumber = 6;
+    private int legid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Legid {
+      get { return legid_; }
+      set {
+        legid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "armid" field.</summary>
+    public const int ArmidFieldNumber = 7;
+    private int armid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Armid {
+      get { return armid_; }
+      set {
+        armid_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "handid" field.</summary>
+    public const int HandidFieldNumber = 8;
+    private int handid_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int Handid {
+      get { return handid_; }
+      set {
+        handid_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as Login);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(Login other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (LeftWeaponid != other.LeftWeaponid) return false;
+      if (RightWeaponid != other.RightWeaponid) return false;
+      if (Headid != other.Headid) return false;
+      if (Bodyid != other.Bodyid) return false;
+      if (Trousers != other.Trousers) return false;
+      if (Legid != other.Legid) return false;
+      if (Armid != other.Armid) return false;
+      if (Handid != other.Handid) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (LeftWeaponid != 0) hash ^= LeftWeaponid.GetHashCode();
+      if (RightWeaponid != 0) hash ^= RightWeaponid.GetHashCode();
+      if (Headid != 0) hash ^= Headid.GetHashCode();
+      if (Bodyid != 0) hash ^= Bodyid.GetHashCode();
+      if (Trousers != 0) hash ^= Trousers.GetHashCode();
+      if (Legid != 0) hash ^= Legid.GetHashCode();
+      if (Armid != 0) hash ^= Armid.GetHashCode();
+      if (Handid != 0) hash ^= Handid.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (LeftWeaponid != 0) {
+        output.WriteRawTag(8);
+        output.WriteInt32(LeftWeaponid);
+      }
+      if (RightWeaponid != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(RightWeaponid);
+      }
+      if (Headid != 0) {
+        output.WriteRawTag(24);
+        output.WriteInt32(Headid);
+      }
+      if (Bodyid != 0) {
+        output.WriteRawTag(32);
+        output.WriteInt32(Bodyid);
+      }
+      if (Trousers != 0) {
+        output.WriteRawTag(40);
+        output.WriteInt32(Trousers);
+      }
+      if (Legid != 0) {
+        output.WriteRawTag(48);
+        output.WriteInt32(Legid);
+      }
+      if (Armid != 0) {
+        output.WriteRawTag(56);
+        output.WriteInt32(Armid);
+      }
+      if (Handid != 0) {
+        output.WriteRawTag(64);
+        output.WriteInt32(Handid);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (LeftWeaponid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(LeftWeaponid);
+      }
+      if (RightWeaponid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(RightWeaponid);
+      }
+      if (Headid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Headid);
+      }
+      if (Bodyid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Bodyid);
+      }
+      if (Trousers != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Trousers);
+      }
+      if (Legid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Legid);
+      }
+      if (Armid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Armid);
+      }
+      if (Handid != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Handid);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(Login other) {
+      if (other == null) {
+        return;
+      }
+      if (other.LeftWeaponid != 0) {
+        LeftWeaponid = other.LeftWeaponid;
+      }
+      if (other.RightWeaponid != 0) {
+        RightWeaponid = other.RightWeaponid;
+      }
+      if (other.Headid != 0) {
+        Headid = other.Headid;
+      }
+      if (other.Bodyid != 0) {
+        Bodyid = other.Bodyid;
+      }
+      if (other.Trousers != 0) {
+        Trousers = other.Trousers;
+      }
+      if (other.Legid != 0) {
+        Legid = other.Legid;
+      }
+      if (other.Armid != 0) {
+        Armid = other.Armid;
+      }
+      if (other.Handid != 0) {
+        Handid = other.Handid;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 8: {
+            LeftWeaponid = input.ReadInt32();
+            break;
+          }
+          case 16: {
+            RightWeaponid = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            Headid = input.ReadInt32();
+            break;
+          }
+          case 32: {
+            Bodyid = input.ReadInt32();
+            break;
+          }
+          case 40: {
+            Trousers = input.ReadInt32();
+            break;
+          }
+          case 48: {
+            Legid = input.ReadInt32();
+            break;
+          }
+          case 56: {
+            Armid = input.ReadInt32();
+            break;
+          }
+          case 64: {
+            Handid = input.ReadInt32();
             break;
           }
         }

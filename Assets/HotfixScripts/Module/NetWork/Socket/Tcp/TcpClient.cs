@@ -2,10 +2,8 @@
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
-namespace NetWork
+namespace Network
 {
-
-
     /// <summary>
     /// Tcp客户端
     /// </summary>
@@ -15,14 +13,19 @@ namespace NetWork
         {
             public System.Action<SocketError> Callback;
         }
-        private readonly Type packageCoderType;//协议类型
+        private readonly Type packageCoderType;//单个逻辑包类型
+        private readonly Type packageBodyCoderType;//数据解码器类型
         private readonly int packagebodyMaxSize;
-        private TcpChannel channel;//通道
+        /// <summary>
+        /// 具体的socket
+        /// </summary>
+        private TcpChannel channel;
 
         private MainThreadSyncContext context;
-        public TcpClient(Type type, int size)
+        public TcpClient(Type packagetype,Type bodyType, int size)
         {
-            packageCoderType = type;
+            packageCoderType = packagetype;
+            packageBodyCoderType = bodyType;
             packagebodyMaxSize = size;
             context = new MainThreadSyncContext();
         }
@@ -32,11 +35,11 @@ namespace NetWork
             channel = new TcpChannel();
             if (e == null)
             {
-                channel.Init(context, null, packageCoderType, packagebodyMaxSize);
+                channel.Init(context, null, packageCoderType, packageBodyCoderType, packagebodyMaxSize);
             }
             else
             {
-                channel.Init(context, e.ConnectSocket, packageCoderType, packagebodyMaxSize);
+                channel.Init(context, e.ConnectSocket, packageCoderType, packageBodyCoderType,packagebodyMaxSize);
             }
         }
         public void Dispose()
@@ -110,7 +113,6 @@ namespace NetWork
             {
                 ProcessConnected(args);
             }
-
         }
         /// <summary>
         /// 处理连接信息
@@ -118,10 +120,9 @@ namespace NetWork
         /// <param name="obj"></param>
         private void ProcessConnected(object obj)
         {
-
             SocketAsyncEventArgs e = obj as SocketAsyncEventArgs;
             UserToken token = e.UserToken as UserToken;
-            if (e.SocketError == SocketError.Success)//success 为操作成功
+            if (e.SocketError == SocketError.Success)
             {
                 if (channel != null)
                     throw new Exception("TcpChannel 已经创建了");
@@ -135,8 +136,7 @@ namespace NetWork
             if (token.Callback != null)
             {
                 token.Callback.Invoke(e.SocketError);
-            }
-
+            }  
         }
         /// <summary>
         /// 回归主线程

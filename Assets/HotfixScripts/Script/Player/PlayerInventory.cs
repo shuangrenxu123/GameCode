@@ -94,18 +94,19 @@ public class PlayerInventory : MonoBehaviour
     /// 添加道具
     /// </summary>
     /// <param name="item"></param>
-    public void AddItem(ItemData item)
+    public void AddItem(ItemData item,int num = 1)
     {
         //panel.UpdateProp(item);
         if (items.ContainsKey(item.id))
         {
-            items[item.id] = (items[item.id].Item1, items[item.id].Item2 + 1);
+            items[item.id] = (items[item.id].Item1, items[item.id].Item2 + num);
             bagPanel.AddItem(item, items[item.id].Item2);
         }
         else
         {
-            items.Add(item.id, (item, 1));
-            bagPanel.AddItem(item);
+            items.Add(item.id, (item, num));
+            //ui
+            bagPanel.AddItem(item,num);
         }
         //currentItem = item;
     }

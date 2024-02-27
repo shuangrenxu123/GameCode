@@ -22,3 +22,13 @@ message Animation{
 message Action{
 	string actionname = 1;
 }
+message Login{
+	int32 leftWeaponid =1;
+	int32 rightWeaponid =2;
+	int32 headid = 3;
+	int32 bodyid = 4;
+	int32 trousers = 5;
+	int32 legid = 6;
+	int32 armid = 7;
+	int32 handid =8;
+}

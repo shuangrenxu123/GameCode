@@ -3,8 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 
 public class LoadDll : MonoBehaviour
 {
@@ -21,11 +23,11 @@ public class LoadDll : MonoBehaviour
 
     private void Awake()
     {
-        GameObject go = new GameObject();
-        var cts = go.AddComponent<ConsoleToScreen>();
-        cts.fontSize = 20;
-
-        DontDestroyOnLoad(go);
+        //GameObject go = new GameObject();
+        //var cts = go.AddComponent<ConsoleToScreen>();
+        //cts.fontSize = 20;
+        //
+        //DontDestroyOnLoad(go);
     }
 
     // Start is called before the first frame update
@@ -57,9 +59,10 @@ public class LoadDll : MonoBehaviour
     }
     IEnumerator DownLoadAssets(Action onDownloadComplete)
     {
-        var assets = new List<string>
+        var DownloadAssets = new List<string>
         {
             "core",
+            "scences",
             "Assembly-CSharp.dll",
         };
 
@@ -68,7 +71,7 @@ public class LoadDll : MonoBehaviour
             var path = Application.streamingAssetsPath + "/MateDlls/" + asset + ".bytes";
             if (!File.Exists(path))
             {
-                assets.Add(asset);
+                DownloadAssets.Add(asset);
             }
             else
             {
@@ -79,7 +82,7 @@ public class LoadDll : MonoBehaviour
                 s_assetDatas[asset] = bytes;
             }
         }
-        foreach (var asset in assets)
+        foreach (var asset in DownloadAssets)
         {
             string dllPath = GetWebRequestPath(asset);
             Debug.Log($"start download asset:{dllPath}");
@@ -111,9 +114,12 @@ public class LoadDll : MonoBehaviour
 #endif
 
         //3.实例化HotUpdateMain.prefab，通过HotUpdateMain.cs执行旧工程入口代码
+        AssetBundle scences = AssetBundle.LoadFromMemory(GetAssetData("scences"));
         AssetBundle prefabAb = AssetBundle.LoadFromMemory(GetAssetData("core"));
+        SceneManager.LoadScene("CharacterControlTest");
         GameObject gm = Instantiate(prefabAb.LoadAsset<GameObject>("GameManager.prefab"));
-        GameObject canves = Instantiate(prefabAb.LoadAsset<GameObject>("Canvas.prefab"));
+        GameObject.DontDestroyOnLoad(gm);
+        //GameObject canves = Instantiate(prefabAb.LoadAsset<GameObject>("Canvas.prefab"));
     }
 
     /// <summary>

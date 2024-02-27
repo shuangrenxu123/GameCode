@@ -24,7 +24,7 @@ public class UpdatPanel : WindowRoot
     private void UpdateEnd()
     {
         UnityEngine.Debug.Log("下载完毕");
-        SceneManager.LoadScene("Demo");
+        SceneManager.LoadScene("CharacterControlTest");
     }
     public void Download()
     {

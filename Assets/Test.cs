@@ -1,3 +1,4 @@
+using Network;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ public class Test : MonoBehaviour
     public List<Mesh> targetmesh;
     SkinnedMeshRenderer targetSkinMeshRender;
     int index = 0;
+    [SerializeField]
+    Player player;
 
     void Start()
     {
@@ -20,6 +23,17 @@ public class Test : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             changeSkinnedMesh();
+        }
+        if(Input.GetKeyDown(KeyCode.K))
+        {
+            NetWorkManager.Instance.ConnectServer("1.14.67.47", 20000);
+        }
+        if(Input.GetKeyDown(KeyCode.L))
+        {
+            if(NetWorkManager.Instance.state == ENetWorkState.Connected)
+            {
+                NetWorkManager.Instance.DisConnectServer();
+            }
         }
     }
 
@@ -65,4 +79,6 @@ public class Test : MonoBehaviour
 
         return null;
     }
+
+
 }

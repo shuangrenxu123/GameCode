@@ -3,10 +3,11 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace NetWork
+namespace Network
 {
     public class DefaultNetworkPackageCoder : NetWorkpackCoder
     {
+
         /// <summary>
         /// 包裹大小的字段类型
         /// 包裹有包头和包体组成
@@ -41,7 +42,6 @@ namespace NetWork
         public EpackageSizeFieldType PackageSizeFieldType = EpackageSizeFieldType.UShort;
 
         public EMessageIDFieldType MessageIDFieldType = EMessageIDFieldType.UShort;
-
         public override int GetPackageHeadSize()
         {
             int size = 0;
@@ -70,7 +70,7 @@ namespace NetWork
             }
             //获得包体数据
             byte[] bytes;
-            bytes = EnCodeInternal(package.Msgobj);
+            bytes = _packageCoder.EnCode(package.Msgobj);
             if (bytes.Length > PackageBodyMaxSize)
             {
                 return;
@@ -154,7 +154,7 @@ namespace NetWork
 
                     if (classType != null)
                     {
-                        packager.Msgobj = DeCodeInternal(classType, body);
+                        packager.Msgobj = _packageCoder.DeCode(classType, body);
                         if (packager.Msgobj != null)
                         {
                             outputList.Add(packager);

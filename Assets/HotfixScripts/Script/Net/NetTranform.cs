@@ -1,4 +1,4 @@
-using NetWork;
+using Network;
 using PlayerInfo;
 using UnityEngine;
 

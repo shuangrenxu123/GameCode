@@ -135,7 +135,6 @@ public class Camera3D : MonoBehaviour
 
         characterRigidbody = characterActor.GetComponent<Rigidbody>();
 
-        inputHandlerSettings.Initialize(gameObject);
 
         GameObject referenceObject = new GameObject("Camera reference");
         viewReference = referenceObject.transform;

@@ -44,7 +44,7 @@ public class NetObj : MonoBehaviour
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
             //lastMove = new Vector2(state.V, state.H);
-            anim.UpdateAnimatorValues(state.V, state.H);
+            //anim.UpdateAnimatorValues(state.V, state.H);
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)

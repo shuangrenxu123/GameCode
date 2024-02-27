@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -7,7 +8,7 @@ using UnityEngine.InputSystem.Utilities;
 public class InputSystemHandler : InputHandler
 {
     [SerializeField]
-    InputActionAsset inputActionsAsset = null;
+    InputActionAsset InputActionsAsset = null;
 
     [SerializeField]
     bool filterByActionMap = false;
@@ -25,25 +26,25 @@ public class InputSystemHandler : InputHandler
     protected virtual void Awake()
     {
 
-        if (inputActionsAsset == null)
+        if (InputActionsAsset == null)
         {
             Debug.Log("No input actions asset found!");
             return;
         }
 
-        inputActionsAsset.Enable();
+        InputActionsAsset.Enable();
 
         if (filterByControlScheme)
         {
-            string bindingGroup = inputActionsAsset.controlSchemes.First(x => x.name == controlSchemeName).bindingGroup;
-            inputActionsAsset.bindingMask = InputBinding.MaskByGroup(bindingGroup);
+            string bindingGroup = InputActionsAsset.controlSchemes.First(x => x.name == controlSchemeName).bindingGroup;
+            InputActionsAsset.bindingMask = InputBinding.MaskByGroup(bindingGroup);
         }
 
         ReadOnlyArray<InputAction> rawInputActions = new ReadOnlyArray<InputAction>();
 
         if (filterByActionMap)
         {
-            rawInputActions = inputActionsAsset.FindActionMap(gameplayActionMap).actions;
+            rawInputActions = InputActionsAsset.FindActionMap(gameplayActionMap).actions;
 
             for (int i = 0; i < rawInputActions.Count; i++)
                 inputActionsDictionary.Add(rawInputActions[i].name, rawInputActions[i]);
@@ -51,9 +52,9 @@ public class InputSystemHandler : InputHandler
         }
         else
         {
-            for (int i = 0; i < inputActionsAsset.actionMaps.Count; i++)
+            for (int i = 0; i < InputActionsAsset.actionMaps.Count; i++)
             {
-                InputActionMap actionMap = inputActionsAsset.actionMaps[i];
+                InputActionMap actionMap = InputActionsAsset.actionMaps[i];
 
                 for (int j = 0; j < actionMap.actions.Count; j++)
                 {
@@ -96,6 +97,5 @@ public class InputSystemHandler : InputHandler
 
         return inputActionsDictionary[actionName].ReadValue<Vector2>();
     }
-
 }
 

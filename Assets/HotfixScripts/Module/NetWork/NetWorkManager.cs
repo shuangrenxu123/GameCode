@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace NetWork
+namespace Network
 {
     public class NetWorkManager : ModuleSingleton<NetWorkManager>, IModule
     {
@@ -13,10 +14,11 @@ namespace NetWork
         public class CreateParameters
         {
             public Type PackageCoderType;
-
+            public Type PackageBodyCoderType;
             public int PackageMaxSize = ushort.MaxValue;
 
         }
+        //后续改为多个Client
         private TcpClient client;
         //ip
         private string host;
@@ -28,20 +30,34 @@ namespace NetWork
         /// </summary>
         public ENetWorkState state { private set; get; } = ENetWorkState.Disconnect;
 
-        public NetworkMessageRegister register;
+        private NetworkMessageRegister register;
         /// <summary>
         /// Mono层的回调,用于处理包，每一帧都会处理接收到的包
         /// </summary>
-        public PackageEvent handle;
+        private Dictionary <int,PackageEvent> handles;
         public void OnCreate(object createParam)
         {
             CreateParameters c = createParam as CreateParameters;
             if (createParam == null)
                 Debug.LogError("传入的参数不对");
-            client = new TcpClient(c.PackageCoderType, c.PackageMaxSize);
-            handle = new();
+
+            client = new TcpClient(c.PackageCoderType, c.PackageBodyCoderType,c.PackageMaxSize);
             register = new NetworkMessageRegister();
+            handles = new Dictionary<int, PackageEvent>();
             register.Init();
+        }
+        public void RegisterHandle(int messageId,UnityAction<DefaultNetWorkPackage> action)
+        {
+            if (handles.TryGetValue(messageId,out var handle))
+            {
+                handle.AddListener(action);
+            }
+            else
+            {
+                var temp = new PackageEvent();
+                temp.AddListener(action);
+                handles.Add(messageId, temp);
+            }
         }
         public void OnUpdate()
         {
@@ -59,9 +75,9 @@ namespace NetWork
                 {
                     return;
                 }
-                else if (handle != null)
+                else if (handles != null)
                 {
-                    handle?.Invoke(package);
+                    handles[package.MsgId]?.Invoke(package);
                 }
 
                 //有可能socket突然断了
@@ -103,13 +119,13 @@ namespace NetWork
             {
                 state = ENetWorkState.Connected;
                 Debug.Log("连接服务器成功");
-                EventManager.Instance.SendMessage("ConnectServer", true);
+                EventManager.Instance.SendMessage("ConnectServerSuccess", null);
             }
             else
             {
                 state = ENetWorkState.Disconnect;
                 Debug.LogError("连接服务器失败");
-                EventManager.Instance.SendMessage("ConnectServer", false);
+                EventManager.Instance.SendMessage("ConnectServerFaild", null);
             }
         }
         /// <summary>

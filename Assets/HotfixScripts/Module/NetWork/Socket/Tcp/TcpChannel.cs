@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace NetWork
+namespace Network
 {
     public class TcpChannel : IDisposable
     {
@@ -34,19 +34,21 @@ namespace NetWork
         /// <param name="type">编码器类型</param>
         /// <param name="Bodysize">包长</param>
         /// <exception cref="System.ArgumentException"></exception>
-        public void Init(MainThreadSyncContext context, Socket sock, Type type, int Bodysize)
+        public void Init(MainThreadSyncContext context, Socket sock, Type packageCodetype, Type bodyCodeType,int Bodysize)
         {
-            if (type == null)
+            if (packageCodetype == null)
                 throw new System.ArgumentException($"packageCoderType is null.");
+            if(bodyCodeType == null) 
+                throw new System.ArgumentException("bodyType is null" );
             if (Bodysize <= 0)
                 throw new System.ArgumentException($"packageMaxSize is invalid : {Bodysize}");
 
             socket = sock;
             packageMaxSize = Bodysize;
             //创建编码解码器
-            packageCoder = (NetWorkpackCoder)Activator.CreateInstance(type);
+            packageCoder = (NetWorkpackCoder)Activator.CreateInstance(packageCodetype);
             //初始化编码解码
-            packageCoder.Init(this, Bodysize);
+            packageCoder.Init(this, Bodysize,bodyCodeType);
             //最大的尺寸等于 包体加包头
             packageMaxSize = Bodysize + packageCoder.GetPackageHeadSize();
             this.context = context;
@@ -179,7 +181,6 @@ namespace NetWork
             //socket传输的字节数
             if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
             {
-                UnityEngine.Debug.Log(e.BytesTransferred);
                 //判断能否写入待解码缓冲区
                 if (!decodeBuffer.CanWriteable(e.BytesTransferred))
                 {

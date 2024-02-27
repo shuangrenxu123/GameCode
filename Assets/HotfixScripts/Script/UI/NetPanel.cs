@@ -1,4 +1,4 @@
-using NetWork;
+using Network;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

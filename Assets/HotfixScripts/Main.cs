@@ -1,5 +1,7 @@
-﻿using NetWork;
-using UnityEditor.Experimental.GraphView;
+﻿using Audio;
+using Config;
+using Network;
+using ObjectPool;
 using UnityEngine;
 public class Main : MonoBehaviour
 {
@@ -8,7 +10,7 @@ public class Main : MonoBehaviour
         //参数设置
         var a = new NetWorkManager.CreateParameters();
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
-
+        a.PackageBodyCoderType = typeof(ProtobufCoder);
 
         MotionEngine.CreateModule<NetWorkManager>(a);
         MotionEngine.CreateModule<EventManager>();

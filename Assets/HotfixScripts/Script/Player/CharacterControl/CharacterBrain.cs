@@ -7,11 +7,15 @@ public class CharacterBrain : MonoBehaviour
 {
     public UpdateModeType UpdateMode = UpdateModeType.FixedUpdate;
     bool isAI = false;
+    [SerializeField]
     InputHandlerSettings inputHandlerSettings = new InputHandlerSettings();
+    [SerializeField]
+    InputHandlerSettings UIinputHandlerSettings = new InputHandlerSettings();
 
     //CharacterAIBehaviour aiBehaviour = null;
 
     CharacterActions characterActions = new CharacterActions();
+    CharacrerUIActions characterUIActions = new CharacrerUIActions();
 
 
     bool firstUpdateFlag = false;
@@ -19,6 +23,7 @@ public class CharacterBrain : MonoBehaviour
     public bool IsAI => isAI;
 
     public CharacterActions CharacterActions => characterActions;
+    public CharacrerUIActions CharacterUIActions => characterUIActions;
 
     public void SetAction(CharacterActions characterActions) => this.characterActions = characterActions;
 
@@ -51,7 +56,8 @@ public class CharacterBrain : MonoBehaviour
         if (Time.timeScale == 0)
             return;
         if (IsAI)
-        {//todo UpdateAIBrainValues(dt);
+        {
+            //todo UpdateAIBrainValues(dt);
         }
         else
         {
@@ -62,22 +68,30 @@ public class CharacterBrain : MonoBehaviour
     {
         characterActions.SetValues(inputHandlerSettings.InputHandler);
         characterActions.Update(dt);
-    }
 
+        characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
+        characterUIActions.Update(dt);
+    }
 
     protected virtual void Awake()
     {
         characterActions.InitializeActions();
-        inputHandlerSettings.Initialize(gameObject);
+        characterUIActions.InitalizeAcionts();
+
     }
     protected virtual void OnEnable()
     {
         characterActions.InitializeActions();
+        characterUIActions.InitalizeAcionts();
+        
+        
+        characterUIActions.Reset();
         characterActions.Reset();
     }
     protected virtual void OnDisable()
     {
         characterActions.Reset();
+        characterUIActions.Reset();
     }
     private void Start()
     {
@@ -100,11 +114,13 @@ public class CharacterBrain : MonoBehaviour
             {
                 firstUpdateFlag = false;
                 characterActions.Reset();
+                characterUIActions.Reset();
             }
         }
         else
         {
             characterActions.Reset();
+            characterUIActions.Reset();
         }
 
         UpdateBrainValues(dt);

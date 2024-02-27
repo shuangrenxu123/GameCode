@@ -21,6 +21,9 @@ public class WeaponAnimator
         [Tooltip("开启连击与关闭连击的时间，X为开启时间，Y为结束时间")]
         public Vector2 ComboTime;
         public Vector2 HitTime;
+
+        public AudioClip attackAirClip;
+        public AudioClip attackEnemyClip;
     }
     public WeaponType type;
     public List<Clip> lightAttackAnimator_OH;

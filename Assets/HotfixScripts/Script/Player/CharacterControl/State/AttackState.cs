@@ -1,4 +1,5 @@
 using Animancer;
+using Audio;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,6 +17,7 @@ public class AttackState : CharacterControlStateBase
     private bool canDoCombo = false;
     private int currentAnimatorIndex = 0;
     private WeaponAnimator currentWeaponAnimator;
+
     public override void Init()
     {
         base.Init();
@@ -28,7 +30,6 @@ public class AttackState : CharacterControlStateBase
         CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         lastState = (CharacterControlStateBase)CharacterStateController.lastState;
         currentWeaponAnimator = animator.animators.First(x => x.type == WeaponType.None);
-
 
         PlayFirstAnimator();
 
@@ -62,6 +63,7 @@ public class AttackState : CharacterControlStateBase
         {
             //²¥·ÅÇá¹¥»÷¶¯»­
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
+            //AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip,AudioLayer.Sound);
             state.Events.AddRange(lightEvents[currentAnimatorIndex]);
         }
         if (state == null)
@@ -76,6 +78,7 @@ public class AttackState : CharacterControlStateBase
         if (CharacterActions.attack.Started)
         {
             //todo ÅÐ¶ÏÇáÖØ¹¥»÷
+            //todo ÅÐ¶Ï×îºóÒ»»÷
             if (currentAnimatorIndex == 2)
             {
                 return;
@@ -87,6 +90,8 @@ public class AttackState : CharacterControlStateBase
                 EndDoCombo();
                 CloseWeaponCollider();
                 state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
+                //AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;
             }

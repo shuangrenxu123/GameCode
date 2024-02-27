@@ -1,15 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
-namespace NetWork
+namespace Network
 {
     public abstract class NetWorkpackCoder
     {
-        private TcpChannel tcpChannel;
         public int PackageBodyMaxSize;
-        public void Init(TcpChannel channel, int size)
+
+        protected TcpChannel tcpChannel;
+        protected IPackageCoder _packageCoder;
+        public void Init(TcpChannel channel, int size,Type coderType)
         {
             tcpChannel = channel;
             PackageBodyMaxSize = size;
+            _packageCoder = (IPackageCoder)Activator.CreateInstance(coderType);
         }
         /// <summary>
         /// 获得包头长度
