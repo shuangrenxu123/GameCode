@@ -4,7 +4,7 @@ public class PlayerCombatEntity : CombatEntity
 {
     public override void Init(int h)
     {
-        stateUI = WindowsManager.Instance.GetUiWindow<StateUI>();
+        stateUI = UIManager.Instance.GetUIWindow<StateUI>();
         hp.Init(true);
         hp.SetMaxValue(h);
         numberBox.Init();

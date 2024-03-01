@@ -1,13 +1,29 @@
-public class InteractPanel : WindowRoot
+public class InteractPanel : UIWindow
 {
-    public override void Start()
+    public override void OnCreate()
+    {
+        
+    }
+
+    public override void OnDelete()
     {
     }
 
-    public override void Update()
+    public override void OnFocus()
     {
-
+        
     }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
+
+    public override void OnUpdate()
+    {
+        
+    }
+
 
 
 }

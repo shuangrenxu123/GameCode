@@ -2,7 +2,7 @@ using Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GameUIMgr : WindowRoot
+public class GameUIMgr : UIWindow
 {
     private string activePanle = string.Empty;
     [SerializeField]
@@ -12,12 +12,6 @@ public class GameUIMgr : WindowRoot
     [SerializeField]
     private string click;
     #endregion
-    public override void Start()
-    {
-        WindowsManager.Instance.DisableWindow<GameUIMgr>();
-        GetUIEvnetListener("Network").PointerClick += OpenNetworkPanel;
-        //GetUIEvnetListener("Settings").PointerClick += OpenAudioPanel;
-    }
     //---------------------------------------------------------------------
     private void OpenNetworkPanel(PointerEventData eventData)
     {
@@ -25,12 +19,12 @@ public class GameUIMgr : WindowRoot
         if (activePanle == "Network")
         {
             activePanle = string.Empty;
-            WindowsManager.Instance.DisableWindow<NetPanel>();
+           // UIManager.Instance.DisableWindow<NetPanel>();
         }
         else
         {
             activePanle = "Network";
-            WindowsManager.Instance.EnableWindow<NetPanel>();
+            //UIManager.Instance.EnableWindow<NetPanel>();
         }
     }
 
@@ -38,9 +32,28 @@ public class GameUIMgr : WindowRoot
     {
 
     }
-
-    public override void Update()
+    public override void OnCreate()
     {
+        
     }
 
+    public override void OnUpdate()
+    {
+        
+    }
+
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+       
+    }
 }

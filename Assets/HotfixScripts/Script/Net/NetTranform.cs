@@ -7,7 +7,7 @@ public class NetTranform : MonoBehaviour
     [Header("同步频率")]
     public int Count;
     public Player player;
-    public Animator anim;
+    //public Animator anim;
     private void Start()
     {
         InvokeRepeating("SendPosition", 0, 1f / Count);
@@ -25,10 +25,9 @@ public class NetTranform : MonoBehaviour
                     Position = NetWorkUtility.ToProtoBufV3(transform.position),
                     Rotation = NetWorkUtility.ToProtoBufV3(transform.rotation.eulerAngles),
                     Velocity = NetWorkUtility.ToProtoBufV3(Vector3.zero),
-                    H = anim.GetFloat("Horizontal"),
-                    V = anim.GetFloat("Verical"),
+                    V = player.Actor.PlanarVelocity.magnitude
                 }
-                );
+            );
         }
     }
 

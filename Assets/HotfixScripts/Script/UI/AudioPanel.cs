@@ -1,12 +1,28 @@
-public class AudioPanel : WindowRoot
+public class AudioPanel : UIWindow
 {
-    public override void Start()
+    public override void OnCreate()
     {
-        WindowsManager.Instance.DisableWindow<NetPanel>();
+        
     }
 
-    public override void Update()
+    public override void OnDelete()
     {
-
+        
     }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
+
+    public override void OnUpdate()
+    {
+        
+    }
+
 }

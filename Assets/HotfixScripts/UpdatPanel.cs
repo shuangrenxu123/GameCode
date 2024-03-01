@@ -1,21 +1,10 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-public class UpdatPanel : WindowRoot
+public class UpdatPanel : UIWindow
 {
     public Image value;
     public HotUpdater hotUpdater;
     private Toggle isupdate;
-
-    public override void Start()
-    {
-        isupdate = GetUIGameObject("Toggle").GetComponent<Toggle>();
-        GetUIGameObject("updatebutton").GetComponent<Button>().onClick.AddListener(Download);
-    }
-
-    public override void Update()
-    {
-        hotUpdater?.Update();
-    }
 
     private void UpdateProgress(float value)
     {
@@ -41,4 +30,29 @@ public class UpdatPanel : WindowRoot
         }
     }
 
+    public override void OnCreate()
+    {
+        isupdate = GetUIGameObject("Toggle").GetComponent<Toggle>();
+        GetUIGameObject("updatebutton").GetComponent<Button>().onClick.AddListener(Download);
+    }
+
+    public override void OnUpdate()
+    {
+        hotUpdater?.Update();
+    }
+
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
 }

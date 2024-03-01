@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class BagPanel : WindowRoot
+public class BagPanel : UIWindow
 {
     Dictionary<int, BagSlot> slots;
     int endSoltIndex = 0;
@@ -22,9 +22,9 @@ public class BagPanel : WindowRoot
     {
         slots = new(30);
     }
-    public override void Start()
+    public  void Start()
     {
-        WindowsManager.Instance.DisableWindow<BagPanel>();
+        //WindowsManager.Instance.DisableWindow<BagPanel>();
         slotParent = GetUIGameObject("slot");
     }
     public void AddItem(ItemData item, int num = 1)
@@ -60,9 +60,29 @@ public class BagPanel : WindowRoot
     {
         currentSelectSlot = null;
     }
-    public override void Update()
-    {
 
+    public override void OnCreate()
+    {
+       
     }
 
+    public override void OnUpdate()
+    {
+        
+    }
+
+    public override void OnDelete()
+    {
+       
+    }
+
+    public override void OnFocus()
+    {
+       
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
 }

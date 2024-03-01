@@ -3,26 +3,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetPanel : WindowRoot
+public class NetPanel : UIWindow
 {
     private GameObject id;
     private TMP_InputField ip;
     private TMP_InputField port;
     private Player player;
-    public override void Start()
-    {
-        WindowsManager.Instance.DisableWindow<NetPanel>();
-        ip = GetUIGameObject("ip").GetComponent<TMP_InputField>();
-        port = GetUIGameObject("port").GetComponent<TMP_InputField>();
-
-        id = GetUIGameObject("id");
-        id.GetComponent<TMP_InputField>().onValueChanged.AddListener(SetIDValue);
-
-        GetUIGameObject("conn").GetComponent<Button>().onClick.AddListener(ConnSer);
-        GetUIGameObject("close").GetComponent<Button>().onClick.AddListener(CloseSer);
-
-        player = FindObjectOfType<Player>();
-    }
 
     private void CloseSer()
     {
@@ -39,12 +25,41 @@ public class NetPanel : WindowRoot
         player.id = arg0;
         Debug.Log(player.id);
     }
-
-    public override void Update()
-    {
-    }
     public void SetPingValue(float value)
     {
     }
 
+    public override void OnCreate()
+    {
+        ip = GetUIGameObject("ip").GetComponent<TMP_InputField>();
+        port = GetUIGameObject("port").GetComponent<TMP_InputField>();
+
+        id = GetUIGameObject("id");
+        id.GetComponent<TMP_InputField>().onValueChanged.AddListener(SetIDValue);
+
+        GetUIGameObject("conn").GetComponent<Button>().onClick.AddListener(ConnSer);
+        GetUIGameObject("close").GetComponent<Button>().onClick.AddListener(CloseSer);
+
+        player = FindObjectOfType<Player>();
+    }
+
+    public override void OnUpdate()
+    {
+        
+    }
+
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
 }

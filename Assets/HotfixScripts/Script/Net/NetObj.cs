@@ -1,5 +1,7 @@
+using Animancer;
 using PlayerInfo;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class NetObj : MonoBehaviour
 {
@@ -8,29 +10,40 @@ public class NetObj : MonoBehaviour
     [HideInInspector]
     private float syncDelta = 1;
     private float smoothTick;
-    public NetAnimator anim;
+
+    #region movement
     Vector3 forcastPosition = Vector3.zero;
     Vector3 startPosition = Vector3.zero;
     Vector3 velocity = Vector3.zero;
     Vector2 lastMove = Vector2.zero;
+    #endregion
 
+    #region Animator
+
+    private AnimactorHelper animacer;
+
+    private LinearMixerTransition currentAnimator;
+    [SerializeField]
+    AnimatorConfig config;
+
+    #endregion
     private void Start()
     {
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
-        anim = GetComponentInChildren<NetAnimator>();
+        animacer = new AnimactorHelper(GetComponentInChildren<AnimancerComponent>());
+        config = GetComponentInChildren<AnimatorConfig>();   
+        currentAnimator = config.normalMoveAnimator;
+        animacer.Play(currentAnimator);
     }
     public void SyncData(DefaultNetWorkPackage data)
     {
-        if (data.MsgId == 1)
-        {
-            SyncPostion(data);
-        }
+        SyncPostion(data);
         ///相关的动画事件，如后滚之类的
-        else if (data.MsgId == 2)
-        {
-            SyncOtherAnim(data);
-        }
+       //else if (data.MsgId == 2)
+       //{
+       //    SyncOtherAnim(data);
+       //}
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
@@ -43,8 +56,8 @@ public class NetObj : MonoBehaviour
             startPosition = transform.position;
             smoothTick = syncDelta;
             transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
-            //lastMove = new Vector2(state.V, state.H);
-            //anim.UpdateAnimatorValues(state.V, state.H);
+            lastMove = new Vector2(state.V, state.H);
+            currentAnimator.State.Parameter = state.V;
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
@@ -52,8 +65,6 @@ public class NetObj : MonoBehaviour
         var animName = (Action)arg0.Msgobj;
         if (animName != null)
         {
-            Debug.Log(animName.Actionname);
-            anim.PlayTargetAnimation(animName.Actionname);
         }
     }
     private void Update()

@@ -1,13 +1,28 @@
-public class TipsPanel : WindowRoot
+public class TipsPanel : UIWindow
 {
-    public override void Start()
+    public override void OnCreate()
     {
-
+        
     }
 
-    public override void Update()
+    public override void OnDelete()
     {
+        
+    }
 
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
+
+    public override void OnUpdate()
+    {
+        
     }
 
 

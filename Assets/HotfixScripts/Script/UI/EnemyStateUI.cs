@@ -9,11 +9,7 @@ public class EnemyStateUI : StateUI
         hp = GetUIGameObject("hp");
         buffGameObejct = GetUIGameObject("buff");
     }
-    public override void Start()
-    {
-    }
-
-    public override void Update()
+    public  void Update()
     {
         transform.rotation = Quaternion.LookRotation(camera.transform.forward);
     }

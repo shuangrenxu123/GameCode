@@ -91,6 +91,12 @@ public class StateSyncMgr : MonoBehaviour
         {
             netObjs[package.SenderId].SyncData(package);
         }
+        else
+        {
+            var go = InstantiateNetObject(package.SenderId);
+            netObjs.Add(package.SenderId, go);
+
+        }
 
     }
     private void SetPingValue(DefaultNetWorkPackage data)
@@ -98,7 +104,7 @@ public class StateSyncMgr : MonoBehaviour
         var obj = data.Msgobj as ping;
         if (obj != null)
         {
-            WindowsManager.Instance.GetUiWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
+            UIManager.Instance.GetUIWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
             return;
         }
     }

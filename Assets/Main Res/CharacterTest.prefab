@@ -4917,7 +4917,7 @@ MonoBehaviour:
   InputActionsAsset: {fileID: -944628639613478452, guid: a02774f01090b1a4daa68613a835e126,
     type: 3}
   filterByActionMap: 0
-  gameplayActionMap: F
+  gameplayActionMap: Normal
   filterByControlScheme: 0
   controlSchemeName: Keyboard Mouse
 --- !u!1 &5807485127056915131
@@ -4979,6 +4979,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f3ff3aded057e1459c3d34c704aa943, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CharacterBrain: {fileID: 3721988805285894471}
 --- !u!1 &5877329984462569581
 GameObject:
   m_ObjectHideFlags: 0
@@ -5267,6 +5268,7 @@ GameObject:
   - component: {fileID: 6232021738972680007}
   - component: {fileID: 8675947834881419900}
   - component: {fileID: 688282092242637537}
+  - component: {fileID: 3218961445452235143}
   m_Layer: 0
   m_Name: CharacterTest
   m_TagString: Untagged
@@ -5413,6 +5415,20 @@ MonoBehaviour:
   rightWeapon: {fileID: 0}
   leftWeapon: {fileID: 0}
   CanReplace: 1
+--- !u!114 &3218961445452235143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7374439972521900437}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3127d0c790e9d4a4786f8fdb9f40ae35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Count: 30
+  player: {fileID: 6232021738972680007}
 --- !u!1001 &2458154528584582270
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ public class Main : MonoBehaviour
 
         MotionEngine.CreateModule<NetWorkManager>(a);
         MotionEngine.CreateModule<EventManager>();
-        MotionEngine.CreateModule<WindowsManager>();
+        MotionEngine.CreateModule<UIManager>();
         MotionEngine.CreateModule<ResourcesManager>();
         MotionEngine.CreateModule<PoolManager>();
         MotionEngine.CreateModule<VersionManager>();

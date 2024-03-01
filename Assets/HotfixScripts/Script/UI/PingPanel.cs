@@ -1,20 +1,35 @@
 using TMPro;
 
-public class PingPanel : WindowRoot
+public class PingPanel : UIWindow
 {
     TMP_Text ping;
-    public override void Start()
+    public void SetPingValue(int value)
+    {
+        ping.text = value.ToString();
+    }
+
+    public override void OnCreate()
     {
         ping = GetComponent<TMP_Text>();
     }
 
-    public override void Update()
+    public override void OnUpdate()
     {
-
+        
     }
 
-    public void SetPingValue(int value)
+    public override void OnDelete()
     {
-        ping.text = value.ToString();
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
     }
 }

@@ -18,6 +18,7 @@ public class Player : MonoBehaviour
         CombatEntity = GetComponent<CombatEntity>();
         Net = GetComponent<NetTranform>();
         Inventory = GetComponent<PlayerInventory>();
+        Actor = GetComponent<CharacterActor>();
         //backStep = GetComponentInChildren<BackStepCollider>();
     }
     void Start()

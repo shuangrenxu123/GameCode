@@ -29,8 +29,8 @@ public class PlayerInventory : MonoBehaviour
     {
         // weaponManager.LoadWeaponOnSlot(rightWeapon, false);
         // weaponManager.LoadWeaponOnSlot(leftWeapon, true);
-        panel = WindowsManager.Instance.GetUiWindow<PlayerInventoryPanel>();
-        bagPanel = WindowsManager.Instance.GetUiWindow<BagPanel>();
+        panel = UIManager.Instance.GetUIWindow<PlayerInventoryPanel>();
+        bagPanel = UIManager.Instance.GetUIWindow<BagPanel>();
 
         //----------------------Test-------------------------
         //AddItem(new FlaskItem("Flask"));

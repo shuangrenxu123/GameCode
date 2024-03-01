@@ -1,6 +1,6 @@
 using UnityEngine.UI;
 
-public class PlayerInventoryPanel : WindowRoot
+public class PlayerInventoryPanel : UIWindow
 {
 
     Image left;
@@ -13,14 +13,6 @@ public class PlayerInventoryPanel : WindowRoot
         right = GetUIGameObject("rightWeapon").transform.GetChild(0).GetComponent<Image>();
         Prop = GetUIGameObject("Prop").transform.GetChild(0).GetComponent<Image>();
         Init();
-    }
-    public override void Start()
-    {
-    }
-
-    public override void Update()
-    {
-
     }
     void Init()
     {
@@ -63,5 +55,30 @@ public class PlayerInventoryPanel : WindowRoot
             Prop.sprite = item.data.Icon;
             Prop.gameObject.SetActive(true);
         }
+    }
+
+    public override void OnCreate()
+    {
+        
+    }
+
+    public override void OnUpdate()
+    {
+       
+    }
+
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
     }
 }

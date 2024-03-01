@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StateUI : WindowRoot
+public class StateUI : UIWindow
 {
     public GameObject hp;
     public GameObject buffGameObejct;
@@ -12,14 +12,6 @@ public class StateUI : WindowRoot
         buffs = new Dictionary<string, GameObject>();
         hp = GetUIGameObject("hp");
         buffGameObejct = GetUIGameObject("buff");
-    }
-    public override void Start()
-    {
-    }
-
-    public override void Update()
-    {
-
     }
     public void SetHPPercent(float v)
     {
@@ -38,5 +30,30 @@ public class StateUI : WindowRoot
         var go = buffs[buff.data.name];
         buffs.Remove(buff.data.name);
         Destroy(go);
+    }
+
+    public override void OnCreate()
+    {
+        
+    }
+
+    public override void OnUpdate()
+    {
+        
+    }
+
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
     }
 }

@@ -553,7 +553,7 @@ public class MovementState : CharacterControlStateBase
                 var interactable = hit.collider.GetComponent<Interactable>();
                 if (interactable != null)
                 {
-                    WindowsManager.Instance.EnableWindow<InteractPanel>();
+                    //UIManager.Instance.OpenUI<InteractPanel>();
                     if (CharacterActions.interact.Started)
                     {
                         database.SetData("interaction", true);
@@ -564,7 +564,7 @@ public class MovementState : CharacterControlStateBase
         }
         else
         {
-            WindowsManager.Instance.DisableWindow<InteractPanel>();
+            UIManager.Instance.CloseUI<InteractPanel>();
 
         }
     }

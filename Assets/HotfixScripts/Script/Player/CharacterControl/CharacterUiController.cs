@@ -24,12 +24,12 @@ public class CharacterUiController : MonoBehaviour
             if(showingUI == false)
             {
                 showingUI = true;
-                WindowsManager.Instance.EnableWindow<GameUIMgr>();
+                //UIManager.Instance.EnableWindow<GameUIMgr>();
             }
             else
             {
                 showingUI =false;
-                WindowsManager.Instance.DisableWindow<GameUIMgr>();
+                //UIManager.Instance.DisableWindow<GameUIMgr>();
             }
         }
     }

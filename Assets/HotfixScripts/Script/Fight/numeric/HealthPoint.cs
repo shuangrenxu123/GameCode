@@ -11,11 +11,11 @@ public class HealthPoint
     {
         if (isPlayer)
         {
-            stateui = WindowsManager.Instance.GetUiWindow<StateUI>();
+            stateui = UIManager.Instance.GetUIWindow<StateUI>();
         }
         else
         {
-            stateui = WindowsManager.Instance.GetUiWindow<EnemyStateUI>();
+            stateui = UIManager.Instance.GetUIWindow<EnemyStateUI>();
         }
     }
     public void Reset()
