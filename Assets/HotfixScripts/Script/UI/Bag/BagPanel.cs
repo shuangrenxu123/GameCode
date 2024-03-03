@@ -2,12 +2,11 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
-public class BagPanel : UIWindow
+public class BagPanel : UIWindowBase,IUIWindow
 {
-    Dictionary<int, BagSlot> slots;
-    int endSoltIndex = 0;
+    PlayerInventory inventory;
+    List<BagSlot> slots;
     GameObject slotParent;
     BagSlot currentSelectSlot;
 
@@ -17,39 +16,35 @@ public class BagPanel : UIWindow
     [SerializeField]
     TMP_Text ItemDescription;
     [SerializeField]
-    GameObject selectPanel;
-    private void Awake()
+    BagSelectPanel selectPanel;
+    void UpdateBagSlot()
     {
-        slots = new(30);
-    }
-    public  void Start()
-    {
-        //WindowsManager.Instance.DisableWindow<BagPanel>();
-        slotParent = GetUIGameObject("slot");
-    }
-    public void AddItem(ItemData item, int num = 1)
-    {
-        if (slots.ContainsKey(item.id))
+        int index = 0;
+        foreach (var item in inventory.Items)
         {
-            slots[item.id].UpdateNumText(num);
-        }
-        else
-        {
-            slots.Add(item.id, slotParent.transform.GetChild(endSoltIndex).GetComponent<BagSlot>());
-            var slot = slots[item.id];
-            slot.SetItemData(item,num);
-            endSoltIndex += 1;
+            slots[index].SetItemData(item.Value.Item1,item.Value.Item2);
         }
     }
     public void OnClick(PointerEventData eventData)
     {
-        Debug.Log(eventData.pointerEnter.name);
         if (currentSelectSlot != null && currentSelectSlot.ItemData != null)
         {
             ItemName.text = currentSelectSlot.ItemData.Name;
             ItemDescription.text = currentSelectSlot.ItemData.Description;
-            var temp = Instantiate(selectPanel,currentSelectSlot.transform);
-            temp.transform.parent = transform;
+            //var temp = Instantiate(selectPanel,currentSelectSlot.transform);
+
+            var temp =UIManager.Instance.OpenUI<BagSelectPanel>(selectPanel);
+            if(temp != null)
+            {
+                temp.OnDeleteEvent += ()=> {
+                    raycaster.interactable = true;
+                    raycaster.blocksRaycasts = true;
+                };
+                temp.transform.SetParent(transform);
+                raycaster.interactable = false;
+                raycaster.blocksRaycasts= false;
+            }
+
         }
     }
     public void SetSelectSlot(BagSlot slot)
@@ -63,12 +58,27 @@ public class BagPanel : UIWindow
 
     public override void OnCreate()
     {
-       
+        slotParent = GetUIGameObject("slot");
+        slots = new(30);
+        for (var i = 0;i < slotParent.transform.childCount;i++)
+        {
+            slots.Add(slotParent.transform.GetChild(i).GetComponent<BagSlot>());
+        }
+        var player = FindObjectOfType<Player>();
+        inventory = player.Inventory;
+        UpdateBagSlot();
+
     }
 
     public override void OnUpdate()
     {
-        
+        if (UIManager.Instance.IsTopWindow<BagPanel>())
+        {
+            if (UIInput.cancel.Started)
+            {
+                UIManager.Instance.CloseUI(GetType());
+            }
+        }
     }
 
     public override void OnDelete()

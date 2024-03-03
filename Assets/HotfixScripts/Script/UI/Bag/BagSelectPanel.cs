@@ -2,16 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BagSelectPanel : MonoBehaviour
+public class BagSelectPanel : UIWindowBase
 {
-    // Start is called before the first frame update
-    void Start()
+    public override void OnCreate()
     {
         
     }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnDelete()
+    {
+        
+    }
+
+    public override void OnFocus()
+    {
+        
+    }
+
+    public override void OnFocusOtherUI()
+    {
+        
+    }
+
+    public override void OnUpdate()
     {
         
     }

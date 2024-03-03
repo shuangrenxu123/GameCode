@@ -1,4 +1,3 @@
-
 using System;
 using UnityEngine;
 
@@ -6,7 +5,6 @@ namespace Fight
 {
     public class CombatEntity : MonoBehaviour
     {
-        public StateUI stateUI;
         public HealthPoint hp;
         public ActionPointManager ActionPointManager;
         public CombatNumberBox numberBox;
@@ -46,7 +44,11 @@ namespace Fight
         {
             ActionPointManager.TriggerActionPoint(actionPointType, action);
         }
-
+        /// <summary>
+        /// 受伤
+        /// </summary>
+        /// <param name="damage"></param>
+        /// <param name="animatorName"></param>
         public virtual void TakeDamage(int damage, string animatorName)
         {
 

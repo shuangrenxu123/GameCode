@@ -97,5 +97,15 @@ public class InputSystemHandler : InputHandler
 
         return inputActionsDictionary[actionName].ReadValue<Vector2>();
     }
+
+    public override void Disable()
+    {
+        InputActionsAsset.Disable();
+    }
+
+    public override void Enable()
+    {
+        InputActionsAsset.Enable();
+    }
 }
 

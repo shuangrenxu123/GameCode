@@ -1,6 +1,6 @@
 using TMPro;
 
-public class PingPanel : UIWindow
+public class PingPanel : UIWindowBase
 {
     TMP_Text ping;
     public void SetPingValue(int value)

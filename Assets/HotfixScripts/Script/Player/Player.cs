@@ -20,6 +20,7 @@ public class Player : MonoBehaviour
         Inventory = GetComponent<PlayerInventory>();
         Actor = GetComponent<CharacterActor>();
         //backStep = GetComponentInChildren<BackStepCollider>();
+        UIManager.Instance.OpenUI<PlayerStateUI>(Resources.Load<PlayerStateUI>("playerState"));
     }
     void Start()
     {

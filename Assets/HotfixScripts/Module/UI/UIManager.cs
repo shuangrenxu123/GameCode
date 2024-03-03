@@ -4,23 +4,22 @@ using System.Collections.Generic;
 using UnityEngine;
 public class UIManager : ModuleSingleton<UIManager>, IModule
 {
-    private readonly List<UIWindow> currentUIStack = new (20);
-
+    private readonly List<IUIWindow> currentUIStack = new (20);
     public void OnCreate(object createParam)
     {
 
     }
     public void OnUpdate()
     {
-        foreach (var window in currentUIStack)
+        for (int i = 0; i < currentUIStack.Count; i++)
         {
-            window.OnUpdate();
+            currentUIStack[i].OnUpdate();
         }
     }
 
-    public void OpenUI<T>(string localname) where T :UIWindow
+    public T OpenUI<T>(string localname) where T : UIWindowBase
     {
-        var prefab = Resources.Load<UIWindow>(localname);
+        var prefab = Resources.Load<UIWindowBase>(localname);
         string name = typeof(T).FullName;
         var window = GetWindow(name);
         if (window != null)
@@ -48,12 +47,12 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
                 continue;
             }
             ui.OnFocusOtherUI();
-
         }
+        return window as T;
     }
-    public void OpenUI(UIWindow prefab)
+    public T OpenUI<T>(UIWindowBase prefab) where T :UIWindowBase
     {
-        string name = prefab.WindowName;
+        string name = prefab.WindowName; 
         var window = GetWindow(name);
         if (window != null)
         {
@@ -82,8 +81,9 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
             ui.OnFocusOtherUI();
 
         }
+        return window as T;
     }
-    public T GetUIWindow<T>() where T :UIWindow
+    public T GetUIWindow<T>() where T :UIWindowBase
     {
         foreach (var ui in currentUIStack)
         {
@@ -95,9 +95,10 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
 
         return null;
     }
-    public void CloseUI<T>() where T : UIWindow
+    public void CloseUI<T>() where T : UIWindowBase => CloseUI(typeof(T));
+    public void CloseUI(Type t)
     {
-        string name = typeof(T).FullName;
+        string name = t.FullName;
         var window = GetWindow(name);
         if (window != null)
         {
@@ -106,16 +107,24 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
             GameObject.Destroy(window.gameObject);
         }
     }
-    public void HasUI()
+    public bool HasUI<T>() where T : UIWindowBase => IsContains(typeof(T).FullName);
+    public bool IsTopWindow(Type t) 
     {
-        
-    }
-//==========private============================
+        var top = GetTopWindow(); 
+        if(top.WindowName == t.FullName)
+        {
+            return true;
+        }
+        return false;
 
-    private UIWindow GetTopWindow()
+    }
+    public bool IsTopWindow<T>() where T : UIWindowBase => IsTopWindow(typeof(T));
+    //==========private============================
+
+    private UIWindowBase GetTopWindow()
     {
         if(currentUIStack.Count !=0)
-            return currentUIStack[^1];
+            return currentUIStack[^1] as UIWindowBase;
         else
         {
             return null;
@@ -133,19 +142,19 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
 
         return false;
     }
-    private UIWindow GetWindow(string name)
+    private UIWindowBase GetWindow(string name)
     {
         foreach (var ui in currentUIStack)
         {
             if (ui.WindowName == name)
             {
-                return ui;
+                return ui as UIWindowBase;
             }
         }
 
         return null;
     }
-    private void Push(UIWindow window)
+    private void Push(UIWindowBase window)
     {
         if (IsContains(window.WindowName))
         {
@@ -159,11 +168,11 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
         }
         else
         {
-            window.canves.sortingOrder = currentUIStack[^1].canves.sortingOrder + 10;
+            window.canves.sortingOrder = currentUIStack[^1] .canves.sortingOrder + 10;
         }
         currentUIStack.Add(window);
     }   
-    private void Pop(UIWindow window)
+    private void Pop(UIWindowBase window)
     {
         currentUIStack.Remove(window);
     }

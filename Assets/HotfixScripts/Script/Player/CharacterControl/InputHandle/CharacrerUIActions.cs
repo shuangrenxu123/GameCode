@@ -4,19 +4,25 @@ using UnityEngine;
 
 public struct CharacrerUIActions 
 {
-    public BoolAction open;
+    public BoolAction confirm;
+    public BoolAction cancel;
     public void Reset()
     {
-        open.Reset();
+        confirm.Reset();
+        cancel.Reset();
     }
     public void InitalizeAcionts()
     {
-        open =new BoolAction();
-        open.Initialize();
+        confirm = new BoolAction();
+        confirm.Initialize();
+
+        cancel = new BoolAction();
+        cancel.Initialize();
     }
     public void SetValues(CharacrerUIActions UiActions)
     {
-        open.value = UiActions.open.value;
+        confirm.value = UiActions.confirm.value;
+        cancel.value = UiActions.cancel.value;
     }
     public void SetValues(InputHandler input)
     {
@@ -25,10 +31,12 @@ public struct CharacrerUIActions
             Debug.Log("inputAsset is null");
             return;
         }
-        open.value = input.GetBool("Open");
+        confirm.value = input.GetBool("confirm");
+        cancel.value = input.GetBool("cancel");
     }
     public void Update(float dt)
     {
-        open.Update(dt);
+        confirm.Update(dt);
+        cancel.Update(dt);
     }
 }

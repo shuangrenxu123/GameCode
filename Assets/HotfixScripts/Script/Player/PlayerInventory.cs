@@ -8,18 +8,17 @@ using UnityEngine;
 public class PlayerInventory : MonoBehaviour
 {
     Equipmanager weaponManager;
-    PlayerInventoryPanel panel;
-    BagPanel bagPanel;
-    public ItemData rightWeapon;
-    public ItemData leftWeapon;
+    //BagPanel bagPanel;
+    private ItemData rightWeapon;
+    private ItemData leftWeapon;
+    private ConsumableItem currentItem = null;
+    private bool CanReplace = true;
 
-    public ConsumableItem currentItem = null;
-    public bool CanReplace = true;
-
-    public Dictionary<int, (ItemData, int)> items = new(30);
+    private Dictionary<int, (ItemData, int)> items = new(30);
+    public Dictionary<int, (ItemData, int)> Items => items;
     #region Event 
-    public event Action<ItemData> OnItemAdd;
-    public event Action<ItemData> OnItemRemove;
+    public event Action<ItemData,int> OnItemAdd;
+    public event Action<ItemData,int> OnItemRemove;
     #endregion
     private void Awake()
     {
@@ -29,8 +28,7 @@ public class PlayerInventory : MonoBehaviour
     {
         // weaponManager.LoadWeaponOnSlot(rightWeapon, false);
         // weaponManager.LoadWeaponOnSlot(leftWeapon, true);
-        panel = UIManager.Instance.GetUIWindow<PlayerInventoryPanel>();
-        bagPanel = UIManager.Instance.GetUIWindow<BagPanel>();
+        //bagPanel = UIManager.Instance.GetUIWindow<BagPanel>();
 
         //----------------------Test-------------------------
         //AddItem(new FlaskItem("Flask"));
@@ -100,14 +98,15 @@ public class PlayerInventory : MonoBehaviour
         if (items.ContainsKey(item.id))
         {
             items[item.id] = (items[item.id].Item1, items[item.id].Item2 + num);
-            bagPanel.AddItem(item, items[item.id].Item2);
+            //bagPanel.AddItem(item, items[item.id].Item2);
         }
         else
         {
             items.Add(item.id, (item, num));
             //ui
-            bagPanel.AddItem(item,num);
+            //bagPanel.AddItem(item,num);
         }
+        OnItemAdd?.Invoke(item, num);
         //currentItem = item;
     }
 }

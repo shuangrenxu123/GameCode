@@ -2,9 +2,8 @@ using Audio;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class GameUIMgr : UIWindow
+public class GameUIMgr : UIWindowBase
 {
-    private string activePanle = string.Empty;
     [SerializeField]
     public AudioData audios;
     #region AudioName
@@ -15,36 +14,40 @@ public class GameUIMgr : UIWindow
     //---------------------------------------------------------------------
     private void OpenNetworkPanel(PointerEventData eventData)
     {
-        //AudioManager.Instance.PlayAudio(audios.GetClip(click),AudioLayer.Sound);
-        if (activePanle == "Network")
-        {
-            activePanle = string.Empty;
-           // UIManager.Instance.DisableWindow<NetPanel>();
-        }
-        else
-        {
-            activePanle = "Network";
-            //UIManager.Instance.EnableWindow<NetPanel>();
-        }
+        CloseOtherPanel();
+        UIManager.Instance.OpenUI<NetPanel>(Resources.Load<NetPanel>("NetworkPanel"));
     }
-
-    private void OpenAudioPanel(PointerEventData eventData)
+    private void OpenBagPanel(PointerEventData eventData)
     {
-
+        CloseOtherPanel();
+        UIManager.Instance.OpenUI<BagPanel>(Resources.Load<BagPanel>("BagPanel"));
+    }
+    private void CloseOtherPanel()
+    {
+        UIManager.Instance.CloseUI<BagPanel>();
+        UIManager.Instance.CloseUI<AudioPanel>();
+        UIManager.Instance.CloseUI<NetPanel>();
     }
     public override void OnCreate()
     {
-        
+        GetUIEvnetListener("Bag").PointerClick += OpenBagPanel;
+        GetUIEvnetListener("Network").PointerClick += OpenNetworkPanel;
     }
-
     public override void OnUpdate()
     {
-        
+        if (UIManager.Instance.IsTopWindow<GameUIMgr>())
+        {
+            if (UIInput.cancel.Started)
+            {
+                CharacterBrain.DisableUIInput();
+                UIManager.Instance.CloseUI(GetType());
+            }
+        }
     }
 
     public override void OnDelete()
     {
-        
+        CloseOtherPanel();
     }
 
     public override void OnFocus()

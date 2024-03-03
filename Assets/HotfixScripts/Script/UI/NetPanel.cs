@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetPanel : UIWindow
+public class NetPanel : UIWindowBase
 {
     private GameObject id;
     private TMP_InputField ip;
@@ -45,7 +45,13 @@ public class NetPanel : UIWindow
 
     public override void OnUpdate()
     {
-        
+        if (UIManager.Instance.IsTopWindow<NetPanel>())
+        {
+            if (UIInput.cancel.Started)
+            {
+                UIManager.Instance.CloseUI(GetType());
+            }
+        }
     }
 
     public override void OnDelete()

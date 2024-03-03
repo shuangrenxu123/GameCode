@@ -1,4 +1,4 @@
-public class InteractPanel : UIWindow
+public class InteractPanel : UIWindowBase
 {
     public override void OnCreate()
     {

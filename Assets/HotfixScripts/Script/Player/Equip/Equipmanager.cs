@@ -51,8 +51,8 @@ public class Equipmanager : MonoBehaviour
     }
     public void LoadBothWeaponOnSlots()
     {
-        LoadWeaponOnSlot(inventory.rightWeapon, false);
-        LoadWeaponOnSlot(inventory.leftWeapon, true);
+        //LoadWeaponOnSlot(inventory.rightWeapon, false);
+        //LoadWeaponOnSlot(inventory.leftWeapon, true);
     }
     /// <summary>
     /// 替换部位装备

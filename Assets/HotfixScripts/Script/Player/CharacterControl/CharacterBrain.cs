@@ -17,6 +17,7 @@ public class CharacterBrain : MonoBehaviour
     CharacterActions characterActions = new CharacterActions();
     CharacrerUIActions characterUIActions = new CharacrerUIActions();
 
+    public bool IsUIInput = false; 
 
     bool firstUpdateFlag = false;
 
@@ -66,13 +67,37 @@ public class CharacterBrain : MonoBehaviour
     }
     void UpdateHumanBrainValues(float dt)
     {
-        characterActions.SetValues(inputHandlerSettings.InputHandler);
-        characterActions.Update(dt);
-
-        characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
-        characterUIActions.Update(dt);
+        if (IsUIInput)
+        {
+            characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
+            characterUIActions.Update(dt);
+        }
+        else
+        {
+            characterActions.SetValues(inputHandlerSettings.InputHandler);
+            characterActions.Update(dt);
+        }
+       
     }
 
+    public void EnableUIIpnut()
+    {
+        IsUIInput = true;
+        characterActions.Reset();
+        characterUIActions.Reset();
+        inputHandlerSettings.InputHandler.Disable();
+        UIinputHandlerSettings.InputHandler.Enable();
+
+
+    }
+    public void DisableUIInput()
+    {
+        characterActions.Reset();
+        characterUIActions.Reset();
+        inputHandlerSettings.InputHandler.Enable();
+        UIinputHandlerSettings.InputHandler.Disable();
+        IsUIInput = false;
+    }
     protected virtual void Awake()
     {
         characterActions.InitializeActions();

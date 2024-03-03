@@ -6,9 +6,18 @@
             "id": "582a4dca-d7bf-482c-9fcc-bc148541bd0b",
             "actions": [
                 {
-                    "name": "Open",
+                    "name": "cancel",
                     "type": "Button",
                     "id": "ffd85e41-2a0a-42ed-9a0f-484f120ef75e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "confirm",
+                    "type": "Button",
+                    "id": "5cb1e317-0cc0-4e16-961b-83efe9894da9",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -23,7 +32,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Open",
+                    "action": "cancel",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -34,7 +43,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Open",
+                    "action": "cancel",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "24023ab8-6b09-4d23-9a48-7e05548231af",
+                    "path": "<Keyboard>/e",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "confirm",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

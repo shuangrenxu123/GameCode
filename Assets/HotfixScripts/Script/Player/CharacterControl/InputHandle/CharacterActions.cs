@@ -9,8 +9,8 @@ public struct CharacterActions
     public BoolAction @lock;
     public BoolAction @attack;
     public BoolAction @crouch;
+    public BoolAction @OpenUI;
     public Vector2Action @movement;
-
 
     public void Reset()
     {
@@ -22,6 +22,7 @@ public struct CharacterActions
         @lock.Reset();
         attack.Reset();
         crouch.Reset();
+        OpenUI.Reset();
     }
     public void InitializeActions()
     {
@@ -46,6 +47,9 @@ public struct CharacterActions
         crouch = new BoolAction();
         crouch.Initialize();
 
+        OpenUI = new BoolAction();
+        OpenUI.Initialize();
+
         movement = new Vector2Action();
     }
     public void Setvalue(CharacterActions characterActions)
@@ -58,6 +62,7 @@ public struct CharacterActions
         @lock.value = characterActions.@lock.value;
         attack.value = characterActions.attack.value;
         crouch.value = characterActions.crouch.value;
+        OpenUI.value = characterActions.OpenUI.value;
     }
 
     public void SetValues(InputHandler inputHandler)
@@ -73,6 +78,7 @@ public struct CharacterActions
         @movement.value = inputHandler.GetVector2("Movement");
         attack.value = inputHandler.GetBool("Attack");
         crouch.value = inputHandler.GetBool("Crouch");
+        OpenUI.value = inputHandler.GetBool("OpenUI");
 
     }
     /// <summary>
@@ -88,6 +94,7 @@ public struct CharacterActions
         @lock.Update(dt);
         attack.Update(dt);
         crouch.Update(dt);
+        OpenUI.Update(dt);
     }
 }
 [SerializeField]

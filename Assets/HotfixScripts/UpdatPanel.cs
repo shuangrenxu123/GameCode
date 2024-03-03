@@ -1,6 +1,6 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-public class UpdatPanel : UIWindow
+public class UpdatPanel : UIWindowBase
 {
     public Image value;
     public HotUpdater hotUpdater;

@@ -1,4 +1,4 @@
-public class AudioPanel : UIWindow
+public class AudioPanel : UIWindowBase
 {
     public override void OnCreate()
     {

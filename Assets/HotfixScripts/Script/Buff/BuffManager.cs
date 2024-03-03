@@ -38,7 +38,7 @@ public class BuffManager
             if (buff.nowtime >= buff.data.Maxtime)
             {
                 RemoveBuff(buff);
-                entity.stateUI.RemoveBuff(buff);
+                //entity.stateUI.RemoveBuff(buff);
                 OnRemoveBuff?.Invoke(buff);
                 return;
             }
