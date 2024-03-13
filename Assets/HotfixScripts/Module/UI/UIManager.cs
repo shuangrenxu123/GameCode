@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 public class UIManager : ModuleSingleton<UIManager>, IModule
 {
-    private readonly List<IUIWindow> currentUIStack = new (20);
+    private readonly List<IUIWindow> currentUIStack = new(20);
+    public int UIWindowCount => currentUIStack.Count;
     public void OnCreate(object createParam)
     {
 
@@ -27,8 +27,8 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
             var topwindow = GetTopWindow();
             if (topwindow != window)
             {
-                Pop(window);
                 window.OnFocus();
+                Pop(window);
                 Push(window);
             }
         }
@@ -37,7 +37,7 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
             window = UnityEngine.Object.Instantiate(prefab);
             Push(window);
             window.OnCreate();
-            
+
         }
 
         foreach (var ui in currentUIStack)
@@ -50,9 +50,9 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
         }
         return window as T;
     }
-    public T OpenUI<T>(UIWindowBase prefab) where T :UIWindowBase
+    public T OpenUI<T>(UIWindowBase prefab) where T : UIWindowBase
     {
-        string name = prefab.WindowName; 
+        string name = prefab.WindowName;
         var window = GetWindow(name);
         if (window != null)
         {
@@ -83,7 +83,7 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
         }
         return window as T;
     }
-    public T GetUIWindow<T>() where T :UIWindowBase
+    public T GetUIWindow<T>() where T : UIWindowBase
     {
         foreach (var ui in currentUIStack)
         {
@@ -102,16 +102,17 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
         var window = GetWindow(name);
         if (window != null)
         {
-            Pop(window);
             window.OnDelete();
+            Pop(window);
+
             GameObject.Destroy(window.gameObject);
         }
     }
     public bool HasUI<T>() where T : UIWindowBase => IsContains(typeof(T).FullName);
-    public bool IsTopWindow(Type t) 
+    public bool IsTopWindow(Type t)
     {
-        var top = GetTopWindow(); 
-        if(top.WindowName == t.FullName)
+        var top = GetTopWindow();
+        if (top.WindowName == t.FullName)
         {
             return true;
         }
@@ -119,17 +120,18 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
 
     }
     public bool IsTopWindow<T>() where T : UIWindowBase => IsTopWindow(typeof(T));
-    //==========private============================
 
-    private UIWindowBase GetTopWindow()
+    public UIWindowBase GetTopWindow()
     {
-        if(currentUIStack.Count !=0)
+        if (currentUIStack.Count != 0)
             return currentUIStack[^1] as UIWindowBase;
         else
         {
             return null;
         }
     }
+    //==========private============================
+
     private bool IsContains(string name)
     {
         foreach (var ui in currentUIStack)
@@ -168,10 +170,10 @@ public class UIManager : ModuleSingleton<UIManager>, IModule
         }
         else
         {
-            window.canves.sortingOrder = currentUIStack[^1] .canves.sortingOrder + 10;
+            window.canves.sortingOrder = currentUIStack[^1].canves.sortingOrder + 10;
         }
         currentUIStack.Add(window);
-    }   
+    }
     private void Pop(UIWindowBase window)
     {
         currentUIStack.Remove(window);

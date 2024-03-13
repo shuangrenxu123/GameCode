@@ -1,4 +1,3 @@
-using Google.Protobuf.WellKnownTypes;
 using ObjectPool;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +16,7 @@ namespace Audio
 
             var agent = new GameObject("audioAgent");
             agent.AddComponent<AudioAgent>();
-            PoolManager.Instance.CreatePool(new PoolInfo(poolName, 10, agent),false);
+            PoolManager.Instance.CreatePool(new PoolInfo(poolName, 10, agent), false);
 
             GameObject.Destroy(agent);
             layers.Add(AudioLayer.Music, new AudioLayerWarpper(AudioLayer.Music));
@@ -40,7 +39,7 @@ namespace Audio
         #endregion
 
         #region 播放
-        public void PlayAudio(AudioData audioData, Vector3 position = default)
+        public AudioAgent[] PlayAudio(AudioData audioData, Vector3 position = default)
         {
             AudioClip[] clipsToPlay = audioData.GetClips();
             AudioAgent[] audioagentrArray = new AudioAgent[clipsToPlay.Length];
@@ -48,7 +47,7 @@ namespace Audio
 
             for (int i = 0; i < clipsToPlay.Length; i++)
             {
-                var agent =  PoolManager.Instance.GetGameObjectToPool<AudioAgent>(poolName, position, Quaternion.identity);
+                var agent = PoolManager.Instance.GetGameObjectToPool<AudioAgent>(poolName, position, Quaternion.identity);
                 audioagentrArray[i] = agent;
                 if (audioagentrArray[i] != null)
                 {
@@ -56,13 +55,14 @@ namespace Audio
                 }
             }
             layers[audioData.layer].AddAgent(audioagentrArray);
+            return audioagentrArray;
         }
-        public void PlayAudio(AudioClip clip, AudioLayer layer, bool loop = false, Vector3 position = default)
+        public AudioAgent PlayAudio(AudioClip clip, AudioLayer layer, bool loop = false, Vector3 position = default)
         {
-            if(clip== null)
+            if (clip == null)
             {
                 Debug.LogError("clip is null");
-                return;
+                return null;
             }
             var agent = PoolManager.Instance.GetGameObjectToPool<AudioAgent>(poolName, position, Quaternion.identity);
             if (agent != null)
@@ -70,6 +70,7 @@ namespace Audio
                 agent.PlayAudio(clip, loop);
             }
             layers[layer].AddAgent(agent);
+            return agent;
         }
 
         public void StopAudio(int id, float duration = 0)

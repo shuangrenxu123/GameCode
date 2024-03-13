@@ -1,9 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public struct CharacrerUIActions 
+public struct CharacrerUIActions
 {
+
     public BoolAction confirm;
     public BoolAction cancel;
     public void Reset()
@@ -26,7 +25,7 @@ public struct CharacrerUIActions
     }
     public void SetValues(InputHandler input)
     {
-        if(input == null)
+        if (input == null)
         {
             Debug.Log("inputAsset is null");
             return;

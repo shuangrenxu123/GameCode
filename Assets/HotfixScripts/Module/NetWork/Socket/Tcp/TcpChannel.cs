@@ -34,12 +34,12 @@ namespace Network
         /// <param name="type">编码器类型</param>
         /// <param name="Bodysize">包长</param>
         /// <exception cref="System.ArgumentException"></exception>
-        public void Init(MainThreadSyncContext context, Socket sock, Type packageCodetype, Type bodyCodeType,int Bodysize)
+        public void Init(MainThreadSyncContext context, Socket sock, Type packageCodetype, Type bodyCodeType, int Bodysize)
         {
             if (packageCodetype == null)
                 throw new System.ArgumentException($"packageCoderType is null.");
-            if(bodyCodeType == null) 
-                throw new System.ArgumentException("bodyType is null" );
+            if (bodyCodeType == null)
+                throw new System.ArgumentException("bodyType is null");
             if (Bodysize <= 0)
                 throw new System.ArgumentException($"packageMaxSize is invalid : {Bodysize}");
 
@@ -48,7 +48,7 @@ namespace Network
             //创建编码解码器
             packageCoder = (NetWorkpackCoder)Activator.CreateInstance(packageCodetype);
             //初始化编码解码
-            packageCoder.Init(this, Bodysize,bodyCodeType);
+            packageCoder.Init(this, Bodysize, bodyCodeType);
             //最大的尺寸等于 包体加包头
             packageMaxSize = Bodysize + packageCoder.GetPackageHeadSize();
             this.context = context;
@@ -128,6 +128,8 @@ namespace Network
                     object packet = sendQueue.Dequeue();//取出一个对象
                     packageCoder.EnCode(sendBuffer, packet);//编码并添加到发送数组中
                     sendArgs.SetBuffer(0, sendBuffer.ReadableBytes());//设置缓冲区，0为开始处的位置，后面的参数为可接受的最大数据量
+                    
+                    
                     bool willRaiseEvent = socket.SendAsync(sendArgs);
                     if (!willRaiseEvent)
                         ProcessSend(sendArgs);
@@ -189,6 +191,7 @@ namespace Network
                 decodeBuffer.WriteBytes(e.Buffer, 0, e.BytesTransferred);//将socket中收到的数据传入到待解码的缓冲区
                 decodeTempList.Clear();//清空临时缓冲列表
                 packageCoder.Decode(decodeBuffer, decodeTempList);//将接受到的数据解码并存到解码临时列表中
+
                 lock (receiveArgs)//接收到的信息
                 {
                     for (int i = 0; i < decodeTempList.Count; i++)

@@ -10,7 +10,7 @@ public class NetTranform : MonoBehaviour
     //public Animator anim;
     private void Start()
     {
-        InvokeRepeating("SendPosition", 0, 1f / Count);
+        InvokeRepeating(nameof(SendPosition), 0, 1f / Count);
         player = GetComponent<Player>();
     }
     public void SendPosition()

@@ -6,7 +6,7 @@ public class ItemData : ScriptableObject
     public Sprite Icon;
     public string Name;
     public string Description;
-    public ItemType Type;
+    public virtual ItemType Type { get; }
 
 }
 public enum ItemType
@@ -18,11 +18,11 @@ public enum ItemType
     /// <summary>
     /// 装备
     /// </summary>
-    Equip,
+    Equip=2,
     /// <summary>
     /// 武器
     /// </summary>
-    Weapon,
+    Weapon=3,
     /// <summary>
     /// 其他
     /// </summary>

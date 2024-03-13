@@ -1,7 +1,9 @@
 using Animancer;
+using Audio;
 using HFSM;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public class StateManger : MonoBehaviour
 {
@@ -12,6 +14,9 @@ public class StateManger : MonoBehaviour
     public AnimancerComponent Animancer;
     public AnimactorHelper AnimancerHelper;
     public MaterialControl materialControl;
+
+    public AudioData moveData;
+
     [Header("基础移动动画")]
     [SerializeField]
     private LinearMixerTransition normalMoveAnimator;
@@ -33,16 +38,29 @@ public class StateManger : MonoBehaviour
     private CharacterWeaponAnimator attackAnimator;
 
     private CharacterActor CharacterActor;
+    DataBase dataBase;
 
     private void Awake()
     {
         AnimancerHelper = new AnimactorHelper(Animancer);
+         dataBase = new();
     }
     private void Start()
     {
-        DataBase dataBase = new();
         CharacterActor = GetComponentInParent<CharacterActor>();
         player = GetComponentInParent<Player>();
+        InitState();
+
+        SetStateMachineData("CombatEntity",player.CombatEntity);
+
+
+        controller.Start();
+    }
+
+    private void InitState()
+    {
+
+
         controller = new CharacterStateController_New
         {
             CharacterActor = GetComponentInParent<CharacterActor>(),
@@ -60,8 +78,8 @@ public class StateManger : MonoBehaviour
             normalMoveAnimator = normalMoveAnimator,
             crouchMoveAnimator = crouchMoveAniamtor,
             MaterialControl = materialControl,
-            lockEnemyAnimator = (MixerState<Vector2>)state
-
+            lockEnemyAnimator = (MixerState<Vector2>)state,
+            moveAudio = moveData
         };
 
 
@@ -133,8 +151,9 @@ public class StateManger : MonoBehaviour
         controller.AddTransition(moveToroll);
         controller.AddTransition(rollTomove);
 
-        controller.Start();
     }
+
+
     private void AddCondition(CharacterStateController_New controller, string name, DataBase database, string form, string to)
     {
         var cond = new StateCondition_Bool(name, database, true);
@@ -155,12 +174,17 @@ public class StateManger : MonoBehaviour
     {
         controller.FixUpdate();
     }
+    //todo 后面修改该函数
     public void HandleLock()
     {
         var movestate = controller.FindState("move") as MovementState;
         movestate?.HandleLockEnemy(camera.currentLockOnTarget);
     }
 
+    public void SetStateMachineData(string key,object value)
+    {
+        controller.database.SetData(key,value);
+    }
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;

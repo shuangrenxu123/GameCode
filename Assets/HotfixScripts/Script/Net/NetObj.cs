@@ -1,7 +1,6 @@
 using Animancer;
 using PlayerInfo;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class NetObj : MonoBehaviour
 {
@@ -32,7 +31,7 @@ public class NetObj : MonoBehaviour
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
         animacer = new AnimactorHelper(GetComponentInChildren<AnimancerComponent>());
-        config = GetComponentInChildren<AnimatorConfig>();   
+        config = GetComponentInChildren<AnimatorConfig>();
         currentAnimator = config.normalMoveAnimator;
         animacer.Play(currentAnimator);
     }
@@ -40,10 +39,10 @@ public class NetObj : MonoBehaviour
     {
         SyncPostion(data);
         ///相关的动画事件，如后滚之类的
-       //else if (data.MsgId == 2)
-       //{
-       //    SyncOtherAnim(data);
-       //}
+        //else if (data.MsgId == 2)
+        //{
+        //    SyncOtherAnim(data);
+        //}
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {

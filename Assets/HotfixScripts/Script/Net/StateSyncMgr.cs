@@ -18,7 +18,7 @@ public class StateSyncMgr : MonoBehaviour
         NetWorkManager.Instance.RegisterHandle(1, SyncGameObjectState);
         NetWorkManager.Instance.RegisterHandle(0, Heartbeat);
         NetWorkManager.Instance.RegisterHandle(4, OnClientJoined);
-        EventManager.Instance.AddListener("ConnectServerSuccess",SendPlayerState);
+        EventManager.Instance.AddListener("ConnectServerSuccess", SendPlayerState);
     }
 
     private void SendPlayerState(object message)
@@ -34,21 +34,21 @@ public class StateSyncMgr : MonoBehaviour
             Legid = 0,
             Trousers = 0,
         };
-        NetWorkManager.Instance.SendMessage(player.id,4, package);
+        NetWorkManager.Instance.SendMessage(player.id, 4, package);
     }
 
     private void OnClientJoined(DefaultNetWorkPackage package)
     {
-        Debug.Log("有玩家加入了房间:"+package.SenderId);
+        Debug.Log("有玩家加入了房间:" + package.SenderId);
 
-        if(package.SenderId==player.id || netObjs.ContainsKey(package.SenderId))
+        if (package.SenderId == player.id || netObjs.ContainsKey(package.SenderId))
         {
             return;
         }
 
         var go = InstantiateNetObject(package.SenderId);
         netObjs.Add(package.SenderId, go);
-        
+
     }
 
     private void Update()
@@ -73,7 +73,7 @@ public class StateSyncMgr : MonoBehaviour
     }
     void Heartbeat(DefaultNetWorkPackage package)
     {
-        if(package.SenderId == player.id)
+        if (package.SenderId == player.id)
         {
             SetPingValue(package);
             return;
@@ -104,7 +104,7 @@ public class StateSyncMgr : MonoBehaviour
         var obj = data.Msgobj as ping;
         if (obj != null)
         {
-            UIManager.Instance.GetUIWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
+            //UIManager.Instance.GetUIWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
             return;
         }
     }

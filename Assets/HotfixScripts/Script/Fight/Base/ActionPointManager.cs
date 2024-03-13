@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 namespace Fight
 {
     public class ActionPointManager
@@ -10,8 +11,12 @@ namespace Fight
         /// </summary>
         public void Init()
         {
-            ActionCallback.Add(ActionPointType.PreReceiveDamage, new List<Action<CombatAction>>(10));
-            ActionCallback.Add(ActionPointType.PostCauseDamage, new List<Action<CombatAction>>(10));
+            //ActionCallback.Add(ActionPointType.PreReceiveDamage, new List<Action<CombatAction>>(10));
+            //ActionCallback.Add(ActionPointType.PostCauseDamage, new List<Action<CombatAction>>(10));
+            for (int i = 0; i < (int)ActionPointType.Length; i++)
+            {
+                ActionCallback.Add((ActionPointType)i, new List<Action<CombatAction>>(10));
+            }
         }
         public void AddListener(ActionPointType type, Action<CombatAction> action)
         {
@@ -29,6 +34,10 @@ namespace Fight
                 {
                     item.Invoke(action);
                 }
+            }
+            else
+            {
+                UnityEngine.Debug.LogError(type + "  is null");
             }
         }
     }
@@ -50,5 +59,13 @@ namespace Fight
         /// 承受伤害后
         /// </summary>
         PostReceiveDamage,
+        ///恢复生命值之前
+        PreRestoreHP,
+        /// <summary>
+        /// 恢复生命值之后
+        /// </summary>
+        PostRestoreHP,
+
+        Length = 5,
     }
 }

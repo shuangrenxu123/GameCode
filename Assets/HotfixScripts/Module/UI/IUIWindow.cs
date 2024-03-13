@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-interface IUIWindow 
+interface IUIWindow
 {
     public string WindowName { get; set; }
     public CanvasGroup raycaster { get; set; }

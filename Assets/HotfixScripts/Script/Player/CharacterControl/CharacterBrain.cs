@@ -11,13 +11,13 @@ public class CharacterBrain : MonoBehaviour
     InputHandlerSettings inputHandlerSettings = new InputHandlerSettings();
     [SerializeField]
     InputHandlerSettings UIinputHandlerSettings = new InputHandlerSettings();
-
+    public InputHandlerSettings CameraInputHandlerSettings = new InputHandlerSettings();
     //CharacterAIBehaviour aiBehaviour = null;
 
     CharacterActions characterActions = new CharacterActions();
     CharacrerUIActions characterUIActions = new CharacrerUIActions();
 
-    public bool IsUIInput = false; 
+    public bool IsUIInput = false;
 
     bool firstUpdateFlag = false;
 
@@ -39,15 +39,6 @@ public class CharacterBrain : MonoBehaviour
         {
             this.isAI = IsAI;
         }
-    }
-    public void SetInputHandler(InputHandler inputHandler)
-    {
-        if (inputHandler == null)
-        {
-            return;
-        }
-        inputHandlerSettings.InputHandler = inputHandler;
-        characterActions.Reset();
     }
 
     // public void SetAIBehaviour(CharacterAIBehaviour )
@@ -77,7 +68,7 @@ public class CharacterBrain : MonoBehaviour
             characterActions.SetValues(inputHandlerSettings.InputHandler);
             characterActions.Update(dt);
         }
-       
+
     }
 
     public void EnableUIIpnut()
@@ -87,6 +78,7 @@ public class CharacterBrain : MonoBehaviour
         characterUIActions.Reset();
         inputHandlerSettings.InputHandler.Disable();
         UIinputHandlerSettings.InputHandler.Enable();
+        CameraInputHandlerSettings.InputHandler.Disable();
 
 
     }
@@ -96,6 +88,7 @@ public class CharacterBrain : MonoBehaviour
         characterUIActions.Reset();
         inputHandlerSettings.InputHandler.Enable();
         UIinputHandlerSettings.InputHandler.Disable();
+        CameraInputHandlerSettings.InputHandler.Enable();
         IsUIInput = false;
     }
     protected virtual void Awake()
@@ -108,8 +101,8 @@ public class CharacterBrain : MonoBehaviour
     {
         characterActions.InitializeActions();
         characterUIActions.InitalizeAcionts();
-        
-        
+
+
         characterUIActions.Reset();
         characterActions.Reset();
     }

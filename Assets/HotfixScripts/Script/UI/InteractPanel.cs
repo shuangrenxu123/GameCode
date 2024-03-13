@@ -2,7 +2,7 @@ public class InteractPanel : UIWindowBase
 {
     public override void OnCreate()
     {
-        
+
     }
 
     public override void OnDelete()
@@ -11,17 +11,17 @@ public class InteractPanel : UIWindowBase
 
     public override void OnFocus()
     {
-        
+
     }
 
     public override void OnFocusOtherUI()
     {
-        
+
     }
 
     public override void OnUpdate()
     {
-        
+
     }
 
 

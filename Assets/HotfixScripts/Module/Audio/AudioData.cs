@@ -42,7 +42,7 @@ namespace Audio
             return clipGroups[0].GetClip(name);
         }
     }
-    
+
 
     /// <summary>
     /// Ò»¸öÒôÆµ×é
@@ -81,8 +81,8 @@ namespace Audio
         {
             foreach (var clip in audioClips)
             {
-                if(clip.name == name) 
-                    return clip;  
+                if (clip.name == name)
+                    return clip;
             }
             return null;
         }

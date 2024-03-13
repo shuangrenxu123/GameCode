@@ -9,7 +9,7 @@ namespace Network
 
         protected TcpChannel tcpChannel;
         protected IPackageCoder _packageCoder;
-        public void Init(TcpChannel channel, int size,Type coderType)
+        public void Init(TcpChannel channel, int size, Type coderType)
         {
             tcpChannel = channel;
             PackageBodyMaxSize = size;

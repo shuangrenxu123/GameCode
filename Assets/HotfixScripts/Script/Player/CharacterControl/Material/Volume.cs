@@ -19,6 +19,8 @@ public class Volume
 [System.Serializable]
 public class Surface
 {
+    public string movementSound;
+
     public string tagName = "";
 
     [Header("Movement")]

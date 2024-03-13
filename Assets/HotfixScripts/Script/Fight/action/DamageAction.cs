@@ -4,7 +4,6 @@ namespace Fight
     public class DamageAction : CombatAction
     {
         public int damage;
-        public string animator;
         public DamageAction(CombatEntity creater, CombatEntity[] targets)
         {
             Creator = creater;
@@ -16,7 +15,6 @@ namespace Fight
             {
                 damage = baseValue;
                 PreProcess(Creator, target);
-                target.TakeDamage(damage, animator);
                 PostProcess(Creator, target);
             }
         }

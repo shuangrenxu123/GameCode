@@ -15,21 +15,21 @@ public class PingPanel : UIWindowBase
 
     public override void OnUpdate()
     {
-        
+
     }
 
     public override void OnDelete()
     {
-        
+
     }
 
     public override void OnFocus()
     {
-        
+
     }
 
     public override void OnFocusOtherUI()
     {
-        
+
     }
 }

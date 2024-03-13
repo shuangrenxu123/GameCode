@@ -160,7 +160,8 @@ public class DataDownloader
         while (true)
         {
             int bytesRead = await responseStream.ReadAsync(buffer).ConfigureAwait(false);
-            if (bytesRead == 0 || IsCanceled) break;
+            if (bytesRead == 0 || IsCanceled)
+                break;
             await memoryStream.WriteAsync(buffer.AsMemory(0, bytesRead)).ConfigureAwait(false);
             DownloadedBytes += bytesRead;
         }

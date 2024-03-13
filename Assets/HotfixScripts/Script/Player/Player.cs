@@ -19,12 +19,18 @@ public class Player : MonoBehaviour
         Net = GetComponent<NetTranform>();
         Inventory = GetComponent<PlayerInventory>();
         Actor = GetComponent<CharacterActor>();
+        StateManager = GetComponentInChildren<StateManger>();
         //backStep = GetComponentInChildren<BackStepCollider>();
         UIManager.Instance.OpenUI<PlayerStateUI>(Resources.Load<PlayerStateUI>("playerState"));
     }
     void Start()
     {
         CombatEntity.Init(1000);
+    }
+
+    public void SetStateMachineData(string key,object value)
+    {
+        StateManager.SetStateMachineData(key,value);
     }
 
 }

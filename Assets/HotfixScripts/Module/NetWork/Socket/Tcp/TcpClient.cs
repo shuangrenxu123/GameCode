@@ -22,7 +22,7 @@ namespace Network
         private TcpChannel channel;
 
         private MainThreadSyncContext context;
-        public TcpClient(Type packagetype,Type bodyType, int size)
+        public TcpClient(Type packagetype, Type bodyType, int size)
         {
             packageCoderType = packagetype;
             packageBodyCoderType = bodyType;
@@ -39,7 +39,7 @@ namespace Network
             }
             else
             {
-                channel.Init(context, e.ConnectSocket, packageCoderType, packageBodyCoderType,packagebodyMaxSize);
+                channel.Init(context, e.ConnectSocket, packageCoderType, packageBodyCoderType, packagebodyMaxSize);
             }
         }
         public void Dispose()
@@ -136,7 +136,7 @@ namespace Network
             if (token.Callback != null)
             {
                 token.Callback.Invoke(e.SocketError);
-            }  
+            }
         }
         /// <summary>
         /// 回归主线程

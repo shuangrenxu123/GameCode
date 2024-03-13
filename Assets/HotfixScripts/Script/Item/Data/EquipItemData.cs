@@ -1,8 +1,17 @@
 using UnityEngine;
+using Utilities;
+using static Utilities.ConditionAttribute;
 [CreateAssetMenu(menuName = "Items/EquipItemData")]
 public class EquipItemData : ItemData
 {
-    public EquipType equipType { get; private set; }
-    public GameObject modelPrefab { get; private set; }
-    public Mesh mesh { get; private set; }
+    public override ItemType Type { get => ItemType.Equip; }
+    public EquipType equipType;
+    public GameObject modelPrefab;
+
+    public Mesh mesh;
+
+    public void Equip(PlayerInventory equipmanager)
+    {
+        equipmanager.ReplaceEquipe(equipType,mesh);
+    }
 }

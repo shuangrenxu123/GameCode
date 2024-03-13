@@ -1,14 +1,14 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-public class ABEditor : MonoBehaviour
+public class ABEditor
 {
     /// <summary>
     /// AB包的输出路径
     /// </summary>
     public static string outputPath = Application.streamingAssetsPath + "/AssetBundles";
 
-    [MenuItem("AB包打包/生成ab包")]
+    [MenuItem("打包/生成ab包")]
 
     public static void BuildeAB()
     {

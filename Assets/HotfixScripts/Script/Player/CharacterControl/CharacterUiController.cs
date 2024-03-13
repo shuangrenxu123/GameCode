@@ -1,9 +1,4 @@
-using Audio;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 [DefaultExecutionOrder(100)]
 public class CharacterUiController : MonoBehaviour
 {
@@ -11,7 +6,7 @@ public class CharacterUiController : MonoBehaviour
     private CharacterBrain CharacterBrain;
 
     bool showingUI;
-    public CharacterActions InputActions 
+    public CharacterActions InputActions
     {
         get
         {
@@ -25,9 +20,7 @@ public class CharacterUiController : MonoBehaviour
         {
             CharacterBrain.EnableUIIpnut();
             UIManager.Instance.OpenUI<GameUIMgr>(Resources.Load<GameUIMgr>("GameUI"));
-            Debug.Log(CharacterBrain.CharacterActions.OpenUI.Started);
-            Debug.Log(CharacterBrain.CharacterUIActions.cancel.Started);
-           
+
         }
     }
 }

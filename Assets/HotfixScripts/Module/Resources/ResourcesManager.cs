@@ -158,7 +158,7 @@ public class ResourcesManager : ModuleSingleton<ResourcesManager>, IModule
     /// <param name="abName"></param>
     /// <returns></returns>
     private AssetBundle LoadAssetBundle(string abName)
-    {
+    { 
         abName = abName.ToLower();
         AssetBundleInfo abinfo = null;
         if (_loadAssetBundles.TryGetValue(abName, out abinfo))
@@ -190,6 +190,7 @@ public class ResourcesManager : ModuleSingleton<ResourcesManager>, IModule
             }
         }
         return abinfo.m_AssetBundle;
+
     }
     /// <summary>
     /// 卸载资源包

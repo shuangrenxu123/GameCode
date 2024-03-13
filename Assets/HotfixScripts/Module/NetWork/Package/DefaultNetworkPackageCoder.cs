@@ -7,7 +7,6 @@ namespace Network
 {
     public class DefaultNetworkPackageCoder : NetWorkpackCoder
     {
-
         /// <summary>
         /// 包裹大小的字段类型
         /// 包裹有包头和包体组成
@@ -104,6 +103,8 @@ namespace Network
             sendBuffer.WriteString(package.SenderId);
             sendBuffer.WriteBytes(bytes, 0, bytes.Length);
 
+            ReferenceManager.Instance.Release(package);
+
         }
         /// <summary>
         /// 解码
@@ -128,7 +129,8 @@ namespace Network
                 {
                     break;//退出然后读够了数据再解包
                 }
-                DefaultNetWorkPackage packager = new DefaultNetWorkPackage();
+                var packager = ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
+                //DefaultNetWorkPackage packager = new DefaultNetWorkPackage();
 
                 if (MessageIDFieldType == EMessageIDFieldType.UShort)
                 {
@@ -176,25 +178,6 @@ namespace Network
                 }
             }
             receiveBuffer.DiscardReadBytes();
-        }
-
-        protected byte[] EnCodeInternal(object obj)
-        {
-            //string json = JsonMapper.ToJson(obj);
-            //byte[] data = Encoding.UTF8.GetBytes(json);
-
-            byte[] data = (obj as IMessage).ToByteArray();
-            //IMessage me = new PlayerInfo.login();
-            //var o= me.Descriptor.Parser.ParseFrom(data) as PlayerInfo.login;
-            return data;
-        }
-        protected object DeCodeInternal(Type type, byte[] body)
-        {
-            //string value = Encoding.UTF8.GetString(body);
-            //object data = JsonMapper.ToObject(value);
-            IMessage mess = (IMessage)Activator.CreateInstance(type);
-            var data = mess.Descriptor.Parser.ParseFrom(body);
-            return data;
         }
     }
 }

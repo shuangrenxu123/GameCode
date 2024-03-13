@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Utility;
 public class PickUpItem : Interactable
 {
     [SerializeField]
-    List<SerializableDictionary<ItemData,int>> ItemDataConfig;
+    List<SerializableDictionary<ItemData, int>> ItemDataConfig;
     public override void Interact(Player playerManager)
     {
         if (ItemDataConfig == null)
@@ -14,11 +13,11 @@ public class PickUpItem : Interactable
             return;
         }
         Debug.Log($"与物体{name}产生了交互");
-        foreach(var item in ItemDataConfig)
+        foreach (var item in ItemDataConfig)
         {
             foreach (var key in item)
             {
-                playerManager.Inventory.AddItem(key.Key,key.Value);
+                playerManager.Inventory.AddItem(key.Key, key.Value);
             }
         }
         Destroy(gameObject);

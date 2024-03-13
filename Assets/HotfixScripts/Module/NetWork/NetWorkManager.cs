@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -34,21 +35,21 @@ namespace Network
         /// <summary>
         /// Mono层的回调,用于处理包，每一帧都会处理接收到的包
         /// </summary>
-        private Dictionary <int,PackageEvent> handles;
+        private Dictionary<int, PackageEvent> handles;
         public void OnCreate(object createParam)
         {
             CreateParameters c = createParam as CreateParameters;
             if (createParam == null)
                 Debug.LogError("传入的参数不对");
 
-            client = new TcpClient(c.PackageCoderType, c.PackageBodyCoderType,c.PackageMaxSize);
+            client = new TcpClient(c.PackageCoderType, c.PackageBodyCoderType, c.PackageMaxSize);
             register = new NetworkMessageRegister();
             handles = new Dictionary<int, PackageEvent>();
             register.Init();
         }
-        public void RegisterHandle(int messageId,UnityAction<DefaultNetWorkPackage> action)
+        public void RegisterHandle(int messageId, UnityAction<DefaultNetWorkPackage> action)
         {
-            if (handles.TryGetValue(messageId,out var handle))
+            if (handles.TryGetValue(messageId, out var handle))
             {
                 handle.AddListener(action);
             }
@@ -78,6 +79,7 @@ namespace Network
                 else if (handles != null)
                 {
                     handles[package.MsgId]?.Invoke(package);
+                   ReferenceManager.Instance.Release(package);
                 }
 
                 //有可能socket突然断了
@@ -154,10 +156,12 @@ namespace Network
             }
             if (client != null)
             {
-                var t = new DefaultNetWorkPackage();
+                var t= ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
+                //var t = new DefaultNetWorkPackage();
                 t.SenderId = senderid;
                 t.MsgId = Msgid;
                 t.Msgobj = package;
+
                 client.SendPackage(t);
             }
         }

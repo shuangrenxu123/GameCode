@@ -63,7 +63,7 @@ public class AttackState : CharacterControlStateBase
         {
             //²¥·ÅÇá¹¥»÷¶¯»­
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-            //AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip,AudioLayer.Sound);
+            AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
             state.Events.AddRange(lightEvents[currentAnimatorIndex]);
         }
         if (state == null)
@@ -90,7 +90,7 @@ public class AttackState : CharacterControlStateBase
                 EndDoCombo();
                 CloseWeaponCollider();
                 state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-                //AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+                AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
 
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;

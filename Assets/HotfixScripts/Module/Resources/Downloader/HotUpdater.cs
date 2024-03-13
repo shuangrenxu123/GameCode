@@ -14,11 +14,11 @@ using UnityEngine.Networking;
 public class HotUpdater
 {
     private Queue<PackInfo> readyList = new();
-    private List<FileDownloader> downloaders = new(5);
+    private static int downloadThreads = 5;
+    private List<FileDownloader> downloaders = new(downloadThreads);
     //下载器是否空闲
-    private List<bool> downloadstates = new List<bool>(10);
+    private List<bool> downloadstates = new List<bool>(downloadThreads);
 
-    private int downloadThreads = 5;
     /// <summary>
     /// 没有任何更新
     /// </summary>
@@ -63,6 +63,9 @@ public class HotUpdater
         }
 
     }
+    /// <summary>
+    /// 开始下载
+    /// </summary>
     public async void Download()
     {
         await Init();
@@ -91,7 +94,7 @@ public class HotUpdater
             readyList.Enqueue(downlaoder.fileInfo);
         }
     }
-    private void DownloadedCallBack(FileDownloader downloader)
+    private async void DownloadedCallBack(FileDownloader downloader)
     {
         try
         {
@@ -115,6 +118,7 @@ public class HotUpdater
                         var count = zip.Count;
                         foreach (var i in zip)
                         {
+                            //todo 在所有的文件下载完毕以后再统一解压
                             i.Extract(Application.persistentDataPath + "/update/", ExtractExistingFileAction.OverwriteSilently);
                         }
                     }

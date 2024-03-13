@@ -1,5 +1,8 @@
 using Network;
+using PlayerInfo;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class Test : MonoBehaviour
@@ -24,19 +27,7 @@ public class Test : MonoBehaviour
         {
             changeSkinnedMesh();
         }
-        if(Input.GetKeyDown(KeyCode.K))
-        {
-            NetWorkManager.Instance.ConnectServer("1.14.67.47", 20000);
-        }
-        if(Input.GetKeyDown(KeyCode.L))
-        {
-            if(NetWorkManager.Instance.state == ENetWorkState.Connected)
-            {
-                NetWorkManager.Instance.DisConnectServer();
-            }
-        }
     }
-
     public void changeSkinnedMesh()
     {
         SkinnedMeshRenderer sourceSkinMeshRender = sourceSkin.GetComponentInChildren<SkinnedMeshRenderer>();    //获取当前要替换的皮肤，这是源

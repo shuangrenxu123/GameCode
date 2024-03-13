@@ -56,16 +56,16 @@ public class NetPanel : UIWindowBase
 
     public override void OnDelete()
     {
-        
+
     }
 
     public override void OnFocus()
     {
-        
+
     }
 
     public override void OnFocusOtherUI()
     {
-        
+
     }
 }

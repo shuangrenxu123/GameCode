@@ -1,4 +1,5 @@
 using Fight;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
@@ -15,8 +16,9 @@ public class Equipmanager : MonoBehaviour
     DamageCollider rightCollider;
     HandIK handIK;
 
-    Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;
-
+    //Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;
+    [SerializeField]
+    List<EquipeWarpper> EquipRenders = new List<EquipeWarpper>(8);
 
     private void Awake()
     {
@@ -59,8 +61,15 @@ public class Equipmanager : MonoBehaviour
     /// </summary>
     /// <param name="qeuipType"></param>
     /// <param name="datas"></param>
-    public void ReplaceEquip(EquipType qeuipType, EquipItemData datas)
+    public void ReplaceEquip(EquipType qeuipType, Mesh datas)
     {
 
+        EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
+    }
+    [Serializable]
+    class EquipeWarpper
+    {
+        public EquipType EquipType;
+        public SkinnedMeshRenderer Mesh;
     }
 }

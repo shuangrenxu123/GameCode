@@ -3,12 +3,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class BagPanel : UIWindowBase,IUIWindow
+public class BagPanel : UIWindowBase, IUIWindow
 {
     PlayerInventory inventory;
     List<BagSlot> slots;
     GameObject slotParent;
-    BagSlot currentSelectSlot;
+    public BagSlot currentSelectSlot { get; private set; }
 
     [SerializeField]
     TMP_Text ItemName;
@@ -22,7 +22,8 @@ public class BagPanel : UIWindowBase,IUIWindow
         int index = 0;
         foreach (var item in inventory.Items)
         {
-            slots[index].SetItemData(item.Value.Item1,item.Value.Item2);
+            slots[index].SetItemData(item.Value.Item1, item.Value.Item2);
+            index++;
         }
     }
     public void OnClick(PointerEventData eventData)
@@ -33,16 +34,17 @@ public class BagPanel : UIWindowBase,IUIWindow
             ItemDescription.text = currentSelectSlot.ItemData.Description;
             //var temp = Instantiate(selectPanel,currentSelectSlot.transform);
 
-            var temp =UIManager.Instance.OpenUI<BagSelectPanel>(selectPanel);
-            if(temp != null)
+            var temp = UIManager.Instance.OpenUI<BagSelectPanel>(selectPanel);
+            if (temp != null)
             {
-                temp.OnDeleteEvent += ()=> {
+                temp.OnDeleteEvent += () =>
+                {
                     raycaster.interactable = true;
                     raycaster.blocksRaycasts = true;
                 };
-                temp.transform.SetParent(transform);
+                temp.SetPanel(currentSelectSlot.transform.position);
                 raycaster.interactable = false;
-                raycaster.blocksRaycasts= false;
+                raycaster.blocksRaycasts = false;
             }
 
         }
@@ -60,7 +62,7 @@ public class BagPanel : UIWindowBase,IUIWindow
     {
         slotParent = GetUIGameObject("slot");
         slots = new(30);
-        for (var i = 0;i < slotParent.transform.childCount;i++)
+        for (var i = 0; i < slotParent.transform.childCount; i++)
         {
             slots.Add(slotParent.transform.GetChild(i).GetComponent<BagSlot>());
         }
@@ -83,16 +85,16 @@ public class BagPanel : UIWindowBase,IUIWindow
 
     public override void OnDelete()
     {
-       
+
     }
 
     public override void OnFocus()
     {
-       
+
     }
 
     public override void OnFocusOtherUI()
     {
-        
+
     }
 }

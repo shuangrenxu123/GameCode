@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -38,10 +37,10 @@ public class BagSlot : MonoBehaviour, IUIElement
 
     private void OnClick(PointerEventData eventData)
     {
-        bagpanel.OnClick(eventData);   
+        bagpanel.OnClick(eventData);
     }
 
-    public void SetItemData(ItemData item,int num=1)
+    public void SetItemData(ItemData item, int num = 1)
     {
         ItemData = item;
         icon.sprite = item.Icon;

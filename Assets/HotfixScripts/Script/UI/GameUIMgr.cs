@@ -22,16 +22,24 @@ public class GameUIMgr : UIWindowBase
         CloseOtherPanel();
         UIManager.Instance.OpenUI<BagPanel>(Resources.Load<BagPanel>("BagPanel"));
     }
+    private void OpenEquipmentUI(PointerEventData eventData)
+    {
+        CloseOtherPanel();
+        UIManager.Instance.OpenUI<EquipmentPanel>(Resources.Load<EquipmentPanel>("EquipmentPanel"));
+    }
     private void CloseOtherPanel()
     {
-        UIManager.Instance.CloseUI<BagPanel>();
-        UIManager.Instance.CloseUI<AudioPanel>();
-        UIManager.Instance.CloseUI<NetPanel>();
+        while (!UIManager.Instance.IsTopWindow<GameUIMgr>())
+        {
+            var ui = UIManager.Instance.GetTopWindow();
+            UIManager.Instance.CloseUI(ui.GetType());
+        }
     }
     public override void OnCreate()
     {
         GetUIEvnetListener("Bag").PointerClick += OpenBagPanel;
         GetUIEvnetListener("Network").PointerClick += OpenNetworkPanel;
+        GetUIEvnetListener("Equipment").PointerClick += OpenEquipmentUI;
     }
     public override void OnUpdate()
     {
@@ -48,15 +56,5 @@ public class GameUIMgr : UIWindowBase
     public override void OnDelete()
     {
         CloseOtherPanel();
-    }
-
-    public override void OnFocus()
-    {
-        
-    }
-
-    public override void OnFocusOtherUI()
-    {
-       
     }
 }

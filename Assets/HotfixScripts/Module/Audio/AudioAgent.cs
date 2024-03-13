@@ -7,6 +7,8 @@ namespace Audio
     public class AudioAgent : PoolObject
     {
         private AudioSource audioSource;
+        private Coroutine Coroutine;
+        private Transform target;
         public override void Init()
         {
             audioSource = gameObject.AddComponent<AudioSource>();
@@ -18,7 +20,16 @@ namespace Audio
             audioSource.time = 0f;
             audioSource.Play();
             if (!hasLoop)
-                StartCoroutine(FinishedPlaying(audioSource.clip.length));
+              Coroutine = StartCoroutine(FinishedPlaying(audioSource.clip.length));
+        }
+        private void Update()
+        {
+            if(target != null) 
+                transform.position = target.position;
+        }
+        public void BindPosition(Transform target)
+        {
+            this.target = target;
         }
         /// <summary>
         /// 获得正在播放的音频
@@ -27,6 +38,13 @@ namespace Audio
         public AudioClip GetClip()
         {
             return audioSource.clip;
+        }
+        /// <summary>
+        /// 继续播放音频
+        /// </summary>
+        public void Continue()
+        {
+            audioSource.Play();
         }
         /// <summary>
         /// 暂停播放
@@ -41,6 +59,9 @@ namespace Audio
         public void Stop()
         {
             audioSource.Stop();
+            if(Coroutine != null) 
+                StopCoroutine(Coroutine);
+            PoolManager.Instance.ReturnObjectToPool("audio", this);
         }
         IEnumerator FinishedPlaying(float clipLength)
         {
@@ -48,16 +69,24 @@ namespace Audio
             //完成以后自己回收
             PoolManager.Instance.ReturnObjectToPool("audio", this);
         }
+        public override void Pull()
+        {
+            base.Pull();
+            audioSource.volume = 1f;
+            target = null; 
+        }
         public bool IsLoop()
         {
             return audioSource.loop;
         }
-
+        public bool isPlaying()
+        {
+            return audioSource.isPlaying;
+        }
         public void SetVolume(float v)
         {
-            audioSource.volume = v;
+            audioSource.volume = v * audioSource.volume;
         }
-
         public void SetMute(bool v)
         {
             audioSource.mute = v;

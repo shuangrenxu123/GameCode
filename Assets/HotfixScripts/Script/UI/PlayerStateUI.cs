@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,27 +18,11 @@ public class PlayerStateUI : UIWindowBase
     #region interface
     public override void OnCreate()
     {
-        //todo ¥¶¿ÌUIœ‘ æ
-    }
-
-    public override void OnUpdate()
-    {
-
-    }
-
-    public override void OnDelete()
-    {
-
-    }
-
-    public override void OnFocus()
-    {
-
-    }
-
-    public override void OnFocusOtherUI()
-    {
-
+        base.OnCreate();
+        leftSlot.gameObject.SetActive(false);
+        rightSlot.gameObject.SetActive(false);
+        magicSlot.gameObject.SetActive(false);
+        itemSlot.gameObject.SetActive(false);
     }
     #endregion
     #region buff

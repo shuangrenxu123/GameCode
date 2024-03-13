@@ -1,9 +1,11 @@
 using Animancer;
+using Audio;
 using System;
 using UnityEngine;
 
 public class MovementState : CharacterControlStateBase
 {
+    //todo 将跳跃，下蹲等动画提出来，最终让整个变为分层状态机
     #region parameters
     public PlanarMovementParameters planarMovementParameters = new();
     public VerticalMovementParameters verticalMovementParameters = new VerticalMovementParameters();
@@ -39,8 +41,12 @@ public class MovementState : CharacterControlStateBase
     /// </summary>
     public event Action<int> OnNotGroundedJumpPerformed;
 
-    #endregion 
+    #endregion
 
+    #region Audio
+    public AudioData moveAudio;
+    private AudioAgent moveagent;
+    #endregion
     public MaterialControl MaterialControl;
     /// <summary>
     /// 连跳次数
@@ -101,6 +107,9 @@ public class MovementState : CharacterControlStateBase
         targetLookingDirection = CharacterActor.Forward;
         currentAnimator = normalMoveAnimator;
         currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
+
+        moveagent = AudioManager.Instance.PlayAudio(moveAudio.GetClip(MaterialControl.CurrentSurface.movementSound),moveAudio.layer,true);
+        moveagent.Pause();
         CharacterActor.UseRootMotion = false;
 
         if (lockFlag)
@@ -116,6 +125,7 @@ public class MovementState : CharacterControlStateBase
     {
         CharacterActor.OnTeleport -= OnTeleport;
         reducedAirControlFlag = false;
+        moveagent.Stop();
     }
     void OnTeleport(Vector3 position, Quaternion rotation)
     {
@@ -247,8 +257,6 @@ public class MovementState : CharacterControlStateBase
         if (!UseGravity)
             return;
         verticalMovementParameters.UpdateParameters();
-
-        //todo  材质所带来的重力相关
         float gravityMutiplier = 1f;
         if (MaterialControl != null)
             gravityMutiplier = CharacterActor.LocalVelocity.y >= 0 ?
@@ -675,6 +683,15 @@ public class MovementState : CharacterControlStateBase
         // CharacterStateController.Animator.SetFloat(planarSpeedParmeter, CharacterActor.PlanarVelocity.magnitude);
         if (CharacterActor.IsStable)
         {
+
+            if (CharacterActor.PlanarVelocity.magnitude > 0.01f && !moveagent.isPlaying())
+            {
+                moveagent.Continue();
+            }
+            else if(CharacterActor.PlanarVelocity.magnitude  <= 0.01f && moveagent.isPlaying())
+            {
+                moveagent.Pause();
+            }
             currentAnimator.State.Parameter = CharacterActor.PlanarVelocity.magnitude;
 
             if (lockFlag)

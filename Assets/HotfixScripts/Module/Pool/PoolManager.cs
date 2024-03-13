@@ -24,7 +24,7 @@ namespace ObjectPool
         /// <param name="name">对象池</param>
         /// <param name="capcity">申请的空间</param>
         /// <returns></returns>
-        public void CreatePool(PoolInfo info,bool destory = true)
+        public void CreatePool(PoolInfo info, bool destory = true)
         {
             if (PoolMap.ContainsKey(info.name))
             {

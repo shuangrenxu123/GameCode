@@ -1,31 +1,39 @@
 using Fight;
 using UnityEngine;
 /// <summary>
-/// 可消耗物品
+/// 属性可消耗品
 /// </summary>
-public abstract class ConsumableItem
+public class ConsumableItem
 {
     public ConsumableItemData data;
     public GameObject go;
-    public int currentItemAmount = 10;
-    public ConsumableItem(string name)
+    public float effectTime =>data.effectTime;
+    public ConsumableItem(ConsumableItemData data)
     {
-        data = Resources.Load<ConsumableItemData>(name);
+        this.data = data;
     }
-    public virtual void AttemptToConsumeItem(Equipmanager equipmanager)
+    public void Effect(CombatEntity me)
     {
-        if (currentItemAmount > 0)
+        switch (data.changeType)
         {
-            //animator.PlayTargetAnimation(data.consumeAnimation, data.isInteracting);
-            go = Object.Instantiate(data.modelPrefab, equipmanager.rightSlot.transform);
-            equipmanager.rightSlot.UnloadWeapon();
-        }
-        else
-        {
-            //animator.PlayTargetAnimation(data.UsageFailedAnimation, true);
+            case ChangeType.HP:
+                if (data.value >= 0)
+                {
+                    var action = new RegenerationAction(me, new CombatEntity[] { me });
+                    action.Apply(data.value);
+                }
+                break;
+            case ChangeType.MP:
+                break;
+            case ChangeType.Atk:
+                break;
+            case ChangeType.Def:
+                break;
+            case ChangeType.Other:
+                break;
+            
         }
     }
-    public abstract void Effect(CombatEntity me, Equipmanager equipmanager);
 
 
 }

@@ -6,9 +6,10 @@ public class Camera3D : MonoBehaviour
 {
 
     [Header("输入设置相关")]
-
     [SerializeField]
-    InputHandlerSettings inputHandlerSettings = new InputHandlerSettings();
+    CharacterBrain characterBrain;
+    [SerializeField]
+    InputHandlerSettings inputHandlerSettings => characterBrain.CameraInputHandlerSettings;
 
     [SerializeField]
     string axes = "Camera";

@@ -12,14 +12,15 @@ public class Main : MonoBehaviour
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
         a.PackageBodyCoderType = typeof(ProtobufCoder);
 
-        MotionEngine.CreateModule<NetWorkManager>(a);
         MotionEngine.CreateModule<EventManager>();
         MotionEngine.CreateModule<UIManager>();
         MotionEngine.CreateModule<ResourcesManager>();
         MotionEngine.CreateModule<PoolManager>();
+        MotionEngine.CreateModule<ReferenceManager>();
         MotionEngine.CreateModule<VersionManager>();
         MotionEngine.CreateModule<ConfigManager>();
         MotionEngine.CreateModule<AudioManager>();
+        MotionEngine.CreateModule<NetWorkManager>(a);
 
     }
     private void Start()

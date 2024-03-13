@@ -1,9 +1,11 @@
 using Animancer;
+using Fight;
 using UnityEngine;
 
 public class InteractionState : CharacterControlStateBase
 {
     private Interactable interactable;
+    private ConsumableItemData ItemData;
     private AnimancerState state;
     public override void Init()
     {
@@ -12,24 +14,43 @@ public class InteractionState : CharacterControlStateBase
     public override void Enter()
     {
         interactable = database.GetData<Interactable>("interactable");
-        if (interactable == null)
+        if (interactable != null)
         {
-            database.SetData<bool>("interaction", false);
+            CharacterActor.Velocity = Vector3.zero;
+            CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+
+            state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
+
+            state.Events.OnEnd += OnAnimatorEnd;
+            state.Events.Add(0.6f, OnInteract);
+            interactable.StartInteract(CharacterStateController.stateManger.player);
         }
-        CharacterActor.Velocity = Vector3.zero;
-        CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+        else
+        {
 
+            ItemData = database.GetData<ConsumableItemData>("interactionData");
+            if (ItemData != null)
+            {
+                CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+                state = Animancer.Play(animators[ItemData.consumeAnimation]);
+                state.Events.Add(ItemData.effectTime, () => { ItemData.Effect(database.GetData<CombatEntity>("CombatEntity")); });
+                state.Events.OnEnd += () =>
+                {
+                    database.SetData<bool>("interaction", false);
+                    state.Events.Clear();
+                };
 
-        state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
-
-
-        state.Events.OnEnd += OnAnimatorEnd;
-        state.Events.Add(0.6f, OnInteract);
-        interactable.StartInteract(CharacterStateController.stateManger.player);
+            }
+            else
+            {
+                database.SetData<bool>("interaction", false);
+            }
+        }
     }
     private void OnAnimatorEnd()
     {
         database.SetData<bool>("interaction", false);
+        database.SetData<Interactable>("Interactable",null);
         interactable.EndInteract(CharacterStateController.stateManger.player);
         state.Events.Clear();
     }

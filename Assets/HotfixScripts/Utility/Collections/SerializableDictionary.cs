@@ -165,7 +165,7 @@ namespace Utility
 
         #endregion
     }
-    #if UNITY_EDITOR
+#if UNITY_EDITOR
     [CustomPropertyDrawer(typeof(SerializableDictionary), true)]
     public class SerializableDictionaryDrawer : PropertyDrawer
     {
@@ -184,5 +184,5 @@ namespace Utility
             return EditorGUI.GetPropertyHeight(getListProperty(property), true);
         }
     }
-    #endif
+#endif
 }

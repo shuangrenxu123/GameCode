@@ -1,17 +1,15 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public abstract class UIWindowBase : MonoBehaviour, IUIWindow
 {
     protected CharacterBrain CharacterBrain;
-    protected CharacrerUIActions UIInput =>CharacterBrain.CharacterUIActions;
+    protected CharacrerUIActions UIInput => CharacterBrain.CharacterUIActions;
 
     public Canvas canves { get; set; }
-    public  string WindowName { get => GetType().FullName; set { return; } }
-    public CanvasGroup  raycaster { get; set; }
+    public string WindowName { get => GetType().FullName; set { return; } }
+    public CanvasGroup raycaster { get; set; }
 
     public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
 
