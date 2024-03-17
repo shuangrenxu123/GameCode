@@ -2,62 +2,67 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UIWindowBase : MonoBehaviour, IUIWindow
+namespace UIWindow
 {
-    protected CharacterBrain CharacterBrain;
-    protected CharacrerUIActions UIInput => CharacterBrain.CharacterUIActions;
 
-    public Canvas canves { get; set; }
-    public string WindowName { get => GetType().FullName; set { return; } }
-    public CanvasGroup raycaster { get; set; }
 
-    public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
-
-    #region event
-    public event Action OnDeleteEvent;
-    public event Action OnFocusEvent;
-    public event Action OnFocusOtherUIEvent;
-    #endregion
-    private void Awake()
+    public abstract class UIWindowBase : MonoBehaviour, IUIWindow
     {
-        canves = GetComponent<Canvas>();
-        raycaster = GetComponent<CanvasGroup>();
-        CharacterBrain = FindObjectOfType<CharacterBrain>();
-    }
-    public UIEventListener GetUIEvnetListener(string name)
-    {
-        if (!listeners.ContainsKey(name))
+        protected CharacterBrain CharacterBrain;
+        protected CharacrerUIActions UIInput => CharacterBrain.CharacterUIActions;
+
+        public Canvas canves { get; set; }
+        public string WindowName { get => GetType().FullName; set { return; } }
+        public CanvasGroup raycaster { get; set; }
+
+        public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
+
+        #region event
+        public event Action OnDeleteEvent;
+        public event Action OnFocusEvent;
+        public event Action OnFocusOtherUIEvent;
+        #endregion
+        private void Awake()
         {
-            Transform childTransform = transform.FindChildByName(name);
-            listeners.Add(name, UIEventListener.GetListener(childTransform));
+            canves = GetComponent<Canvas>();
+            raycaster = GetComponent<CanvasGroup>();
+            CharacterBrain = FindObjectOfType<CharacterBrain>();
         }
-        return listeners[name];
-    }
-    public GameObject GetUIGameObject(string name)
-    {
-        return transform.FindChildByName(name).gameObject;
-    }
-    public void RemoveUIEventListener(string name)
-    {
-        if (listeners.ContainsKey(name))
+        public UIEventListener GetUIEvnetListener(string name)
         {
-            listeners.Remove(name);
+            if (!listeners.ContainsKey(name))
+            {
+                Transform childTransform = transform.FindChildByName(name);
+                listeners.Add(name, UIEventListener.GetListener(childTransform));
+            }
+            return listeners[name];
         }
+        public GameObject GetUIGameObject(string name)
+        {
+            return transform.FindChildByName(name).gameObject;
+        }
+        public void RemoveUIEventListener(string name)
+        {
+            if (listeners.ContainsKey(name))
+            {
+                listeners.Remove(name);
+            }
+        }
+        #region Method
+        public virtual void OnCreate() { }
+        public virtual void OnUpdate() { }
+        public virtual void OnDelete()
+        {
+            OnDeleteEvent?.Invoke();
+        }
+        public virtual void OnFocus()
+        {
+            OnFocusEvent?.Invoke();
+        }
+        public virtual void OnFocusOtherUI()
+        {
+            OnFocusOtherUIEvent?.Invoke();
+        }
+        #endregion
     }
-    #region Method
-    public virtual void OnCreate() { }
-    public virtual void OnUpdate() { }
-    public virtual void OnDelete()
-    {
-        OnDeleteEvent?.Invoke();
-    }
-    public virtual void OnFocus()
-    {
-        OnFocusEvent?.Invoke();
-    }
-    public virtual void OnFocusOtherUI()
-    {
-        OnFocusOtherUIEvent?.Invoke();
-    }
-    #endregion
 }

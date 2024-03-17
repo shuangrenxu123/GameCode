@@ -1,5 +1,6 @@
 using Animancer;
 using Audio;
+using CharacterControlerStateMachine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -147,22 +148,22 @@ public class AttackState : CharacterControlStateBase
     #region Event Function
     private void CanDoCombo()
     {
-        Debug.Log("可以连击");
+        
         canDoCombo = true;
     }
     private void EndDoCombo()
     {
-        Debug.Log("连击取消");
+       
 
         canDoCombo = false;
     }
     private void OpenWeaponCollider()
     {
-        Debug.Log("打开伤害碰撞体");
+       
     }
     private void CloseWeaponCollider()
     {
-        Debug.Log("关闭伤害碰撞体");
+      
     }
     #endregion
 }

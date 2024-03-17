@@ -1,5 +1,6 @@
 using Network;
 using TMPro;
+using UIWindow;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -52,20 +53,5 @@ public class NetPanel : UIWindowBase
                 UIManager.Instance.CloseUI(GetType());
             }
         }
-    }
-
-    public override void OnDelete()
-    {
-
-    }
-
-    public override void OnFocus()
-    {
-
-    }
-
-    public override void OnFocusOtherUI()
-    {
-
     }
 }

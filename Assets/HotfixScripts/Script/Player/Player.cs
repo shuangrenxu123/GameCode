@@ -1,4 +1,5 @@
 using Fight;
+using UIWindow;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterActor))]
@@ -21,7 +22,7 @@ public class Player : MonoBehaviour
         Actor = GetComponent<CharacterActor>();
         StateManager = GetComponentInChildren<StateManger>();
         //backStep = GetComponentInChildren<BackStepCollider>();
-        UIManager.Instance.OpenUI<PlayerStateUI>(Resources.Load<PlayerStateUI>("playerState"));
+        UIManager.Instance.OpenUI<PlayerStateUI>(UnityEngine.Resources.Load<PlayerStateUI>("playerState"));
     }
     void Start()
     {

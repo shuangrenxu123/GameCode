@@ -19,7 +19,7 @@ public class WeaponHolderSlot : HolderSlot
             Destroy(currentModel);
         }
     }
-    public void LoadModel(ItemData Item)
+    public void LoadWeapon(WeaponItemData Item)
     {
         var weaponItem = Item;
         if (weaponItem == null)
@@ -32,7 +32,7 @@ public class WeaponHolderSlot : HolderSlot
             currentModel.SetActive(true);
             return;
         }
-        GameObject model = Instantiate((weaponItem as EquipItemData).modelPrefab);
+        GameObject model = Instantiate(weaponItem.modle);
         if (model != null)
         {
             if (parentOverride != null)

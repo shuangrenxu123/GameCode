@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UIWindow;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -38,7 +39,7 @@ public class PlayerStateUI : UIWindowBase
     {
         var go = buffs[buff.data.name];
         buffs.Remove(buff.data.name);
-        Destroy(go);
+        GameObject.Destroy(go);
     }
     #endregion
 

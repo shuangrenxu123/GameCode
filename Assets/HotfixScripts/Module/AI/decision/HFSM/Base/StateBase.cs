@@ -45,6 +45,7 @@ namespace HFSM
             transitions ??= new List<StateTransition>();
             transitions.Add(transition);
         }
+ 
         /// <summary>
         /// 当状态被移除的时候调用
         /// </summary>

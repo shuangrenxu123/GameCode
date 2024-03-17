@@ -1,4 +1,5 @@
 using TMPro;
+using UIWindow;
 
 public class PingPanel : UIWindowBase
 {

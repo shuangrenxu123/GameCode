@@ -1,3 +1,5 @@
+using UIWindow;
+
 public class TipsPanel : UIWindowBase
 {
     public override void OnCreate()

@@ -1,4 +1,5 @@
 using TMPro;
+using UIWindow;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -59,8 +60,16 @@ public class BagSelectPanel : UIWindowBase
 
     private void EquipmentClick(PointerEventData eventdata)
     {
-        var equipe= currentItem as EquipItemData;
-        equipe.Equip(inventory);
+
+        var equipe = currentItem as EquipItemData;
+        if(equipe != null)
+        {
+            equipe.Equip(inventory);
+        }
+        else
+        {
+            inventory.ReplaceRightWeapon(currentItem as WeaponItemData);
+        }
 
         UIManager.Instance.CloseUI<BagSelectPanel>();
     }

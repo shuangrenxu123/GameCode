@@ -8,7 +8,7 @@ using UnityEngine;
 public class PlayerInventory : MonoBehaviour
 {
     private Player player;
-    Equipmanager weaponManager;
+    Equipmanager EquipeManager;
     //BagPanel bagPanel;
     private ItemData rightWeapon;
     private ItemData leftWeapon;
@@ -23,7 +23,7 @@ public class PlayerInventory : MonoBehaviour
     #endregion
     private void Awake()
     {
-        weaponManager = GetComponent<Equipmanager>();
+        EquipeManager = GetComponent<Equipmanager>();
         player = GetComponent<Player>();
     }
     private void Start()
@@ -71,15 +71,16 @@ public class PlayerInventory : MonoBehaviour
     }
     public void ReplaceEquipe(EquipType type,Mesh mesh)
     {
-        weaponManager.ReplaceEquip(type, mesh);
+        EquipeManager.ReplaceEquip(type, mesh);
     }
-    public void ReplaceLeftWeapon()
+    public void ReplaceLeftWeapon(WeaponItemData data)
     {
 
+        EquipeManager.LoadWeaponOnSlot(data,true);
     }
-    public void ReplaceRightWeapon()
+    public void ReplaceRightWeapon(WeaponItemData data)
     {
-
+        EquipeManager.LoadWeaponOnSlot(data, false);
     }
     /// <summary>
     /// 放置道具

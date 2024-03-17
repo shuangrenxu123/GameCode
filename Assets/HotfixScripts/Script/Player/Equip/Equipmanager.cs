@@ -7,14 +7,14 @@ using UnityEngine;
 /// </summary>
 public class Equipmanager : MonoBehaviour
 {
-    public Player player;
-    public PlayerInventory inventory;
+    private Player player;
+    private PlayerInventory inventory;
     public WeaponHolderSlot leftSlot;
     public WeaponHolderSlot rightSlot;
     private CombatEntity PlayerCombatEntity => player.CombatEntity;
     DamageCollider leftCollider;
     DamageCollider rightCollider;
-    HandIK handIK;
+    //HandIK handIK;
 
     //Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;
     [SerializeField]
@@ -24,30 +24,17 @@ public class Equipmanager : MonoBehaviour
     {
         player = GetComponent<Player>();
         inventory = GetComponent<PlayerInventory>();
-        WeaponHolderSlot[] weaponHolderSlots = GetComponentsInChildren<WeaponHolderSlot>();
-
-        foreach (var i in weaponHolderSlots)
-        {
-            if (i.isLeftHandSlot)
-            {
-                leftSlot = i;
-            }
-            else if (i.isRightHandSlot)
-            {
-                rightSlot = i;
-            }
-        }
     }
-    public void LoadWeaponOnSlot(ItemData item, bool isLeft)
+    public void LoadWeaponOnSlot(WeaponItemData item, bool isLeft)
     {
         if (isLeft)
         {
-            leftSlot.LoadModel(item);
+            leftSlot.LoadWeapon(item);
             //LoadLeftWeaponDamageCollider();
         }
         else
         {
-            rightSlot.LoadModel(item);
+            rightSlot.LoadWeapon(item);
             //LoadRightWeaponDamageCollider();
         }
     }
@@ -63,8 +50,15 @@ public class Equipmanager : MonoBehaviour
     /// <param name="datas"></param>
     public void ReplaceEquip(EquipType qeuipType, Mesh datas)
     {
+        if (qeuipType == EquipType.helmet)
+        {
 
-        EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
+        }
+        else
+        {
+            EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
+        }
+
     }
     [Serializable]
     class EquipeWarpper

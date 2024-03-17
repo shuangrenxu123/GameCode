@@ -29,7 +29,6 @@ public class RollState : CharacterControlStateBase
     }
     public override void Enter()
     {
-        //todo ： 朝着面朝方向翻滚
         var targetDir = CharacterStateController.InputMovementReference;
         Quaternion targetDeltaRotation = Quaternion.FromToRotation(CharacterActor.Forward, targetDir);
         CharacterActor.SetYaw(targetDeltaRotation * CharacterActor.Forward);

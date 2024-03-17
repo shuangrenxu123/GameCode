@@ -1,3 +1,4 @@
+using UIWindow;
 using UnityEngine;
 [DefaultExecutionOrder(100)]
 public class CharacterUiController : MonoBehaviour
@@ -19,7 +20,7 @@ public class CharacterUiController : MonoBehaviour
         if (InputActions.OpenUI.Started)
         {
             CharacterBrain.EnableUIIpnut();
-            UIManager.Instance.OpenUI<GameUIMgr>(Resources.Load<GameUIMgr>("GameUI"));
+            UIManager.Instance.OpenUI<GameUIMgr>(UnityEngine.Resources.Load<GameUIMgr>("GameUI"));
 
         }
     }

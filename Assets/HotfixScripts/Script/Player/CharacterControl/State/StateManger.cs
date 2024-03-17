@@ -1,9 +1,9 @@
 using Animancer;
 using Audio;
+using CharacterControlerStateMachine;
 using HFSM;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.LowLevel;
 
 public class StateManger : MonoBehaviour
 {
@@ -59,8 +59,6 @@ public class StateManger : MonoBehaviour
 
     private void InitState()
     {
-
-
         controller = new CharacterStateController_New
         {
             CharacterActor = GetComponentInParent<CharacterActor>(),
@@ -70,6 +68,7 @@ public class StateManger : MonoBehaviour
         controller.ExternalReference = camera.transform;
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
         controller.database = dataBase;
+       
         var state = Animancer.States.GetOrCreate(lockMovementAnimator);
         var movementState = new MovementState
         {

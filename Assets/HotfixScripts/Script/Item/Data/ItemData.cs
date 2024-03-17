@@ -1,5 +1,4 @@
 using UnityEngine;
-[CreateAssetMenu(menuName = "Items/TestItem")]
 public class ItemData : ScriptableObject
 {
     public int id;

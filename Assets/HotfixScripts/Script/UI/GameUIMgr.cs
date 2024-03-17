@@ -1,7 +1,8 @@
 using Audio;
+using UIWindow;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using Resources = UnityEngine.Resources;
 public class GameUIMgr : UIWindowBase
 {
     [SerializeField]
@@ -15,17 +16,17 @@ public class GameUIMgr : UIWindowBase
     private void OpenNetworkPanel(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<NetPanel>(Resources.Load<NetPanel>("NetworkPanel"));
+        UIManager.Instance.OpenUI<NetPanel>(UnityEngine.Resources.Load<NetPanel>("NetworkPanel"));
     }
     private void OpenBagPanel(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<BagPanel>(Resources.Load<BagPanel>("BagPanel"));
+        UIManager.Instance.OpenUI<BagPanel>(UnityEngine.Resources.Load<BagPanel>("BagPanel"));
     }
     private void OpenEquipmentUI(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<EquipmentPanel>(Resources.Load<EquipmentPanel>("EquipmentPanel"));
+        UIManager.Instance.OpenUI<EquipmentPanel>(UnityEngine.Resources.Load<EquipmentPanel>("EquipmentPanel"));
     }
     private void CloseOtherPanel()
     {

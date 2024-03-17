@@ -1,182 +1,185 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-public class UIManager : ModuleSingleton<UIManager>, IModule
+namespace UIWindow
 {
-    private readonly List<IUIWindow> currentUIStack = new(20);
-    public int UIWindowCount => currentUIStack.Count;
-    public void OnCreate(object createParam)
+    public class UIManager : ModuleSingleton<UIManager>, IModule
     {
-
-    }
-    public void OnUpdate()
-    {
-        for (int i = 0; i < currentUIStack.Count; i++)
+        private readonly List<IUIWindow> currentUIStack = new(20);
+        public int UIWindowCount => currentUIStack.Count;
+        public void OnCreate(object createParam)
         {
-            currentUIStack[i].OnUpdate();
+
         }
-    }
-
-    public T OpenUI<T>(string localname) where T : UIWindowBase
-    {
-        var prefab = Resources.Load<UIWindowBase>(localname);
-        string name = typeof(T).FullName;
-        var window = GetWindow(name);
-        if (window != null)
+        public void OnUpdate()
         {
-            var topwindow = GetTopWindow();
-            if (topwindow != window)
+            for (int i = 0; i < currentUIStack.Count; i++)
             {
-                window.OnFocus();
-                Pop(window);
+                currentUIStack[i].OnUpdate();
+            }
+        }
+
+        public T OpenUI<T>(string localname) where T : UIWindowBase
+        {
+            var prefab = Resources.Load<UIWindowBase>(localname);
+            string name = typeof(T).FullName;
+            var window = GetWindow(name);
+            if (window != null)
+            {
+                var topwindow = GetTopWindow();
+                if (topwindow != window)
+                {
+                    window.OnFocus();
+                    Pop(window);
+                    Push(window);
+                }
+            }
+            else
+            {
+                window = UnityEngine.Object.Instantiate(prefab);
                 Push(window);
-            }
-        }
-        else
-        {
-            window = UnityEngine.Object.Instantiate(prefab);
-            Push(window);
-            window.OnCreate();
+                window.OnCreate();
 
-        }
-
-        foreach (var ui in currentUIStack)
-        {
-            if (ui.WindowName == window.WindowName)
-            {
-                continue;
             }
-            ui.OnFocusOtherUI();
-        }
-        return window as T;
-    }
-    public T OpenUI<T>(UIWindowBase prefab) where T : UIWindowBase
-    {
-        string name = prefab.WindowName;
-        var window = GetWindow(name);
-        if (window != null)
-        {
-            var topwindow = GetTopWindow();
-            if (topwindow != window)
+
+            foreach (var ui in currentUIStack)
             {
-                Pop(window);
-                window.OnFocus();
+                if (ui.WindowName == window.WindowName)
+                {
+                    continue;
+                }
+                ui.OnFocusOtherUI();
+            }
+            return window as T;
+        }
+        public T OpenUI<T>(UIWindowBase prefab) where T : UIWindowBase
+        {
+            string name = prefab.WindowName;
+            var window = GetWindow(name);
+            if (window != null)
+            {
+                var topwindow = GetTopWindow();
+                if (topwindow != window)
+                {
+                    Pop(window);
+                    window.OnFocus();
+                    Push(window);
+                }
+            }
+            else
+            {
+                window = UnityEngine.Object.Instantiate(prefab);
                 Push(window);
+                window.OnCreate();
+
             }
-        }
-        else
-        {
-            window = UnityEngine.Object.Instantiate(prefab);
-            Push(window);
-            window.OnCreate();
 
-        }
-
-        foreach (var ui in currentUIStack)
-        {
-            if (ui.WindowName == window.WindowName)
+            foreach (var ui in currentUIStack)
             {
-                continue;
-            }
-            ui.OnFocusOtherUI();
+                if (ui.WindowName == window.WindowName)
+                {
+                    continue;
+                }
+                ui.OnFocusOtherUI();
 
+            }
+            return window as T;
         }
-        return window as T;
-    }
-    public T GetUIWindow<T>() where T : UIWindowBase
-    {
-        foreach (var ui in currentUIStack)
+        public T GetUIWindow<T>() where T : UIWindowBase
         {
-            if (ui.WindowName == typeof(T).FullName)
+            foreach (var ui in currentUIStack)
             {
-                return ui as T;
+                if (ui.WindowName == typeof(T).FullName)
+                {
+                    return ui as T;
+                }
             }
-        }
 
-        return null;
-    }
-    public void CloseUI<T>() where T : UIWindowBase => CloseUI(typeof(T));
-    public void CloseUI(Type t)
-    {
-        string name = t.FullName;
-        var window = GetWindow(name);
-        if (window != null)
-        {
-            window.OnDelete();
-            Pop(window);
-
-            GameObject.Destroy(window.gameObject);
-        }
-    }
-    public bool HasUI<T>() where T : UIWindowBase => IsContains(typeof(T).FullName);
-    public bool IsTopWindow(Type t)
-    {
-        var top = GetTopWindow();
-        if (top.WindowName == t.FullName)
-        {
-            return true;
-        }
-        return false;
-
-    }
-    public bool IsTopWindow<T>() where T : UIWindowBase => IsTopWindow(typeof(T));
-
-    public UIWindowBase GetTopWindow()
-    {
-        if (currentUIStack.Count != 0)
-            return currentUIStack[^1] as UIWindowBase;
-        else
-        {
             return null;
         }
-    }
-    //==========private============================
-
-    private bool IsContains(string name)
-    {
-        foreach (var ui in currentUIStack)
+        public void CloseUI<T>() where T : UIWindowBase => CloseUI(typeof(T));
+        public void CloseUI(Type t)
         {
-            if (ui.WindowName == name)
+            string name = t.FullName;
+            var window = GetWindow(name);
+            if (window != null)
+            {
+                window.OnDelete();
+                Pop(window);
+
+                GameObject.Destroy(window.gameObject);
+            }
+        }
+        public bool HasUI<T>() where T : UIWindowBase => IsContains(typeof(T).FullName);
+        public bool IsTopWindow(Type t)
+        {
+            var top = GetTopWindow();
+            if (top.WindowName == t.FullName)
             {
                 return true;
             }
-        }
+            return false;
 
-        return false;
-    }
-    private UIWindowBase GetWindow(string name)
-    {
-        foreach (var ui in currentUIStack)
+        }
+        public bool IsTopWindow<T>() where T : UIWindowBase => IsTopWindow(typeof(T));
+
+        public UIWindowBase GetTopWindow()
         {
-            if (ui.WindowName == name)
+            if (currentUIStack.Count != 0)
+                return currentUIStack[^1] as UIWindowBase;
+            else
             {
-                return ui as UIWindowBase;
+                return null;
             }
         }
+        //==========private============================
 
-        return null;
-    }
-    private void Push(UIWindowBase window)
-    {
-        if (IsContains(window.WindowName))
+        private bool IsContains(string name)
         {
-            return;
+            foreach (var ui in currentUIStack)
+            {
+                if (ui.WindowName == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+        private UIWindowBase GetWindow(string name)
+        {
+            foreach (var ui in currentUIStack)
+            {
+                if (ui.WindowName == name)
+                {
+                    return ui as UIWindowBase;
+                }
+            }
+
+            return null;
+        }
+        private void Push(UIWindowBase window)
+        {
+            if (IsContains(window.WindowName))
+            {
+                return;
+            }
+
+            if (currentUIStack.Count == 0)
+            {
+                window.canves.sortingOrder = 0;
+
+            }
+            else
+            {
+                window.canves.sortingOrder = currentUIStack[^1].canves.sortingOrder + 10;
+            }
+            currentUIStack.Add(window);
+        }
+        private void Pop(UIWindowBase window)
+        {
+            currentUIStack.Remove(window);
         }
 
-        if (currentUIStack.Count == 0)
-        {
-            window.canves.sortingOrder = 0;
-
-        }
-        else
-        {
-            window.canves.sortingOrder = currentUIStack[^1].canves.sortingOrder + 10;
-        }
-        currentUIStack.Add(window);
     }
-    private void Pop(UIWindowBase window)
-    {
-        currentUIStack.Remove(window);
-    }
-
 }

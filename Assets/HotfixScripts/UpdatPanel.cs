@@ -1,3 +1,4 @@
+using UIWindow;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class UpdatPanel : UIWindowBase
@@ -41,18 +42,4 @@ public class UpdatPanel : UIWindowBase
         hotUpdater?.Update();
     }
 
-    public override void OnDelete()
-    {
-
-    }
-
-    public override void OnFocus()
-    {
-
-    }
-
-    public override void OnFocusOtherUI()
-    {
-
-    }
 }
