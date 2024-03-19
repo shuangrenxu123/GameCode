@@ -781,9 +781,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractableType: 6
   ItemDataConfig:
-  - list:
-    - Key: {fileID: 11400000, guid: b5ce82df308407c44ac13f2d8604b90e, type: 2}
-      Value: 1
+  - m_pairs:
+    - m_key: {fileID: 11400000, guid: e8bc78f3230c02c449ef7c5a20a0bdc4, type: 2}
+      m_value: 3
 --- !u!65 &114024743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -883,9 +883,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractableType: 6
   ItemDataConfig:
-  - list:
-    - Key: {fileID: 11400000, guid: 99bf729d6d997934a9f665d38390c0a1, type: 2}
-      Value: 1
+  - m_pairs:
+    - m_key: {fileID: 11400000, guid: 99bf729d6d997934a9f665d38390c0a1, type: 2}
+      m_value: 1
+    - m_key: {fileID: 11400000, guid: 9a57e4bf3422a5e498aa27f474ac16b4, type: 2}
+      m_value: 1
 --- !u!65 &133335251
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1456,9 +1458,9 @@ RectTransform:
   - {fileID: 630571560}
   m_Father: {fileID: 1526994519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -165}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &262400496
@@ -5690,9 +5692,9 @@ RectTransform:
   - {fileID: 1662898355}
   m_Father: {fileID: 1526994519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -240}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1499798251
@@ -6834,9 +6836,9 @@ RectTransform:
   - {fileID: 2021302439}
   m_Father: {fileID: 1526994519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -15}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1745275616
@@ -7476,9 +7478,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractableType: 6
   ItemDataConfig:
-  - list:
-    - Key: {fileID: 11400000, guid: e8bc78f3230c02c449ef7c5a20a0bdc4, type: 2}
-      Value: 3
+  - m_pairs:
+    - m_key: {fileID: 11400000, guid: 927a61f26419a7a4185a517c87fde4f9, type: 2}
+      m_value: 1
 --- !u!65 &1937409922
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7534,9 +7536,9 @@ RectTransform:
   - {fileID: 45490409}
   m_Father: {fileID: 1526994519}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -90}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1945485319
@@ -9052,9 +9054,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   InteractableType: 6
   ItemDataConfig:
-  - list:
-    - Key: {fileID: 11400000, guid: 9a57e4bf3422a5e498aa27f474ac16b4, type: 2}
-      Value: 1
+  - m_pairs:
+    - m_key: {fileID: 11400000, guid: 9a57e4bf3422a5e498aa27f474ac16b4, type: 2}
+      m_value: 2
 --- !u!65 &1992214166
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -10906,8 +10908,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
+      propertyPath: UseRootMotion
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: interpolaterActor
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: constraintRotation
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
       propertyPath: CanPushDynamicRigidbodies
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: oneWayPlatformsLayerMask.m_Bits
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: useContinuousCollisionDetection
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6860333679610632849, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}

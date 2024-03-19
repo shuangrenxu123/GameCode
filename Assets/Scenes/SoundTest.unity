@@ -585,7 +585,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2106019512}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: AudioTest, Assembly-CSharp
         m_MethodName: Test
         m_Mode: 1
@@ -781,8 +781,6 @@ GameObject:
   - component: {fileID: 2106019515}
   - component: {fileID: 2106019514}
   - component: {fileID: 2106019513}
-  - component: {fileID: 2106019512}
-  - component: {fileID: 2106019511}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -790,34 +788,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &2106019511
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106019510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8edb3e8c61f4447b94803bcfd61666, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  clipGroups:
-  - {fileID: 11400000, guid: 1d6a53e5f26a4064db8edb2bf7f7c5e3, type: 2}
-  looping: 0
-  layer: 0
---- !u!114 &2106019512
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2106019510}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dbb7b0079e429ff4aadd8698f29855e0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2106019513
 MonoBehaviour:
   m_ObjectHideFlags: 0

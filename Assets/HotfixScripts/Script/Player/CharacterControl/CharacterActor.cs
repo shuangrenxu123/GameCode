@@ -2,18 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
+using VInspector;
 [RequireComponent(typeof(CharacterBody))]
 [DefaultExecutionOrder(10)]
 public class CharacterActor : PhysicsActor
 {
     #region 相关变量
-    [Header("单项平台设置")]
+    [Tab("单项平台设置")]
     public LayerMask oneWayPlatformsLayerMask = 0;
 
     [Range(0, 179f)]
     public float oneWayPlayformsValidArc = 175;
 
-    [Header("stable")]
+    [Tab("stable")]
     [Tooltip("坡度限制,只有当地面坡度必须小于或等于此值的时候才能保持稳定， 角度的计算是使用地面法线来计算，即可以爬上倾斜度更高的坡")]
     public float slopeLimit = 55f;
     [Tooltip("没有被此图层标记的对象将会被视为不稳定对象")]
@@ -25,13 +26,13 @@ public class CharacterActor : PhysicsActor
     [Tooltip("这可以防止角色跨过不稳定的表面，如果不需要这种级别的精度可以禁用他")]
     public bool preventBadSteps = true;
 
-    [Header("Step handing")]
+    [Tab("Step handing")]
     [Tooltip("应用于Character底部的偏移距离。更高的偏移量意味着更多的可步行表面,即可以上更高的楼梯")]
     public float stepUpDistance = 0.5f;
     [Tooltip("Character能检测地面的距离，使用该变量将Character固定在地面上")]
     public float stepDownDistance = 0.5f;
 
-    [Header("Grounding")]
+    [Tab("Grounding")]
     [Tooltip("“防止Character进入接地状态（IsGrounded 将是false")]
     public bool alwaysNotGrounded = false;
 
@@ -50,7 +51,7 @@ public class CharacterActor : PhysicsActor
     [Tooltip("如果角色的垂直速度为正，则字符是否检测到新的（和有效的）地面")]
     public bool detectGroundWhileAscending = false;
 
-    [Header("Dynamic ground")]
+    [Tab("Dynamic ground")]
     [Tooltip("角色是否应该受到地面运动的影响")]
     public bool supportDynamicGround = true;
     public LayerMask dynamicGroundLayerMask = -1;
@@ -73,7 +74,7 @@ public class CharacterActor : PhysicsActor
     [Tooltip("继承动态地面速度的系数（转化为垂直速度）")]
     public float inheritedGroundVerticalVelocityMultiplier = 1f;
 
-    [Header("Velocity")]
+    [Tab("Velocity")]
     public bool slideOnWalls = true;
 
     [SerializeField]
@@ -83,7 +84,7 @@ public class CharacterActor : PhysicsActor
     public CharacterVelocityMode stablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
     public CharacterVelocityMode unstablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
 
-    [Header("Rotation")]
+    [Tab("Rotation")]
     [Tooltip("该组件是否需要重新定义角色的坐标轴")]
     public bool constraintRotation = true;
 
@@ -113,7 +114,7 @@ public class CharacterActor : PhysicsActor
     public VerticalAlignmentSettings.VerticalReferenceMode upDirectionReferenceMode = VerticalAlignmentSettings.VerticalReferenceMode.Away;
 
 
-    [Header("Physics")]
+    [Tab("Physics")]
     public bool CanPushDynamicRigidbodies = true;
     [Condition("CanPushDynamicRigidbodies", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public LayerMask pushableRigidbodyLayerMask = -1;

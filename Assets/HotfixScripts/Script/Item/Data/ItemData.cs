@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+[Serializable]
 public class ItemData : ScriptableObject
 {
     public int id;
