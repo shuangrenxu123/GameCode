@@ -1,22 +1,32 @@
+
+using UnityEditor.MPE;
 using UnityEngine;
 namespace Fight
 {
     public class DamageAction : CombatAction
     {
-        public int damage;
+        public IntCollector damage;
         public DamageAction(CombatEntity creater, CombatEntity[] targets)
         {
             Creator = creater;
             Target = targets;
+            damage = new IntCollector(PropertySourceType.Self);
         }
         public override void Apply(int baseValue)
         {
+            //int damage = baseValue;
+            damage.AddInt(new IntNumber(baseValue,PropertySourceType.Self));
             foreach (var target in Target)
             {
-                damage = baseValue;
                 PreProcess(Creator, target);
+                Process(Creator,target);
                 PostProcess(Creator, target);
             }
+        }
+
+        public void Process(CombatEntity c, CombatEntity t)
+        {
+            t.hp.Minus(damage.Value);
         }
         /// <summary>
         /// 后置行为

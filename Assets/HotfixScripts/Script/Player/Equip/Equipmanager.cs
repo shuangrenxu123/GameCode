@@ -12,14 +12,15 @@ public class Equipmanager : MonoBehaviour
     public WeaponHolderSlot leftSlot;
     public WeaponHolderSlot rightSlot;
     private CombatEntity PlayerCombatEntity => player.CombatEntity;
-    DamageCollider leftCollider;
-    DamageCollider rightCollider;
+    public DamageCollider leftCollider;
+    public DamageCollider rightCollider;
     //HandIK handIK;
 
     //Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;
     [SerializeField]
     List<EquipeWarpper> EquipRenders = new List<EquipeWarpper>(8);
-
+    [SerializeField]
+    List<HeadWarpper> headWarppers = new List<HeadWarpper>(3);
     private void Awake()
     {
         player = GetComponent<Player>();
@@ -29,12 +30,12 @@ public class Equipmanager : MonoBehaviour
     {
         if (isLeft)
         {
-            leftSlot.LoadWeapon(item);
+            leftCollider = leftSlot.LoadWeapon(item).GetComponentInChildren<DamageCollider>();
             //LoadLeftWeaponDamageCollider();
         }
         else
         {
-            rightSlot.LoadWeapon(item);
+            rightCollider = rightSlot.LoadWeapon(item).GetComponentInChildren<DamageCollider>();
             //LoadRightWeaponDamageCollider();
         }
     }
@@ -52,18 +53,27 @@ public class Equipmanager : MonoBehaviour
     {
         if (qeuipType == EquipType.helmet)
         {
+            foreach(var h in headWarppers)
+            {
+                h.Mesh.gameObject.SetActive(false);
+            }
+            EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.gameObject.SetActive(true);
+        }
 
-        }
-        else
-        {
-            EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
-        }
+        EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
+        
 
     }
     [Serializable]
     class EquipeWarpper
     {
         public EquipType EquipType;
+        public SkinnedMeshRenderer Mesh;
+    }
+    [Serializable]
+    class HeadWarpper
+    {
+        public Decoration type;
         public SkinnedMeshRenderer Mesh;
     }
 }

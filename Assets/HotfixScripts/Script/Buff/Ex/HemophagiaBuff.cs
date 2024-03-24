@@ -18,7 +18,7 @@ public class HemophagiaBuff : BuffBase
         var o = obj as DamageAction;
         if (o != null)
         {
-            new RegenerationAction(o.Creator, new CombatEntity[] { o.Creator }).Apply((int)(o.damage * 0.5));
+            //new RegenerationAction(o.Creator, new CombatEntity[] { o.Creator }).Apply((int)(o.damage * 0.5));
         }
     }
     public override void OnDestory()

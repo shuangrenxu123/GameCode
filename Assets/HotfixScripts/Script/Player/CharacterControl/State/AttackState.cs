@@ -120,7 +120,7 @@ public class AttackState : CharacterControlStateBase
                     new AnimancerEvent(clip.ComboTime.x, CanDoCombo),
                     new AnimancerEvent(clip.ComboTime.y, EndDoCombo),
                     new AnimancerEvent(clip.HitTime.x,OpenWeaponCollider),
-                    new AnimancerEvent(clip.HitTime.x,CloseWeaponCollider),
+                    new AnimancerEvent(clip.HitTime.y,CloseWeaponCollider),
                 };
                 lightEvents.Add(sequeue);
             }
@@ -147,23 +147,21 @@ public class AttackState : CharacterControlStateBase
 
     #region Event Function
     private void CanDoCombo()
-    {
-        
+    {   
         canDoCombo = true;
     }
     private void EndDoCombo()
     {
-       
-
         canDoCombo = false;
     }
     private void OpenWeaponCollider()
     {
-       
+        CharacterStateController.stateManger.player.Inventory.EquipeManager.rightCollider.EnableDamageCollider();
     }
     private void CloseWeaponCollider()
     {
-      
+        CharacterStateController.stateManger.player.Inventory.EquipeManager.rightCollider.DisableDamageCollider();
+
     }
     #endregion
 }

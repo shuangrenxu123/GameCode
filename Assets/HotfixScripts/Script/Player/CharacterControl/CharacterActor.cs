@@ -8,7 +8,7 @@ using VInspector;
 public class CharacterActor : PhysicsActor
 {
     #region 相关变量
-    [Tab("单项平台设置")]
+    [Tab("OneWayPlatform")]
     public LayerMask oneWayPlatformsLayerMask = 0;
 
     [Range(0, 179f)]
@@ -1041,6 +1041,7 @@ public class CharacterActor : PhysicsActor
     {
         ApplyWeight(GroundVelocity);
         VerticalVelocity = Vector3.zero;
+        //根据输入的速度值来推算大致位移，不考虑障碍物的情况
         Vector3 displacement = CustomUtilities.ProjectOnTangent(
             CustomUtilities.Multiply(Velocity, dt),
             GroundStableNormal,
@@ -1353,8 +1354,9 @@ public class CharacterActor : PhysicsActor
         while (iteration < CharacterConstants.MaxSlideIterations)
         {
             iteration++;
+            //身体发射射线检测障碍物
             CollisionInfo collisionInfo = CharacterCollisions.CastBody(position, displacement, useFullBody ? 0f : StepOffset, in filter, false, _collisionHitFilter);
-
+            //如果目标位移没有障碍物说明可以直接过去，否则需要计算该走多少
             if (collisionInfo.hitInfo.hit)
             {
                 if (CheckOneWayPlatformLayerMask(collisionInfo))

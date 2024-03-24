@@ -1,3 +1,4 @@
+using Audio;
 using System;
 using UnityEngine;
 
@@ -5,6 +6,10 @@ namespace Fight
 {
     public class CombatEntity : MonoBehaviour
     {
+        [SerializeField]
+        AudioClip hit;
+        [SerializeField]
+        private Animator Animator;
         public HealthPoint hp;
         public ActionPointManager ActionPointManager;
         public CombatNumberBox numberBox;
@@ -49,9 +54,35 @@ namespace Fight
         /// </summary>
         /// <param name="damage"></param>
         /// <param name="animatorName"></param>
-        public virtual void TakeDamage(int damage, string animatorName)
+        public virtual void TakeDamageFx(float dir)
         {
-
+            ChooseWhichDirectionDamageCameFrom(dir);
+        }
+        protected virtual void ChooseWhichDirectionDamageCameFrom(float direction)
+        {
+            string currentDamageAnimation = null;
+            if (direction >= 145 && direction <= 180)
+            {
+                currentDamageAnimation = "Damage_Forward_01";
+            }
+            else if (direction <= -145 && direction >= -180)
+            {
+                currentDamageAnimation = "Damage_Forward_01";
+            }
+            else if (direction >= -45 && direction <= 45)
+            {
+                currentDamageAnimation = "Damage_Back_01";
+            }
+            else if (direction >= -144 && direction <= -45)
+            {
+                currentDamageAnimation = "Damage_Left_01";
+            }
+            else if (direction >= 45 && direction <= 144)
+            {
+                currentDamageAnimation = "Damage_Right_01";
+            }
+            Animator.Play(currentDamageAnimation);
+            AudioManager.Instance.PlayAudio(hit,AudioLayer.Sound);
         }
     }
 }

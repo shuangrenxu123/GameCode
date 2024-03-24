@@ -1,23 +1,28 @@
 using Fight;
+using NaughtyAttributes;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
 {
+    [SerializeField]
     Collider damageCollider;
+    [SerializeField]
     CombatEntity entity;
-    //WeaponItemData weaponItem;
+    WeaponItemData weaponItem;
     List<Enemy> characterDamagedDuringThisCalculation;
-    public string currentDamageAnimation;
+    private string currentDamageAnimation;
     LayerMask Enemylayer;
+    [Tag]
     public string EnemyTag;
     private void Awake()
     {
+        entity = GetComponentInParent<CombatEntity>();
         damageCollider = GetComponent<Collider>();
-        //damageCollider.gameObject.SetActive(true);
-        //damageCollider.isTrigger = true;
-        //damageCollider.enabled = false;
+        damageCollider.isTrigger = true;
+        damageCollider.enabled = false;
         characterDamagedDuringThisCalculation = new List<Enemy>();
+        //todo 后期取消硬编码的写法，交由武器持有者判断
         Enemylayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
     }
@@ -25,10 +30,11 @@ public class DamageCollider : MonoBehaviour
     {
         entity = GetComponentInParent<CombatEntity>();
         damageCollider.enabled = true;
-        //characterDamagedDuringThisCalculation.Clear();
+ 
     }
     public void DisableDamageCollider()
     {
+        characterDamagedDuringThisCalculation.Clear();
         damageCollider.enabled = false;
     }
     private void OnTriggerEnter(Collider other)
@@ -40,36 +46,13 @@ public class DamageCollider : MonoBehaviour
             {
                 return;
             }
-            //characterDamagedDuringThisCalculation.Add(enemy);
+            characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            //float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
-            //ChooseWhichDirectionDamageCameFrom(directionHitFrom);
-            //new DamageAction(entity, new CombatEntity[] { target }).Apply(10);
+            float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
+            new DamageAction(entity, new CombatEntity[] { target }).Apply(10);
+            target.TakeDamageFx(directionHitFrom);
         }
         Debug.Log(other.name);
-    }
-    protected virtual void ChooseWhichDirectionDamageCameFrom(float direction)
-    {
-        if (direction >= 145 && direction <= 180)
-        {
-            currentDamageAnimation = "Damage_Forward_01";
-        }
-        else if (direction <= -145 && direction >= -180)
-        {
-            currentDamageAnimation = "Damage_Forward_01";
-        }
-        else if (direction >= -45 && direction <= 45)
-        {
-            currentDamageAnimation = "Damage_Back_01";
-        }
-        else if (direction >= -144 && direction <= -45)
-        {
-            currentDamageAnimation = "Damage_Left_01";
-        }
-        else if (direction >= 45 && direction <= 144)
-        {
-            currentDamageAnimation = "Damage_Right_01";
-        }
     }
 }

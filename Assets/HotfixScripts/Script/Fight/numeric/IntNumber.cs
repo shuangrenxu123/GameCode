@@ -2,11 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IntNumber 
+public class IntNumber : Number
 {
-    int value;
-    public IntNumber(int v)
+    public IntNumber(int v,PropertySourceType type)
     {
-        value = v;
+        Value = v;
+        this.Type = type;
     }
+}
+public enum PropertySourceType
+{
+    Equipe,
+    Buff,
+    Self,//¡Ÿ ± ˝÷µ
 }

@@ -1,10 +1,11 @@
+using System;
 using UnityEngine;
 /// <summary>
 /// 血条组件
 /// </summary>
 public class HealthPoint
 {
-    //private StateUI stateui;
+    public event Action<int, int> OnHPChange; 
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
     public void Init(bool isPlayer)
@@ -26,6 +27,7 @@ public class HealthPoint
     public void Minus(int value)
     {
         Value = Mathf.Max(0, Value - value);
+        OnHPChange?.Invoke(Value,MaxValue);
     }
     /// <summary>
     /// 加血
@@ -34,6 +36,7 @@ public class HealthPoint
     public void Add(int value)
     {
         Value = Mathf.Min(MaxValue, Value + value);
+        OnHPChange?.Invoke(Value, MaxValue);
     }
     /// <summary>
     /// 返回当前生命百分比

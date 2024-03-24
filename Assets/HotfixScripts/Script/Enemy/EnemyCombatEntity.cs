@@ -1,4 +1,6 @@
 using Fight;
+using System;
+using UnityEngine;
 
 public class EnemyCombatEntity : CombatEntity
 {
@@ -13,28 +15,16 @@ public class EnemyCombatEntity : CombatEntity
         hp.Init(false);
         numberBox.Init();
         hp.SetMaxValue(h);
+        hp.OnHPChange += HPChange;
     }
-    public override void TakeDamage(int damage, string animatorName)
-    {
-        hp.Minus(damage);
-        if (animatorName == null || animatorName == "")
-        {
-        }
-        else
-        {
-            //animator.PlayTargetAnimation(animatorName, false);
-        }
-        if (enemy.isDead)
-        {
-            return;
-        }
-        if (hp.Value <= 0)
-        {
-            //animator.PlayTargetAnimation("dead", false);
-            enemy.isDead = true;
-            return;
-        }
 
+    private void HPChange(int arg1, int arg2)
+    {
+        Debug.Log(arg1);
+        if (arg1 <= 0)
+        {
+            Debug.Log(name + "is Dead");
+        }
     }
 }
 

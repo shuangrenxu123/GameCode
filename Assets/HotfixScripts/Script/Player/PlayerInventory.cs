@@ -8,10 +8,9 @@ using UnityEngine;
 public class PlayerInventory : MonoBehaviour
 {
     private Player player;
-    Equipmanager EquipeManager;
-    //BagPanel bagPanel;
-    private ItemData rightWeapon;
-    private ItemData leftWeapon;
+    public Equipmanager EquipeManager { get; private set; }
+    public ItemData rightWeapon;
+    public ItemData leftWeapon;
     private ConsumableItemData currentItem = null;
     private bool CanReplace = true;
 
@@ -20,6 +19,8 @@ public class PlayerInventory : MonoBehaviour
     #region Event 
     public event Action<ItemData, int> OnItemAdd;
     public event Action<ItemData, int> OnItemRemove;
+    public event Action<WeaponItemData> OnRightWeaponLoad;
+    public event Action<WeaponItemData> OnLeftWeaponLoad;
     #endregion
     private void Awake()
     {
@@ -75,12 +76,14 @@ public class PlayerInventory : MonoBehaviour
     }
     public void ReplaceLeftWeapon(WeaponItemData data)
     {
-
         EquipeManager.LoadWeaponOnSlot(data,true);
+        OnLeftWeaponLoad?.Invoke(data);
+
     }
     public void ReplaceRightWeapon(WeaponItemData data)
     {
         EquipeManager.LoadWeaponOnSlot(data, false);
+        OnRightWeaponLoad?.Invoke(data);
     }
     /// <summary>
     /// 放置道具

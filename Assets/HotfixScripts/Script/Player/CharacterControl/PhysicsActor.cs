@@ -8,7 +8,7 @@ using VInspector;
 public abstract class PhysicsActor : MonoBehaviour
 {
     [Tab("Rigidbody")]
-    //--------------------------------未知
+    //是否启用插值
     public bool interpolaterActor = true;
     [Tooltip("是否启用连续检测，避免穿墙的情况")]
     public bool useContinuousCollisionDetection = true;
@@ -431,7 +431,7 @@ public abstract class PhysicsActor : MonoBehaviour
             return;
         }
 
-        //由于在更新调用期间由于插值过程，变换组件已被修改，这将影响主体位置/旋转（刚体）。
+        //由于在更新调用期间由于插值过程，transform组件已被修改，这将影响主体位置/旋转（刚体）。
         //使用以前的物理场框架目标数据重新定义刚体属性非常重要。
         Position = startingPosition = targetPosition;
         Rotation = startingRotation = targetRotation;
@@ -463,7 +463,9 @@ public abstract class PhysicsActor : MonoBehaviour
             ResetInterpolationRotation();
         }
     }
-
+    /// <summary>
+    /// 更新插值的目标值
+    /// </summary>
     public void UpdateInterpolationTargets()
     {
         if (!interpolaterActor)
