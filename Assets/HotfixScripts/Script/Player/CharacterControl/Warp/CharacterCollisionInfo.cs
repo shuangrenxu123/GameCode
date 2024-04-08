@@ -37,10 +37,10 @@ public struct CharacterCollisionInfo
     public GameObject groundObject;
     public int groundLayer;
     public Collider groundCollider3D;
-    public Collider2D groundCollider2D;
+    //public Collider2D groundCollider2D;
 
     public Rigidbody groundRigidbody3D;
-    public Rigidbody2D groundRigidbody2D;
+    //public Rigidbody2D groundRigidbody2D;
 
     public void Reset()
     {
@@ -50,7 +50,6 @@ public struct CharacterCollisionInfo
     }
     public void ResetGroundInfo()
     {
-        groundCollider2D = null;
         groundCollider3D = null;
         groundLayer = 0;
         groundObject = null;
@@ -87,16 +86,16 @@ public struct CharacterCollisionInfo
         {
             isOnEdge = collisionInfo.isAnEdge;
             edgeAngle = collisionInfo.edgeAngle;
+
             groundContactNormal = collisionInfo.contactSlopeAngle < 90f ? collisionInfo.hitInfo.normal : characterActor.Up;
             groundContactPoint = collisionInfo.hitInfo.point;
             groundSlopeAngle = Vector3.Angle(characterActor.Up, groundStableNormal);
+            groundStableNormal = characterActor.GetGroundSlopeNormal(collisionInfo);
+
 
             groundObject = collisionInfo.hitInfo.transform.gameObject;
             groundLayer = groundObject.layer;
-            groundCollider2D = collisionInfo.hitInfo.collider2D;
             groundCollider3D = collisionInfo.hitInfo.collider3D;
-
-            groundRigidbody2D = collisionInfo.hitInfo.rigidbody2D;
             groundRigidbody3D = collisionInfo.hitInfo.rigidbody3D;
 
             Vector3 pointVelocity = Vector3.zero;

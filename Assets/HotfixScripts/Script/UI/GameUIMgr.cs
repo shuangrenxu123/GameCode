@@ -1,4 +1,5 @@
 using Audio;
+using Resources;
 using UIWindow;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -16,17 +17,20 @@ public class GameUIMgr : UIWindowBase
     private void OpenNetworkPanel(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<NetPanel>(UnityEngine.Resources.Load<NetPanel>("NetworkPanel"));
+        var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "NetworkPanel.prefab");
+        UIManager.Instance.OpenUI<NetPanel>(ui.GetComponent<NetPanel>());
     }
     private void OpenBagPanel(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<BagPanel>(UnityEngine.Resources.Load<BagPanel>("BagPanel"));
+        var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "BagPanel.prefab");
+        UIManager.Instance.OpenUI<BagPanel>(ui.GetComponent<BagPanel>());
     }
     private void OpenEquipmentUI(PointerEventData eventData)
     {
         CloseOtherPanel();
-        UIManager.Instance.OpenUI<EquipmentPanel>(UnityEngine.Resources.Load<EquipmentPanel>("EquipmentPanel"));
+        var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "EquipmentPanel.prefab");
+        UIManager.Instance.OpenUI<EquipmentPanel>(ui.GetComponent<EquipmentPanel>());
     }
     private void CloseOtherPanel()
     {

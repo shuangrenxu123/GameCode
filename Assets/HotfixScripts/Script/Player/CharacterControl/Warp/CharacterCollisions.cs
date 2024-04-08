@@ -1,5 +1,4 @@
 using UnityEngine;
-
 public abstract class CharacterCollisions : MonoBehaviour
 {
     public HitInfo[] Hitbuffer { get; private set; } = new HitInfo[20];
@@ -41,7 +40,6 @@ public abstract class CharacterCollisions : MonoBehaviour
     public CollisionInfo CheckForGround(Vector3 position, float stepOffset, float stepDownDistance, in HitInfoFilter hitInfoFilter, HitFilterDelegate hitFilter = null)
     {
         float preDistance = stepOffset + BackstepDistance;
-        //displacement : Î»ÒÆ
         Vector3 displacement = CustomUtilities.Multiply(-CharacterActor.Up, Mathf.Max(CharacterConstants.GroundCheckDistance, stepDownDistance));
         Vector3 origin = CharacterActor.GetBottomCenter(position, preDistance);
         Vector3 castDisplacement = displacement + CustomUtilities.Multiply(Vector3.Normalize(displacement), preDistance + ContactOffset);
@@ -127,6 +125,7 @@ public abstract class CharacterCollisions : MonoBehaviour
     {
         if (hitInfo.hit)
         {
+
             Vector3 castDirection = Vector3.Normalize(castDisplacement);
 
             float closestDistance = hitInfo.distance - preDistance - ContactOffset;

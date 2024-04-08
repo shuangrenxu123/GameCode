@@ -41,9 +41,9 @@ public class SkillRunner
             OnFinish();
         }
     }
-    public void LoadConfig(string name, SkillTrigger trigger)
+    public void LoadConfig(TimelineAsset playable, SkillTrigger trigger)
     {
-        TimelineAsset playable = Resources.Load<TimelineAsset>(name);
+        //TimelineAsset playable = Resources.Load<TimelineAsset>(name);
         var tracks = playable.GetOutputTracks();
         foreach (var track in tracks)
         {

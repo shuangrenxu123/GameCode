@@ -12,7 +12,7 @@ public abstract class PhysicsActor : MonoBehaviour
     public bool interpolaterActor = true;
     [Tooltip("是否启用连续检测，避免穿墙的情况")]
     public bool useContinuousCollisionDetection = true;
-
+    public bool Is2D = false;
     [Tab("Root Motion")]
     //在爬梯子等情况下我们会需要用到rootmotion
     [Tooltip("是否启用了RootMotion")]
@@ -431,8 +431,7 @@ public abstract class PhysicsActor : MonoBehaviour
             return;
         }
 
-        //由于在更新调用期间由于插值过程，transform组件已被修改，这将影响主体位置/旋转（刚体）。
-        //使用以前的物理场框架目标数据重新定义刚体属性非常重要。
+        //取消Rigibody所带来的位移
         Position = startingPosition = targetPosition;
         Rotation = startingRotation = targetRotation;
 

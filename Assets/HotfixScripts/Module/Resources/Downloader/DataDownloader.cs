@@ -102,15 +102,20 @@ namespace Downloader
                 {
                     response.EnsureSuccessStatusCode();
                     if (!response.IsSuccessStatusCode)
+                    {
+                        Debug.LogError((int)response.StatusCode + " " + response.StatusCode);
                         throw new Exception("HttpStatusCode : " + (int)response.StatusCode + " " + response.StatusCode);
+
+                    }
                     DownloadTotalBytesByHeaders = response.Content.Headers.ContentLength == null ? 0 : (int)response.Content.Headers.ContentLength;
                     using Stream responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
                     PrivateData = await StreamCopy(responseStream).ConfigureAwait(false);
                 }
                 DownloadCompleted(IsCanceled ? DownloadStatus.Cancelled : DownloadStatus.Succeeded);
             }
-            catch (Exception E)
+            catch (Exception e)
             {
+                Debug.LogException(e);
                 DownloadCompleted(DownloadStatus.Failed);
             }
             finally

@@ -4,8 +4,6 @@ using UnityEngine;
 
 namespace UIWindow
 {
-
-
     public abstract class UIWindowBase : MonoBehaviour, IUIWindow
     {
         protected CharacterBrain CharacterBrain;

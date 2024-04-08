@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-namespace ResourcesManager
+namespace Resources
 {
     public class ResourcesManager : ModuleSingleton<ResourcesManager>, IModule
     {
@@ -169,7 +169,7 @@ namespace ResourcesManager
             }
             else
             {
-                var loadPath = PathUtil.DataPath + PathUtil.ABRootPath + abName;
+                var loadPath = PathUtil.DownloadPath + PathUtil.ABRootPath + abName;
                 var AB = AssetBundle.LoadFromFile(loadPath);
                 if (AB == null)
                 {

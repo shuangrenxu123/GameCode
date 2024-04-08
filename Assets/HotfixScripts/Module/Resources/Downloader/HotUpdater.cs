@@ -161,7 +161,7 @@ namespace Downloader
         }
         public void Update()
         {
-            FileDownloader.Onupdate();
+            FileDownloader.OnUpdate();
         }
         /// <summary>
         /// 开始下载资源包

@@ -1,5 +1,7 @@
 using Animancer;
 using PlayerInfo;
+using System.Threading;
+using TMPro;
 using UnityEngine;
 
 public class NetObj : MonoBehaviour
@@ -11,8 +13,12 @@ public class NetObj : MonoBehaviour
     private float smoothTick;
 
     #region movement
-    Vector3 forcastPosition = Vector3.zero;
+    Vector3 targetPosition = Vector3.zero;
     Vector3 startPosition = Vector3.zero;
+
+    Quaternion tartgetRotation;
+    Quaternion startRotation;
+
     Vector3 velocity = Vector3.zero;
     Vector2 lastMove = Vector2.zero;
     #endregion
@@ -21,9 +27,11 @@ public class NetObj : MonoBehaviour
 
     private AnimactorHelper animacer;
 
+
+
     private LinearMixerTransition currentAnimator;
     [SerializeField]
-    AnimatorConfig config;
+    CCAnimatorConfig config;
 
     #endregion
     private void Start()
@@ -31,18 +39,20 @@ public class NetObj : MonoBehaviour
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
         animacer = new AnimactorHelper(GetComponentInChildren<AnimancerComponent>());
-        config = GetComponentInChildren<AnimatorConfig>();
-        currentAnimator = config.normalMoveAnimator;
+        currentAnimator = config.linearMixerAnimators["NormalMove"];
         animacer.Play(currentAnimator);
     }
     public void SyncData(DefaultNetWorkPackage data)
     {
-        SyncPostion(data);
+        if(data.MsgId == 1)
+        {
+            SyncPostion(data);
+        }
         ///相关的动画事件，如后滚之类的
-        //else if (data.MsgId == 2)
-        //{
-        //    SyncOtherAnim(data);
-        //}
+        else if (data.MsgId == 2)
+        {
+            SyncOtherAnim(data);
+        }
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
@@ -51,10 +61,10 @@ public class NetObj : MonoBehaviour
         {
             syncDelta = Time.time - lastMotionState.lastMotionTime;
             lastMotionState.lastMotionTime = Time.time;
-            forcastPosition = NetWorkUtility.ToUnityV3(state.Position) + NetWorkUtility.ToUnityV3(state.Velocity) * syncDelta;
+            targetPosition = NetWorkUtility.ToUnityV3(state.Position) + NetWorkUtility.ToUnityV3(state.Velocity) * syncDelta;
             startPosition = transform.position;
             smoothTick = syncDelta;
-            transform.rotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
+            tartgetRotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
             lastMove = new Vector2(state.V, state.H);
             currentAnimator.State.Parameter = state.V;
         }
@@ -64,13 +74,16 @@ public class NetObj : MonoBehaviour
         var animName = (Action)arg0.Msgobj;
         if (animName != null)
         {
+            animacer.Play(config.clipAnimators[animName.Actionname]);
         }
     }
     private void Update()
     {
         if (smoothTick > 0)
         {
-            transform.position = startPosition + (forcastPosition - startPosition) * (1 - smoothTick / syncDelta);
+            float timer = Time.deltaTime / smoothTick;
+
+            transform.SetLocalPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer),  Quaternion.Slerp(startRotation, tartgetRotation, timer));
             smoothTick -= Time.deltaTime;
         }
         else

@@ -1,4 +1,4 @@
-using ResourcesManager;
+using Resources;
 using System;
 using UnityEngine;
 
@@ -9,7 +9,7 @@ public class PathUtil
 {
     public const string BuildRootPath = "Assets/AssetsBundles/";            //打包的根路径，在打包ab包和使用模式2的时候会用到
     public const string ABRootPath = "AB/";                                 //AB包打包的根路径
-    public const string UpdateURL = "http://1.14.67.47/";
+    public const string UpdateURL = "http://43.139.97.52/";
     public static string DownloadPath = Application.dataPath + "/StreamingAssets/";
     /// <summary>
     /// 数据盘的根目录
@@ -18,7 +18,7 @@ public class PathUtil
     {
         get
         {
-            switch (ResourcesManager.ResourcesManager.ResMode)
+            switch (Resources.ResourcesManager.ResMode)
             {
 
                 case ResMode.Default:

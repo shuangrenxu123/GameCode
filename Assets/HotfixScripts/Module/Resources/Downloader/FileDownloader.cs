@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -64,6 +65,7 @@ namespace Downloader
         /// 是否取消了下载
         /// </summary>
         private bool isCanceled;
+
         /// <summary>
         /// 取消下载
         /// </summary>
@@ -77,10 +79,11 @@ namespace Downloader
             this.OnFailed = OnFailed;
             this.MainThreadInvoke = mainThreadInvoke;
         }
+
         /// <summary>
         /// 主线程上来执行回调函数
         /// </summary>
-        public static void Onupdate()
+        public static void OnUpdate()
         {
             List<Tuple<Action<FileDownloader>, FileDownloader>> onCompletedQueue = null;
             lock (OnCompleteQueue)
@@ -109,14 +112,19 @@ namespace Downloader
         /// <param name="directory">要保存的文件夹</param>
         public async void StartDownload(string directory, PackInfo info)
         {
+            fileInfo = info;
+            await StartDownload(directory, fileInfo.url,fileInfo.fileName);
+        }
+
+        public async Task StartDownload(string directory,string url,string fileName)
+        {
             HttpClient client = HttpClientPool.GetHttpClient();
             try
             {
-                fileInfo = info;
                 Directory.CreateDirectory(directory);
-                FilePath = directory + fileInfo.fileName;
+                FilePath = directory + fileName;
                 //先异步获得http 的文件头
-                using HttpResponseMessage response = await client.GetAsync(fileInfo.url, HttpCompletionOption.ResponseHeadersRead);
+                using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead);
                 response.EnsureSuccessStatusCode();
                 if (!response.IsSuccessStatusCode)
                 {
@@ -127,7 +135,7 @@ namespace Downloader
                 //获得相关的文件流
                 using Stream responseStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
 
-                await StreamCopy(responseStream);
+                await StreamCopy(responseStream).ConfigureAwait(false);
 
                 DownloadCompleted(isCanceled ? DownloadStatus.Cancelled : DownloadStatus.Succeeded);
             }
@@ -181,6 +189,7 @@ namespace Downloader
             {
                 action = OnFailed;
             }
+
             if (action != null)
             {
                 if (MainThreadInvoke)

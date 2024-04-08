@@ -14,25 +14,11 @@ public class StateManger : MonoBehaviour
     public AnimancerComponent Animancer;
     public AnimactorHelper AnimancerHelper;
     public MaterialControl materialControl;
-
+    public NetTranform NetHelper;
     public AudioData moveData;
 
-    [Header("»ù´¡ÒÆ¶¯¶¯»­")]
     [SerializeField]
-    private LinearMixerTransition normalMoveAnimator;
-    [SerializeField]
-    private LinearMixerTransition crouchMoveAniamtor;
-    [SerializeReference]
-    private ITransition lockMovementAnimator;
-    [SerializeField]
-    private List<ClipTransition> jumpAnimator;
-    [Header("½»»¥¶¯»­")]
-    [SerializeField]
-    List<ClipTransition> InterctionTransition;
-
-    [Header("·­¹ö¶¯»­")]
-    [SerializeField]
-    List<ClipTransition> rollAnimator;
+    public CCAnimatorConfig animatorConfig;
     [Header("¹¥»÷¶¯»­")]
     [SerializeField]
     private CharacterWeaponAnimator attackAnimator;
@@ -48,7 +34,9 @@ public class StateManger : MonoBehaviour
     private void Start()
     {
         CharacterActor = GetComponentInParent<CharacterActor>();
+        NetHelper = GetComponentInParent<NetTranform>();
         player = GetComponentInParent<Player>();
+
         InitState();
 
         SetStateMachineData("CombatEntity",player.CombatEntity);
@@ -68,21 +56,14 @@ public class StateManger : MonoBehaviour
         controller.ExternalReference = camera.transform;
         controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
         controller.database = dataBase;
-       
-        var state = Animancer.States.GetOrCreate(lockMovementAnimator);
+
         var movementState = new MovementState
         {
             database = dataBase,
             Animancer = AnimancerHelper,
-            normalMoveAnimator = normalMoveAnimator,
-            crouchMoveAnimator = crouchMoveAniamtor,
             MaterialControl = materialControl,
-            lockEnemyAnimator = (MixerState<Vector2>)state,
             moveAudio = moveData
         };
-
-
-        movementState.AddStateAnimators(jumpAnimator);
 
         movementState.lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
         var ladderClimb = new LadderClimbingState
@@ -96,14 +77,13 @@ public class StateManger : MonoBehaviour
             database = dataBase,
             Animancer = this.AnimancerHelper
         };
-        interaction.AddStateAnimators(InterctionTransition);
+
 
         var roll = new RollState
         {
             database = dataBase,
             Animancer = this.AnimancerHelper,
         };
-        roll.AddStateAnimators(rollAnimator);
 
         var Attack = new AttackState
         {

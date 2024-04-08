@@ -1,0 +1,219 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3fe476fdf9b794da66c768188d0b5b, type: 3}
+  m_Name: NetPlayer
+  m_EditorClassIdentifier: 
+  linearMixerAnimators:
+    _serializedList:
+    - Key: NormalMove
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+        - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
+        - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - 0
+        - 3
+        - 6
+        _DefaultParameter: 0
+        _ExtrapolateSpeed: 0
+    - Key: CrouchMove
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: ecfb6959ea35077469d921cde7022de1, type: 2}
+        - {fileID: 1827226128182048838, guid: 6eca74693f92bd047ad96c9e0232e204, type: 3}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - 0
+        - 2
+        _DefaultParameter: 0
+        _ExtrapolateSpeed: 0
+  clipAnimators:
+    _serializedList:
+    - Key: Chest
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8024166766231005104, guid: c5f5f86bafa384c4784bd54a54c0019b,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Jump
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: d291a98131443b74fb62361d9d6ab34b, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: JumpFall
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 860228f57ffe2d649a5a025b57b464e8, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: JumpEnd
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 7a41ab7a37086fa408ef02bd3dddd51c, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Lever
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8237482108326870749, guid: ca9a547d114f2be4d8c25167452e8ebb,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: OpenDoor_Outward
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -869818814183701303, guid: da9f82a65d548d84c925328a29420f8c,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: OpenDoor_DoubleDoors
+      Value:
+        _FadeDuration: 0.68750006
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6456316685503285685, guid: 86884e72f81ed064780f8cc063769cf8,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: OpenDoor_Up
+      Value:
+        _FadeDuration: 0.36666667
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -484074203470291469, guid: a34922bca7029114d8a8561acf444fc9,
+          type: 3}
+        _Speed: 0
+        _NormalizedStartTime: 0
+    - Key: Item
+      Value:
+        _FadeDuration: 0.3
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 271aca446fcaa8e4bb801e95d3140db5, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Drink
+      Value:
+        _FadeDuration: 0.33333334
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: b70f6bbb675d057428723414073a32a7, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: DrinkFailed
+      Value:
+        _FadeDuration: 0.27083334
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 3a9e9efcc7707104884f460bf9366498, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Roll
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 66b9a73903ab32143bf4fc644b79635a, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+  LockMovement:
+    rid: 3528261379365797958
+  references:
+    version: 2
+    RefIds:
+    - rid: 3528261379365797958
+      type: {class: MixerTransition2D, ns: Animancer, asm: Animancer}
+      data:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+        - {fileID: -6833178373325573696, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -517782688235292392, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 1175238861931870556, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -2160857492978203510, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 6423147695630285900, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 4095878515519292984, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 6657471127650802555, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -943800857461652088, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - {x: 0, y: 0}
+        - {x: 1, y: 0}
+        - {x: -1, y: 0}
+        - {x: 0, y: -1}
+        - {x: 0, y: 1}
+        - {x: 0.5, y: -0.5}
+        - {x: 0.5, y: 0.5}
+        - {x: -0.5, y: -0.5}
+        - {x: -0.5, y: 0.5}
+        _DefaultParameter: {x: 0, y: 0}
+        _Type: 0

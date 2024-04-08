@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Utility
 {
@@ -40,6 +41,17 @@ namespace Utility
                 }
             }
             return -1;
+        }
+
+        public static void Shuffle<T>(ref T[] pokeArr)
+        {
+            for (int i = 0; i < pokeArr.Length; i++)
+            {
+                T temp = pokeArr[i];
+                int randomIndex = UnityEngine.Random.Range(0, pokeArr.Length);
+                pokeArr[i] = pokeArr[randomIndex];
+                pokeArr[randomIndex] = temp;
+            }
         }
     }
 }

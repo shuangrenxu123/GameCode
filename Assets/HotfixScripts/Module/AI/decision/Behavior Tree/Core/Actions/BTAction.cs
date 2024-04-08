@@ -7,7 +7,6 @@ namespace BT
     /// </summary>
     public class BTAction : BTNode
     {
-        public Transform transform;
         private BTActionStatus status = BTActionStatus.Ready;
         public BTAction(string name)
         {

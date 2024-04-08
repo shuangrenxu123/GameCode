@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
+using VInspector;
 
 [DefaultExecutionOrder(110)]
 public class Camera3D : MonoBehaviour
 {
 
-    [Header("输入设置相关")]
+    [Tab("输入设置相关")]
     [SerializeField]
     CharacterBrain characterBrain;
     [SerializeField]
@@ -17,7 +18,7 @@ public class Camera3D : MonoBehaviour
     [SerializeField]
     string zoomAxis = "Camera Zoom"; //zoom ： 变焦
 
-    [Header("Target")]
+    [Tab("Target")]
 
     [Tooltip("摄像机所对焦的点。默认情况下应该为我们所控制的角色的Graphics节点")]
     [SerializeField]
@@ -30,13 +31,13 @@ public class Camera3D : MonoBehaviour
     [Tooltip("The interpolation speed used when the height of the character changes.")]
     [SerializeField]
     float heightLerpSpeed = 10f;
-    [Header("竖直旋转")]
+    [Tab("竖直旋转")]
 
     public bool updateYaw = true;
 
     public float yawSpeed = 180f;
 
-    [Header("锁定")]
+    [Tab("锁定")]
     [SerializeField] float lockDistance = 20f;
     [SerializeField] float lockEnemyMaxDistance = 30f;
     [SerializeField] float lockEnemyCameraMoveSpeed = 10f;
@@ -47,7 +48,7 @@ public class Camera3D : MonoBehaviour
     Transform nearestLockOnTarget;
     bool lockbutton;
     public Transform currentLockOnTarget;
-    [Header("水平移动")]
+    [Tab("水平移动")]
 
     public bool updatePitch = true;
 
@@ -62,7 +63,7 @@ public class Camera3D : MonoBehaviour
     [Range(1f, 85f)]
     public float minPitchAngle = 80f;
 
-    [Header("镜头缩放")]
+    [Tab("镜头缩放")]
 
     public bool updateZoom = true;
 
@@ -83,7 +84,7 @@ public class Camera3D : MonoBehaviour
     public float maxZoom = 12f;
 
 
-    [Header("Collision")]
+    [Tab("Collision")]
 
     public bool collisionDetection = true;
     public bool collisionAffectsZoom = false;
@@ -238,9 +239,9 @@ public class Camera3D : MonoBehaviour
         UpdateRotation(dt);
         // ------------------------------------------------------------------------------------------------------
 
-        currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
-        currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
-
+        //currentDistanceToTarget += deltaZoom * zoomInOutSpeed * dt;
+        //currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
+        currentDistanceToTarget = maxZoom;
         smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * dt);
         Vector3 displacement = -viewReference.forward * smoothedDistanceToTarget;
 

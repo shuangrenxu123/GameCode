@@ -20,16 +20,18 @@ namespace BT
             {
                 _activeChildIndex = 0;
             }
+            BTResult result = BTResult.Success;
             while (_activeChildIndex != children.Count)
             {
                 var child = children[_activeChildIndex];
-                var result = child.Tick();
-                if (result == BTResult.Failed)
+                var childResult = child.Tick();
+                if (childResult == BTResult.Failed)
                 {
                     child.Clear();
-                    return BTResult.Failed;
+                    result = BTResult.Failed;
+                    break;
                 }
-                if (result == BTResult.Success)
+                if (childResult == BTResult.Success)
                 {
                     child.Clear();
                     _activeChildIndex += 1;
@@ -43,7 +45,7 @@ namespace BT
             }
             _activeChildIndex = -1;
             isRunning = false;
-            return BTResult.Success;
+            return result;
         }
         public override void Clear()
         {

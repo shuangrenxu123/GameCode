@@ -5,7 +5,7 @@ public class HemophagiaBuff : BuffBase
 {
     public HemophagiaBuff(BuffManager manager, CombatEntity c) : base(manager, c)
     {
-        data = Resources.Load<BuffDataBase>("buff/hemophagia");
+        data = UnityEngine.Resources.Load<BuffDataBase>("buff/hemophagia");
     }
     public override void OnAdd()
     {

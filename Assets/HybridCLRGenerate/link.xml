@@ -1,5 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <linker>
+  <assembly fullname="AYellowpaper.SerializeInterfaces">
+    <type fullname="AYellowpaper.InterfaceReference`1" preserve="all" />
+    <type fullname="AYellowpaper.InterfaceReference`2" preserve="all" />
+    <type fullname="AYellowpaper.RequireInterfaceAttribute" preserve="all" />
+  </assembly>
   <assembly fullname="Animancer">
     <type fullname="Animancer.AnimancerComponent" preserve="all" />
     <type fullname="Animancer.AnimancerEvent" preserve="all" />
@@ -40,6 +45,12 @@
     <type fullname="Ionic.Zip.ExtractExistingFileAction" preserve="all" />
     <type fullname="Ionic.Zip.ZipEntry" preserve="all" />
     <type fullname="Ionic.Zip.ZipFile" preserve="all" />
+  </assembly>
+  <assembly fullname="NaughtyAttributes.Core">
+    <type fullname="NaughtyAttributes.TagAttribute" preserve="all" />
+  </assembly>
+  <assembly fullname="SKUnityToolkit.SerializableDictionary">
+    <type fullname="SKUnityToolkit.SerializableDictionary.SerializableDictionary`2" preserve="all" />
   </assembly>
   <assembly fullname="System">
     <type fullname="System.CodeDom.Compiler.GeneratedCodeAttribute" preserve="all" />
@@ -161,7 +172,6 @@
     <type fullname="UnityEngine.HeaderAttribute" preserve="all" />
     <type fullname="UnityEngine.HideFlags" preserve="all" />
     <type fullname="UnityEngine.HideInInspector" preserve="all" />
-    <type fullname="UnityEngine.ISerializationCallbackReceiver" preserve="all" />
     <type fullname="UnityEngine.KeyCode" preserve="all" />
     <type fullname="UnityEngine.LayerMask" preserve="all" />
     <type fullname="UnityEngine.Material" preserve="all" />
@@ -270,10 +280,17 @@
     <type fullname="UnityEngine.UI.Image" preserve="all" />
     <type fullname="UnityEngine.UI.Toggle" preserve="all" />
   </assembly>
+  <assembly fullname="UnityEngine.UIModule">
+    <type fullname="UnityEngine.Canvas" preserve="all" />
+    <type fullname="UnityEngine.CanvasGroup" preserve="all" />
+  </assembly>
   <assembly fullname="UnityEngine.UnityWebRequestModule">
     <type fullname="UnityEngine.Networking.DownloadHandler" preserve="all" />
     <type fullname="UnityEngine.Networking.UnityWebRequest" preserve="all" />
     <type fullname="UnityEngine.Networking.UnityWebRequestAsyncOperation" preserve="all" />
+  </assembly>
+  <assembly fullname="VInspector">
+    <type fullname="VInspector.TabAttribute" preserve="all" />
   </assembly>
   <assembly fullname="mscorlib">
     <type fullname="System.Action" preserve="all" />
@@ -294,8 +311,6 @@
     <type fullname="System.Collections.Generic.Dictionary`2/Enumerator" preserve="all" />
     <type fullname="System.Collections.Generic.Dictionary`2/ValueCollection" preserve="all" />
     <type fullname="System.Collections.Generic.EqualityComparer`1" preserve="all" />
-    <type fullname="System.Collections.Generic.ICollection`1" preserve="all" />
-    <type fullname="System.Collections.Generic.IDictionary`2" preserve="all" />
     <type fullname="System.Collections.Generic.IEnumerable`1" preserve="all" />
     <type fullname="System.Collections.Generic.IEnumerator`1" preserve="all" />
     <type fullname="System.Collections.Generic.IList`1" preserve="all" />
@@ -340,7 +355,6 @@
     <type fullname="System.IO.TextWriter" preserve="all" />
     <type fullname="System.IndexOutOfRangeException" preserve="all" />
     <type fullname="System.Int32" preserve="all" />
-    <type fullname="System.Lazy`1" preserve="all" />
     <type fullname="System.Math" preserve="all" />
     <type fullname="System.MathF" preserve="all" />
     <type fullname="System.MemoryExtensions" preserve="all" />
@@ -353,7 +367,6 @@
     <type fullname="System.Predicate`1" preserve="all" />
     <type fullname="System.ReadOnlyMemory`1" preserve="all" />
     <type fullname="System.ReadOnlySpan`1" preserve="all" />
-    <type fullname="System.Reflection.DefaultMemberAttribute" preserve="all" />
     <type fullname="System.Reflection.MemberInfo" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.AsyncStateMachineAttribute" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.AsyncTaskMethodBuilder" preserve="all" />
@@ -361,6 +374,8 @@
     <type fullname="System.Runtime.CompilerServices.AsyncVoidMethodBuilder" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.CompilationRelaxationsAttribute" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.CompilerGeneratedAttribute" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.ConfiguredTaskAwaitable" preserve="all" />
+    <type fullname="System.Runtime.CompilerServices.ConfiguredTaskAwaitable/ConfiguredTaskAwaiter" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.ConfiguredTaskAwaitable`1/ConfiguredTaskAwaiter" preserve="all" />
     <type fullname="System.Runtime.CompilerServices.ConfiguredValueTaskAwaitable" preserve="all" />

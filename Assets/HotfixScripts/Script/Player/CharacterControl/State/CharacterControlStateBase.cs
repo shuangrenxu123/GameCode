@@ -17,8 +17,9 @@ public class CharacterControlStateBase : StateBase
         }
     }
     public CharacterStateController_New CharacterStateController { get; protected set; }
-
-    public Dictionary<string, ClipTransition> animators;
+    protected CCAnimatorConfig animatorConfig => CharacterStateController.stateManger.animatorConfig;
+    protected NetTranform netHelper => CharacterStateController.stateManger.NetHelper;
+    //public Dictionary<string, ClipTransition> animators;
     public override void Init()
     {
         CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
@@ -55,18 +56,18 @@ public class CharacterControlStateBase : StateBase
     public virtual void PostCharacterSimulation()
     {
     }
-    public void AddStateAnimators(List<ClipTransition> anims)
-    {
-        if (anims == null || anims.Count == 0)
-        {
-            Debug.LogError("Ìí¼Ó¶¯»­Ê§°Ü" + name);
-            return;
-        }
-        if (animators == null)
-            animators = new Dictionary<string, ClipTransition>(anims.Count);
-        for (int i = 0; i < anims.Count; i++)
-        {
-            animators.Add(anims[i].Clip.name, anims[i]);
-        }
-    }
+    //public void AddStateAnimators(List<ClipTransition> anims)
+    //{
+    //    if (anims == null || anims.Count == 0)
+    //    {
+    //        Debug.LogError("Ìí¼Ó¶¯»­Ê§°Ü" + name);
+    //        return;
+    //    }
+    //    if (animators == null)
+    //        animators = new Dictionary<string, ClipTransition>(anims.Count);
+    //    for (int i = 0; i < anims.Count; i++)
+    //    {
+    //        animators.Add(anims[i].Clip.name, anims[i]);
+    //    }
+    //}
 }

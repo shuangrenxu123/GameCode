@@ -44,49 +44,7 @@ namespace Audio
     }
 
 
-    /// <summary>
-    /// 一个音频组
-    /// </summary>
-    [CreateAssetMenu(menuName = ("audio"))]
-    class AudioClipsGroup : ScriptableObject
-    {
-        public SequenceMode sequenceMode = SequenceMode.Sequential;
-        [SerializeField]
-        private AudioClip[] audioClips;
-        //====private======
-        private AudioClip[] randomAudioClips;
-        private int nextClipToPlay = -1;
-        public AudioClip GetNextClip()
-        {
-            if (audioClips.Length == 1)
-                return audioClips[0];
-            //如果不止一个音频。那就判断之前是否播放过
-            switch (sequenceMode)
-            {
-                case SequenceMode.Random:
-                    nextClipToPlay = Random.Range(0, audioClips.Length);
-                    break;
-                case SequenceMode.Sequential:
-                    if (nextClipToPlay == -1)
-                        nextClipToPlay = 0;
-                    else
-                        nextClipToPlay = (int)Mathf.Repeat(++nextClipToPlay, audioClips.Length);
-                    break;
-            }
-
-            return audioClips[nextClipToPlay];
-        }
-
-        public AudioClip GetClip(string name)
-        {
-            foreach (var clip in audioClips)
-            {
-                if (clip.name == name)
-                    return clip;
-            }
-            return null;
-        }
-    }
+   
     /// <summary>
     /// 音频播放模式
     /// </summary>
@@ -97,9 +55,9 @@ namespace Audio
         /// </summary>
         Random,
         /// <summary>
-        /// 不完全随机播放
+        /// 不重复随机
         /// </summary>
-        //RandomNoImmediateRepeat,
+        RandomNoImmediateRepeat,
         /// <summary>
         /// 顺序播放
         /// </summary>

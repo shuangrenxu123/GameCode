@@ -1,6 +1,7 @@
 using Fight;
 using UIWindow;
 using UnityEngine;
+using Resources;
 
 [RequireComponent(typeof(CharacterActor))]
 [RequireComponent(typeof(PlayerInventory))]
@@ -22,7 +23,9 @@ public class Player : MonoBehaviour
         Actor = GetComponent<CharacterActor>();
         StateManager = GetComponentInChildren<StateManger>();
         //backStep = GetComponentInChildren<BackStepCollider>();
-        UIManager.Instance.OpenUI<PlayerStateUI>(UnityEngine.Resources.Load<PlayerStateUI>("playerState"));
+        //UIManager.Instance.OpenUI<PlayerStateUI>(UnityEngine.Resources.Load<PlayerStateUI>("playerState"));
+        //var ui = ResourcesManager.Instance.LoadAsset<PlayerStateUI>("ui","playerState.prefab");
+        //UIManager.Instance.OpenUI<PlayerStateUI>(ui);
     }
     void Start()
     {

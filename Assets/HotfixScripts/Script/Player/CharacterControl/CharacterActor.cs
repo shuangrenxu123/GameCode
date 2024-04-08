@@ -189,7 +189,7 @@ public class CharacterActor : PhysicsActor
         UpdateRootPosition = updateRootPosition;
         UpdateRootRotation = updateRootRotation;
     }
-    public void SetupRootMotion(bool updateRootPosition = true, RootMotionVelocityType rootMotionVelocityType = RootMotionVelocityType.SetVelocity,
+    public void SetUpRootMotion(bool updateRootPosition = true, RootMotionVelocityType rootMotionVelocityType = RootMotionVelocityType.SetVelocity,
         bool updateRootRotation = true, RootMotionRotationType rootMotionRotationType = RootMotionRotationType.AddRotation)
     {
         UseRootMotion = true;
@@ -209,8 +209,6 @@ public class CharacterActor : PhysicsActor
     ///可以从这种结构中获得。
     /// </summary>
     public CharacterCollisionInfo CharacterCollisionInfo => characterCollisionInfo;
-
-
 
     /// <summary>
     /// 角色是否在边缘上
@@ -238,16 +236,14 @@ public class CharacterActor : PhysicsActor
 
     public GameObject GroundObject => characterCollisionInfo.groundObject;
     public Transform GroundTransform => GroundObject != null ? GroundObject.transform : null;
-    public Collider2D GroundCollider2D => characterCollisionInfo.groundCollider2D;
     public Collider GroundCollider3D => characterCollisionInfo.groundCollider3D;
 
-    public Rigidbody2D GroundRigidbody2D => characterCollisionInfo.groundRigidbody2D;
     public Rigidbody GroundRigidbody3D => characterCollisionInfo.groundRigidbody3D;
     #endregion
     #region Wall
-    public bool wallCollision => characterCollisionInfo.wallCollision;
-    public float wallAngle => characterCollisionInfo.wallAngle;
-    public Contact wallContact => characterCollisionInfo.wallContact;
+    public bool WallCollision => characterCollisionInfo.wallCollision;
+    public float WallAngle => characterCollisionInfo.wallAngle;
+    public Contact WallContact => characterCollisionInfo.wallContact;
     #endregion
     #region head
     /// <summary>
@@ -681,7 +677,6 @@ public class CharacterActor : PhysicsActor
                 SetDynamicGroundData(position);
                 Position = position;
             }
-            //==============================================不确定是否可以改为else
             if (IsStable)
             {
                 ProcessDynamicGroundMovement(dt);
@@ -1039,14 +1034,14 @@ public class CharacterActor : PhysicsActor
     /// <param name="position"></param>
     void ProcessStableMovement(float dt, ref Vector3 position)
     {
-        ApplyWeight(GroundVelocity);
+        ApplyWeight(GroundContactPoint);
         VerticalVelocity = Vector3.zero;
         //根据输入的速度值来推算大致位移，不考虑障碍物的情况
+
         Vector3 displacement = CustomUtilities.ProjectOnTangent(
             CustomUtilities.Multiply(Velocity, dt),
             GroundStableNormal,
             Up);
-
         StableCollideAndSlide(ref position, displacement, false);
         SetDynamicGroundData(position);
         if (!IsStable)
@@ -1402,7 +1397,7 @@ public class CharacterActor : PhysicsActor
                 }
                 else
                 {
-                    if (!wallCollision)
+                    if (!WallCollision)
                         position += collisionInfo.displacement;
                     break;
                 }
@@ -1632,6 +1627,7 @@ public class CharacterActor : PhysicsActor
     {
         ProcessNewGround(collisionInfo.hitInfo.transform);
         characterCollisionInfo.SetGroundInfo(collisionInfo, this);
+
         SetStableState(collisionInfo);
     }
     void SetStableState(CollisionInfo collisionInfo)

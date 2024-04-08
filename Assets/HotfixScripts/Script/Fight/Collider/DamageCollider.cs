@@ -53,6 +53,5 @@ public class DamageCollider : MonoBehaviour
             new DamageAction(entity, new CombatEntity[] { target }).Apply(10);
             target.TakeDamageFx(directionHitFrom);
         }
-        Debug.Log(other.name);
     }
 }

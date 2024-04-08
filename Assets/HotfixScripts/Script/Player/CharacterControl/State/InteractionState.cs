@@ -17,9 +17,9 @@ public class InteractionState : CharacterControlStateBase
         if (interactable != null)
         {
             CharacterActor.Velocity = Vector3.zero;
-            CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+            CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
 
-            state = Animancer.Play(animators[interactable.InteractableType.ToString()]);
+            state = Animancer.Play(animatorConfig.clipAnimators[interactable.InteractableType.ToString()]);
 
             state.Events.OnEnd += OnAnimatorEnd;
             state.Events.Add(0.6f, OnInteract);
@@ -31,8 +31,8 @@ public class InteractionState : CharacterControlStateBase
             ItemData = database.GetData<ConsumableItemData>("interactionData");
             if (ItemData != null)
             {
-                CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-                state = Animancer.Play(animators[ItemData.consumeAnimation]);
+                CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+                state = Animancer.Play(animatorConfig.linearMixerAnimators[ItemData.consumeAnimation]);
                 state.Events.Add(ItemData.effectTime, () => { ItemData.Effect(database.GetData<CombatEntity>("CombatEntity")); });
                 state.Events.OnEnd += () =>
                 {

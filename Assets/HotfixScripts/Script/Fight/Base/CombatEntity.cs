@@ -1,5 +1,6 @@
 using Audio;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Fight
@@ -7,7 +8,7 @@ namespace Fight
     public class CombatEntity : MonoBehaviour
     {
         [SerializeField]
-        AudioClip hit;
+        AudioData hit;
         [SerializeField]
         private Animator Animator;
         public HealthPoint hp;
@@ -82,7 +83,8 @@ namespace Fight
                 currentDamageAnimation = "Damage_Right_01";
             }
             Animator.Play(currentDamageAnimation);
-            AudioManager.Instance.PlayAudio(hit,AudioLayer.Sound);
+            AudioManager.Instance.PlayAudio(hit);
         }
     }
+
 }

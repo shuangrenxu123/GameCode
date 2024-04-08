@@ -75,7 +75,7 @@ class AudioEventClip : EventClip
     AudioClip clip;
     public AudioEventClip(Transform transform, AudioSource s, string clipName) : base(transform)
     {
-        this.clip = Resources.Load<AudioClip>(clipName);
+        //this.clip = Resources.Load<AudioClip>(clipName);
         this.source = s;
     }
     public override void OnStart()

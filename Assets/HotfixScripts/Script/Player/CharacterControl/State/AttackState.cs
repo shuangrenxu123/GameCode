@@ -1,6 +1,7 @@
 using Animancer;
 using Audio;
 using CharacterControlerStateMachine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -10,11 +11,11 @@ public class AttackState : CharacterControlStateBase
     private CharacterControlStateBase lastState;
     public CharacterWeaponAnimator animator;
     private AnimancerState state;
-
+    public LookingDirectionParameters lookingDirectionParameters = new LookingDirectionParameters();
     private List<AnimancerEvent.Sequence> lightEvents;
     private List<AnimancerEvent.Sequence> HeaveEvents;
     private WeaponType currentWeaponType = 0;
-
+    protected Vector3 targetLookingDirection = Vector3.zero;
     private bool canDoCombo = false;
     private int currentAnimatorIndex = 0;
     private WeaponAnimator currentWeaponAnimator;
@@ -24,11 +25,12 @@ public class AttackState : CharacterControlStateBase
         base.Init();
         lightEvents = new List<AnimancerEvent.Sequence>(4);
         HeaveEvents = new List<AnimancerEvent.Sequence>(4);
+        lookingDirectionParameters.speed = 1;
     }
     public override void Enter()
     {
         CharacterActor.Velocity = Vector3.zero;
-        CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+        CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         lastState = (CharacterControlStateBase)CharacterStateController.lastState;
         currentWeaponAnimator = animator.animators.First(x => x.type == WeaponType.None);
 
@@ -95,6 +97,77 @@ public class AttackState : CharacterControlStateBase
 
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;
+            }
+        }
+    }
+    public override void FixUpdate()
+    {
+        float dt = Time.deltaTime;
+        HandleRotation(dt);
+    }
+
+    private void HandleRotation(float dt)
+    {
+        HandleLookingDirection(dt);
+    }
+    void HandleLookingDirection(float dt)
+    {
+        if (!lookingDirectionParameters.changeLookingDirection)
+        {
+            return;
+        }
+        switch (lookingDirectionParameters.lookingDirectionMode)
+        {
+            case LookingDirectionParameters.LookingDirectionMode.Movement:
+
+                switch (CharacterActor.CurrentState)
+                {
+                    case CharacterActorState.NotGrounded:
+                        SetTargetLookingDirection(lookingDirectionParameters.notGroundedLookingDirectionMode);
+                        break;
+                    case CharacterActorState.StableGrounded:
+                        SetTargetLookingDirection(lookingDirectionParameters.stableGroundedLookingDirectionMode);
+                        break;
+                    case CharacterActorState.UnstableGrounded:
+                        SetTargetLookingDirection(lookingDirectionParameters.unstableGroundedLookingDirectionMode);
+                        break;
+                }
+                break;
+            case LookingDirectionParameters.LookingDirectionMode.Target:
+                targetLookingDirection = Vector3.ProjectOnPlane(lookingDirectionParameters.target.position - CharacterActor.Position, CharacterActor.Up).normalized;
+                break;
+            case LookingDirectionParameters.LookingDirectionMode.ExternalReference:
+                targetLookingDirection = CharacterStateController.MovementReferenceForward;
+                break;
+        }
+
+        Quaternion targetDeltaRotation = Quaternion.FromToRotation(CharacterActor.Forward, targetLookingDirection);
+        Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity, targetDeltaRotation, lookingDirectionParameters.speed * dt);
+
+        CharacterActor.SetYaw(currentDeltaDotation * CharacterActor.Forward);
+    }
+    void SetTargetLookingDirection(LookingDirectionParameters.LookingDirectionMovementSource lookingDirectionMode)
+    {
+        if (lookingDirectionMode == LookingDirectionParameters.LookingDirectionMovementSource.Input)
+        {
+            if (CharacterStateController.InputMovementReference != Vector3.zero)
+            {
+                targetLookingDirection = CharacterStateController.InputMovementReference;
+            }
+            else
+            {
+                targetLookingDirection = CharacterActor.Forward;
+            }
+        }
+        else
+        {
+            if (CharacterActor.PlanarVelocity != Vector3.zero)
+            {
+                targetLookingDirection = Vector3.ProjectOnPlane(CharacterActor.PlanarVelocity, CharacterActor.Up);
+            }
+            else
+            {
+                targetLookingDirection = CharacterActor.Forward;
             }
         }
     }

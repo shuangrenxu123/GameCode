@@ -1,8 +1,9 @@
 ﻿using Audio;
 using Config;
+using Downloader;
 using Network;
 using ObjectPool;
-using ResourcesManager;
+using Resources;
 using UIWindow;
 using UnityEngine;
 public class Main : MonoBehaviour
@@ -16,7 +17,7 @@ public class Main : MonoBehaviour
 
         MotionEngine.CreateModule<EventManager>();
         MotionEngine.CreateModule<UIManager>();
-        MotionEngine.CreateModule<ResourcesManager.ResourcesManager>();
+        MotionEngine.CreateModule<ResourcesManager>();
         MotionEngine.CreateModule<PoolManager>();
         MotionEngine.CreateModule<ReferenceManager>();
         MotionEngine.CreateModule<VersionManager>();

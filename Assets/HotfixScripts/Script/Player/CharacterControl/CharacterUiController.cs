@@ -1,3 +1,4 @@
+using Resources;
 using UIWindow;
 using UnityEngine;
 [DefaultExecutionOrder(100)]
@@ -20,7 +21,8 @@ public class CharacterUiController : MonoBehaviour
         if (InputActions.OpenUI.Started)
         {
             CharacterBrain.EnableUIIpnut();
-            UIManager.Instance.OpenUI<GameUIMgr>(UnityEngine.Resources.Load<GameUIMgr>("GameUI"));
+            var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui","GameUI.prefab");
+            UIManager.Instance.OpenUI<GameUIMgr>(ui.GetComponent<GameUIMgr>());
 
         }
     }

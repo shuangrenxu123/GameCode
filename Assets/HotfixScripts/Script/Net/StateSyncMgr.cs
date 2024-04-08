@@ -16,6 +16,7 @@ public class StateSyncMgr : MonoBehaviour
     private void Start()
     {
         NetWorkManager.Instance.RegisterHandle(1, SyncGameObjectState);
+        NetWorkManager.Instance.RegisterHandle(2, SyncGameObjectState);
         NetWorkManager.Instance.RegisterHandle(0, Heartbeat);
         NetWorkManager.Instance.RegisterHandle(4, OnClientJoined);
         EventManager.Instance.AddListener("ConnectServerSuccess", SendPlayerState);

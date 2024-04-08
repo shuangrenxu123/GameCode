@@ -50,7 +50,7 @@ public class LadderClimbingState : CharacterControlStateBase
         //CharacterActor.Position = targetPosition;
 
         //Root Motion
-        CharacterActor.SetupRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+        CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         CharacterActor.Animator.SetTrigger(isBottom ? bottomDownParmeter : topDownParameter);
 
         state = LadderClimbState.Entering;

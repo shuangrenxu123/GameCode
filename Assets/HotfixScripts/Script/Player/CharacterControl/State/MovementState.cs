@@ -101,6 +101,11 @@ namespace CharacterControlerStateMachine
             crouchParameters.heightRatio = Mathf.Max(minCrouchHeightRatio, crouchParameters.heightRatio);
             CharacterActor.OnTeleport += OnTeleport;
             CharacterActor.OnGroundedStateEnter += HandleJumpEnterGround;
+
+            normalMoveAnimator = animatorConfig.linearMixerAnimators["NormalMove"];
+            crouchMoveAnimator = animatorConfig.linearMixerAnimators["CrouchMove"];
+            var state = Animancer.Animancer.States.GetOrCreate(animatorConfig.LockMovement);
+            lockEnemyAnimator = (MixerState<Vector2>)state;
         }
         public override void Enter()
         {
@@ -139,7 +144,7 @@ namespace CharacterControlerStateMachine
             HandleSize(dt);
             HandleVelocity(dt);
             HandleRotation(dt);
-        }
+        } 
         public override void Update()
         {
             if (CharacterActions.roll.Started && CharacterActor.IsGrounded)
@@ -479,7 +484,7 @@ namespace CharacterControlerStateMachine
 
                 CharacterActor.Velocity -= Vector3.Project(CharacterActor.Velocity, JumpDirection);
                 CharacterActor.Velocity += CustomUtilities.Multiply(JumpDirection, verticalMovementParameters.jumpSpeed);
-                Animancer.Play(animators[jump]);
+                Animancer.Play(animatorConfig.clipAnimators[jump]);
                 if (verticalMovementParameters.cancelJumpOnRelease)
                 {
                     isAllowedToCancelJump = true;
@@ -492,11 +497,11 @@ namespace CharacterControlerStateMachine
         {
             if (lockFlag)
             {
-                Animancer.Play(animators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(lockEnemyAnimator); };
+                Animancer.Play(animatorConfig.clipAnimators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(lockEnemyAnimator); };
             }
             else
             {
-                Animancer.Play(animators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(currentAnimator); };
+                Animancer.Play(animatorConfig.clipAnimators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(currentAnimator); };
             }
         }
 
@@ -705,11 +710,11 @@ namespace CharacterControlerStateMachine
 
                 if (CharacterActor.Velocity.y > 0)
                 {
-                    Animancer.Play(animators[jump]);
+                    Animancer.Play(animatorConfig.clipAnimators[jump]);
                 }
                 else if (CharacterActor.Velocity.y < 0)
                 {
-                    Animancer.Play(animators[jumpFall]);
+                    Animancer.Play(animatorConfig.clipAnimators[jumpFall]);
                 }
             }
 

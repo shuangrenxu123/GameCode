@@ -18,40 +18,6 @@ namespace UIWindow
                 currentUIStack[i].OnUpdate();
             }
         }
-
-        public T OpenUI<T>(string localname) where T : UIWindowBase
-        {
-            var prefab = Resources.Load<UIWindowBase>(localname);
-            string name = typeof(T).FullName;
-            var window = GetWindow(name);
-            if (window != null)
-            {
-                var topwindow = GetTopWindow();
-                if (topwindow != window)
-                {
-                    window.OnFocus();
-                    Pop(window);
-                    Push(window);
-                }
-            }
-            else
-            {
-                window = UnityEngine.Object.Instantiate(prefab);
-                Push(window);
-                window.OnCreate();
-
-            }
-
-            foreach (var ui in currentUIStack)
-            {
-                if (ui.WindowName == window.WindowName)
-                {
-                    continue;
-                }
-                ui.OnFocusOtherUI();
-            }
-            return window as T;
-        }
         public T OpenUI<T>(UIWindowBase prefab) where T : UIWindowBase
         {
             string name = prefab.WindowName;

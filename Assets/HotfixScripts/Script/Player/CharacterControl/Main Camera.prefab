@@ -142,9 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb22738fdb13bb340907cfeeca977dda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputHandlerSettings:
-    humanInputType: 0
-    inputhandler: {fileID: 8069557756328992592}
+  characterBrain: {fileID: 0}
   axes: Camera
   zoomAxis: Camera Zoom
   targetTransform: {fileID: 0}
@@ -155,12 +153,12 @@ MonoBehaviour:
   yawSpeed: 180
   lockDistance: 20
   lockEnemyMaxDistance: 30
-  lockEnemyCameraMoveSpeed: 10
+  lockEnemyCameraMoveSpeed: 2
   lockEnemyTag: Enemy
-  lockOffsetPosition: {x: 0, y: 0, z: 0}
+  lockOffsetPosition: {x: 0, y: 10, z: -2}
   lockMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 128
   currentLockOnTarget: {fileID: 0}
   updatePitch: 1
   initialPitch: 45
@@ -168,17 +166,17 @@ MonoBehaviour:
   maxPitchAngle: 80
   minPitchAngle: 80
   updateZoom: 1
-  distanceToTarget: 2
-  zoomInOutSpeed: 40
-  zoomInOutLerpSpeed: 5
-  minZoom: 2
+  distanceToTarget: 10
+  zoomInOutSpeed: 0.5
+  zoomInOutLerpSpeed: 1.95
+  minZoom: 1
   maxZoom: 12
   collisionDetection: 1
-  collisionAffectsZoom: 0
+  collisionAffectsZoom: 1
   detectionRadius: 0.5
   layerMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 1
   considerKinematicRigidbodies: 1
   considerDynamicRigidbodies: 1
 --- !u!114 &8069557756328992592
@@ -193,7 +191,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6e7aa1db8f98fa84580adde104a80f74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  inputActionsAsset: {fileID: -944628639613478452, guid: 647c348c5a105f04d95f2354c8369679,
+  InputActionsAsset: {fileID: -944628639613478452, guid: 647c348c5a105f04d95f2354c8369679,
     type: 3}
   filterByActionMap: 0
   gameplayActionMap: Gameplay

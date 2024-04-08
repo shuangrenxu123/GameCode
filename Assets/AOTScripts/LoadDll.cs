@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
@@ -45,7 +46,7 @@ public class LoadDll : MonoBehaviour
 
     private string GetWebRequestPath(string asset)
     {
-        var path = $"http://1.14.67.47/dlls/{asset}";
+        var path = $"http://43.139.97.52/dlls/{asset}";
         if (!path.Contains("://"))
         {
             path = "file://" + path;
@@ -61,7 +62,7 @@ public class LoadDll : MonoBehaviour
         var DownloadAssets = new List<string>
         {
             "core",
-            "scences",
+            //"scences",
             "Assembly-CSharp.dll",
         };
 
@@ -113,12 +114,14 @@ public class LoadDll : MonoBehaviour
 #endif
 
         //3.实例化HotUpdateMain.prefab，通过HotUpdateMain.cs执行旧工程入口代码
-        AssetBundle scences = AssetBundle.LoadFromMemory(GetAssetData("scences"));
+        //AssetBundle scences = AssetBundle.LoadFromMemory(GetAssetData("scences"));
         AssetBundle prefabAb = AssetBundle.LoadFromMemory(GetAssetData("core"));
-        SceneManager.LoadScene("CharacterControlTest");
         GameObject gm = Instantiate(prefabAb.LoadAsset<GameObject>("GameManager.prefab"));
-        GameObject.DontDestroyOnLoad(gm);
-        //GameObject canves = Instantiate(prefabAb.LoadAsset<GameObject>("Canvas.prefab"));
+        DontDestroyOnLoad(gm);
+        GameObject canves = Instantiate(prefabAb.LoadAsset<GameObject>("Canvas.prefab"));
+        Debug.Log(11111);
+        //SceneManager.LoadScene("CharacterControlTest");
+    
     }
 
     /// <summary>

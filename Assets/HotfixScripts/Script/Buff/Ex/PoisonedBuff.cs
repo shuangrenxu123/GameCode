@@ -7,7 +7,7 @@ public class PoisonedBuff : BuffBase
     int count = 1;
     public PoisonedBuff(BuffManager manager, CombatEntity c) : base(manager, c)
     {
-        data = Resources.Load<BuffDataBase>("buff/poisoned");
+        data = UnityEngine.Resources.Load<BuffDataBase>("buff/poisoned");
     }
     public override void OnAdd()
     {

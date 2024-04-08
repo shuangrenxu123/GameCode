@@ -12,7 +12,7 @@ namespace BT
             root.Tick();
         }
         public abstract void SetNode();
-        public virtual void Init(Enemy enemy, Enemy tree, DataBase d = null)
+        public virtual void Init(DataBase d = null)
         {
             if (d == null)
             {

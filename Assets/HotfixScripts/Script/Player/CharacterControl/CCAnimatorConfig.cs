@@ -1,10 +1,15 @@
 using Animancer;
-using System.Collections;
+using AYellowpaper.SerializedCollections;
 using System.Collections.Generic;
 using UnityEngine;
+[CreateAssetMenu(fileName ="animations", menuName = "Animator")]
 public class CCAnimatorConfig : ScriptableObject
 {
-    List<LinearMixerTransition> linearMixerAnimators;
+    [SerializedDictionary("ClipName","Clip")]
+    public SerializedDictionary<string,LinearMixerTransition> linearMixerAnimators;
+    [SerializedDictionary("ClipName", "Clip")]
+    public SerializedDictionary<string,ClipTransition> clipAnimators;
 
-    List<ClipTransition> clipAnimators;
+    [SerializeReference]
+    public ITransition LockMovement;
 }
