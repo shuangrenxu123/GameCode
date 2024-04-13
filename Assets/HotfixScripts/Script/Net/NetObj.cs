@@ -11,7 +11,6 @@ public class NetObj : MonoBehaviour
     [HideInInspector]
     private float syncDelta = 1;
     private float smoothTick;
-
     #region movement
     Vector3 targetPosition = Vector3.zero;
     Vector3 startPosition = Vector3.zero;
@@ -67,6 +66,8 @@ public class NetObj : MonoBehaviour
             tartgetRotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
             lastMove = new Vector2(state.V, state.H);
             currentAnimator.State.Parameter = state.V;
+
+            velocity = (targetPosition - startPosition)/smoothTick;
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
@@ -81,16 +82,31 @@ public class NetObj : MonoBehaviour
     {
         if (smoothTick > 0)
         {
+            if((targetPosition - startPosition).magnitude > StateSyncMgr.MaxDisplacement)
+            {
+                smoothTick = 0;
+                transform.SetPositionAndRotation(targetPosition,tartgetRotation);
+                velocity = Vector3.zero;
+                return;
+            }
             float timer = Time.deltaTime / smoothTick;
 
-            transform.SetLocalPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer),  Quaternion.Slerp(startRotation, tartgetRotation, timer));
+            transform.SetPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer),  Quaternion.Slerp(startRotation, tartgetRotation, timer));
+
             smoothTick -= Time.deltaTime;
         }
         else
         {
             transform.position += velocity * Time.deltaTime;
         }
-        //anim.UpdateAnimatorValues(lastMove.x, lastMove.y);
+    }
+
+    private void Reset()
+    {
+        startPosition = targetPosition = Vector3.zero;
+        startRotation = tartgetRotation = Quaternion.identity;
+        smoothTick = 0;
+
     }
 
 }

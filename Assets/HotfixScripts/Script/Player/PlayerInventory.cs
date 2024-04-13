@@ -16,6 +16,8 @@ public class PlayerInventory : MonoBehaviour
 
     private Dictionary<int, (ItemData, int)> items = new(30);
     public Dictionary<int, (ItemData, int)> Items => items;
+    
+    public WeaponType WeaponType { get; private set; } = WeaponType.None;
     #region Event 
     public event Action<ItemData, int> OnItemAdd;
     public event Action<ItemData, int> OnItemRemove;
@@ -83,6 +85,7 @@ public class PlayerInventory : MonoBehaviour
     public void ReplaceRightWeapon(WeaponItemData data)
     {
         EquipeManager.LoadWeaponOnSlot(data, false);
+        WeaponType = data.WeaponType;
         OnRightWeaponLoad?.Invoke(data);
     }
     /// <summary>
@@ -115,5 +118,52 @@ public class PlayerInventory : MonoBehaviour
         }
         OnItemAdd?.Invoke(item, num);
         //currentItem = item;
+    }
+
+    public void OpenRightDamageCollider()
+    {
+        if(rightWeapon == null)
+        {
+            EquipeManager.DefaultRightDamageCollider.EnableDamageCollider();
+        }
+        else
+        {
+            EquipeManager.rightCollider.EnableDamageCollider();
+        }
+    }
+    public void OpenLeftDamageCollider()
+    {
+        if (rightWeapon == null)
+        {
+            EquipeManager.DefaultLeftDamageCollider.EnableDamageCollider();
+        }
+        else
+        {
+            EquipeManager.leftCollider.EnableDamageCollider();
+        }
+    }
+
+    public void CloseRightDamagerCollider()
+    {
+        if (rightWeapon == null)
+        {
+            EquipeManager.DefaultRightDamageCollider.DisableDamageCollider();
+        }
+        else{
+        
+               EquipeManager.rightCollider.DisableDamageCollider();
+        }
+    }
+    public void CloseLeftDamagerCollider()
+    {
+        if (rightWeapon == null)
+        {
+            EquipeManager.DefaultRightDamageCollider.DisableDamageCollider();
+        }
+        else
+        {
+
+            EquipeManager.rightCollider.DisableDamageCollider();
+        }
     }
 }

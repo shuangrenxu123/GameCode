@@ -11,7 +11,7 @@ namespace BT
         public DataBase database;
 
         /// <summary>
-        /// 激活节点
+        /// 激活节点,可以视作是节点添加完成后调用,此时已经获得数据库
         /// </summary>
         /// <param name="database"></param>
         public virtual void Activate(DataBase database)

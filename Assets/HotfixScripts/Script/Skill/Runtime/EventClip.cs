@@ -1,135 +1,152 @@
+using Animancer;
 using UnityEngine;
 
-public class EventClip
+namespace SkillRuntimeClip
 {
-    public bool isStart = true;
-    public bool isFinished = false;
-    public float StartTime;
-    public float EndTime;
-    public Transform transform;
 
-    public EventClip(Transform transform)
-    {
-        this.transform = transform;
-    }
-    public virtual void Init()
-    {
-        isFinished = false;
-    }
-    public virtual void OnStart()
-    {
-        isStart = false;
-    }
-    public virtual void OnFinish()
-    {
 
-    }
-    /// <summary>
-    /// 有的自定义片段可能会需要我们计算相对值
-    /// </summary>
-    /// <param name="time"></param>
-    public void OnUpdate(float time)
+    public class EventClip
     {
-        UpdateEvent(time);
-    }
-    public virtual void UpdateEvent(float time)
-    {
+        public bool isStart = true;
+        public bool isFinished = false;
+        public float StartTime;
+        public float EndTime;
 
-    }
-    public virtual void OnReset()
-    {
-
-    }
-}
-
-class AnimEventClip : EventClip
-{
-    private Animator animator;
-    private int clipHash;
-    public AnimEventClip(string clipName, Transform transform, Animator anim) : base(transform)
-    {
-        animator = anim;
-        clipHash = Animator.StringToHash("Base Layer" + "." + clipName);
-    }
-    public override void Init()
-    {
-        base.Init();
-        if (animator == null)
+        public EventClip()
         {
-            return;
+        }
+        public virtual void Init()
+        {
+            isFinished = false;
+        }
+        public virtual void OnStart()
+        {
+            isStart = false;
+        }
+        public virtual void OnFinish()
+        {
+
+        }
+        /// <summary>
+        /// 有的自定义片段可能会需要我们计算相对值
+        /// </summary>
+        /// <param name="time"></param>
+        public void OnUpdate(float time)
+        {
+            UpdateEvent(time);
+        }
+        public virtual void UpdateEvent(float time)
+        {
+
+        }
+        public virtual void OnReset()
+        {
+
         }
     }
-    public override void OnFinish()
+
+    class AnimEventClip : EventClip
     {
-        animator.Play("idle");
+        private AnimancerComponent animator;
+        private ClipTransition clip;
+        public AnimEventClip(ClipTransition clip, AnimancerComponent anim)
+        {
+            animator = anim;
+            this.clip = clip;
+        }
+        public override void Init()
+        {
+            base.Init();
+            if (animator == null)
+            {
+                return;
+            }
+        }
+        public override void OnFinish()
+        {
+        }
+        public override void OnStart()
+        {
+            animator.Play(clip);
+            base.OnStart();
+        }
     }
-    public override void OnStart()
+    class AudioEventClip : EventClip
     {
-        animator.Play(clipHash);
-        base.OnStart();
+        AudioSource source;
+        AudioClip clip;
+        public AudioEventClip(AudioSource s, string clipName)
+        {
+            //this.clip = Resources.Load<AudioClip>(clipName);
+            this.source = s;
+        }
+        public override void OnStart()
+        {
+            source.clip = clip;
+            source.Play();
+            base.OnStart();
+        }
+        public override void OnFinish()
+        {
+            source.Stop();
+            Debug.Log("停止播放音乐");
+        }
     }
-}
-class AudioEventClip : EventClip
-{
-    AudioSource source;
-    AudioClip clip;
-    public AudioEventClip(Transform transform, AudioSource s, string clipName) : base(transform)
+    class FxEventClip : EventClip
     {
-        //this.clip = Resources.Load<AudioClip>(clipName);
-        this.source = s;
+        /// <summary>
+        /// 特效的名字
+        /// </summary>
+        private string name;
+        public FxEventClip(string name)
+        {
+            this.name = name;
+
+        }
+        public override void OnStart()
+        {
+            //go.gameObject.SetActive(true);
+            base.OnStart();
+        }
     }
-    public override void OnStart()
-    {
-        source.clip = clip;
-        source.Play();
-        base.OnStart();
-    }
-    public override void OnFinish()
-    {
-        source.Stop();
-        Debug.Log("停止播放音乐");
-    }
-}
-class FxEventClip : EventClip
-{
     /// <summary>
-    /// 特效的名字
+    /// ————————————————————————BUG——————————————————————————
     /// </summary>
-    private string name;
-    public FxEventClip(Transform transform, string name) : base(transform)
+    class TriggerEventClip : EventClip
     {
-        this.name = name;
-        this.transform = transform;
+        private SkillTrigger trigger;
+        public TriggerEventClip(SkillTrigger trigger)
+        {
+            this.trigger = trigger;
+        }
+        public override void OnStart()
+        {
+            trigger.OnStart();
+        }
+        public override void OnFinish()
+        {
+            base.OnFinish();
+            trigger.OnFinish();
+        }
+        public override void UpdateEvent(float time)
+        {
+            trigger.OnEventUpdate(time);
+        }
     }
-    public override void OnStart()
+    class ColliderEventClip : EventClip
     {
-        var go = transform.Find(name);
-        go.gameObject.SetActive(true);
-        base.OnStart();
-    }
-}
-/// <summary>
-/// ————————————————————————BUG——————————————————————————
-/// </summary>
-class TriggerEventClip : EventClip
-{
-    private SkillTrigger trigger;
-    public TriggerEventClip(Transform trnas, SkillTrigger trigger) : base(trnas)
-    {
-        transform = trnas;
-        this.trigger = trigger;
-    }
-    public override void OnStart()
-    {
-        trigger.OnStart();
-    }
-    public override void OnFinish()
-    {
-        base.OnFinish();
-        trigger.OnFinish();
-    }
-    public override void UpdateEvent(float time)
-    {
-        trigger.OnUpdate(time);
+        private DamageCollider collider;
+        public ColliderEventClip(DamageCollider collider)
+        {
+            this.collider = collider;
+        }
+        public override void OnStart()
+        {
+            collider.EnableDamageCollider();
+        }
+        public override void OnFinish()
+        {
+            collider.DisableDamageCollider();
+        }
     }
 }

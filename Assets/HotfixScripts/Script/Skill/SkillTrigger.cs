@@ -1,13 +1,19 @@
+using System;
+using Animancer;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class SkillTrigger : MonoBehaviour
 {
+    public CCAnimatorConfig animatorConfig;
     public SkillRunner runner;
-    public Animator anim;
+    public AnimancerComponent anim;
     public AudioSource AudioSource;
+
+    private bool canStart;
     public bool isFinish
     {
-        get
+        get  
         {
             if (runner != null)
                 return runner.isFinish;
@@ -16,24 +22,35 @@ public class SkillTrigger : MonoBehaviour
     }
     public virtual void Start()
     {
-        anim = GameObject.Find("Enemy").transform.GetChild(0).gameObject.GetComponent<Animator>();
-        AudioSource = GetComponent<AudioSource>();
-        runner = new SkillRunner(anim, AudioSource, transform);
+        runner = new SkillRunner(anim, AudioSource, animatorConfig, transform);
+        anim.Play(animatorConfig.linearMixerAnimators["move"]);
     }
-    private void Update()
+
+    public void LoadConfig(TimelineAsset asset)
     {
-        runner.Update();
+        runner.LoadConfig(asset,this);
+        canStart = true;
     }
     public virtual void OnStart()
     {
 
     }
-    public virtual void OnUpdate(float time)
+    public virtual void OnEventUpdate(float time)
     {
+    }
 
+    public void OnUpdate()
+    {
+        runner.Update();
     }
     public virtual void OnFinish()
     {
 
     }
+
+    public void OnReset()
+    {
+        runner.Reset();
+    }
+
 }

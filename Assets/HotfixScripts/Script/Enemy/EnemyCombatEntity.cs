@@ -1,13 +1,20 @@
+using Animancer;
+using Audio;
 using Fight;
-using System;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class EnemyCombatEntity : CombatEntity
 {
     [SerializeField]
+    AudioData hit;
+    [SerializeField]
     private GameObject bloodFx;
+    [SerializeField]
+    AnimancerComponent animator;
+    [SerializeField]
+    CCAnimatorConfig animationConfig;
     Enemy enemy;
+
     public override void Awake()
     {
         base.Awake();
@@ -23,16 +30,39 @@ public class EnemyCombatEntity : CombatEntity
 
     private void HPChange(int arg1, int arg2)
     {
-        Debug.Log(arg1);
         if (arg1 <= 0)
         {
+
             Debug.Log(name + "is Dead");
         }
     }
     protected override void ChooseWhichDirectionDamageCameFrom(float direction)
     {
-        base.ChooseWhichDirectionDamageCameFrom(direction);
+
+        string currentDamageAnimation = null;
+        if (direction >= 145 && direction <= 180)
+        {
+            currentDamageAnimation = "Damage_Forward_01";
+        }
+        else if (direction <= -145 && direction >= -180)
+        {
+            currentDamageAnimation = "Damage_Forward_01";
+        }
+        else if (direction >= -45 && direction <= 45)
+        {
+            currentDamageAnimation = "Damage_Back_01";
+        }
+        else if (direction >= -144 && direction <= -45)
+        {
+            currentDamageAnimation = "Damage_Left_01";
+        }
+        else if (direction >= 45 && direction <= 144)
+        {
+            currentDamageAnimation = "Damage_Right_01";
+        }
+        animator.Play(animationConfig.clipAnimators[currentDamageAnimation]);
         Instantiate(bloodFx,transform.position +new Vector3(0,1,0),Quaternion.Euler(0,direction,0));
+        AudioManager.Instance.PlayAudio(hit);
     }
 }
 

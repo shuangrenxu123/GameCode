@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-namespace Resources
+namespace Assets
 {
     public class ResourcesManager : ModuleSingleton<ResourcesManager>, IModule
     {

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0f3fe476fdf9b794da66c768188d0b5b, type: 3}
-  m_Name: NetPlayer
+  m_Name: Human
   m_EditorClassIdentifier: 
   linearMixerAnimators:
     _serializedList:
@@ -177,6 +177,72 @@ MonoBehaviour:
           _Callbacks: []
           _Names: []
         _Clip: {fileID: 7400000, guid: 66b9a73903ab32143bf4fc644b79635a, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Death
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6675343724984935337, guid: 10f56734873d7864fa1f56282cce6fa6,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Backstab_Death
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 1827226128182048838, guid: 6b81a224b33940f44836dc660bc9aa7f,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Back_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 996606033263881515, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Forward_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6165068137202532354, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Left_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -1272651102350564749, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Right_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -3118386427450552708, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
         _Speed: 1
         _NormalizedStartTime: 0
   LockMovement:

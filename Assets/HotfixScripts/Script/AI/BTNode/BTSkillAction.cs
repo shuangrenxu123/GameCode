@@ -1,33 +1,36 @@
 using BT;
 using UnityEngine;
+using UnityEngine.Timeline;
 
 public class BTSkillAction : BTAction
 {
-    private string skillname;
-    private SkillSystem skillSystem;
+    private TimelineAsset skill;
+    //private SkillSystem skillSystem;
     private SkillTrigger runner;
-    public float SkillCD;
-    public BTSkillAction(SkillSystem skill, string skillname, string name, float skillCD) : base(name)
+    private CharacterActor actor;
+    public BTSkillAction(SkillTrigger skill, TimelineAsset skillname, string name ) : base(name)
     {
-        this.skillname = skillname;
-        this.skillSystem = skill;
-        SkillCD = skillCD;
+        this.skill = skillname;
+        runner = skill;
+        //this.skillSystem = skill;
+        
     }
+
+    protected override void Enter()
+    { 
+        base.Enter();
+        runner.LoadConfig(skill);
+        actor = database.GetData<CharacterActor>("actor");
+        actor.SetUpRootMotion(true,true);
+    }
+
     protected override BTResult Execute()
     {
-        var time = database.GetData<float>(skillname);
-        if (time < SkillCD)
-        {
-            return BTResult.Failed;
-        }
-        if (runner == null)
-        {
-            runner = skillSystem.GenerateSkill(skillname).GetComponent<SkillTrigger>();
-        }
+        runner.OnUpdate();
+
         if (runner.isFinish == true)
         {
-            database.SetData<float>(skillname, 0f);
-            GameObject.Destroy(runner.gameObject);
+            runner.OnReset();
             return BTResult.Success;
         }
         else
@@ -35,9 +38,9 @@ public class BTSkillAction : BTAction
             return BTResult.Running;
         }
     }
-    public override void Clear()
+    protected override void Exit()
     {
-        base.Clear();
-        runner = null;
+        base.Exit();
+        actor.UseRootMotion = false;
     }
 }

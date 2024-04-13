@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Animancer;
+using SkillRuntimeClip;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -8,15 +10,17 @@ public class SkillRunner
     private GameObject SkillOwner;
     private List<TrackRunner> trackRunners;
     public bool isFinish = false;
-    public Animator anim;
+    public AnimancerComponent anim;
     private AudioSource AudioSource;
     private Transform transform;
-    public SkillRunner(Animator anim, AudioSource audioSource, Transform transform)
+    private CCAnimatorConfig animatorConfig;
+    public SkillRunner(AnimancerComponent anim, AudioSource audioSource,CCAnimatorConfig config, Transform transform)
     {
         trackRunners = new List<TrackRunner>();
         AudioSource = audioSource;
         this.anim = anim;
         this.transform = transform;
+        animatorConfig = config;
     }
     public void Update()
     {
@@ -41,9 +45,9 @@ public class SkillRunner
             OnFinish();
         }
     }
-    public void LoadConfig(TimelineAsset playable, SkillTrigger trigger)
+    public void LoadConfig(TimelineAsset asset, SkillTrigger trigger)
     {
-        //TimelineAsset playable = Resources.Load<TimelineAsset>(name);
+        TimelineAsset playable = asset;
         var tracks = playable.GetOutputTracks();
         foreach (var track in tracks)
         {
@@ -54,23 +58,23 @@ public class SkillRunner
                 EventClip clip;
                 if (track is AnimationTrack)
                 {
-                    clip = new AnimEventClip(e.displayName, transform, anim);
+                    clip = new AnimEventClip(animatorConfig.clipAnimators[e.displayName], anim);
                 }
                 else if (track is AudioTrack)
                 {
-                    clip = new AudioEventClip(transform, AudioSource, e.displayName);
+                    clip = new AudioEventClip(AudioSource, e.displayName);
                 }
                 else if (track is ControlTrack)
                 {
-                    clip = new FxEventClip(transform, e.displayName);
+                    clip = new FxEventClip (e.displayName);
                 }
-                else if (track is TriggerTrack)
-                {
-                    clip = new TriggerEventClip(transform, trigger);
-                }
+                //else if (track is TriggerTrack)
+                //{
+                //    clip = new TriggerEventClip(trigger);
+                //}
                 else
                 {
-                    clip = new(transform);
+                    clip = new();
                 }
                 clip.StartTime = (float)e.start;
                 clip.EndTime = (float)e.end;
@@ -82,9 +86,16 @@ public class SkillRunner
     }
     private void OnFinish()
     {
+        trackRunners.Clear();
         if (isSubSkill)
         {
             //删除自己
         }
+    }
+
+    public void Reset()
+    {
+        trackRunners.Clear();
+        isFinish = false;
     }
 }

@@ -14,6 +14,9 @@ public class Equipmanager : MonoBehaviour
     private CombatEntity PlayerCombatEntity => player.CombatEntity;
     public DamageCollider leftCollider;
     public DamageCollider rightCollider;
+
+    public DamageCollider DefaultRightDamageCollider;
+    public DamageCollider DefaultLeftDamageCollider;
     //HandIK handIK;
 
     //Dictionary<EquipType, SkinnedMeshRenderer> EquipRenders;

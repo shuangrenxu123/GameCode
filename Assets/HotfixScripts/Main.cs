@@ -3,7 +3,7 @@ using Config;
 using Downloader;
 using Network;
 using ObjectPool;
-using Resources;
+using Assets;
 using UIWindow;
 using UnityEngine;
 public class Main : MonoBehaviour

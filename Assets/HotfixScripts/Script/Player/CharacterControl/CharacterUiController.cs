@@ -1,4 +1,4 @@
-using Resources;
+using Assets;
 using UIWindow;
 using UnityEngine;
 [DefaultExecutionOrder(100)]

@@ -1,7 +1,7 @@
 using Fight;
 using UIWindow;
 using UnityEngine;
-using Resources;
+using Assets;
 
 [RequireComponent(typeof(CharacterActor))]
 [RequireComponent(typeof(PlayerInventory))]

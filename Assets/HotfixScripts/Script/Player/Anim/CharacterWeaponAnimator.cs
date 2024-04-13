@@ -39,6 +39,9 @@ public class WeaponAnimator
 }
 public enum WeaponType
 {
+    /// <summary>
+    /// È­Í·
+    /// </summary>
     None = 0,
     /// <summary>
     /// Ö±½£

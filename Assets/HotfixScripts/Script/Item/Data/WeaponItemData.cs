@@ -6,5 +6,6 @@ using UnityEngine;
 public class WeaponItemData : ItemData
 {
     public override ItemType Type { get => ItemType.Weapon; }
+    public WeaponType WeaponType;
     public GameObject modle;
 }

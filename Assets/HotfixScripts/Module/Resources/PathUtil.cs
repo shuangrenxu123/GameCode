@@ -1,4 +1,4 @@
-using Resources;
+using Assets;
 using System;
 using UnityEngine;
 
@@ -18,7 +18,7 @@ public class PathUtil
     {
         get
         {
-            switch (Resources.ResourcesManager.ResMode)
+            switch (Assets.ResourcesManager.ResMode)
             {
 
                 case ResMode.Default:

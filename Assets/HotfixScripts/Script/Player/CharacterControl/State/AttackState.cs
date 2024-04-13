@@ -32,7 +32,8 @@ public class AttackState : CharacterControlStateBase
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         lastState = (CharacterControlStateBase)CharacterStateController.lastState;
-        currentWeaponAnimator = animator.animators.First(x => x.type == WeaponType.None);
+
+        currentWeaponAnimator = animator.animators.First(x => x.type == GetCurrentWeaponType());
 
         PlayFirstAnimator();
 
@@ -66,7 +67,10 @@ public class AttackState : CharacterControlStateBase
         {
             //²¥·ÅÇá¹¥»÷¶¯»­
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-            AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+            if(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+            {
+                AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+            }
             state.Events.AddRange(lightEvents[currentAnimatorIndex]);
         }
         if (state == null)
@@ -82,7 +86,7 @@ public class AttackState : CharacterControlStateBase
         {
             //todo ÅÐ¶ÏÇáÖØ¹¥»÷
             //todo ÅÐ¶Ï×îºóÒ»»÷
-            if (currentAnimatorIndex == 2)
+            if (currentAnimatorIndex == currentWeaponAnimator.lightAttackAnimator_OH.Count -1)
             {
                 return;
             }
@@ -93,7 +97,11 @@ public class AttackState : CharacterControlStateBase
                 EndDoCombo();
                 CloseWeaponCollider();
                 state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-                AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+                if(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+                {
+                    AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+
+                }
 
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;
@@ -217,6 +225,10 @@ public class AttackState : CharacterControlStateBase
         database.SetData<bool>("attack", false);
         state.Events.OnEnd -= OnAnimatorEnd;
     }
+    private WeaponType GetCurrentWeaponType()
+    {
+        return CharacterStateController.stateManger.player.Inventory.WeaponType;
+    }
 
     #region Event Function
     private void CanDoCombo()
@@ -229,11 +241,11 @@ public class AttackState : CharacterControlStateBase
     }
     private void OpenWeaponCollider()
     {
-        CharacterStateController.stateManger.player.Inventory.EquipeManager.rightCollider.EnableDamageCollider();
+        CharacterStateController.stateManger.player.Inventory.OpenRightDamageCollider();
     }
     private void CloseWeaponCollider()
     {
-        CharacterStateController.stateManger.player.Inventory.EquipeManager.rightCollider.DisableDamageCollider();
+        CharacterStateController.stateManger.player.Inventory.CloseRightDamagerCollider();
 
     }
     #endregion

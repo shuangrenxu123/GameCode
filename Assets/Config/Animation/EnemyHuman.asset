@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3fe476fdf9b794da66c768188d0b5b, type: 3}
+  m_Name: EnemyHuman
+  m_EditorClassIdentifier: 
+  linearMixerAnimators:
+    _serializedList:
+    - Key: move
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+        - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
+        - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - 0
+        - 2
+        - 4
+        _DefaultParameter: 0
+        _ExtrapolateSpeed: 0
+  clipAnimators:
+    _serializedList:
+    - Key: attack1
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: f9fa335824bfd7a44961cdec6aa7f8d6, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: attack2
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 22f1cf955cad7f548a0bda1509e8c558, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+  LockMovement:
+    rid: 3528261631677038612
+  references:
+    version: 2
+    RefIds:
+    - rid: 3528261631677038612
+      type: {class: MixerTransition2D, ns: Animancer, asm: Animancer}
+      data:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+        - {fileID: -6833178373325573696, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -517782688235292392, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 1175238861931870556, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -2160857492978203510, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 6423147695630285900, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 4095878515519292984, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: 6657471127650802555, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        - {fileID: -943800857461652088, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - {x: 0, y: 0}
+        - {x: 1, y: 0}
+        - {x: -1, y: 0}
+        - {x: 0, y: -1}
+        - {x: 0, y: 1}
+        - {x: 0.5, y: -0.5}
+        - {x: 0.5, y: 0.5}
+        - {x: -0.5, y: -0.5}
+        - {x: -0.5, y: 0.5}
+        _DefaultParameter: {x: 0, y: 0}
+        _Type: 0

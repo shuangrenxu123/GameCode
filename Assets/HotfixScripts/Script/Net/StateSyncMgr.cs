@@ -5,6 +5,13 @@ using UnityEngine;
 
 public class StateSyncMgr : MonoBehaviour
 {
+
+    #region setting
+    /// <summary>
+    /// 当超过该值的时候会被直接拉过去
+    /// </summary>
+    public static readonly int MaxDisplacement = 10;
+    #endregion
     public Player player;
     public Dictionary<string, NetObj> netObjs = new();
     public GameObject prefab;

@@ -18,7 +18,7 @@ public class DamageCollider : MonoBehaviour
     private void Awake()
     {
         entity = GetComponentInParent<CombatEntity>();
-        damageCollider = GetComponent<Collider>();
+        //damageCollider = GetComponent<Collider>();
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
         characterDamagedDuringThisCalculation = new List<Enemy>();
@@ -28,7 +28,7 @@ public class DamageCollider : MonoBehaviour
     }
     public void EnableDamageCollider()
     {
-        entity = GetComponentInParent<CombatEntity>();
+        //entity = GetComponentInParent<CombatEntity>();
         damageCollider.enabled = true;
  
     }
