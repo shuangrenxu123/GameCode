@@ -35,7 +35,7 @@ public class TrackRunner
             }
             if (!events[i].isFinished)
             {
-                events[i].OnUpdate(currentTime);
+                events[i].OnUpdate();
             }
         }
         else if (currentTime >= events[i].EndTime)

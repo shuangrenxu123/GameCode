@@ -33,7 +33,7 @@ public class EnemyAI : BTTree
         rootNode.AddChild(randomNode);
         rootNode.AddChild(new BTMoveAction("移动",2));
         //rootNode.AddChild(new BTFindEnemy("寻找敌人", "Enemy") { setDataName = "target" });
-        rootNode.AddChild(new BTSkillAction(control.skillRunner,Resources.Load<TimelineAsset>("test"),"test"));
+        rootNode.AddChild(new BTSkillAction(control.skillRunner,Resources.Load<TimelineAsset>("test"),"combo1"));
 
 
         //rootNode.AddChild(rootNode);

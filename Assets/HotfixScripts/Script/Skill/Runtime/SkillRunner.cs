@@ -1,28 +1,28 @@
 using System.Collections.Generic;
 using Animancer;
 using SkillRuntimeClip;
+using SKUnityToolkit.SerializableDictionary;
 using UnityEngine;
 using UnityEngine.Timeline;
 
-public class SkillRunner
+public class SkillRunner : MonoBehaviour
 {
-    public bool isSubSkill;
-    private GameObject SkillOwner;
-    private List<TrackRunner> trackRunners;
+    public SerializableDictionary<string, DamageCollider> damageColliders;
+    public CharacterActor actor;
     public bool isFinish = false;
     public AnimancerComponent anim;
     private AudioSource AudioSource;
-    private Transform transform;
+    private List<TrackRunner> trackRunners;
+    [SerializeField]
     private CCAnimatorConfig animatorConfig;
-    public SkillRunner(AnimancerComponent anim, AudioSource audioSource,CCAnimatorConfig config, Transform transform)
+    [SerializeField]
+    private EnemyAIControl enemyAIControl;
+    private DataBase dataBase => enemyAIControl.dataBase;
+    private void Awake()
     {
         trackRunners = new List<TrackRunner>();
-        AudioSource = audioSource;
-        this.anim = anim;
-        this.transform = transform;
-        animatorConfig = config;
     }
-    public void Update()
+    public void OnUpdate()
     {
         int trackCount = trackRunners.Count;
         if (trackCount == 0)
@@ -45,7 +45,20 @@ public class SkillRunner
             OnFinish();
         }
     }
-    public void LoadConfig(TimelineAsset asset, SkillTrigger trigger)
+    public void OnClipUpdate(EventClipType clipType,object arg)
+    {
+        if(clipType== EventClipType.Rotation)
+        {
+            float speed = (float)arg;
+            var target = dataBase.GetData<Transform>("target");
+            Vector3 direction = target.position - actor.Position;
+            var targetLookingDirection = Vector3.ProjectOnPlane(direction, actor.Up).normalized;
+            Quaternion targetDeltaRotation = Quaternion.FromToRotation(actor.Forward, targetLookingDirection);
+            Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity, targetDeltaRotation, speed * Time.deltaTime);
+            actor.SetYaw(currentDeltaDotation * actor.Forward);
+        }
+    }
+    public void LoadConfig(TimelineAsset asset)
     {
         TimelineAsset playable = asset;
         var tracks = playable.GetOutputTracks();
@@ -55,26 +68,31 @@ public class SkillRunner
             var events = track.GetClips();
             foreach (var e in events)
             {
-                EventClip clip;
+                EventClip clip = null;
                 if (track is AnimationTrack)
                 {
-                    clip = new AnimEventClip(animatorConfig.clipAnimators[e.displayName], anim);
+                    clip = new AnimEventClip(OnClipUpdate,animatorConfig.clipAnimators[e.displayName], anim);
                 }
                 else if (track is AudioTrack)
                 {
-                    clip = new AudioEventClip(AudioSource, e.displayName);
+                    clip = new AudioEventClip(OnClipUpdate, AudioSource, e.displayName);
                 }
                 else if (track is ControlTrack)
                 {
-                    clip = new FxEventClip (e.displayName);
+                    clip = new FxEventClip(OnClipUpdate,e.displayName);
                 }
-                //else if (track is TriggerTrack)
-                //{
-                //    clip = new TriggerEventClip(trigger);
-                //}
+                else if (track is ColliderTrack)
+                {
+                    clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
+                }
+                else if(track is RotationTrack)
+                {
+                    var c = e.asset as RotationClip;
+                    clip = new RotationEventClip(OnClipUpdate,actor, c.RotationSpeed);
+                }
                 else
                 {
-                    clip = new();
+                    //clip = new(null);
                 }
                 clip.StartTime = (float)e.start;
                 clip.EndTime = (float)e.end;
@@ -87,13 +105,9 @@ public class SkillRunner
     private void OnFinish()
     {
         trackRunners.Clear();
-        if (isSubSkill)
-        {
-            //删除自己
-        }
     }
 
-    public void Reset()
+    public void OnReset()
     {
         trackRunners.Clear();
         isFinish = false;

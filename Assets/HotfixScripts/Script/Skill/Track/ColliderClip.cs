@@ -7,6 +7,7 @@ using UnityEngine.Playables;
 public class ColliderClip : PlayableAsset
 {
     private ColliderData template = new ColliderData();
+    public List<string> colliderNames;
     public override Playable CreatePlayable(PlayableGraph graph, GameObject owner)
     {
         var playable = ScriptPlayable<ColliderData>.Create(graph, template);

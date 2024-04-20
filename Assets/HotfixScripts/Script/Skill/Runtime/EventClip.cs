@@ -1,19 +1,20 @@
 using Animancer;
+using System;
 using UnityEngine;
 
 namespace SkillRuntimeClip
 {
-
-
-    public class EventClip
+    public abstract class EventClip
     {
         public bool isStart = true;
         public bool isFinished = false;
         public float StartTime;
         public float EndTime;
-
-        public EventClip()
+        protected Action<EventClipType, object> onUpdateAction;
+        protected abstract EventClipType clipType { get;}
+        public EventClip(Action<EventClipType, object> action)
         {
+            onUpdateAction = action;
         }
         public virtual void Init()
         {
@@ -31,14 +32,7 @@ namespace SkillRuntimeClip
         /// 有的自定义片段可能会需要我们计算相对值
         /// </summary>
         /// <param name="time"></param>
-        public void OnUpdate(float time)
-        {
-            UpdateEvent(time);
-        }
-        public virtual void UpdateEvent(float time)
-        {
-
-        }
+        public abstract void OnUpdate();
         public virtual void OnReset()
         {
 
@@ -49,11 +43,14 @@ namespace SkillRuntimeClip
     {
         private AnimancerComponent animator;
         private ClipTransition clip;
-        public AnimEventClip(ClipTransition clip, AnimancerComponent anim)
+        public AnimEventClip(Action<EventClipType, object> action, ClipTransition clip, AnimancerComponent anim):base(action)
         {
             animator = anim;
             this.clip = clip;
         }
+
+        protected override EventClipType clipType => EventClipType.Animator;
+
         public override void Init()
         {
             base.Init();
@@ -70,12 +67,20 @@ namespace SkillRuntimeClip
             animator.Play(clip);
             base.OnStart();
         }
+
+        public override void OnUpdate()
+        {
+            
+        }
     }
     class AudioEventClip : EventClip
     {
         AudioSource source;
         AudioClip clip;
-        public AudioEventClip(AudioSource s, string clipName)
+
+        protected override EventClipType clipType => EventClipType.Audio;
+
+        public AudioEventClip(Action<EventClipType, object> action,AudioSource s, string clipName):base(action)
         {
             //this.clip = Resources.Load<AudioClip>(clipName);
             this.source = s;
@@ -91,6 +96,11 @@ namespace SkillRuntimeClip
             source.Stop();
             Debug.Log("停止播放音乐");
         }
+
+        public override void OnUpdate()
+        {
+           
+        }
     }
     class FxEventClip : EventClip
     {
@@ -98,45 +108,32 @@ namespace SkillRuntimeClip
         /// 特效的名字
         /// </summary>
         private string name;
-        public FxEventClip(string name)
+        public FxEventClip(Action<EventClipType, object> action,string name):base(action) 
         {
             this.name = name;
 
         }
+
+        protected override EventClipType clipType => throw new NotImplementedException();
+
         public override void OnStart()
         {
             //go.gameObject.SetActive(true);
             base.OnStart();
         }
-    }
-    /// <summary>
-    /// ————————————————————————BUG——————————————————————————
-    /// </summary>
-    class TriggerEventClip : EventClip
-    {
-        private SkillTrigger trigger;
-        public TriggerEventClip(SkillTrigger trigger)
+
+        public override void OnUpdate()
         {
-            this.trigger = trigger;
-        }
-        public override void OnStart()
-        {
-            trigger.OnStart();
-        }
-        public override void OnFinish()
-        {
-            base.OnFinish();
-            trigger.OnFinish();
-        }
-        public override void UpdateEvent(float time)
-        {
-            trigger.OnEventUpdate(time);
+           
         }
     }
     class ColliderEventClip : EventClip
     {
         private DamageCollider collider;
-        public ColliderEventClip(DamageCollider collider)
+
+        protected override EventClipType clipType => EventClipType.Collider;
+
+        public ColliderEventClip(Action<EventClipType, object>action, DamageCollider collider) : base(action)
         {
             this.collider = collider;
         }
@@ -144,9 +141,41 @@ namespace SkillRuntimeClip
         {
             collider.EnableDamageCollider();
         }
+        
         public override void OnFinish()
         {
             collider.DisableDamageCollider();
         }
+
+        public override void OnUpdate()
+        {
+            onUpdateAction(clipType,null);
+        }
+    }
+    class RotationEventClip : EventClip {
+        private float speed;
+        private CharacterActor actor;
+        protected override EventClipType clipType => EventClipType.Rotation;
+        public RotationEventClip(Action<EventClipType,object> action,CharacterActor actor, float speed) :base(action) 
+        {
+            this.speed = speed;
+            this.actor = actor; 
+        }
+        public override void OnStart()
+        {
+            actor.SetUpRootMotion(true,false);
+        }
+        public override void OnUpdate()
+        {
+            onUpdateAction?.Invoke(clipType,speed);
+        }
+    }
+
+    public enum EventClipType
+    {
+        Audio,
+        Rotation,
+        Collider,
+        Animator,
     }
 }
