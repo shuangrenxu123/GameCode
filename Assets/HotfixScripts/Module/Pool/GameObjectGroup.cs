@@ -13,6 +13,7 @@ namespace ObjectPool
         /// </summary>
         public List<PoolObject> usePool;
         private GameObject Go;
+        private Transform parent;
         /// <summary>
         /// 用完后不销毁
         /// </summary>
@@ -27,6 +28,7 @@ namespace ObjectPool
             pool = new List<PoolObject>(capcity * 2);
             Go = prefab;
             usePool = new List<PoolObject>(capcity * 2);
+            this.parent = parent.transform;
             for (int i = 0; i < capcity; i++)
             {
                 GameObject a = Instantiate(prefab, Vector3.zero, Quaternion.identity);
@@ -89,6 +91,7 @@ namespace ObjectPool
             {
                 GameObject a = Instantiate(Go, Vector3.zero, Quaternion.identity);
                 a.SetActive(false);
+                a.transform.parent = parent;
                 PoolObject b = a.GetComponent<PoolObject>();
                 pool.Add(b);
             }

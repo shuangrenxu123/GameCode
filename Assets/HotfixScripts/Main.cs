@@ -15,15 +15,16 @@ public class Main : MonoBehaviour
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
         a.PackageBodyCoderType = typeof(ProtobufCoder);
 
-        MotionEngine.CreateModule<EventManager>();
-        MotionEngine.CreateModule<UIManager>();
-        MotionEngine.CreateModule<ResourcesManager>();
-        MotionEngine.CreateModule<PoolManager>();
-        MotionEngine.CreateModule<ReferenceManager>();
-        MotionEngine.CreateModule<VersionManager>();
-        MotionEngine.CreateModule<ConfigManager>();
-        MotionEngine.CreateModule<AudioManager>();
-        MotionEngine.CreateModule<NetWorkManager>(a);
+        Engine.CreateModule<EventManager>();
+        Engine.CreateModule<UIManager>();
+        Engine.CreateModule<ResourcesManager>();
+        Engine.CreateModule<PoolManager>();
+        Engine.CreateModule<ReferenceManager>();
+        Engine.CreateModule<VersionManager>();
+        Engine.CreateModule<ConfigManager>();
+        Engine.CreateModule<AudioManager>();
+        Engine.CreateModule<NetWorkManager>(a);
+        Engine.CreateModule<LogManager>();
 
     }
     private void Start()
@@ -31,8 +32,12 @@ public class Main : MonoBehaviour
         QualitySettings.vSyncCount = 0;
         DontDestroyOnLoad(this);
     }
+    private void OnApplicationQuit()
+    {
+        LogManager.Instance.Dispose();
+    }
     private void Update()
     {
-        MotionEngine.Update();
+        Engine.Update();
     }
 }

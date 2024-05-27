@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class MotionEngine
+public static class Engine
 {
     /// <summary>
     /// 对模块的封装
