@@ -1,9 +1,9 @@
-﻿using Audio;
+﻿using Assets;
+using Audio;
 using Config;
-using Downloader;
+using ConsoleLog;
 using Network;
 using ObjectPool;
-using Assets;
 using UIWindow;
 using UnityEngine;
 public class Main : MonoBehaviour
@@ -24,7 +24,7 @@ public class Main : MonoBehaviour
         Engine.CreateModule<ConfigManager>();
         Engine.CreateModule<AudioManager>();
         Engine.CreateModule<NetWorkManager>(a);
-        Engine.CreateModule<LogManager>();
+        Engine.CreateModule<ConsoleManager>();
 
     }
     private void Start()
@@ -34,7 +34,7 @@ public class Main : MonoBehaviour
     }
     private void OnApplicationQuit()
     {
-        LogManager.Instance.Dispose();
+        ConsoleManager.Instance.Dispose();
     }
     private void Update()
     {
