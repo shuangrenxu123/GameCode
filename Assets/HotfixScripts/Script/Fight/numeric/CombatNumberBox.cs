@@ -5,11 +5,11 @@ namespace Fight
         public IntCollector Atk;
         public IntCollector Def;
         //public IntCollector Speed;
-        
+
         public void Init()
         {
-            Atk = new (PropertySourceType.Self);
-            Def = new (PropertySourceType.Self);
+            Atk = new(PropertySourceType.Self);
+            Def = new(PropertySourceType.Self);
             //Speed = new ();
         }
     }

@@ -11,7 +11,7 @@ namespace SkillRuntimeClip
         public float StartTime;
         public float EndTime;
         protected Action<EventClipType, object> onUpdateAction;
-        protected abstract EventClipType clipType { get;}
+        protected abstract EventClipType clipType { get; }
         public EventClip(Action<EventClipType, object> action)
         {
             onUpdateAction = action;
@@ -43,7 +43,7 @@ namespace SkillRuntimeClip
     {
         private AnimancerComponent animator;
         private ClipTransition clip;
-        public AnimEventClip(Action<EventClipType, object> action, ClipTransition clip, AnimancerComponent anim):base(action)
+        public AnimEventClip(Action<EventClipType, object> action, ClipTransition clip, AnimancerComponent anim) : base(action)
         {
             animator = anim;
             this.clip = clip;
@@ -70,7 +70,7 @@ namespace SkillRuntimeClip
 
         public override void OnUpdate()
         {
-            
+
         }
     }
     class AudioEventClip : EventClip
@@ -80,7 +80,7 @@ namespace SkillRuntimeClip
 
         protected override EventClipType clipType => EventClipType.Audio;
 
-        public AudioEventClip(Action<EventClipType, object> action,AudioSource s, string clipName):base(action)
+        public AudioEventClip(Action<EventClipType, object> action, AudioSource s, string clipName) : base(action)
         {
             //this.clip = Resources.Load<AudioClip>(clipName);
             this.source = s;
@@ -99,7 +99,7 @@ namespace SkillRuntimeClip
 
         public override void OnUpdate()
         {
-           
+
         }
     }
     class FxEventClip : EventClip
@@ -108,7 +108,7 @@ namespace SkillRuntimeClip
         /// 特效的名字
         /// </summary>
         private string name;
-        public FxEventClip(Action<EventClipType, object> action,string name):base(action) 
+        public FxEventClip(Action<EventClipType, object> action, string name) : base(action)
         {
             this.name = name;
 
@@ -124,7 +124,7 @@ namespace SkillRuntimeClip
 
         public override void OnUpdate()
         {
-           
+
         }
     }
     class ColliderEventClip : EventClip
@@ -133,7 +133,7 @@ namespace SkillRuntimeClip
 
         protected override EventClipType clipType => EventClipType.Collider;
 
-        public ColliderEventClip(Action<EventClipType, object>action, DamageCollider collider) : base(action)
+        public ColliderEventClip(Action<EventClipType, object> action, DamageCollider collider) : base(action)
         {
             this.collider = collider;
         }
@@ -141,7 +141,7 @@ namespace SkillRuntimeClip
         {
             collider.EnableDamageCollider();
         }
-        
+
         public override void OnFinish()
         {
             collider.DisableDamageCollider();
@@ -149,25 +149,26 @@ namespace SkillRuntimeClip
 
         public override void OnUpdate()
         {
-            onUpdateAction(clipType,null);
+            onUpdateAction(clipType, null);
         }
     }
-    class RotationEventClip : EventClip {
+    class RotationEventClip : EventClip
+    {
         private float speed;
         private CharacterActor actor;
         protected override EventClipType clipType => EventClipType.Rotation;
-        public RotationEventClip(Action<EventClipType,object> action,CharacterActor actor, float speed) :base(action) 
+        public RotationEventClip(Action<EventClipType, object> action, CharacterActor actor, float speed) : base(action)
         {
             this.speed = speed;
-            this.actor = actor; 
+            this.actor = actor;
         }
         public override void OnStart()
         {
-            actor.SetUpRootMotion(true,false);
+            actor.SetUpRootMotion(true, false);
         }
         public override void OnUpdate()
         {
-            onUpdateAction?.Invoke(clipType,speed);
+            onUpdateAction?.Invoke(clipType, speed);
         }
     }
 

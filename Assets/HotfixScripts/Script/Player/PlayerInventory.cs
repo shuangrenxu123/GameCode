@@ -16,7 +16,7 @@ public class PlayerInventory : MonoBehaviour
 
     private Dictionary<int, (ItemData, int)> items = new(30);
     public Dictionary<int, (ItemData, int)> Items => items;
-    
+
     public WeaponType WeaponType { get; private set; } = WeaponType.None;
     #region Event 
     public event Action<ItemData, int> OnItemAdd;
@@ -48,7 +48,7 @@ public class PlayerInventory : MonoBehaviour
         {
             Debug.Log("使用了道具");
             CanReplace = false;
-            UseItem(currentItem);   
+            UseItem(currentItem);
             //currentItem.AttemptToConsumeItem(animtorHandle, weaponManager);
         }
     }
@@ -72,13 +72,13 @@ public class PlayerInventory : MonoBehaviour
             return;
         }
     }
-    public void ReplaceEquipe(EquipType type,Mesh mesh)
+    public void ReplaceEquipe(EquipType type, Mesh mesh)
     {
         EquipeManager.ReplaceEquip(type, mesh);
     }
     public void ReplaceLeftWeapon(WeaponItemData data)
     {
-        EquipeManager.LoadWeaponOnSlot(data,true);
+        EquipeManager.LoadWeaponOnSlot(data, true);
         OnLeftWeaponLoad?.Invoke(data);
 
     }
@@ -122,7 +122,7 @@ public class PlayerInventory : MonoBehaviour
 
     public void OpenRightDamageCollider()
     {
-        if(rightWeapon == null)
+        if (rightWeapon == null)
         {
             EquipeManager.DefaultRightDamageCollider.EnableDamageCollider();
         }
@@ -149,9 +149,10 @@ public class PlayerInventory : MonoBehaviour
         {
             EquipeManager.DefaultRightDamageCollider.DisableDamageCollider();
         }
-        else{
-        
-               EquipeManager.rightCollider.DisableDamageCollider();
+        else
+        {
+
+            EquipeManager.rightCollider.DisableDamageCollider();
         }
     }
     public void CloseLeftDamagerCollider()

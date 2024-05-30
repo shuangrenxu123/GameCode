@@ -1,8 +1,6 @@
 using SKUnityToolkit.SerializableDictionary;
 using System.Collections.Generic;
 using UnityEngine;
-using Utility;
-using VInspector;
 public class PickUpItem : Interactable
 {
     [SerializeField]

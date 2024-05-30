@@ -1,5 +1,4 @@
 using BT;
-using UnityEngine;
 using UnityEngine.Timeline;
 
 public class BTSkillAction : BTAction
@@ -8,12 +7,12 @@ public class BTSkillAction : BTAction
     //private SkillSystem skillSystem;
     private SkillRunner runner;
     private CharacterActor actor;
-    public BTSkillAction(SkillRunner skill, TimelineAsset skillname, string name ) : base(name)
+    public BTSkillAction(SkillRunner skill, TimelineAsset skillname, string name) : base(name)
     {
         this.skill = skillname;
         runner = skill;
         //this.skillSystem = skill;
-        
+
     }
 
     protected override void Enter()
@@ -21,7 +20,7 @@ public class BTSkillAction : BTAction
         base.Enter();
         runner.LoadConfig(skill);
         actor = database.GetData<CharacterActor>("actor");
-        actor.SetUpRootMotion(true,RootMotionVelocityType.SetVelocity,false);
+        actor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
     }
 
     protected override BTResult Execute()

@@ -61,7 +61,7 @@ public class EnemyCombatEntity : CombatEntity
             currentDamageAnimation = "Damage_Right_01";
         }
         animator.Play(animationConfig.clipAnimators[currentDamageAnimation]);
-        Instantiate(bloodFx,transform.position +new Vector3(0,1,0),Quaternion.Euler(0,direction,0));
+        Instantiate(bloodFx, transform.position + new Vector3(0, 1, 0), Quaternion.Euler(0, direction, 0));
         AudioManager.Instance.PlayAudio(hit);
     }
 }

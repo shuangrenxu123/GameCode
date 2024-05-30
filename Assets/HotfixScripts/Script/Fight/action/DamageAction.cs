@@ -13,11 +13,11 @@ namespace Fight
         public override void Apply(int baseValue)
         {
             //int damage = baseValue;
-            damage.AddInt(new IntNumber(baseValue,PropertySourceType.Self));
+            damage.AddInt(new IntNumber(baseValue, PropertySourceType.Self));
             foreach (var target in Target)
             {
                 PreProcess(Creator, target);
-                Process(Creator,target);
+                Process(Creator, target);
                 PostProcess(Creator, target);
             }
         }

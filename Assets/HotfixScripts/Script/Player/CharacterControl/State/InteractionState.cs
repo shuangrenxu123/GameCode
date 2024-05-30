@@ -50,7 +50,7 @@ public class InteractionState : CharacterControlStateBase
     private void OnAnimatorEnd()
     {
         database.SetData<bool>("interaction", false);
-        database.SetData<Interactable>("Interactable",null);
+        database.SetData<Interactable>("Interactable", null);
         interactable.EndInteract(CharacterStateController.stateManger.player);
         state.Events.Clear();
     }

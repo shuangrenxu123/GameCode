@@ -30,7 +30,7 @@ public class DamageCollider : MonoBehaviour
     {
         //entity = GetComponentInParent<CombatEntity>();
         damageCollider.enabled = true;
- 
+
     }
     public void DisableDamageCollider()
     {

@@ -5,7 +5,7 @@ using UnityEngine;
 /// </summary>
 public class HealthPoint
 {
-    public event Action<int, int> OnHPChange; 
+    public event Action<int, int> OnHPChange;
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
     public void Init(bool isPlayer)
@@ -27,7 +27,7 @@ public class HealthPoint
     public void Minus(int value)
     {
         Value = Mathf.Max(0, Value - value);
-        OnHPChange?.Invoke(Value,MaxValue);
+        OnHPChange?.Invoke(Value, MaxValue);
     }
     /// <summary>
     /// 加血

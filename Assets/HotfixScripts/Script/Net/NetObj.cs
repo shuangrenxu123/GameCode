@@ -1,7 +1,5 @@
 using Animancer;
 using PlayerInfo;
-using System.Threading;
-using TMPro;
 using UnityEngine;
 
 public class NetObj : MonoBehaviour
@@ -43,7 +41,7 @@ public class NetObj : MonoBehaviour
     }
     public void SyncData(DefaultNetWorkPackage data)
     {
-        if(data.MsgId == 1)
+        if (data.MsgId == 1)
         {
             SyncPostion(data);
         }
@@ -67,7 +65,7 @@ public class NetObj : MonoBehaviour
             lastMove = new Vector2(state.V, state.H);
             currentAnimator.State.Parameter = state.V;
 
-            velocity = (targetPosition - startPosition)/smoothTick;
+            velocity = (targetPosition - startPosition) / smoothTick;
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
@@ -82,16 +80,16 @@ public class NetObj : MonoBehaviour
     {
         if (smoothTick > 0)
         {
-            if((targetPosition - startPosition).magnitude > StateSyncMgr.MaxDisplacement)
+            if ((targetPosition - startPosition).magnitude > StateSyncMgr.MaxDisplacement)
             {
                 smoothTick = 0;
-                transform.SetPositionAndRotation(targetPosition,tartgetRotation);
+                transform.SetPositionAndRotation(targetPosition, tartgetRotation);
                 velocity = Vector3.zero;
                 return;
             }
             float timer = Time.deltaTime / smoothTick;
 
-            transform.SetPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer),  Quaternion.Slerp(startRotation, tartgetRotation, timer));
+            transform.SetPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer), Quaternion.Slerp(startRotation, tartgetRotation, timer));
 
             smoothTick -= Time.deltaTime;
         }

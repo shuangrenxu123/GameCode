@@ -1,6 +1,4 @@
-using Audio;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Fight

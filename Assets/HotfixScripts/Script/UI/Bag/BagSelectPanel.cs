@@ -62,7 +62,7 @@ public class BagSelectPanel : UIWindowBase
     {
 
         var equipe = currentItem as EquipItemData;
-        if(equipe != null)
+        if (equipe != null)
         {
             equipe.Equip(inventory);
         }

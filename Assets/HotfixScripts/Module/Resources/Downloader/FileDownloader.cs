@@ -113,10 +113,10 @@ namespace Downloader
         public async void StartDownload(string directory, PackInfo info)
         {
             fileInfo = info;
-            await StartDownload(directory, fileInfo.url,fileInfo.fileName);
+            await StartDownload(directory, fileInfo.url, fileInfo.fileName);
         }
 
-        public async Task StartDownload(string directory,string url,string fileName)
+        public async Task StartDownload(string directory, string url, string fileName)
         {
             HttpClient client = HttpClientPool.GetHttpClient();
             try

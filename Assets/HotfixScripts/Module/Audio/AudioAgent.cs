@@ -20,11 +20,11 @@ namespace Audio
             audioSource.time = 0f;
             audioSource.Play();
             if (!hasLoop)
-              Coroutine = StartCoroutine(FinishedPlaying(audioSource.clip.length));
+                Coroutine = StartCoroutine(FinishedPlaying(audioSource.clip.length));
         }
         private void Update()
         {
-            if(target != null) 
+            if (target != null)
                 transform.position = target.position;
         }
         public void BindPosition(Transform target)
@@ -59,7 +59,7 @@ namespace Audio
         public void Stop()
         {
             audioSource.Stop();
-            if(Coroutine != null) 
+            if (Coroutine != null)
                 StopCoroutine(Coroutine);
             PoolManager.Instance.ReturnObjectToPool("audio", this);
         }
@@ -73,7 +73,7 @@ namespace Audio
         {
             base.Pull();
             audioSource.volume = 1f;
-            target = null; 
+            target = null;
         }
         public bool IsLoop()
         {

@@ -8,6 +8,6 @@ public class EquipItemData : ItemData
 
     public void Equip(PlayerInventory equipmanager)
     {
-        equipmanager.ReplaceEquipe(equipType,mesh);
+        equipmanager.ReplaceEquipe(equipType, mesh);
     }
 }

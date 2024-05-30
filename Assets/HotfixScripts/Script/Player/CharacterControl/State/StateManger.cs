@@ -2,7 +2,6 @@ using Animancer;
 using Audio;
 using CharacterControlerStateMachine;
 using HFSM;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StateManger : MonoBehaviour
@@ -29,7 +28,7 @@ public class StateManger : MonoBehaviour
     private void Awake()
     {
         AnimancerHelper = new AnimactorHelper(Animancer);
-         dataBase = new();
+        dataBase = new();
     }
     private void Start()
     {
@@ -39,7 +38,7 @@ public class StateManger : MonoBehaviour
 
         InitState();
 
-        SetStateMachineData("CombatEntity",player.CombatEntity);
+        SetStateMachineData("CombatEntity", player.CombatEntity);
 
 
         controller.Start();
@@ -160,9 +159,9 @@ public class StateManger : MonoBehaviour
         movestate?.HandleLockEnemy(camera.currentLockOnTarget);
     }
 
-    public void SetStateMachineData(string key,object value)
+    public void SetStateMachineData(string key, object value)
     {
-        controller.database.SetData(key,value);
+        controller.database.SetData(key, value);
     }
     private void OnDrawGizmos()
     {

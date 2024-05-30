@@ -12,8 +12,8 @@ namespace Fight
     {
         private Action<CombatAction> PreCreatorAction;
         private Action<CombatAction> PostCreatorAction;
-        private List<Action<CombatAction>> PreTargetActions = new ();
-        private List<Action<CombatAction>> PostTargetActions = new ();
+        private List<Action<CombatAction>> PreTargetActions = new();
+        private List<Action<CombatAction>> PostTargetActions = new();
         /// <summary>
         /// 发起者
         /// </summary>

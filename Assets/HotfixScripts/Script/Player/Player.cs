@@ -1,7 +1,5 @@
 using Fight;
-using UIWindow;
 using UnityEngine;
-using Assets;
 
 [RequireComponent(typeof(CharacterActor))]
 [RequireComponent(typeof(PlayerInventory))]
@@ -32,9 +30,9 @@ public class Player : MonoBehaviour
         CombatEntity.Init(1000);
     }
 
-    public void SetStateMachineData(string key,object value)
+    public void SetStateMachineData(string key, object value)
     {
-        StateManager.SetStateMachineData(key,value);
+        StateManager.SetStateMachineData(key, value);
     }
 
 }

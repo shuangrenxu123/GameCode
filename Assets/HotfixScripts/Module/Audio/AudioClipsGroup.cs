@@ -1,6 +1,3 @@
-using Audio;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Utility;
 
@@ -20,7 +17,7 @@ namespace Audio
         {
             if (audioClips.Length == 1)
                 return audioClips[0];
-            if(sequenceMode == SequenceMode.RandomNoImmediateRepeat)
+            if (sequenceMode == SequenceMode.RandomNoImmediateRepeat)
             {
                 Probability.Shuffle<AudioClip>(ref audioClips);
             }

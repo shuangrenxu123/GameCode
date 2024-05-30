@@ -144,7 +144,7 @@ namespace CharacterControlerStateMachine
             HandleSize(dt);
             HandleVelocity(dt);
             HandleRotation(dt);
-        } 
+        }
         public override void Update()
         {
             if (CharacterActions.roll.Started && CharacterActor.IsGrounded)

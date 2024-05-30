@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 public class ReferenceManager : ModuleSingleton<ReferenceManager>, IModule
 {
@@ -166,7 +165,7 @@ public class ReferenceCollector
         SpawnCount++;
         return item as T;
     }
-    public  object Spawn()
+    public object Spawn()
     {
         object item;
         if (_collector.Count > 0)
@@ -196,7 +195,7 @@ public class ReferenceCollector
         {
             //throw new Exception($"The item {item.GetType()} already exists.");
             UnityEngine.Debug.LogError($"The item {item.GetType()} already exists.");
-            return; 
+            return;
         }
         SpawnCount--;
         _collector.Push(item);

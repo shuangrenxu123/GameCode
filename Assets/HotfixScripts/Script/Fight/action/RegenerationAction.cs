@@ -24,7 +24,7 @@ public class RegenerationAction : CombatAction
 
     protected override void PostProcess(CombatEntity c, CombatEntity t)
     {
-        
+
     }
 
     protected override void PreProcess(CombatEntity c, CombatEntity t)

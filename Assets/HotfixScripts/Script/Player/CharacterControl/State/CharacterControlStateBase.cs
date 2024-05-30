@@ -1,7 +1,4 @@
-using Animancer;
 using HFSM;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class CharacterControlStateBase : StateBase
 {

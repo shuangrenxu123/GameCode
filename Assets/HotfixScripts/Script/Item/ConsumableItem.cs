@@ -7,7 +7,7 @@ public class ConsumableItem
 {
     public ConsumableItemData data;
     public GameObject go;
-    public float effectTime =>data.effectTime;
+    public float effectTime => data.effectTime;
     public ConsumableItem(ConsumableItemData data)
     {
         this.data = data;
@@ -31,7 +31,7 @@ public class ConsumableItem
                 break;
             case ChangeType.Other:
                 break;
-            
+
         }
     }
 

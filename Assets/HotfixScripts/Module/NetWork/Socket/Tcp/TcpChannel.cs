@@ -128,8 +128,8 @@ namespace Network
                     object packet = sendQueue.Dequeue();//取出一个对象
                     packageCoder.EnCode(sendBuffer, packet);//编码并添加到发送数组中
                     sendArgs.SetBuffer(0, sendBuffer.ReadableBytes());//设置缓冲区，0为开始处的位置，后面的参数为可接受的最大数据量
-                    
-                    
+
+
                     bool willRaiseEvent = socket.SendAsync(sendArgs);
                     if (!willRaiseEvent)
                         ProcessSend(sendArgs);

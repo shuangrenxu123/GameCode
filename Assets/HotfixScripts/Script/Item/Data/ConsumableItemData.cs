@@ -19,11 +19,11 @@ public class ConsumableItemData : ItemData
     /// 消耗品所更改的数值
     /// </summary>
     public ChangeType changeType;
-    [Condition("changeType",ConditionAttribute.ConditionType.IsLessThan,ConditionAttribute.VisibilityType.Hidden,5)]
+    [Condition("changeType", ConditionAttribute.ConditionType.IsLessThan, ConditionAttribute.VisibilityType.Hidden, 5)]
     public int value;
 
     public void Effect(CombatEntity me)
-    {        
+    {
         switch (changeType)
         {
             case ChangeType.HP:
@@ -48,9 +48,9 @@ public class ConsumableItemData : ItemData
 
 public enum ChangeType
 {
-    HP=1,
-    MP=2,
-    Atk=3,
-    Def=4,
-    Other=5,
+    HP = 1,
+    MP = 2,
+    Atk = 3,
+    Def = 4,
+    Other = 5,
 }

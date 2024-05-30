@@ -56,7 +56,7 @@ public class Equipmanager : MonoBehaviour
     {
         if (qeuipType == EquipType.helmet)
         {
-            foreach(var h in headWarppers)
+            foreach (var h in headWarppers)
             {
                 h.Mesh.gameObject.SetActive(false);
             }
@@ -64,7 +64,7 @@ public class Equipmanager : MonoBehaviour
         }
 
         EquipRenders.Find(x => x.EquipType == qeuipType).Mesh.sharedMesh = datas;
-        
+
 
     }
     [Serializable]

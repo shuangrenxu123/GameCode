@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UIWindow;
 using UnityEngine;
@@ -68,7 +67,7 @@ public class PlayerStateUI : UIWindowBase
 
     private void OnHPChange(int arg1, int arg2)
     {
-        hp.fillAmount = (float)arg1/arg2;
+        hp.fillAmount = (float)arg1 / arg2;
     }
     #endregion
 }

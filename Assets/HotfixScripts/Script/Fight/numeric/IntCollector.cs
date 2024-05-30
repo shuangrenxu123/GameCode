@@ -1,7 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 /// <summary>
 /// 数值整合，由底层数值组合而成
@@ -45,7 +43,7 @@ public class IntCollector : Number
         }
         UpdateValue();
     }
-    public void RemoveInt(Number value) 
+    public void RemoveInt(Number value)
     {
         if (propertySource.ContainsKey(value.Type))
             propertySource[value.Type].Remove(value);
@@ -56,9 +54,9 @@ public class IntCollector : Number
         if (propertySource.ContainsKey(PropertySourceType.Buff))
             BuffValue = propertySource[PropertySourceType.Buff].Sum(x => x.Value);
         if (propertySource.ContainsKey(PropertySourceType.Equipe))
-            EquipeValue =  propertySource[PropertySourceType.Equipe].Sum(x => x.Value);
+            EquipeValue = propertySource[PropertySourceType.Equipe].Sum(x => x.Value);
         if (propertySource.ContainsKey(PropertySourceType.Self))
-            BaseValue =  propertySource[PropertySourceType.Self].Sum(x => x.Value);
+            BaseValue = propertySource[PropertySourceType.Self].Sum(x => x.Value);
         TotalValue = BuffValue + EquipeValue + BaseValue;
-}
+    }
 }

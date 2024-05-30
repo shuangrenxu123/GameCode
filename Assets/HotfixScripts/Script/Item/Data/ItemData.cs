@@ -19,11 +19,11 @@ public enum ItemType
     /// <summary>
     /// 装备
     /// </summary>
-    Equip=2,
+    Equip = 2,
     /// <summary>
     /// 武器
     /// </summary>
-    Weapon=3,
+    Weapon = 3,
     /// <summary>
     /// 其他
     /// </summary>

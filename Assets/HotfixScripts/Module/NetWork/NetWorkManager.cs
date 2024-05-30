@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -79,7 +78,7 @@ namespace Network
                 else if (handles != null)
                 {
                     handles[package.MsgId]?.Invoke(package);
-                   ReferenceManager.Instance.Release(package);
+                    ReferenceManager.Instance.Release(package);
                 }
 
                 //有可能socket突然断了
@@ -156,7 +155,7 @@ namespace Network
             }
             if (client != null)
             {
-                var t= ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
+                var t = ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
                 //var t = new DefaultNetWorkPackage();
                 t.SenderId = senderid;
                 t.MsgId = Msgid;

@@ -1,7 +1,6 @@
 using Animancer;
 using Audio;
 using CharacterControlerStateMachine;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -67,7 +66,7 @@ public class AttackState : CharacterControlStateBase
         {
             //²¥·ÅÇá¹¥»÷¶¯»­
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-            if(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+            if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
             {
                 AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
             }
@@ -86,7 +85,7 @@ public class AttackState : CharacterControlStateBase
         {
             //todo ÅÐ¶ÏÇáÖØ¹¥»÷
             //todo ÅÐ¶Ï×îºóÒ»»÷
-            if (currentAnimatorIndex == currentWeaponAnimator.lightAttackAnimator_OH.Count -1)
+            if (currentAnimatorIndex == currentWeaponAnimator.lightAttackAnimator_OH.Count - 1)
             {
                 return;
             }
@@ -97,7 +96,7 @@ public class AttackState : CharacterControlStateBase
                 EndDoCombo();
                 CloseWeaponCollider();
                 state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-                if(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+                if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
                 {
                     AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
 
@@ -232,7 +231,7 @@ public class AttackState : CharacterControlStateBase
 
     #region Event Function
     private void CanDoCombo()
-    {   
+    {
         canDoCombo = true;
     }
     private void EndDoCombo()

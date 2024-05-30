@@ -1,5 +1,4 @@
 using BT;
-using FindPath;
 using UnityEngine;
 
 public class BTMoveAction : BTAction
@@ -56,7 +55,7 @@ public class BTMoveAction : BTAction
         }
         return BTResult.Running;
     }
-    protected override  void Exit()
+    protected override void Exit()
     {
         actor.Velocity = Vector3.zero;
         base.Exit();

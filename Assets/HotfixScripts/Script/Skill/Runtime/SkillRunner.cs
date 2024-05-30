@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Animancer;
 using SkillRuntimeClip;
 using SKUnityToolkit.SerializableDictionary;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Timeline;
 
@@ -45,9 +45,9 @@ public class SkillRunner : MonoBehaviour
             OnFinish();
         }
     }
-    public void OnClipUpdate(EventClipType clipType,object arg)
+    public void OnClipUpdate(EventClipType clipType, object arg)
     {
-        if(clipType== EventClipType.Rotation)
+        if (clipType == EventClipType.Rotation)
         {
             float speed = (float)arg;
             var target = dataBase.GetData<Transform>("target");
@@ -71,7 +71,7 @@ public class SkillRunner : MonoBehaviour
                 EventClip clip = null;
                 if (track is AnimationTrack)
                 {
-                    clip = new AnimEventClip(OnClipUpdate,animatorConfig.clipAnimators[e.displayName], anim);
+                    clip = new AnimEventClip(OnClipUpdate, animatorConfig.clipAnimators[e.displayName], anim);
                 }
                 else if (track is AudioTrack)
                 {
@@ -79,16 +79,16 @@ public class SkillRunner : MonoBehaviour
                 }
                 else if (track is ControlTrack)
                 {
-                    clip = new FxEventClip(OnClipUpdate,e.displayName);
+                    clip = new FxEventClip(OnClipUpdate, e.displayName);
                 }
                 else if (track is ColliderTrack)
                 {
                     clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
                 }
-                else if(track is RotationTrack)
+                else if (track is RotationTrack)
                 {
                     var c = e.asset as RotationClip;
-                    clip = new RotationEventClip(OnClipUpdate,actor, c.RotationSpeed);
+                    clip = new RotationEventClip(OnClipUpdate, actor, c.RotationSpeed);
                 }
                 else
                 {

@@ -1,9 +1,8 @@
-using Audio;
 using Assets;
+using Audio;
 using UIWindow;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using Resources = UnityEngine.Resources;
 public class GameUIMgr : UIWindowBase
 {
     [SerializeField]
