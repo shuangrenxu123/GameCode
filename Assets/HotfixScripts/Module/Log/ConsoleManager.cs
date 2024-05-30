@@ -31,7 +31,7 @@ namespace ConsoleLog
             var result = commonController.Execute(command);
             Output(result);
         }
-        private void Output(string info,string color = "0x000000")
+        private void Output(string info,string color = "#FFFFFF")
         {
             OnOutput?.Invoke(info,color);
         }

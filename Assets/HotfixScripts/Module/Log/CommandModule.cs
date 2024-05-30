@@ -69,7 +69,6 @@ namespace ConsoleLog
         {
             commands = new Dictionary<string, Command>();
             var lists = LoadCommands();
-            Debug.Log(lists.Count);
             foreach (var c in lists)
             {
                 commands.Add(c.name, c);

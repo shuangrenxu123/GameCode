@@ -96,10 +96,6 @@ namespace ConsoleLog
                     {
                         isDebugLog = true;
                     }
-                    else if (fullName.EndsWith("UniLog") && sf.GetMethod().Name.Equals("WriteLine"))
-                    {
-                        isDebugLog = true;
-                    }
                 }
             }
             streamWriter.WriteLine(stringBuilder.ToString());
