@@ -10,6 +10,7 @@ public struct CharacterActions
     public BoolAction @attack;
     public BoolAction @crouch;
     public BoolAction @OpenUI;
+    public BoolAction @OpenConsoleUI;
     public Vector2Action @movement;
 
     public void Reset()
@@ -23,6 +24,7 @@ public struct CharacterActions
         attack.Reset();
         crouch.Reset();
         OpenUI.Reset();
+        @OpenConsoleUI.Reset();
     }
     public void InitializeActions()
     {
@@ -50,6 +52,9 @@ public struct CharacterActions
         OpenUI = new BoolAction();
         OpenUI.Initialize();
 
+        OpenConsoleUI = new BoolAction();
+        OpenConsoleUI.Initialize();
+
         movement = new Vector2Action();
     }
     public void Setvalue(CharacterActions characterActions)
@@ -63,6 +68,7 @@ public struct CharacterActions
         attack.value = characterActions.attack.value;
         crouch.value = characterActions.crouch.value;
         OpenUI.value = characterActions.OpenUI.value;
+        OpenConsoleUI.value = characterActions.OpenConsoleUI.value;
     }
 
     public void SetValues(InputHandler inputHandler)
@@ -79,7 +85,7 @@ public struct CharacterActions
         attack.value = inputHandler.GetBool("Attack");
         crouch.value = inputHandler.GetBool("Crouch");
         OpenUI.value = inputHandler.GetBool("OpenUI");
-
+        OpenConsoleUI.value = inputHandler.GetBool("OpenConsole");
     }
     /// <summary>
     /// 用于记录按下时间等
@@ -95,6 +101,7 @@ public struct CharacterActions
         attack.Update(dt);
         crouch.Update(dt);
         OpenUI.Update(dt);
+        OpenConsoleUI.Update(dt);
     }
 }
 [SerializeField]

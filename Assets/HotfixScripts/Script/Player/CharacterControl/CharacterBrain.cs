@@ -17,7 +17,7 @@ public class CharacterBrain : MonoBehaviour
     CharacterActions characterActions = new CharacterActions();
     CharacrerUIActions characterUIActions = new CharacrerUIActions();
 
-    public bool IsUIInput = false;
+    private bool IsUIInput = false;
 
     bool firstUpdateFlag = false;
 
@@ -101,8 +101,6 @@ public class CharacterBrain : MonoBehaviour
     {
         characterActions.InitializeActions();
         characterUIActions.InitalizeAcionts();
-
-
         characterUIActions.Reset();
         characterActions.Reset();
     }

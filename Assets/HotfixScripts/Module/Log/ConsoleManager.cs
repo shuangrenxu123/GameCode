@@ -9,6 +9,7 @@ namespace ConsoleLog
         CommandModule commonController;
 
         public event Action<string,string> OnOutput;
+        public event Action OnSubmit;
         public void OnCreate(object p)
         {
             logFileManager = new();
@@ -26,12 +27,21 @@ namespace ConsoleLog
         {
             logFileManager.LogMessageReceived(info, null, LogType.Log);
         }
+        public void WriteErrorFile(string info)
+        {
+            logFileManager.LogMessageReceived(info, null, LogType.Error);
+        }
+        public void WriteWarningFile(string info)
+        {
+            logFileManager.LogMessageReceived(info, null, LogType.Warning);
+        }
         public void SubmitCommand(string command)
         {  
             var result = commonController.Execute(command);
-            Output(result);
+            OutputToConsole(result);
+            OnSubmit?.Invoke();
         }
-        private void Output(string info,string color = "#FFFFFF")
+        public void OutputToConsole(string info,string color = "#FFFFFF")
         {
             OnOutput?.Invoke(info,color);
         }

@@ -21,14 +21,22 @@ public class CommandUI : UIWindowBase
         logStack = new Stack<Text>();
         input.onSubmit.AddListener((string text) => Submit(text));
         ConsoleManager.Instance.OnOutput += OutputPanel;
+        
     }
-
-    private void OutputPanel(string arg1, string arg2)
+    public override void OnUpdate()
+    {
+        if (UIInput.cancel.Started)
+        {
+            CharacterBrain.DisableUIInput();
+            UIManager.Instance.CloseUI(GetType());
+        }
+    }
+    private void OutputPanel(string arg1, string col)
     {
         if (arg1 != "" && arg1 != string.Empty && arg1 != null)
         {
             var go = Instantiate(Text, parent.transform);
-            if(ColorUtility.TryParseHtmlString(arg2,out var color))
+            if(ColorUtility.TryParseHtmlString(col,out var color))
             {
                 go.color = color;
             }
