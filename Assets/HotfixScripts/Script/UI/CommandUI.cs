@@ -1,4 +1,5 @@
 using ConsoleLog;
+using Network;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,6 +22,8 @@ public class CommandUI : UIWindowBase
         logStack = new Stack<Text>();
         input.onSubmit.AddListener((string text) => Submit(text));
         ConsoleManager.Instance.OnOutput += OutputPanel;
+
+        //NetWorkManager.Instance.RegisterHandle();
         
     }
     public override void OnUpdate()
@@ -51,8 +54,17 @@ public class CommandUI : UIWindowBase
 
     private void Submit(string text)
     {
-        ConsoleManager.Instance.SubmitCommand(text);
+        var mianText = text.AsSpan();
+        bool isCommand = text[0] == '/';
+        if (isCommand)
+        {
+            ConsoleManager.Instance.SubmitCommand(mianText.Slice(1, text.Length - 1).ToString());
+        }
+        else
+        {
+            ConsoleManager.Instance.OutputToConsole(text);
+        }
         input.text = string.Empty;
-        
     }
+    
 }
