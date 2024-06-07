@@ -60,5 +60,8 @@ public class GameUIMgr : UIWindowBase
     public override void OnDelete()
     {
         CloseOtherPanel();
+        GetUIEvnetListener("Bag").PointerClick -= OpenBagPanel;
+        GetUIEvnetListener("Network").PointerClick -= OpenNetworkPanel;
+        GetUIEvnetListener("Equipment").PointerClick -= OpenEquipmentUI;
     }
 }

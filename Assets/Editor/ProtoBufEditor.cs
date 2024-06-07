@@ -6,8 +6,8 @@ using UnityEditor;
 
 public class ProtoBufTool
 {
-    private static string targetDir = Environment.CurrentDirectory + "Assets/HotfixScripts/Module/NetWork/Proto";
-    private static string protobufFileDir = Environment.CurrentDirectory + "Assets/HotfixScripts/Module/NetWork/Proto";
+    private static string targetDir = Environment.CurrentDirectory + "/Assets/HotfixScripts/Module/NetWork/Proto";
+    private static string protobufFileDir = Environment.CurrentDirectory + "/Assets/HotfixScripts/Module/NetWork/Proto";
 
     [MenuItem("打包/生成Protobuf类")]
     public static void AllProto2CS()

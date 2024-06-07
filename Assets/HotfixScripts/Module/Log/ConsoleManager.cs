@@ -1,3 +1,4 @@
+using Network;
 using System;
 using UnityEngine;
 using static UnityEditor.Rendering.CameraUI;
@@ -17,6 +18,16 @@ namespace ConsoleLog
 #if !UNITY_EDITOR
             Application.logMessageReceivedThreaded += LogMessageReceived;
 #endif
+            NetWorkManager.Instance.RegisterHandle(5, ReceiveNetMessage);
+        }
+
+        private void ReceiveNetMessage(DefaultNetWorkPackage arg0)
+        {
+            var message = arg0.Msgobj as PlayerInfo.PlayerMessage;
+            if (message != null)
+            {
+                OutputToConsole(message.Mes);
+            }
         }
 
         private void LogMessageReceived(string condition, string stackTrace, LogType type)
@@ -55,6 +66,5 @@ namespace ConsoleLog
             logFileManager.Dispose();
 #endif
         }
-
     }
 }

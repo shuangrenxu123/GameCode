@@ -33,8 +33,8 @@ namespace PlayerInfo {
             "aW9uEhIKCmFjdGlvbm5hbWUYASABKAkilAEKBUxvZ2luEhQKDGxlZnRXZWFw",
             "b25pZBgBIAEoBRIVCg1yaWdodFdlYXBvbmlkGAIgASgFEg4KBmhlYWRpZBgD",
             "IAEoBRIOCgZib2R5aWQYBCABKAUSEAoIdHJvdXNlcnMYBSABKAUSDQoFbGVn",
-            "aWQYBiABKAUSDQoFYXJtaWQYByABKAUSDgoGaGFuZGlkGAggASgFYgZwcm90",
-            "bzM="));
+            "aWQYBiABKAUSDQoFYXJtaWQYByABKAUSDgoGaGFuZGlkGAggASgFIhwKDVBs",
+            "YXllck1lc3NhZ2USCwoDbWVzGAEgASgJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
@@ -43,7 +43,8 @@ namespace PlayerInfo {
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Timer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Action), global::PlayerInfo.Action.Parser, new[]{ "Actionname" }, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Login), global::PlayerInfo.Login.Parser, new[]{ "LeftWeaponid", "RightWeaponid", "Headid", "Bodyid", "Trousers", "Legid", "Armid", "Handid" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Login), global::PlayerInfo.Login.Parser, new[]{ "LeftWeaponid", "RightWeaponid", "Headid", "Bodyid", "Trousers", "Legid", "Armid", "Handid" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.PlayerMessage), global::PlayerInfo.PlayerMessage.Parser, new[]{ "Mes" }, null, null, null)
           }));
     }
     #endregion
@@ -1201,6 +1202,135 @@ namespace PlayerInfo {
           }
           case 64: {
             Handid = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed partial class PlayerMessage : pb::IMessage<PlayerMessage> {
+    private static readonly pb::MessageParser<PlayerMessage> _parser = new pb::MessageParser<PlayerMessage>(() => new PlayerMessage());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<PlayerMessage> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[6]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PlayerMessage() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PlayerMessage(PlayerMessage other) : this() {
+      mes_ = other.mes_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public PlayerMessage Clone() {
+      return new PlayerMessage(this);
+    }
+
+    /// <summary>Field number for the "mes" field.</summary>
+    public const int MesFieldNumber = 1;
+    private string mes_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Mes {
+      get { return mes_; }
+      set {
+        mes_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as PlayerMessage);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(PlayerMessage other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Mes != other.Mes) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (Mes.Length != 0) hash ^= Mes.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (Mes.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(Mes);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (Mes.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Mes);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(PlayerMessage other) {
+      if (other == null) {
+        return;
+      }
+      if (other.Mes.Length != 0) {
+        Mes = other.Mes;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Mes = input.ReadString();
             break;
           }
         }

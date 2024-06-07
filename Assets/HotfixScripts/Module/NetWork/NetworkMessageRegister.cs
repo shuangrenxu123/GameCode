@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 namespace Network
 {
+    /// <summary>
+    /// 消息处理器，该如何反序列化接收到的消息
+    /// </summary>
     public class NetworkMessageRegister
     {
         private static Dictionary<int, Type> types = new Dictionary<int, Type>();
@@ -19,6 +22,7 @@ namespace Network
             RegisterMessageType(1, typeof(PlayerInfo.move));
             RegisterMessageType(2, typeof(PlayerInfo.Action));
             RegisterMessageType(4, typeof(PlayerInfo.Login));
+            RegisterMessageType(5, typeof(PlayerInfo.PlayerMessage));
         }
         /// <summary>
         /// 注册非热更的消息类型
