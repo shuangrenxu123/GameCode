@@ -13,6 +13,7 @@ public class CommandUI : UIWindowBase
     public TMP_InputField input;
     [SerializeField] Text Text;
     [SerializeField] GameObject parent;
+    [SerializeField] Transform tipsParent;
     #region Message
     private Stack<Text> logStack;
     private const int MAXCOUNT = 20;
@@ -28,9 +29,13 @@ public class CommandUI : UIWindowBase
     {
         logStack = new Stack<Text>();
         commandStack = new();
-        input.onSubmit.AddListener((string text) => Submit(text));
+        input.onSubmit.AddListener((string text) => SubmitCommand(text));
+        input.onValueChanged.AddListener((string text)=>GetCommandTips(text));
+
         ConsoleManager.Instance.OnOutput += OutputPanel;
 
+
+        input.ActivateInputField();
         player = FindFirstObjectByType<Player>();
         
     }
@@ -51,7 +56,7 @@ public class CommandUI : UIWindowBase
             {
                 go.color = color;
             }
-            go.text = $"[{player.id}] : {arg1}";
+            go.text = arg1;
             logStack.Push(go);
             logCount += 1;
         }
@@ -62,7 +67,7 @@ public class CommandUI : UIWindowBase
     {
         ConsoleManager.Instance.OnOutput -= OutputPanel;
     }
-    private void Submit(string text)
+    private void SubmitCommand(string text)
     {
         if (text == "" || text == string.Empty)
         {
@@ -76,9 +81,12 @@ public class CommandUI : UIWindowBase
         }
         else
         {
-            ConsoleManager.Instance.OutputToConsole(text);
+            var tempText = $"[{player.id}] : {text}";
+            ConsoleManager.Instance.OutputToConsole(tempText);
+            SendPlayerMessage(tempText);
         }
         input.text = string.Empty;
+        //UIManager.Instance.CloseUI<CommandUI>();
     }
 
     private void SendPlayerMessage(string mess)
@@ -88,6 +96,36 @@ public class CommandUI : UIWindowBase
             NetWorkManager.Instance.SendMessage(player.id, 5, new PlayerInfo.PlayerMessage { Mes = mess });
         }
 
+    }
+    /// <summary>
+    /// 获得命令提示
+    /// </summary>
+    /// <param name="inputText"></param>
+    private void GetCommandTips(string inputText)
+    {
+        tipsParent.RemoveAllChildren();
+        //todo 加上参数的提示
+        if (inputText == "")
+            return;
+        bool isCommand = inputText[0] == '/';
+        if (!isCommand)
+            return;
+        var names = ConsoleManager.Instance.CommandsNames;
+        var tempList = new List<string>();
+        var mainText = inputText.AsSpan().Slice(1, inputText.Length-1).ToString();
+        foreach (var c in names)
+        {
+            if (c.Contains(mainText))
+            {
+                tempList.Add(c);
+            }
+        }
+
+        foreach (var i in tempList)
+        {
+            var go = Instantiate(Text, tipsParent);
+            go.text = i;
+        }
     }
 
 }

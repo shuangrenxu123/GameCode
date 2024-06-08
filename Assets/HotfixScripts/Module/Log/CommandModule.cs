@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Unity.Burst.Intrinsics;
 using UnityEngine;
@@ -65,13 +66,22 @@ namespace ConsoleLog
     public class CommandModule
     {
         private Dictionary<string, Command> commands;
+
+        public List<string> CommandNames =>commands.Keys.ToList();
         public CommandModule()
         {
             commands = new Dictionary<string, Command>();
             var lists = LoadCommands();
             foreach (var c in lists)
             {
-                commands.Add(c.name, c);
+                if (commands.ContainsKey(c.name))
+                {
+                    Debug.LogError("Command ÷ÿ∏¥");
+                }
+                else
+                {
+                    commands.Add(c.name, c);
+                }
             }
         }
         public string Execute(string c)

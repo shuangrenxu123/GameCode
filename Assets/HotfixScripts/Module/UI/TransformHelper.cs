@@ -23,4 +23,13 @@ public static class TransformHelper
         }
         return null;
     }
+    public static void RemoveAllChildren(this Transform parent)
+    {
+        Transform transform;
+        for (int i = 0; i < parent.transform.childCount; i++)
+        {
+            transform = parent.transform.GetChild(i);
+            GameObject.Destroy(transform.gameObject);
+        }
+    }
 }
