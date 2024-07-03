@@ -23,9 +23,6 @@ public class NetObj : MonoBehaviour
     #region Animator
 
     private AnimactorHelper animacer;
-
-
-
     private LinearMixerTransition currentAnimator;
     [SerializeField]
     CCAnimatorConfig config;

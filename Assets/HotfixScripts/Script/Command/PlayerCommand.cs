@@ -3,9 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCommand
+public class PlayerCommand : MonoBehaviour 
 {
     static Player player;
+
+    private void Start()
+    {
+        player = FindFirstObjectByType<Player>();
+    }
     [Command("PlayerInfo")]
     static void PrintPlayerInfo()
     {
@@ -15,5 +20,10 @@ public class PlayerCommand
     static void AddItem(int id,int num = 1)
     {
         ConsoleManager.Instance.OutputToConsole($"获得物品{num}个");
+    }
+    [Command("AddBuff")]
+    static void AddBuff(string name)
+    {
+        player.CombatEntity.buffManager.AddBuff(name);
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -117,7 +118,7 @@ public class LoadDll : MonoBehaviour
         GameObject gm = Instantiate(prefabAb.LoadAsset<GameObject>("GameManager.prefab"));
         DontDestroyOnLoad(gm);
         GameObject canves = Instantiate(prefabAb.LoadAsset<GameObject>("Canvas.prefab"));
-        Debug.Log(11111);
+
         //SceneManager.LoadScene("CharacterControlTest");
 
     }

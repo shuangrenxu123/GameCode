@@ -1,6 +1,9 @@
 using ObjectPool;
+using System;
 using System.Collections;
+using System.Drawing.Drawing2D;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Audio
 {
@@ -9,9 +12,25 @@ namespace Audio
         private AudioSource audioSource;
         private Coroutine Coroutine;
         private Transform target;
+
+        public UnityAction OnPlay;
+        /// <summary>
+        /// 播放完毕事件
+        /// </summary>
+        public UnityAction OnEnd;
+        public UnityAction OnPause;
+        /// <summary>
+        /// 手动停止事件
+        /// </summary>
+        public UnityAction OnStop;
         public override void Init()
         {
             audioSource = gameObject.AddComponent<AudioSource>();
+
+            OnPlay = null;
+            OnStop = null;
+            OnPause = null;
+            OnEnd = null;
         }
         public void PlayAudio(AudioClip clip, bool hasLoop)
         {
@@ -19,6 +38,7 @@ namespace Audio
             audioSource.loop = hasLoop;
             audioSource.time = 0f;
             audioSource.Play();
+            OnPlay?.Invoke();
             if (!hasLoop)
                 Coroutine = StartCoroutine(FinishedPlaying(audioSource.clip.length));
         }
@@ -59,6 +79,7 @@ namespace Audio
         public void Stop()
         {
             audioSource.Stop();
+            OnStop?.Invoke();
             if (Coroutine != null)
                 StopCoroutine(Coroutine);
             PoolManager.Instance.ReturnObjectToPool("audio", this);
@@ -67,6 +88,7 @@ namespace Audio
         {
             yield return new WaitForSeconds(clipLength);
             //完成以后自己回收
+            OnEnd?.Invoke();
             PoolManager.Instance.ReturnObjectToPool("audio", this);
         }
         public override void Pull()

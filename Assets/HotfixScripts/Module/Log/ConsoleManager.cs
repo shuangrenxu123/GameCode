@@ -2,7 +2,6 @@ using Network;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.Rendering.CameraUI;
 namespace ConsoleLog
 {
     public class ConsoleManager : ModuleSingleton<ConsoleManager>, IModule

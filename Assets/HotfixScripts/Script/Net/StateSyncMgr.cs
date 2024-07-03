@@ -120,7 +120,7 @@ public class StateSyncMgr : MonoBehaviour
     {
         var go = Instantiate(prefab, Vector3.zero, Quaternion.identity);
         //go.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = name;
-        go.AddComponent<NetObj>().id = name;
+        go.GetComponent<NetObj>().id = name;
         return go.GetComponent<NetObj>();
     }
 }

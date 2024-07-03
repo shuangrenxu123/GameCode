@@ -45,10 +45,14 @@ public class BuffManager
             buff.OnTrigger();
         }
     }
-
-    public BuffBase AddBuff(string buffName, CombatEntity creater)
+    public void AddBuff(string buffName, CombatEntity creater)
     {
         var buff = BuffFactory.CreateBuff(buffName, creater, this);
+        if(buff == null)
+        {
+            Debug.Log($"{buffName} : 不存在");
+            return ;
+        }
         bool canAdd = buff.data.Tag.ToList().Intersect(_mutexTags.ToList()).Count() == 0;
         if (canAdd)
         {
@@ -57,7 +61,7 @@ public class BuffManager
                 if (buffName == i.data.name)
                 {
                     i.OnRefresh();
-                    return i;
+                    return ;
                 }
             }
             buff.OnAdd();
@@ -67,9 +71,13 @@ public class BuffManager
                 _tags.Add(i);
             }
             OnAddBuff?.Invoke(buff);
-            return buff;
+            return ;
         }
-        return null;
+        return ;
+    }
+    public void AddBuff(string buffName)
+    {
+        AddBuff(buffName,entity);
     }
     public void RemoveBuff(BuffBase buff)
     {

@@ -24,11 +24,12 @@ public class CharacterUiController : MonoBehaviour
             var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "GameUI.prefab");
             UIManager.Instance.OpenUI<GameUIMgr>(ui.GetComponent<GameUIMgr>());
         }
-        if (InputActions.OpenConsoleUI.Started) {
+        if (InputActions.OpenConsoleUI.Started)
+        {
             CharacterBrain.EnableUIIpnut();
-            var ui = Resources.Load<GameObject>("ConsoleUI");
+            //var ui = Resources.Load<GameObject>("ConsoleUI");
             
-            //var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "GameUI.prefab");
+            var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "ConsoleUI.prefab");
             UIManager.Instance.OpenUI<CommandUI>(ui.GetComponent<CommandUI>());
 
         }

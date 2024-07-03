@@ -22,6 +22,7 @@ public class CommandUI : UIWindowBase
     #region Command
     private List<string> commandStack;//历史命令
     private int currentCommandIndex = 0;
+    private List<string> tipsCommand;
     #endregion
 
     Player player;
@@ -29,6 +30,7 @@ public class CommandUI : UIWindowBase
     {
         logStack = new Stack<Text>();
         commandStack = new();
+        tipsCommand = new();
         input.onSubmit.AddListener((string text) => SubmitCommand(text));
         input.onValueChanged.AddListener((string text)=>GetCommandTips(text));
 
@@ -111,21 +113,34 @@ public class CommandUI : UIWindowBase
         if (!isCommand)
             return;
         var names = ConsoleManager.Instance.CommandsNames;
-        var tempList = new List<string>();
+        tipsCommand.Clear();
         var mainText = inputText.AsSpan().Slice(1, inputText.Length-1).ToString();
         foreach (var c in names)
         {
             if (c.Contains(mainText))
             {
-                tempList.Add(c);
+                tipsCommand.Add(c);
             }
         }
 
-        foreach (var i in tempList)
+        foreach (var i in tipsCommand)
         {
             var go = Instantiate(Text, tipsParent);
             go.text = i;
         }
+    }
+    /// <summary>
+    /// 补全指令
+    /// </summary>
+    private void FillCommand()
+    {
+    }
+    /// <summary>
+    /// 切换补全指令
+    /// </summary>
+    private void SwitchFillCommand()
+    {
+
     }
 
 }
