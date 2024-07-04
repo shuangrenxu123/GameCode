@@ -4,8 +4,8 @@ public class RigidbodyComponent3D : RigidbodyComponent
 {
     new Rigidbody rigidbody = null;
     public override float Mass { get => rigidbody.mass; set => rigidbody.mass = value; }
-    public override float LinerDrag { get => rigidbody.drag; set => rigidbody.drag = value; }
-    public override float AngularDrag { get => rigidbody.angularDrag; set => rigidbody.angularDrag = value; }
+    public override float LinerDrag { get => rigidbody.linearDamping; set => rigidbody.linearDamping = value; }
+    public override float AngularDrag { get => rigidbody.angularDamping; set => rigidbody.angularDamping = value; }
     public override bool IsKinematic
     {
         get => rigidbody.isKinematic;
@@ -33,7 +33,7 @@ public class RigidbodyComponent3D : RigidbodyComponent
     public override RigidbodyConstraints Constraints { get => rigidbody.constraints; set => rigidbody.constraints = value; }
     public override Vector3 Position { get => rigidbody.position; set => rigidbody.position = value; }
     public override Quaternion Rotation { get => rigidbody.rotation; set => rigidbody.rotation = value; }
-    public override Vector3 Velocity { get => rigidbody.velocity; set => rigidbody.velocity = value; }
+    public override Vector3 Velocity { get => rigidbody.linearVelocity; set => rigidbody.linearVelocity = value; }
     public override Vector3 AngularVelocity { get => rigidbody.angularVelocity; set => rigidbody.angularVelocity = value; }
     protected override bool IsUsingContinuousCollisionDetection => rigidbody.collisionDetectionMode > 0;
     public override void AddExplosionForceToRigidbody(float explosionForce, Vector3 explosionPosition, float explosionRadius, float upwardsModeifier = 0)

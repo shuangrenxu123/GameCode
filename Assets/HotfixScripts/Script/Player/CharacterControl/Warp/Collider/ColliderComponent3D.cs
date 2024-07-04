@@ -12,7 +12,7 @@ public abstract class ColliderComponent3D : ColliderComponent
 
     public List<Collider> FilteredOverlaps { get; protected set; } = new List<Collider>(10);
 
-    public PhysicMaterial Material
+    public PhysicsMaterial Material
     {
         get => collider.sharedMaterial;
         set => collider.sharedMaterial = value;
@@ -63,13 +63,13 @@ public abstract class ColliderComponent3D : ColliderComponent
 
     protected int FilterVaidOverlaps(int hits, Collider[] unfilterOverlaps, List<Collider> filteredOverlaps, OverlapFilterDelegate3D Filter)
     {
-        //Çå³ýÏÖÓÐµÄcollider
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½collider
         filteredOverlaps.Clear();
         for (int i = 0; i < hits; i++)
         {
             Collider collider = unfilterOverlaps[i];
 
-            ///¹ýÂËµôÄÄÐ©²»ÐèÒªµÄ
+            ///ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ð©ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½
             if (Filter != null)
             {
                 bool validHit = Filter(collider);
@@ -83,7 +83,7 @@ public abstract class ColliderComponent3D : ColliderComponent
     }
 
     /// <summary>
-    /// ÄÚ²¿µÄ¼ì²â¹ýÂË£¨Filter  ¹ýÂË£©
+    /// ï¿½Ú²ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ë£ï¿½Filter  ï¿½ï¿½ï¿½Ë£ï¿½
     /// </summary>
     /// <param name="collider"></param>
     /// <returns></returns>
@@ -96,11 +96,11 @@ public abstract class ColliderComponent3D : ColliderComponent
     protected override void Awake()
     {
         base.Awake();
-        PhysicMaterial material = new PhysicMaterial("Frictionless 3D");
+        PhysicsMaterial material = new PhysicsMaterial("Frictionless 3D");
         material.staticFriction = 0f;
         material.dynamicFriction = 0f;
-        material.frictionCombine = PhysicMaterialCombine.Minimum;
-        material.bounceCombine = PhysicMaterialCombine.Minimum;
+        material.frictionCombine = PhysicsMaterialCombine.Minimum;
+        material.bounceCombine = PhysicsMaterialCombine.Minimum;
         material.bounciness = 0f;
 
         collider.sharedMaterial = material;
