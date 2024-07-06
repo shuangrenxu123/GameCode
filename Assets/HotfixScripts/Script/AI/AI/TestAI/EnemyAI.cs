@@ -21,8 +21,6 @@ public class EnemyAI : BTTree
     public override void SetNode()
     {
         var rootNode = new BTSequence();
-
-
         var randomNode = new BTRandomTargetPosition("寻找随机巡逻点")
         {
             Range = new Vector2(10, 10),
@@ -31,10 +29,8 @@ public class EnemyAI : BTTree
 
         rootNode.AddChild(randomNode);
         rootNode.AddChild(new BTMoveAction("移动", 2));
-        rootNode.AddChild(new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test"), "combo1"));
-
-
-        //rootNode.AddChild(rootNode);
+        var node = new BTProbability(10, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("BuffTest"), "test"));
+        rootNode.AddChild(node);
 
         root = rootNode;
     }

@@ -46,11 +46,12 @@ public class DamageCollider : MonoBehaviour
             {
                 return;
             }
+            Debug.Log("¹¥»÷µ½:"+enemy.name);
             characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
-            new DamageAction(entity, new CombatEntity[] { target }).Apply(10);
+            new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
             target.TakeDamageFx(directionHitFrom);
         }
     }

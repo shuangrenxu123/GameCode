@@ -49,7 +49,6 @@ namespace BT
         }
         public override void Clear()
         {
-            base.Clear();
             if (_activeChildIndex > -1)
             {
                 for (int i = _activeChildIndex; i < children.Count; i++)

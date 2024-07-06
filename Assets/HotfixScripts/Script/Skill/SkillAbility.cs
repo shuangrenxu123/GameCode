@@ -1,3 +1,4 @@
+using Skill;
 using UnityEngine;
 public class SkillAbility
 {
@@ -8,6 +9,10 @@ public class SkillAbility
     {
         SkillPrefab = p;
         this.data = data;
+    }
+    public bool CheckCondition()
+    {
+        return true;
     }
     public GameObject CreateExecution(Vector3 pos)
     {

@@ -13,14 +13,6 @@ namespace BT
 
         public int activeChildIndex { get { return _activeChildIndex; } }
 
-        public override void Clear()
-        {
-            base.Clear();
-            foreach (BTNode child in children)
-            {
-                child.Clear();
-            }
-        }
         public override BTResult Tick()
         {
             if (children.Count == 0)

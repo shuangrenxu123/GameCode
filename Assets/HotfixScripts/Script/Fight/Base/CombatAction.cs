@@ -21,7 +21,7 @@ namespace Fight
         /// <summary>
         /// 对象
         /// </summary>
-        public CombatEntity[] Target { get; set; }
+        public List<CombatEntity> Target { get; set; }
         /// <summary>
         /// 前置
         /// </summary>
@@ -34,7 +34,6 @@ namespace Fight
         /// 后续
         /// </summary>
         protected abstract void PostProcess(CombatEntity c, CombatEntity t);
-
         public void AddPreCreatorAction(Action<CombatAction> action)
         {
             PreCreatorAction = action;

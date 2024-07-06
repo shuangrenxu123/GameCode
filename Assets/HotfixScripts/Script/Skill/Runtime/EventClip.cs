@@ -1,4 +1,5 @@
 using Animancer;
+using Fight;
 using System;
 using UnityEngine;
 
@@ -102,22 +103,24 @@ namespace SkillRuntimeClip
 
         }
     }
-    class FxEventClip : EventClip
+    class SkillGenerateClip : EventClip
     {
         /// <summary>
         /// 特效的名字
         /// </summary>
         private string name;
-        public FxEventClip(Action<EventClipType, object> action, string name) : base(action)
+        private SkillSystem system;
+        public SkillGenerateClip(Action<EventClipType, object> action, string name,SkillSystem skillsystem) : base(action)
         {
             this.name = name;
-
+            this.system = skillsystem;
         }
 
-        protected override EventClipType clipType => throw new NotImplementedException();
+        protected override EventClipType clipType => EventClipType.Skill;
 
         public override void OnStart()
         {
+            system.GenerateSkill(name);
             //go.gameObject.SetActive(true);
             base.OnStart();
         }
@@ -178,5 +181,6 @@ namespace SkillRuntimeClip
         Rotation,
         Collider,
         Animator,
+        Skill,
     }
 }

@@ -1,4 +1,5 @@
 using Fight;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PoisonedBuff : BuffBase
@@ -17,7 +18,7 @@ public class PoisonedBuff : BuffBase
     {
         if (nowtime >= deltaTime * count)
         {
-            new DamageAction(BuffManager.entity, new CombatEntity[] { BuffManager.entity }).Apply(10);
+            new DamageAction(BuffManager.entity, new List<CombatEntity> { BuffManager.entity }).Apply(10);
             count += 1;
         }
     }

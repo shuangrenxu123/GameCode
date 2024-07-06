@@ -58,7 +58,9 @@ namespace Fight
         /// 承受伤害后
         /// </summary>
         PostReceiveDamage,
+        ///<summary>
         ///恢复生命值之前
+        /// </summary>
         PreRestoreHP,
         /// <summary>
         /// 恢复生命值之后

@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace BT
 {
     /// <summary>
@@ -7,9 +9,20 @@ namespace BT
     {
         protected BTNode root = null;
         public DataBase database;
+
+        protected float time = 0.02f;
+        private float timer = 0;
         public void Update()
         {
-            root.Tick();
+            if (timer < time)
+            {
+                timer += Time.deltaTime;
+            }
+            else
+            {
+                timer = 0;
+                root.Tick();
+            }
         }
         public abstract void SetNode();
         public virtual void Init(DataBase d = null)

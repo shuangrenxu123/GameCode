@@ -42,5 +42,13 @@ namespace BT
         {
             children.Remove(node);
         }
+        public override void Clear()
+        {
+            base.Clear();
+            foreach (BTNode child in children)
+            {
+                child.Clear();
+            }
+        }
     }
 }

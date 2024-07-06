@@ -17,7 +17,7 @@ namespace Utility
             if (PValue > 100)
                 return true;
             int p = Random.Range(0, 100);
-            return PValue <= p;
+            return PValue >= p;
         }
         /// <summary>
         /// 轮盘赌算法，返回所对应区间下标

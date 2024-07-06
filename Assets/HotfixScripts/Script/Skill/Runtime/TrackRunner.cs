@@ -6,12 +6,15 @@ public class TrackRunner
 {
     public bool hasFinished = false;
     private float currentTime = 0;
+    private float lastTime;
+    private float nowTime;
     private int currentClip = 0;
     public List<EventClip> events = new List<EventClip>();
     public void AddEvent(EventClip clip)
     {
         clip.Init();
         events.Add(clip);
+        lastTime = Time.time;
     }
     public void UpdateEvent()
     {
@@ -21,7 +24,9 @@ public class TrackRunner
             hasFinished = true;
             return;
         }
-        currentTime += Time.deltaTime;
+        nowTime = Time.time;
+        currentTime += nowTime - lastTime;
+        lastTime = nowTime;
         int i = currentClip;
         if (currentTime < events[i].StartTime)
         {

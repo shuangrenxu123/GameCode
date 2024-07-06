@@ -1,10 +1,11 @@
-using SKUnityToolkit.SerializableDictionary;
+
+using AYellowpaper.SerializedCollections;
 using System.Collections.Generic;
 using UnityEngine;
 public class PickUpItem : Interactable
 {
     [SerializeField]
-    List<SerializableDictionary<ItemData, int>> ItemDataConfig;
+    List<SerializedDictionary<ItemData, int>> ItemDataConfig;
     public override void Interact(Player playerManager)
     {
         if (ItemDataConfig == null)

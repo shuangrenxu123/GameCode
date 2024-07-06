@@ -1,10 +1,11 @@
+using System.Collections.Generic;
 using UnityEngine;
 namespace Fight
 {
     public class DamageAction : CombatAction
     {
         public IntCollector damage;
-        public DamageAction(CombatEntity creater, CombatEntity[] targets)
+        public DamageAction(CombatEntity creater, List<CombatEntity> targets)
         {
             Creator = creater;
             Target = targets;

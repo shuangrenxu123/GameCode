@@ -1,4 +1,5 @@
 using Fight;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// 属性可消耗品
@@ -19,7 +20,7 @@ public class ConsumableItem
             case ChangeType.HP:
                 if (data.value >= 0)
                 {
-                    var action = new RegenerationAction(me, new CombatEntity[] { me });
+                    var action = new RegenerationAction(me, new List<CombatEntity> { me });
                     action.Apply(data.value);
                 }
                 break;

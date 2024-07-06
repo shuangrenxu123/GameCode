@@ -1,5 +1,8 @@
 namespace BT
 {
+    /// <summary>
+    /// ÷ÿ ‘Ω⁄µ„
+    /// </summary>
     public class BTRepeat : BTDecorator
     {
         public BTRepeat(BTNode child) : base(child)
