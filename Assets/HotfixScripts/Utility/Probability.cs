@@ -1,5 +1,7 @@
+using System;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Utility
 {
@@ -51,6 +53,37 @@ namespace Utility
                 pokeArr[i] = pokeArr[randomIndex];
                 pokeArr[randomIndex] = temp;
             }
+        }
+
+/// <summary>
+/// 通过二次贝叶斯概率返回一个bool值
+/// </summary>
+/// <param name="a">A事件发生的次数</param>
+/// <param name="ac">A发生以后C事件发生的次数，该值不可能大于A</param>
+/// <param name="b">B事件发生的次数，该事件与A事件对</param>
+/// <param name="bc">B发生以后C发生的次数，该值不可能大于就B</param>
+/// <returns> C发生的情况下他是不是A事件 </returns>
+        public static bool BayesianProbability(int a ,int ac,int b,int bc)
+        {
+            if(ac > a || bc  > b)
+            {
+                throw new Exception("传入的参数有问题");
+            }
+        
+
+            int allEventCount = a + b;
+
+            if(allEventCount == 0 || a == 0 || b == 0){
+                return true;
+            }
+
+            var p1 = (ac / a);
+            var p2 = a/ allEventCount;
+            
+            var probability = (p1 * p2 ) / (p1* p2 + (bc / b) * (1 - p2));
+
+            return GetBool(probability * 100);
+            
         }
     }
 }

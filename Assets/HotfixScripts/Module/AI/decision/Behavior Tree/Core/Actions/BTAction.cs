@@ -36,6 +36,10 @@ namespace BT
                 status = BTActionStatus.Ready;
             }
         }
+        /// <summary>
+        /// 获得运行状态，一般不需要重写该方法
+        /// </summary>
+        /// <returns></returns>
         public override BTResult Tick()
         {
             BTResult result = BTResult.Success;

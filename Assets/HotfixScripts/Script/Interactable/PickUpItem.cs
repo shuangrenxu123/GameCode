@@ -5,7 +5,13 @@ using UnityEngine;
 public class PickUpItem : Interactable
 {
     [SerializeField]
-    List<SerializedDictionary<ItemData, int>> ItemDataConfig;
+    struct IDWithCount
+    {
+        public ItemData data;
+        public int count;
+    }
+    [SerializeField]
+    List<IDWithCount> ItemDataConfig;
     public override void Interact(Player playerManager)
     {
         if (ItemDataConfig == null)
@@ -16,10 +22,10 @@ public class PickUpItem : Interactable
         Debug.Log($"与物体{name}产生了交互");
         foreach (var item in ItemDataConfig)
         {
-            foreach (var key in item)
-            {
-                playerManager.Inventory.AddItem(key.Key, key.Value);
-            }
+
+            
+                playerManager.Inventory.AddItem(item.data, item.count);
+            
         }
         Destroy(gameObject);
     }

@@ -9,10 +9,6 @@ public class EventManager : ModuleSingleton<EventManager>, IModule
     {
     }
 
-    public void OnGUI()
-    {
-    }
-
     public void OnUpdate()
     {
     }
