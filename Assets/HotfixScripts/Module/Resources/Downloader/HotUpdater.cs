@@ -97,7 +97,7 @@ namespace Downloader
                 readyList.Enqueue(downlaoder.fileInfo);
             }
         }
-        private async void DownloadedCallBack(FileDownloader downloader)
+        private void DownloadedCallBack(FileDownloader downloader)
         {
             try
             {

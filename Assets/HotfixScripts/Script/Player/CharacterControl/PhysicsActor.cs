@@ -12,7 +12,6 @@ public abstract class PhysicsActor : MonoBehaviour
     public bool interpolaterActor = true;
     [Tooltip("是否启用连续检测，避免穿墙的情况")]
     public bool useContinuousCollisionDetection = true;
-    public bool Is2D = false;
     [Tab("Root Motion")]
     //在爬梯子等情况下我们会需要用到rootmotion
     [Tooltip("是否启用了RootMotion")]

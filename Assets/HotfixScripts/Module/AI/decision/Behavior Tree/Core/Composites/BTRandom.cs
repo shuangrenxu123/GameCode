@@ -6,7 +6,7 @@ namespace BT
 {
     public class BTRandom : BTComposite
     {
-        private List<int> probability;
+        private List<int> probability = new();
         BTNode currentNode;
         public BTComposite AddChild(int prob,BTNode node)
         {
