@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCommand : MonoBehaviour 
+public class PlayerCommand : MonoBehaviour
 {
     static Player player;
 
@@ -17,9 +17,10 @@ public class PlayerCommand : MonoBehaviour
 
     }
     [Command("giveItem")]
-    static void AddItem(int id,int num = 1)
+    static void AddItem(int id, int num = 1)
     {
-        ConsoleManager.Instance.OutputToConsole($"»ñµÃÎïÆ·{num}¸ö");
+        Debug.Log("add " + id);
+        ConsoleManager.Instance.OutputToConsole($"ï¿½ï¿½ï¿½ï¿½ï¿½Æ·{num}ï¿½ï¿½");
     }
     [Command("AddBuff")]
     static void AddBuff(string name)
