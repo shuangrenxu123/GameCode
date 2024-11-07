@@ -14,6 +14,4 @@ public class Test : MonoBehaviour
         var a = parser.Expression();
         ExpressionInterpreter.Interpret(a);
     }
-
-
 }

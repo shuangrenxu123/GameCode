@@ -20,7 +20,7 @@ public class CommandUI : UIWindowBase
     private int logCount = 0;
     #endregion
     #region Command
-    private List<string> commandStack;//ÀúÊ·ÃüÁî
+    private List<string> commandStack;//ï¿½ï¿½Ê·ï¿½ï¿½ï¿½ï¿½
     private int currentCommandIndex = 0;
     private List<string> tipsCommand;
     #endregion
@@ -32,14 +32,14 @@ public class CommandUI : UIWindowBase
         commandStack = new();
         tipsCommand = new();
         input.onSubmit.AddListener((string text) => SubmitCommand(text));
-        input.onValueChanged.AddListener((string text)=>GetCommandTips(text));
+        input.onValueChanged.AddListener((string text) => GetCommandTips(text));
 
         ConsoleManager.Instance.OnOutput += OutputPanel;
 
 
         input.ActivateInputField();
         player = FindFirstObjectByType<Player>();
-        
+
     }
     public override void OnUpdate()
     {
@@ -100,43 +100,43 @@ public class CommandUI : UIWindowBase
 
     }
     /// <summary>
-    /// »ñµÃÃüÁîÌáÊ¾
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
     /// </summary>
     /// <param name="inputText"></param>
     private void GetCommandTips(string inputText)
     {
-        tipsParent.RemoveAllChildren();
-        //todo ¼ÓÉÏ²ÎÊýµÄÌáÊ¾
-        if (inputText == "")
-            return;
-        bool isCommand = inputText[0] == '/';
-        if (!isCommand)
-            return;
-        var names = ConsoleManager.Instance.CommandsNames;
-        tipsCommand.Clear();
-        var mainText = inputText.AsSpan().Slice(1, inputText.Length-1).ToString();
-        foreach (var c in names)
-        {
-            if (c.Contains(mainText))
-            {
-                tipsCommand.Add(c);
-            }
-        }
-
-        foreach (var i in tipsCommand)
-        {
-            var go = Instantiate(Text, tipsParent);
-            go.text = i;
-        }
+        // tipsParent.RemoveAllChildren();
+        // //todo ï¿½ï¿½ï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
+        // if (inputText == "")
+        //     return;
+        // bool isCommand = inputText[0] == '/';
+        // if (!isCommand)
+        //     return;
+        // //var names = ConsoleManager.Instance.CommandsNames;
+        // tipsCommand.Clear();
+        // var mainText = inputText.AsSpan().Slice(1, inputText.Length - 1).ToString();
+        // foreach (var c in names)
+        // {
+        //     if (c.Contains(mainText))
+        //     {
+        //         tipsCommand.Add(c);
+        //     }
+        // }
+        //
+        // foreach (var i in tipsCommand)
+        // {
+        //     var go = Instantiate(Text, tipsParent);
+        //     go.text = i;
+        // }
     }
     /// <summary>
-    /// ²¹È«Ö¸Áî
+    /// ï¿½ï¿½È«Ö¸ï¿½ï¿½
     /// </summary>
     private void FillCommand()
     {
     }
     /// <summary>
-    /// ÇÐ»»²¹È«Ö¸Áî
+    /// ï¿½Ð»ï¿½ï¿½ï¿½È«Ö¸ï¿½ï¿½
     /// </summary>
     private void SwitchFillCommand()
     {
