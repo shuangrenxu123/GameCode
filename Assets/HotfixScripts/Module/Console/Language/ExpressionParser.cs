@@ -4,7 +4,7 @@ namespace Helper
 {
     public class ExpressionParser
     {
-        private readonly List<Token> tokens;
+        private List<Token> tokens;
         /// <summary>
         /// 待解析token下标
         /// </summary>
@@ -12,8 +12,9 @@ namespace Helper
         private bool isEnd => tokens[current].type == TokenType.EOF;
 
 
-        public ExpressionParser(List<Token> tokens)
+        public void Init(List<Token> tokens)
         {
+            current = 0;
             this.tokens = tokens;
         }
         public Expression Expression()

@@ -31,6 +31,7 @@ namespace Helper
         public List<Token> Parser(string source)
         {
             this.source = source;
+            current = start = 0;
             tokens.Clear();
 
             while (!IsEnd)

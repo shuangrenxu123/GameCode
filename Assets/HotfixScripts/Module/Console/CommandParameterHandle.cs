@@ -10,21 +10,23 @@ namespace ConsoleLog
         static readonly Dictionary<Type, ParameterParser> DefaultParseFunctions;
         static CommandParameterHandle()
         {
-            DefaultParseFunctions = new Dictionary<Type, ParameterParser>();
-            DefaultParseFunctions.Add(typeof(int), ParseInt);
-            DefaultParseFunctions.Add(typeof(string), ParseString);
-            DefaultParseFunctions.Add(typeof(float), ParseFloat);
-            DefaultParseFunctions.Add(typeof(double), ParseDouble);
-            DefaultParseFunctions.Add(typeof(bool), ParseBool);
-            DefaultParseFunctions.Add(typeof(char), ParseChar);
-            DefaultParseFunctions.Add(typeof(byte), ParseByte);
-            DefaultParseFunctions.Add(typeof(short), ParseShort);
-            DefaultParseFunctions.Add(typeof(long), ParseLong);
-            DefaultParseFunctions.Add(typeof(ushort), ParseUShort);
-            DefaultParseFunctions.Add(typeof(uint), ParseUInt);
-            DefaultParseFunctions.Add(typeof(ulong), ParseULong);
-            DefaultParseFunctions.Add(typeof(decimal), ParseDecimal);
-            DefaultParseFunctions.Add(typeof(sbyte), ParseSByte);
+            DefaultParseFunctions = new Dictionary<Type, ParameterParser>
+            {
+                { typeof(int), ParseInt },
+                { typeof(string), ParseString },
+                { typeof(float), ParseFloat },
+                { typeof(double), ParseDouble },
+                { typeof(bool), ParseBool },
+                { typeof(char), ParseChar },
+                { typeof(byte), ParseByte },
+                { typeof(short), ParseShort },
+                { typeof(long), ParseLong },
+                { typeof(ushort), ParseUShort },
+                { typeof(uint), ParseUInt },
+                { typeof(ulong), ParseULong },
+                { typeof(decimal), ParseDecimal },
+                { typeof(sbyte), ParseSByte }
+            };
         }
         public static bool ContainsParser(Type type)
         {

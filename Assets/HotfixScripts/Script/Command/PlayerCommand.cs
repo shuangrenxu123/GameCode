@@ -11,6 +11,11 @@ public class PlayerCommand : MonoBehaviour
     {
         player = FindFirstObjectByType<Player>();
     }
+    [Command("Test")]
+    static void Test()
+    {
+        ConsoleManager.Instance.OutputToConsole($"TestCommand");
+    }
     [Command("PlayerInfo")]
     static void PrintPlayerInfo()
     {

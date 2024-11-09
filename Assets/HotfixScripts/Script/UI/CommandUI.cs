@@ -75,11 +75,11 @@ public class CommandUI : UIWindowBase
         {
             return;
         }
-        var mianText = text.AsSpan();
+        var mainText = text.AsSpan();
         bool isCommand = text[0] == '/';
         if (isCommand)
         {
-            ConsoleManager.Instance.SubmitCommand(mianText.Slice(1, text.Length - 1).ToString());
+            ConsoleManager.Instance.SubmitCommand(mainText.Slice(1, text.Length - 1).ToString());
         }
         else
         {
