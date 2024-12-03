@@ -22,7 +22,7 @@ public class DamageCollider : MonoBehaviour
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
         characterDamagedDuringThisCalculation = new List<Enemy>();
-        //todo ºóÆÚÈ¡ÏûÓ²±àÂëµÄÐ´·¨£¬½»ÓÉÎäÆ÷³ÖÓÐÕßÅÐ¶Ï
+        //todo ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         Enemylayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
     }
@@ -46,7 +46,7 @@ public class DamageCollider : MonoBehaviour
             {
                 return;
             }
-            Debug.Log("¹¥»÷µ½:"+enemy.name);
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:" + enemy.name);
             characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);

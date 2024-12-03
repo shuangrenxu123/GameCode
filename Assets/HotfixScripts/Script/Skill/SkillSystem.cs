@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Fight
 {
     /// <summary>
-    /// ¸ÃÀàÖ÷Òª¿ØÖÆ¼¼ÄÜµÄĞÂÎïÌå²úÉú£¬Ö÷ÒªÓÃÓÚ»á³öÏÖĞÂµÄGameObjectµÄÇé¿ö
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Æ¼ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½Ú»ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½GameObjectï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public class SkillSystem
     {
@@ -29,7 +29,7 @@ namespace Fight
         }
         public GameObject GenerateSkill(string name)
         {
-            return GenerateSkill(name,transform.position);
+            return GenerateSkill(name, transform.position);
         }
     }
 }
