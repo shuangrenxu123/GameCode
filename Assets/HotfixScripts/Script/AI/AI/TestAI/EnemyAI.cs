@@ -30,8 +30,10 @@ public class EnemyAI : BTTree
         rootNode.AddChild(randomNode);
         rootNode.AddChild(new BTMoveAction("移动", 2));
         var randomSelectNode = new BTRandom();
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("BuffTest"), "test"));
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test"), "test2"));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("BuffTest"), "buffTest"));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test"), "test"));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test2"), "test2"));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("step"), "step"));
         var node = new BTProbability(50, randomSelectNode);
         rootNode.AddChild(node);
 

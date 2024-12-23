@@ -21,15 +21,17 @@ public class EnemyAIControl : MonoBehaviour
         skillSystem = new(entity);
 
         skillSystem.AddSkill(Resources.Load<SkillData>("skill/buffData"), Resources.Load<GameObject>("skill/buff"));
+
         Ai = new EnemyAI(this);
         dataBase = new();
+
         Ai.actor = actor;
         Ai.Init(null, dataBase);
-        
+
     }
     private void Start()
     {
-        
+
     }
     private void Update()
     {
