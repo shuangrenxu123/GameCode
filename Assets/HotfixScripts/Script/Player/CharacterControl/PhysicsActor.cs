@@ -2,23 +2,23 @@ using System.Collections;
 using UnityEngine;
 using Utilities;
 /// <summary>
-/// ½ÇÉ«µÄ¿ØÖÆºËĞÄ
+/// è§’è‰²çš„æ§åˆ¶æ ¸å¿ƒ
 /// </summary>
 public abstract class PhysicsActor : MonoBehaviour
 {
 
-    //ÊÇ·ñÆôÓÃ²åÖµ
+    //æ˜¯å¦å¯ç”¨æ’å€¼
     public bool interpolaterActor = true;
-    [Tooltip("ÊÇ·ñÆôÓÃÁ¬Ğø¼ì²â£¬±ÜÃâ´©Ç½µÄÇé¿ö")]
+    [Tooltip("æ˜¯å¦å¯ç”¨è¿ç»­æ£€æµ‹ï¼Œé¿å…ç©¿å¢™çš„æƒ…å†µ")]
     public bool useContinuousCollisionDetection = true;
 
-    //ÔÚÅÀÌİ×ÓµÈÇé¿öÏÂÎÒÃÇ»áĞèÒªÓÃµ½rootmotion
-    [Tooltip("ÊÇ·ñÆôÓÃÁËRootMotion")]
+    //åœ¨çˆ¬æ¢¯å­ç­‰æƒ…å†µä¸‹æˆ‘ä»¬ä¼šéœ€è¦ç”¨åˆ°rootmotion
+    [Tooltip("æ˜¯å¦å¯ç”¨äº†RootMotion")]
     public bool UseRootMotion = false;
     [Condition("UseRootMotion", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("ÊÇ·ñÆôÓÃrootmotionÖĞ´«µİ×ø±ê")]
+    [Tooltip("æ˜¯å¦å¯ç”¨rootmotionä¸­ä¼ é€’åæ ‡")]
     public bool UpdateRootPosition = true;
-    [Tooltip("ÊÇ·ñÆôÓÃrootmotionÖĞ´«µİĞı×ª")]
+    [Tooltip("æ˜¯å¦å¯ç”¨rootmotionä¸­ä¼ é€’æ—‹è½¬")]
     [Condition("UseRootMotion", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool UpdateRootRotation = true;
     [Condition(new string[] { "UseRootMotion", "UpdateRootPosition" }, new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsTrue }, new float[] { 0, 0 }, ConditionAttribute.VisibilityType.NotEditable)]
@@ -27,11 +27,11 @@ public abstract class PhysicsActor : MonoBehaviour
     public RootMotionRotationType rootMotionRotationType = RootMotionRotationType.SetRotation;
 
     /// <summary>
-    /// ¸ÃÊÂ¼ş»áÔÚÎïÀíÄ£ÄâÖ®Ç°µ÷ÓÃ
+    /// è¯¥äº‹ä»¶ä¼šåœ¨ç‰©ç†æ¨¡æ‹Ÿä¹‹å‰è°ƒç”¨
     /// </summary>
     public event System.Action<float> OnPreSimulation;
     /// <summary>
-    /// ¸ÃÊÂ¼ş»áÔÚÎïÀíÄ£ÄâÒÔºóµ÷ÓÃ
+    /// è¯¥äº‹ä»¶ä¼šåœ¨ç‰©ç†æ¨¡æ‹Ÿä»¥åè°ƒç”¨
     /// </summary>
     public event System.Action<float> OnPostSimulation;
 
@@ -47,7 +47,7 @@ public abstract class PhysicsActor : MonoBehaviour
     public abstract RigidbodyComponent RigidbodyComponent { get; }
     public Animator Animator { get; private set; }
     /// <summary>
-    /// ÊÀ½ç×ø±êÏÂËÙ¶ÈÖµ
+    /// ä¸–ç•Œåæ ‡ä¸‹é€Ÿåº¦å€¼
     /// </summary>
     public Vector3 Velocity
     {
@@ -55,7 +55,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => RigidbodyComponent.Velocity = value;
     }
     /// <summary>
-    /// ÊÀ½ç×ø±êÏÂµÄË®Æ½ËÙ¶ÈÖµ
+    /// ä¸–ç•Œåæ ‡ä¸‹çš„æ°´å¹³é€Ÿåº¦å€¼
     /// </summary>
     public Vector3 PlanarVelocity
     {
@@ -63,7 +63,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => LocalPlanarVelocity = transform.InverseTransformDirection(value);
     }
     /// <summary>
-    /// ÊÀ½ç×ø±êÏÂµÄ´¹Ö±ËÙ¶ÈÖµ
+    /// ä¸–ç•Œåæ ‡ä¸‹çš„å‚ç›´é€Ÿåº¦å€¼
     /// </summary>
     public Vector3 VerticalVelocity
     {
@@ -71,7 +71,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => LocalVerticalVelocity = transform.InverseTransformDirection(value);
     }
     /// <summary>
-    /// »ñÈ¡/ÉèÖÃ¸ÕÌå¾Ö²¿ËÙ¶È¡£
+    /// è·å–/è®¾ç½®åˆšä½“å±€éƒ¨é€Ÿåº¦ã€‚
     /// </summary>
     public Vector3 LocalVelocity
     {
@@ -79,7 +79,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => RigidbodyComponent.Velocity = transform.TransformDirection(value);
     }
     /// <summary>
-    /// »ñÈ¡/ÉèÖÃ¸ÕÌå¾Ö²¿Æ½ÃæËÙ¶È¡£
+    /// è·å–/è®¾ç½®åˆšä½“å±€éƒ¨å¹³é¢é€Ÿåº¦ã€‚
     /// </summary>
     public Vector3 LocalPlanarVelocity
     {
@@ -96,7 +96,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     /// <summary>
-    /// »ñÈ¡/ÉèÖÃ¸ÕÌå¾Ö²¿´¹Ö±ËÙ¶È¡£
+    /// è·å–/è®¾ç½®åˆšä½“å±€éƒ¨å‚ç›´é€Ÿåº¦ã€‚
     /// </summary>
     public Vector3 LocalVerticalVelocity
     {
@@ -114,15 +114,15 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ÊÇ·ñÏÂÂäÖĞ
+    /// æ˜¯å¦ä¸‹è½ä¸­
     /// </summary>
     public bool IsFalling => LocalVelocity.y < 0f;
     /// <summary>
-    /// ÊÇ·ñÉÏÉıÖĞ
+    /// æ˜¯å¦ä¸Šå‡ä¸­
     /// </summary>
     public bool IsAscending => LocalVelocity.y > 0f;
     /// <summary>
-    /// ½ÇÉ«µÄÊµ¼ÊÎ»ÖÃ£¬Èç¹ûÖ±½Óµ÷Õû¸ÃÖµ»áµ¼ÖÂÎïÌå´«ËÍ
+    /// è§’è‰²çš„å®é™…ä½ç½®ï¼Œå¦‚æœç›´æ¥è°ƒæ•´è¯¥å€¼ä¼šå¯¼è‡´ç‰©ä½“ä¼ é€
     /// </summary>
     public Vector3 Position
     {
@@ -134,7 +134,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     /// <summary>
-    /// Êµ¼ÊµÄĞı×ªÖµ£¬Ö±½ÓĞŞ¸Ä»áÖ±½Óµ¼ÖÂÎïÌå×ª¹ıÈ¥
+    /// å®é™…çš„æ—‹è½¬å€¼ï¼Œç›´æ¥ä¿®æ”¹ä¼šç›´æ¥å¯¼è‡´ç‰©ä½“è½¬è¿‡å»
     /// </summary>
     public Quaternion Rotation
     {
@@ -146,7 +146,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     /// <summary>
-    /// ÊÇ·ñÎªÔË¶¯Ñ§£¬¼´Ëû²»»áÊÜµ½ÍâÁ¦µÄÓ°Ïì
+    /// æ˜¯å¦ä¸ºè¿åŠ¨å­¦ï¼Œå³ä»–ä¸ä¼šå—åˆ°å¤–åŠ›çš„å½±å“
     /// </summary>
     public bool IsKinematic
     {
@@ -154,7 +154,7 @@ public abstract class PhysicsActor : MonoBehaviour
         set => RigidbodyComponent.IsKinematic = value;
     }
     /// <summary>
-    /// ÒÆ¶¯ÎïÌå£¬Èç¹ûÊÇÔË¶¯Ñ§µÄ»°»áÍ¨¹ıÖ±½Ó×ø±êÊµÏÖ£¬Èç¹ûÊÇ¶¯Á¦Ñ§µÄ»°Ôò»áÍ¨¹ıÌí¼ÓÁ¦À´ÊµÏÖ
+    /// ç§»åŠ¨ç‰©ä½“ï¼Œå¦‚æœæ˜¯è¿åŠ¨å­¦çš„è¯ä¼šé€šè¿‡ç›´æ¥åæ ‡å®ç°ï¼Œå¦‚æœæ˜¯åŠ¨åŠ›å­¦çš„è¯åˆ™ä¼šé€šè¿‡æ·»åŠ åŠ›æ¥å®ç°
     /// </summary>
     /// <param name="position"></param>
     public void Move(Vector3 position)
@@ -162,14 +162,14 @@ public abstract class PhysicsActor : MonoBehaviour
         RigidbodyComponent.Move(position);
     }
     /// <summary>
-    /// ´«ËÍºó´¥·¢µÄÊÂ¼ş
+    /// ä¼ é€åè§¦å‘çš„äº‹ä»¶
     /// </summary>
     public event System.Action<Vector3, Quaternion> OnTeleport;
     public event System.Action OnAnimatorMoveEvent;
     public event System.Action<int> OnAnimatorIKEvent;
 
     /// <summary>
-    /// Éè¶¨ºÃÎ»ÖÃ£¬½ÇÉ«»áÒÔÄÚ²¿×Ô¼ºµÄÂß¼­À´ÒÆ¶¯
+    /// è®¾å®šå¥½ä½ç½®ï¼Œè§’è‰²ä¼šä»¥å†…éƒ¨è‡ªå·±çš„é€»è¾‘æ¥ç§»åŠ¨
     /// </summary>
     /// <param name="position"></param>
     public void Teleport(Vector3 position)
@@ -194,7 +194,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ù¾İ¸ÕÌåĞı×ª»ñÈ¡µ±Ç°ÏòÉÏ·½Ïò£¨²»Ò»¶¨ÊÇ transform.up£©¡£
+    /// æ ¹æ®åˆšä½“æ—‹è½¬è·å–å½“å‰å‘ä¸Šæ–¹å‘ï¼ˆä¸ä¸€å®šæ˜¯ transform.upï¼‰ã€‚
     /// </summary>
     public virtual Vector3 Up
     {
@@ -209,7 +209,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     /// <summary>
-    /// ¸ù¾İ¸ÕÌåĞı×ª»ñÈ¡/ÉèÖÃµ±Ç°Ç°½ø·½Ïò£¨²»Ò»¶¨ÊÇ transform.forward£©¡£
+    /// æ ¹æ®åˆšä½“æ—‹è½¬è·å–/è®¾ç½®å½“å‰å‰è¿›æ–¹å‘ï¼ˆä¸ä¸€å®šæ˜¯ transform.forwardï¼‰ã€‚
     /// </summary>
     public virtual Vector3 Forward
     {
@@ -225,7 +225,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ¸ù¾İ¸ÕÌåĞı×ª»ñÈ¡µ±Ç°ÏòÉÏ·½Ïò£¨²»Ò»¶¨ÊÇ transform.right£©
+    /// æ ¹æ®åˆšä½“æ—‹è½¬è·å–å½“å‰å‘ä¸Šæ–¹å‘ï¼ˆä¸ä¸€å®šæ˜¯ transform.rightï¼‰
     /// </summary>
     public virtual Vector3 Right
     {
@@ -241,9 +241,9 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
 
-    #region Ğı×ª
+    #region æ—‹è½¬
     /// <summary>
-    /// ÉèÖÃ»ùÓÚ¡°ÏòÇ°¡±ºÍ¡°ÏòÉÏ¡±µÄĞı×ª¡£ÕâÏàµ±ÓÚQuaternion.LookRotation¡£
+    /// è®¾ç½®åŸºäºâ€œå‘å‰â€å’Œâ€œå‘ä¸Šâ€çš„æ—‹è½¬ã€‚è¿™ç›¸å½“äºQuaternion.LookRotationã€‚
     /// </summary>
     /// <param name="forward"></param>
     /// <param name="up"></param>
@@ -264,7 +264,7 @@ public abstract class PhysicsActor : MonoBehaviour
         Position += preReferenceToPivot - postReferEnceToPivot;
     }
     /// <summary>
-    /// ²ÎÊıÎªÒ»¸öÒª³¯ÏòµÄÏòÁ¿£¬±¾ÖÊ»¹ÊÇĞı×ªÒ»¸ö½Ç¶È£¬¿ÉÒÔ¿´×÷RotateµÄÖØÔØ
+    /// å‚æ•°ä¸ºä¸€ä¸ªè¦æœå‘çš„å‘é‡ï¼Œæœ¬è´¨è¿˜æ˜¯æ—‹è½¬ä¸€ä¸ªè§’åº¦ï¼Œå¯ä»¥çœ‹ä½œRotateçš„é‡è½½
     /// </summary>
     /// <param name="forward"></param>
     public virtual void SetYaw(Vector3 forward)
@@ -272,7 +272,7 @@ public abstract class PhysicsActor : MonoBehaviour
         Rotation = Quaternion.AngleAxis(Vector3.SignedAngle(Forward, forward, Up), Up) * Rotation;
     }
     /// <summary>
-    /// ÈÆ×ÅUpÖáÀ´Ğı×ªÒ»¸ö½Ç¶È
+    /// ç»•ç€Upè½´æ¥æ—‹è½¬ä¸€ä¸ªè§’åº¦
     /// </summary>
     /// <param name="angle"></param>
     public virtual void RotateYaw(float angle)
@@ -280,17 +280,17 @@ public abstract class PhysicsActor : MonoBehaviour
         Rotation = Quaternion.AngleAxis(angle, Up) * Rotation;
     }
     /// <summary>
-    /// ÑØ×ÅUpÖáĞı×ª£¬
+    /// æ²¿ç€Upè½´æ—‹è½¬ï¼Œ
     /// </summary>
-    /// <param name="angle">½Ç¶È</param>
-    /// <param name="pivot">¿Õ¼äÖĞµÄĞı×ªÊàÖá¡£</param>
+    /// <param name="angle">è§’åº¦</param>
+    /// <param name="pivot">ç©ºé—´ä¸­çš„æ—‹è½¬æ¢è½´ã€‚</param>
     public virtual void RotateYaw(float angle, Vector3 pivot)
     {
         Quaternion delatRotation = Quaternion.AngleAxis(angle, Up);
         RotateAround(delatRotation, pivot);
     }
     /// <summary>
-    /// ÈÆ×ÅRightÖáĞı×ª
+    /// ç»•ç€Rightè½´æ—‹è½¬
     /// </summary>
     /// <param name="angle">The angle in degrees.</param>   
     public virtual void RotatePitch(float angle)
@@ -299,7 +299,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ÈÆ×ÅRightÖáĞı×ª
+    /// ç»•ç€Rightè½´æ—‹è½¬
     /// </summary>
     /// <param name="angle">The angle in degrees.</param>       
     /// <param name="pivot">The rotation pivot in space.</param>      
@@ -310,7 +310,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ÈÆ×ÅForwardÖáĞı×ª
+    /// ç»•ç€Forwardè½´æ—‹è½¬
     /// </summary>
     /// <param name="angle">The angle in degrees.</param>  
     public virtual void RotateRoll(float angle)
@@ -319,7 +319,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// ÈÆ×ÅForwardÖáĞı×ª
+    /// ç»•ç€Forwardè½´æ—‹è½¬
     /// </summary>
     /// <param name="angle">The angle in degrees.</param>        
     /// <param name="pivot">The rotation pivot in space.</param>     
@@ -330,7 +330,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 
     /// <summary>
-    /// Í¨¹ıÖ´ĞĞ 180 ¶ÈµÄÆ«º½Ğı×ª£¨ÈÆÆä´¹Ö±Öá£©À´Ğı×ª½ÇÉ«¡£´ËÍâ£¬²åÖµ£¨Ğı×ª£©»á×Ô¶¯ÖØÖÃ
+    /// é€šè¿‡æ‰§è¡Œ 180 åº¦çš„åèˆªæ—‹è½¬ï¼ˆç»•å…¶å‚ç›´è½´ï¼‰æ¥æ—‹è½¬è§’è‰²ã€‚æ­¤å¤–ï¼Œæ’å€¼ï¼ˆæ—‹è½¬ï¼‰ä¼šè‡ªåŠ¨é‡ç½®
     /// </summary>
     public virtual void Turnaround()
     {
@@ -339,7 +339,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
     #endregion
     /// <summary>
-    /// »ùÓÚ¸ø¶¨µÄ¶¯»­Æ÷×é¼şÅäÖÃËùÓĞÓë¶¯»­Ïà¹ØµÄ×é¼ş¡£¶¯»­Æ÷Ìá¹©¸ùÔË¶¯Êı¾İ
+    /// åŸºäºç»™å®šçš„åŠ¨ç”»å™¨ç»„ä»¶é…ç½®æ‰€æœ‰ä¸åŠ¨ç”»ç›¸å…³çš„ç»„ä»¶ã€‚åŠ¨ç”»å™¨æä¾›æ ¹è¿åŠ¨æ•°æ®
     /// </summary>
     public void InitializeAnimation()
     {
@@ -418,7 +418,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     void OnAnimatorIKLinkMethod(int layerIndex) => OnAnimatorIKEvent?.Invoke(layerIndex);
-    #region ²åÖµ
+    #region æ’å€¼
     bool internalResetFlag = true;
     public void SyncBody()
     {
@@ -429,7 +429,7 @@ public abstract class PhysicsActor : MonoBehaviour
             return;
         }
 
-        //È¡ÏûRigibodyËù´øÀ´µÄÎ»ÒÆ
+        //å–æ¶ˆRigibodyæ‰€å¸¦æ¥çš„ä½ç§»
         Position = startingPosition = targetPosition;
         Rotation = startingRotation = targetRotation;
 
@@ -461,7 +461,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
     }
     /// <summary>
-    /// ¸üĞÂ²åÖµµÄÄ¿±êÖµ
+    /// æ›´æ–°æ’å€¼çš„ç›®æ ‡å€¼
     /// </summary>
     public void UpdateInterpolationTargets()
     {
@@ -485,16 +485,16 @@ public abstract class PhysicsActor : MonoBehaviour
     bool resetRotationFlag = false;
 
     /// <summary>
-    /// ·ÀÖ¹Ö÷ÌåÔÚÒ»´ÎÎïÀí¸üĞÂÆÚ¼ä²åÈëÆäÎ»ÖÃ¡£
+    /// é˜²æ­¢ä¸»ä½“åœ¨ä¸€æ¬¡ç‰©ç†æ›´æ–°æœŸé—´æ’å…¥å…¶ä½ç½®ã€‚
     /// </summary>
     public void ResetInterpolationPosition() => resetPositionFlag = true;
 
     /// <summary>
-    /// ·ÀÖ¹ÔÚÒ»´ÎÎïÀí¸üĞÂÆÚ¼ä¶ÔÖ÷Ìå½øĞĞĞı×ª²åÖµ¡£
+    /// é˜²æ­¢åœ¨ä¸€æ¬¡ç‰©ç†æ›´æ–°æœŸé—´å¯¹ä¸»ä½“è¿›è¡Œæ—‹è½¬æ’å€¼ã€‚
     /// </summary>
     public void ResetInterpolationRotation() => resetRotationFlag = true;
     /// <summary>
-    /// ·ÀÖ¹ÔÚÒ»´ÎÎïÀí¸üĞÂÆÚ¼ä¶ÔÖ÷Ìå½øĞĞ²åÖµ¡£
+    /// é˜²æ­¢åœ¨ä¸€æ¬¡ç‰©ç†æ›´æ–°æœŸé—´å¯¹ä¸»ä½“è¿›è¡Œæ’å€¼ã€‚
     /// </summary>
     public void ResetInterpolation()
     {
@@ -503,7 +503,7 @@ public abstract class PhysicsActor : MonoBehaviour
     }
     #endregion
     /// <summary>
-    /// ÅĞ¶ÏÊÇ·ñ´æÔÚÒ»¸öÓĞĞ§µÄ¶¯»­¿ØÖÆÆ÷
+    /// åˆ¤æ–­æ˜¯å¦å­˜åœ¨ä¸€ä¸ªæœ‰æ•ˆçš„åŠ¨ç”»æ§åˆ¶å™¨
     /// </summary>
     /// <returns></returns>
     public bool IsAnimatorValid()
@@ -557,7 +557,7 @@ public abstract class PhysicsActor : MonoBehaviour
         RigidbodyComponent.ContinuousCollisionDetection = useContinuousCollisionDetection;
         RigidbodyComponent.UseInterpolation = false;
 
-        //²åÖµ£¨interpolation£©
+        //æ’å€¼ï¼ˆinterpolationï¼‰
         targetPosition = startingPosition = transform.position;
         targetRotation = startingRotation = transform.rotation;
     }
@@ -591,7 +591,7 @@ public abstract class PhysicsActor : MonoBehaviour
         float dt = Time.deltaTime;
         PreSimulationUpdate(dt);
         OnPreSimulation?.Invoke(dt);
-        //ÊÖ¶¯Í¬²½£¬·ÀÖ¹×ø±êÖµ±»ÎÛÈ¾¡£
+        //æ‰‹åŠ¨åŒæ­¥ï¼Œé˜²æ­¢åæ ‡å€¼è¢«æ±¡æŸ“ã€‚
         transform.SetLocalPositionAndRotation(Position, Rotation);
 
     }
@@ -614,34 +614,34 @@ public abstract class PhysicsActor : MonoBehaviour
     }
 }
 /// <summary>
-/// ¶¨ÒåÈçºÎ½«¸ùËÙ¶ÈÊı¾İÓ¦ÓÃÓÚÖ´ĞĞ×é¼ş¡£
+/// å®šä¹‰å¦‚ä½•å°†æ ¹é€Ÿåº¦æ•°æ®åº”ç”¨äºæ‰§è¡Œç»„ä»¶ã€‚
 /// </summary>
 public enum RootMotionVelocityType
 {
     /// <summary>
-    /// ¸ùÔË¶¯ËÙ¶È½«Ó¦ÓÃÎªËÙ¶È¡£
+    /// æ ¹è¿åŠ¨é€Ÿåº¦å°†åº”ç”¨ä¸ºé€Ÿåº¦ã€‚
     /// </summary>
     SetVelocity,
     /// <summary>
-    /// ¸ùÔË¶¯ËÙ¶È½«Ó¦ÓÃÎªÆ½ÃæËÙ¶È¡£
+    /// æ ¹è¿åŠ¨é€Ÿåº¦å°†åº”ç”¨ä¸ºå¹³é¢é€Ÿåº¦ã€‚
     /// </summary>
     SetPlanarVelocity,
     /// <summary>
-    /// ¸ùÔË¶¯ËÙ¶È½«Ó¦ÓÃÎª´¹Ö±ËÙ¶È¡£
+    /// æ ¹è¿åŠ¨é€Ÿåº¦å°†åº”ç”¨ä¸ºå‚ç›´é€Ÿåº¦ã€‚
     /// </summary>
     SetVerticalVelocity,
 }
 /// <summary>
-/// ¶¨ÒåÈçºÎ½«¸ùÂÖ»»Êı¾İÓ¦ÓÃÓÚÖ´ĞĞ×é¼ş.
+/// å®šä¹‰å¦‚ä½•å°†æ ¹è½®æ¢æ•°æ®åº”ç”¨äºæ‰§è¡Œç»„ä»¶.
 /// </summary>
 public enum RootMotionRotationType
 {
     /// <summary>
-    /// ¸ùÔË¶¯Ğı×ª½«¸²¸Çµ±Ç°Ğı×ª¡£
+    /// æ ¹è¿åŠ¨æ—‹è½¬å°†è¦†ç›–å½“å‰æ—‹è½¬ã€‚
     /// </summary>
     SetRotation,
     /// <summary>
-    /// ¸ùÔË¶¯Ğı×ª½«Ìí¼Óµ½µ±Ç°Ğı×ªÖĞ¡£
+    /// æ ¹è¿åŠ¨æ—‹è½¬å°†æ·»åŠ åˆ°å½“å‰æ—‹è½¬ä¸­ã€‚
     /// </summary>
     AddRotation
 }

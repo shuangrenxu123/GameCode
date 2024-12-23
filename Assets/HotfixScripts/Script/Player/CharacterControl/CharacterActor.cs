@@ -6,7 +6,7 @@ using Utilities;
 [DefaultExecutionOrder(10)]
 public class CharacterActor : PhysicsActor
 {
-    #region ��ر���?
+    #region ï¿½ï¿½Ø±ï¿½ï¿½ï¿?
 
     public LayerMask oneWayPlatformsLayerMask = 0;
 
@@ -14,75 +14,74 @@ public class CharacterActor : PhysicsActor
     public float oneWayPlayformsValidArc = 175;
 
 
-    [Tooltip("�¶�����,ֻ�е������¶ȱ���С�ڻ���ڴ�ֵ��ʱ����ܱ����ȶ��� �Ƕȵļ�����ʹ�õ��淨�������㣬������������б�ȸ��ߵ���")]
+    [Tooltip("ï¿½Â¶ï¿½ï¿½ï¿½ï¿½ï¿½,Ö»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¶È±ï¿½ï¿½ï¿½Ð¡ï¿½Ú»ï¿½ï¿½ï¿½Ú´ï¿½Öµï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ ï¿½Ç¶ÈµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½æ·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½È¸ï¿½ï¿½ßµï¿½ï¿½ï¿½")]
     public float slopeLimit = 55f;
-    [Tooltip("û�б���ͼ���ǵĶ��󽫻ᱻ��Ϊ���ȶ�����")]
+    [Tooltip("Ã»ï¿½Ð±ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ÇµÄ¶ï¿½ï¿½ó½«»á±»ï¿½ï¿½Îªï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public LayerMask stableLayerMask = -1;
-    [Tooltip("�Ƿ�����������Character��Ϊ�ȶ�����")]
+    [Tooltip("ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Characterï¿½ï¿½Îªï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public bool allowCharactersAsStableSurfaces = true;
-    [Tooltip("��ƽ����Ϸ�п��ܻ���Ϊ�ٶȹ��ߵ��·�ԽһЩ���ܱ��������ϰ�����ֵ����ͨ��ɾ��������ٶ�ֵ����ֹ���")]
+    [Tooltip("ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½Ð¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½Îªï¿½Ù¶È¹ï¿½ï¿½ßµï¿½ï¿½Â·ï¿½Ô½Ò»Ð©ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Öµï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½")]
     public bool preventtUnstableClimbing = true;
-    [Tooltip("����Է�ֹ���?������ȶ��ı���?��������?���ּ���ľ��ȿ��Խ�����?")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ô·ï¿½Ö¹ï¿½ï¿½É?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ä±ï¿½ï¿½æ£?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½È¿ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿?")]
     public bool preventBadSteps = true;
 
-    [Tooltip("Ӧ����Character�ײ���ƫ�ƾ��롣���ߵ�ƫ������ζ�Ÿ���Ŀɲ��б���?,�������ϸ��ߵ�¥��")]
+    [Tooltip("Ó¦ï¿½ï¿½ï¿½ï¿½Characterï¿½×²ï¿½ï¿½ï¿½Æ«ï¿½Æ¾ï¿½ï¿½ë¡£ï¿½ï¿½ï¿½ßµï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¶ï¿½Å¸ï¿½ï¿½ï¿½Ä¿É²ï¿½ï¿½Ð±ï¿½ï¿½ï¿?,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ßµï¿½Â¥ï¿½ï¿½")]
     public float stepUpDistance = 0.5f;
-    [Tooltip("Character�ܼ�����ľ���?ʹ�øñ�����Character�̶��ڵ�����")]
+    [Tooltip("Characterï¿½Ü¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ë£?Ê¹ï¿½Ã¸Ã±ï¿½ï¿½ï¿½ï¿½ï¿½Characterï¿½Ì¶ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½")]
     public float stepDownDistance = 0.5f;
 
-    [Tooltip("����ֹCharacter����ӵ�״�?��IsGrounded ����false")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ö¹Characterï¿½ï¿½ï¿½ï¿½Óµï¿½×´Ì?ï¿½ï¿½IsGrounded ï¿½ï¿½ï¿½ï¿½false")]
     public bool alwaysNotGrounded = false;
 
-    [Tooltip("��ֵ������Ϸ��ʼ��ʱ����е�����?���û��⵽��ôIsGround������false")]
+    [Tooltip("ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½â£?ï¿½ï¿½ï¿½Ã»ï¿½ï¿½âµ½ï¿½ï¿½Ã´IsGroundï¿½ï¿½ï¿½ï¿½ï¿½ï¿½false")]
     [Condition("alwaysNotGrounded", ConditionAttribute.ConditionType.IsFalse)]
     public bool forceGroundedAtStart = true;
 
-    [Tooltip("�Ƿ�����OnTrigger�ȴ���������������棩��һ����˵���ǲ��ᱻ���������?���ǵĽ�ɫ�����յ�")]
+    [Tooltip("ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½OnTriggerï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£©ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ç²ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î?ï¿½ï¿½ï¿½ÇµÄ½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½")]
     public bool useGroundTrigger = true;
-    [Tooltip("���ø�ֵ�Ժ󣬽�ɫ�ײ��Ľ��ᱻģ��ΪԲ���壬���ڱ�Եʱ����Ч")]
+    [Tooltip("ï¿½ï¿½ï¿½Ã¸ï¿½Öµï¿½Ôºó£¬½ï¿½É«ï¿½×²ï¿½ï¿½Ä½ï¿½ï¿½á±»Ä£ï¿½ï¿½ÎªÔ²ï¿½ï¿½ï¿½å£¬ï¿½ï¿½ï¿½Ú±ï¿½ÔµÊ±ï¿½ï¿½ï¿½ï¿½Ð§")]
     public bool edgeCompensation = false;
-    [Tooltip("����ɫ�����Ӵ���վ�����ȶ���Ե��ʱ�� " +
-        "ture:������ô��ײ���ַ�����������ȶ�״�?" +
-        "false �� ��ɫ��ʹ�ýӴ�����ȷ���ȶ��ԣ�ֵС��б�����ƣ�")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½Õ¾ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½Ôµï¿½ï¿½Ê±ï¿½ï¿½ " +
+        "ture:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½×²ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½×´Ì?" +
+        "false ï¿½ï¿½ ï¿½ï¿½É«ï¿½ï¿½Ê¹ï¿½Ã½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ô£ï¿½ÖµÐ¡ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½")]
     public bool useStableEdgeWhenLanding = true;
-    [Tooltip("������?�Ĵ�ֱ�ٶ�Ϊ�������ַ��Ƿ��⵽�µģ�����Ч�ģ�����")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½É?ï¿½Ä´ï¿½Ö±ï¿½Ù¶ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ç·ï¿½ï¿½âµ½ï¿½ÂµÄ£ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public bool detectGroundWhileAscending = false;
 
-    [Tooltip("��ɫ�Ƿ�Ӧ���ܵ������˶���Ӱ��")]
+    [Tooltip("ï¿½ï¿½É«ï¿½Ç·ï¿½Ó¦ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½Ó°ï¿½ï¿½")]
     public bool supportDynamicGround = true;
     public LayerMask dynamicGroundLayerMask = -1;
-    [Tooltip("��ɫ��������᲻���ܵ������ƶ���Ӱ��?")]
+    [Tooltip("ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á²»ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ó°ï¿½ï¿?")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool rotateForwardDirection = true;
-    [Tooltip("���ǽ�ɫ�����ܵ��������ٶȣ���������ٶ��?�죬��ɫ����ֹͣ�ƶ�")]
+    [Tooltip("ï¿½ï¿½ï¿½Ç½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Ì?ï¿½ì£¬ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½Æ¶ï¿½")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float maxGroundVelocityChange = 30f;
-    [Tooltip("�̳ж�̬�����ٶ��������Сֵ���?��Ϊˮƽ�ٶȣ�")]
+    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Öµï¿½ï¿½×?ï¿½ï¿½ÎªË®Æ½ï¿½Ù¶È£ï¿½")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlannarlVelocityThreshold = 2f;
-    [Tooltip("�̳ж�̬�����ٶȵ�ϵ����ת��Ϊˮƽ�ٶȣ�")]
+    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ÎªË®Æ½ï¿½Ù¶È£ï¿½")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlanarVelocityMultiplier = 1f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("�̳ж�̬�����ٶȵ�ϵ����ת��Ϊ��ֱ�ٶȣ�")]
+    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ù¶È£ï¿½")]
     public float inheritedGroundVerticalVelocityThreshold = 2f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("�̳ж�̬�����ٶȵ�ϵ����ת��Ϊ��ֱ�ٶȣ�")]
+    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ù¶È£ï¿½")]
     public float inheritedGroundVerticalVelocityMultiplier = 1f;
     public bool slideOnWalls = true;
-
     [SerializeField]
-    //���ͺ��Ƿ������ٶ�
+    //ï¿½ï¿½ï¿½Íºï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     bool resetVelocityOnTeleport = true;
 
     public CharacterVelocityMode stablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
     public CharacterVelocityMode unstablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
 
-    [Tooltip("������Ƿ����?���¶�����?��������")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½ï¿½É?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public bool constraintRotation = true;
 
     /// <summary>
-    /// ������?���¶��������ᣬ�����ϵ�Transform������
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Transformï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [Condition("constraintRotation", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public Transform upDirectionReference = null;
@@ -94,7 +93,7 @@ public class CharacterActor : PhysicsActor
     new float[] { 0f, 0f },
     ConditionAttribute.VisibilityType.Hidden)]
     /// <summary>
-    /// ��������Ϸ���?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿?
     /// </summary>
     public Vector3 constraintUpDirection = Vector3.up;
 
@@ -134,7 +133,7 @@ public class CharacterActor : PhysicsActor
     public float StepOffset => stepUpDistance - BodySize.x / 2f;
 
     /// <summary>
-    /// ����root motion���?
+    /// ï¿½ï¿½ï¿½ï¿½root motionï¿½ï¿½ï¿?
     /// </summary>
     /// <param name="updateRootPosition"></param>
     /// <param name="updateRootRotation"></param>
@@ -148,7 +147,7 @@ public class CharacterActor : PhysicsActor
 
     protected CharacterCollisionInfo characterCollisionInfo = new CharacterCollisionInfo();
     /// <summary>
-    /// ��ǰ�Ľ�ɫ����״̬����Ϊ1.���ȶ����� 2.�˶����� 3.���ڵ�����
+    /// ï¿½ï¿½Ç°ï¿½Ä½ï¿½É«ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Îª1.ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ 2.ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ 3.ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public CharacterActorState CurrentState
     {
@@ -161,7 +160,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ������һ֡�Ľ�ɫ״̬
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½Ä½ï¿½É«×´Ì¬
     /// </summary>
     public CharacterActorState PreviousState
     {
@@ -196,29 +195,29 @@ public class CharacterActor : PhysicsActor
     public LayerMask ObstaclesWithoutOWPLayerMask => PhysicsComponent.CollisionLayerMask & ~(oneWayPlatformsLayerMask);
 
     /// <summary>
-    ///��ȡ�����йؽ�ɫ��ײ��������Ϣ�Ľṹ��������ַ����ԣ�����? IsGrounded��IsStable��GroundObject �ȣ�
-    ///���Դ����ֽṹ�л�á�?
+    ///ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹Ø½ï¿½É«ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ä½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿? IsGroundedï¿½ï¿½IsStableï¿½ï¿½GroundObject ï¿½È£ï¿½
+    ///ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ö½á¹¹ï¿½Ð»ï¿½Ã¡ï¿?
     /// </summary>
     public CharacterCollisionInfo CharacterCollisionInfo => characterCollisionInfo;
 
     /// <summary>
-    /// ��ɫ�Ƿ��ڱ�Ե��
+    /// ï¿½ï¿½É«ï¿½Ç·ï¿½ï¿½Ú±ï¿½Ôµï¿½ï¿½
     /// </summary>
     public bool IsOnEdge => characterCollisionInfo.isOnEdge;
     /// <summary>
-    /// ��Ե�Ƕ�
+    /// ï¿½ï¿½Ôµï¿½Ç¶ï¿½
     /// </summary>
     public float EdgeAngle => characterCollisionInfo.edgeAngle;
     /// <summary>
-    /// �Ƿ��ڵ�����
+    /// ï¿½Ç·ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public bool IsGrounded { get; private set; }
     /// <summary>
-    /// ��ȡ��ɫ��UP���������ȶ�����֮��ĽǶȡ�?
+    /// ï¿½ï¿½È¡ï¿½ï¿½É«ï¿½ï¿½UPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½Ç¶È¡ï¿?
     /// </summary>
     public float GroundSlopeAngle => characterCollisionInfo.groundSlopeAngle;
     /// <summary>
-    /// �����õĽӴ��㡣
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄ½Ó´ï¿½ï¿½ã¡£
     /// </summary>
     public Vector3 GroundContactPoint => characterCollisionInfo.groundContactPoint;
     public Vector3 GroundContactNormal => characterCollisionInfo.groundContactNormal;
@@ -238,7 +237,7 @@ public class CharacterActor : PhysicsActor
     #endregion
     #region head
     /// <summary>
-    /// ��ȡ��ɫ�ĵ�ǰ�ȶ���״̬���ȶ��Ե��ڡ��ӵ�+�¶Ƚ�<=�¶ȼ��ޡ���
+    /// ï¿½ï¿½È¡ï¿½ï¿½É«ï¿½Äµï¿½Ç°ï¿½È¶ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ôµï¿½ï¿½Ú¡ï¿½ï¿½Óµï¿½+ï¿½Â¶È½ï¿½<=ï¿½Â¶È¼ï¿½ï¿½Þ¡ï¿½ï¿½ï¿½
     /// </summary>
     public bool IsStable { get; private set; }
     public bool HeadCollision => characterCollisionInfo.headCollision;
@@ -246,15 +245,15 @@ public class CharacterActor : PhysicsActor
     public Contact HeadContact => characterCollisionInfo.headContact;
     public bool IsOnUnstableGround => IsGrounded && characterCollisionInfo.groundSlopeAngle > slopeLimit;
     /// <summary>
-    /// ��ȡ��ǰ�ĵ���״̬
+    /// ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½Äµï¿½ï¿½ï¿½×´Ì¬
     /// </summary>
     public bool WasGrounded { get; private set; }
     /// <summary>
-    /// ������һ֡���ȶ�״̬
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½È¶ï¿½×´Ì¬
     /// </summary>
     public bool WasStable { get; private set; }
     /// <summary>
-    /// һ�����ԣ�ָʾ��ɫ����һ�����������ڼ��Ƿ��ѽӵء�
+    /// Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Ô£ï¿½Ö¸Ê¾ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú¼ï¿½ï¿½Ç·ï¿½ï¿½Ñ½ÓµØ¡ï¿½
     /// </summary>
     public bool HasBecomeGrounded { get; private set; }
     public bool HasBecomeStable { get; private set; }
@@ -295,7 +294,7 @@ public class CharacterActor : PhysicsActor
     public float UnStableElapsedTime { get; private set; }
 
     /// <summary>
-    /// ��ȡ/����ͶӰ���������Ϸ����γɵ�ƽ���ϵĸ����ٶȡ�
+    /// ï¿½ï¿½È¡/ï¿½ï¿½ï¿½ï¿½Í¶Ó°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Î³Éµï¿½Æ½ï¿½ï¿½ï¿½ÏµÄ¸ï¿½ï¿½ï¿½ï¿½Ù¶È¡ï¿½
     /// </summary>
     public Vector3 StableVelocity
     {
@@ -398,7 +397,7 @@ public class CharacterActor : PhysicsActor
     public CharacterCollisions CharacterCollisions { get; private set; }
     HitFilterDelegate _collisionHitFilter;
 
-    #region Unity��������
+    #region Unityï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     protected override void Awake()
     {
         base.Awake();
@@ -418,7 +417,7 @@ public class CharacterActor : PhysicsActor
         groundTriggerCollider3D.isTrigger = true;
         groundTriggerCollider3D.radius = BodySize.x / 2f;
         groundTriggerCollider3D.center = Vector3.up * (BodySize.x / 2f - CharacterConstants.GroundTriggerOffset);
-        //������ײ
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²
         Physics.IgnoreCollision(GetComponent<CapsuleCollider>(), groundTriggerCollider3D, true);
 
         _removePenetrationAction = RemovePenetrationAction;
@@ -444,7 +443,7 @@ public class CharacterActor : PhysicsActor
         SetColliderSize();
     }
     /// <summary>
-    /// ��ʱ����ע������¼�?
+    /// ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿?
     /// </summary>
     protected override void OnEnable()
     {
@@ -453,7 +452,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// ��ʱ����ȡ����ע�������¼�
+    /// ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
     /// </summary>
     protected override void OnDisable()
     {
@@ -462,7 +461,7 @@ public class CharacterActor : PhysicsActor
     }
     #endregion
     /// <summary>
-    /// ���ͺ���¼�����ʱֻ������ٶ�
+    /// ï¿½ï¿½ï¿½Íºï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê±Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     /// </summary>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
@@ -474,7 +473,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// �ڵ���Ӵ���������������������������ʩ������?
+    /// ï¿½Úµï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿?
     /// </summary>
     /// <param name="contactPoint"></param>
     protected virtual void ApplyWeight(Vector3 contactPoint)
@@ -500,7 +499,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// �����������Ӵ�����Ϣ
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
     /// </summary>
     public List<Contact> Contacts
     {
@@ -512,7 +511,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ��ȡ���µ�Trigger��
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½Âµï¿½Triggerï¿½ï¿½
     /// </summary>
     public Trigger CurrentTrigger
     {
@@ -531,27 +530,27 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ��ȡ����FixUpdate����֮ǰ������ٶ�ֵ�������������ȷ��
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½FixUpdateï¿½ï¿½ï¿½ï¿½Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½
     /// </summary>
     public Vector3 InputVelocity { get; private set; }
     /// <summary>
-    /// ������ռ��µ��ٶ�Ӧ�õ����ؿռ���?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½Âµï¿½ï¿½Ù¶ï¿½Ó¦ï¿½Ãµï¿½ï¿½ï¿½ï¿½Ø¿Õ¼ï¿½ï¿½ï¿?
     /// </summary>
     public Vector3 LocalInputVelocity => transform.InverseTransformDirection(InputVelocity);
     /// <summary>
-    /// ģ��ǰ���ٶ�
+    /// Ä£ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ù¶ï¿½
     /// </summary>
     public Vector3 PreSimulationVelocity { get; private set; }
     /// <summary>
-    /// ����ģ�����ٶ�
+    /// ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     /// </summary>
     public Vector3 PostSimulationVelocity { get; private set; }
     /// <summary>
-    /// ������ṩ���ٶ�?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½Ù¶ï¿?
     /// </summary>
     public Vector3 ExternalVelocity { get; private set; }
     /// <summary>
-    /// ������ת
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×ª
     /// </summary>
     void HandleRotation()
     {
@@ -568,20 +567,20 @@ public class CharacterActor : PhysicsActor
         Up = constraintUpDirection;
     }
     /// <summary>
-    /// ������ǽ����ײ�¼���ص����нӴ��ĵ�?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç½ï¿½ï¿½ï¿½ï¿½×²ï¿½Â¼ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ð½Ó´ï¿½ï¿½Äµã¡?
     /// </summary>
     public List<Contact> WallContacts { get; private set; } = new List<Contact>(10);
     /// <summary>
-    /// ������ͷ����ײ�¼���ص����нӴ���?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½×²ï¿½Â¼ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ð½Ó´ï¿½ï¿½ã¡?
     /// </summary>
     public List<Contact> HeadContacts { get; private set; } = new List<Contact>(10);
     /// <summary>
-    /// �����������ײ��صĽӴ���
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ØµÄ½Ó´ï¿½ï¿½ï¿½
     /// </summary>
     public List<Contact> GroundContacts { get; private set; } = new List<Contact>(10);
 
     /// <summary>
-    /// ������ײ��Ϣ.�����е���ײ��Ϣ��������
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Ï¢.ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½×²ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void GetContactsInformation()
     {
@@ -684,7 +683,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// �����ȶ�����µ�Flags
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Flags
     /// </summary>
     void UpdateStabilityFlags()
     {
@@ -698,7 +697,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// ��ģ������󴥷���ص��¼�
+    /// ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ó´¥·ï¿½ï¿½ï¿½Øµï¿½ï¿½Â¼ï¿½
     /// </summary>
     void UpdatePostSimulationFlags()
     {
@@ -717,7 +716,7 @@ public class CharacterActor : PhysicsActor
         inheritVelocityFlag = false;
     }
     /// <summary>
-    /// ������صļ�ʱ�������ڵ����ϵ�ʱ���
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ØµÄ¼ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½Ïµï¿½Ê±ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="dt"></param>
     void UpdateTimer(float dt)
@@ -746,7 +745,7 @@ public class CharacterActor : PhysicsActor
 
     #region Dynamic Ground
     /// <summary>
-    /// �Ƿ��ܵ���̬����Ӱ��
+    /// ï¿½Ç·ï¿½ï¿½Üµï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
     /// </summary>
     /// <returns></returns>
     bool IsAllowedToFollowRiggidbodyReference()
@@ -763,7 +762,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// ���ö�̬������������
+    /// ï¿½ï¿½ï¿½Ã¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="position"></param>
     void SetDynamicGroundData(Vector3 position)
@@ -776,7 +775,7 @@ public class CharacterActor : PhysicsActor
         groundToCharacter = position - GroundPosition;
     }
     /// <summary>
-    /// �ý�ɫ���Ŷ�̬�����˶�,�ڲ�ִ�з���
+    /// ï¿½Ã½ï¿½É«ï¿½ï¿½ï¿½Å¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½,ï¿½Ú²ï¿½Ö´ï¿½Ð·ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
@@ -795,7 +794,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ���µ�ǰ������ٶ�?
+    /// ï¿½ï¿½ï¿½Âµï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿?
     /// </summary>
     void UpdateGroundVelocity()
     {
@@ -803,7 +802,7 @@ public class CharacterActor : PhysicsActor
         GroundVelocity = GetGroundPointVelocity(GroundContactPoint);
     }
     /// <summary>
-    /// ������̬�����ϵ��ƶ�
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Æ¶ï¿½
     /// </summary>
     /// <param name="dt"></param>
     void ProcessDynamicGroundMovement(float dt)
@@ -817,7 +816,7 @@ public class CharacterActor : PhysicsActor
         Vector3 targetPosition = Position;
         Quaternion targetRotation = Rotation;
         ApplyGroundMovement(ref targetPosition, ref targetRotation, dt);
-        // �����ڶ�̬������ʱ��ͨ���ӽ�ɫ�ٶ���ɾ��ƽ̨�ٶ���ģ������Ħ����
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ú¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ó½ï¿½É«ï¿½Ù¶ï¿½ï¿½ï¿½É¾ï¿½ï¿½Æ½Ì¨ï¿½Ù¶ï¿½ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¦ï¿½ï¿½ï¿½ï¿½
         if (!WasGrounded)
         {
             Vector3 planerVelocityOnPlatform = Vector3.Project(PlanarVelocity, GetGroundPointVelocity(GroundContactPoint));
@@ -863,7 +862,7 @@ public class CharacterActor : PhysicsActor
         }
         if (verticalGroundVelocity.magnitude >= inheritedGroundVerticalVelocityThreshold)
         {
-            //����Է�ֹ���?�޷���Ծ�ı�Ե������½�ƽ�?��
+            //ï¿½ï¿½ï¿½ï¿½Ô·ï¿½Ö¹ï¿½ï¿½É?ï¿½Þ·ï¿½ï¿½ï¿½Ô¾ï¿½Ä±ï¿½Ôµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½Æ½Ì?ï¿½ï¿½
             if (LocalVelocity.y > -loaclGroundVelocity.y)
                 inheritedGroundVelocity += CustomUtilities.Multiply(verticalGroundVelocity, inheritedGroundPlanarVelocityMultiplier);
         }
@@ -874,7 +873,7 @@ public class CharacterActor : PhysicsActor
     #endregion
 
     /// <summary>
-    /// ================��ʱδ֪===========================================================================
+    /// ================ï¿½ï¿½Ê±Î´Öª===========================================================================
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
@@ -911,7 +910,7 @@ public class CharacterActor : PhysicsActor
         bodyPosition += separation;
     }
     /// <summary>
-    /// ģ�����Ժ�����ٶ�?
+    /// Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿?
     /// </summary>
     void PostSimulationVelocityUpdate()
     {
@@ -985,27 +984,27 @@ public class CharacterActor : PhysicsActor
 
     #endregion
     /// <summary>
-    /// ��õ�����ٶ�
+    /// ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     /// </summary>
     public Vector3 GroundVelocity { get; private set; }
     /// <summary>
-    /// ��ȡ���棨���壩����ǰ�ٶȡ�
+    /// ï¿½ï¿½È¡ï¿½ï¿½ï¿½æ£¨ï¿½ï¿½ï¿½å£©ï¿½ï¿½ï¿½ï¿½Ç°ï¿½Ù¶È¡ï¿½
     /// </summary>
     public Vector3 PreviousGroundVelocity { get; private set; }
     /// <summary>
-    /// ������ٶȲ�?����һ֡���ٶ�֮�
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È²î£?ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½Ù¶ï¿½Ö®ï¿½î£©
     /// </summary>
     public Vector3 GroundDeltaVelocity => GroundVelocity - PreviousGroundVelocity;
     /// <summary>
-    /// ����ļ��ٶ�?
+    /// ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ù¶ï¿?
     /// </summary>
     public Vector3 GroundAcceleration => (GroundVelocity - PreviousGroundVelocity) / Time.fixedDeltaTime;
     /// <summary>
-    /// �����Ƿ�������
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public bool IsGroundAscending => transform.InverseTransformVectorUnscaled(Vector3.Project(CustomUtilities.Multiply(GroundVelocity, Time.deltaTime), Up)).y > 0;
     /// <summary>
-    /// ������ɫ�ƶ�
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Æ¶ï¿½
     /// </summary>
     /// <param name="dt"></param>
     void ProcessVelocity(float dt)
@@ -1019,7 +1018,7 @@ public class CharacterActor : PhysicsActor
         Velocity = (position - Position) / dt;
     }
     /// <summary>
-    /// ������ɫ���ȶ������ϵ��ƶ�
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Æ¶ï¿½
     /// </summary>
     /// <param name="dt"></param>
     /// <param name="position"></param>
@@ -1027,7 +1026,7 @@ public class CharacterActor : PhysicsActor
     {
         ApplyWeight(GroundContactPoint);
         VerticalVelocity = Vector3.zero;
-        //����������ٶ�ֵ���������λ�ƣ��������ϰ�������
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         Vector3 displacement = CustomUtilities.ProjectOnTangent(
             CustomUtilities.Multiply(Velocity, dt),
@@ -1041,7 +1040,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ������ɫ�ڷ��ȶ������ϵ��ƶ�
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Ú·ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Æ¶ï¿½
     /// </summary>
     /// <param name="dt"></param>
     /// <param name="position"></param>
@@ -1070,7 +1069,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// ���ݸ����ĸ߶�ê�㣨Ҳ��Ϊ��С�ο������ɴ�С���´�С���бȽϺ󣬻�ȡ��λ��ֵ��
+    /// ï¿½ï¿½ï¿½Ý¸ï¿½ï¿½ï¿½ï¿½Ä¸ß¶ï¿½Ãªï¿½ã£¨Ò²ï¿½ï¿½Îªï¿½ï¿½Ð¡ï¿½Î¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É´ï¿½Ð¡ï¿½ï¿½ï¿½Â´ï¿½Ð¡ï¿½ï¿½ï¿½Ð±È½Ïºó£¬»ï¿½È¡ï¿½ï¿½Î»ï¿½ï¿½Öµï¿½ï¿½
     /// </summary>
     /// <param name="size"></param>
     /// <param name="heightAnchorRatio"></param>
@@ -1131,7 +1130,7 @@ public class CharacterActor : PhysicsActor
 
     public bool CheckAndInterpolateHeight(float targetHeight, float lerpFactor, SizeReferenceType sizeReferenceType) => CheckAndInterpolateSize(new Vector2(DefaultBodySize.x, targetHeight), lerpFactor, SizeReferenceType.Bottom);
     /// <summary>
-    /// ������ײ����?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½Ð?
     /// </summary>
     void SetColliderSize()
     {
@@ -1150,7 +1149,7 @@ public class CharacterActor : PhysicsActor
         Position += collisionInfo.displacement;
     }
     /// <summary>
-    /// ������ܣ�ǿ�ƽ��?�ӵأ�isGrounded = true���������������ѹ����?
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü£ï¿½Ç¿ï¿½Æ½ï¿½É?ï¿½ÓµØ£ï¿½isGrounded = trueï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ë¡?
     /// </summary>
     public void ForceGrounded()
     {
@@ -1170,7 +1169,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ��õ����¶ȷ���?
+    /// ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½Â¶È·ï¿½ï¿½ï¿?
     /// </summary>
     /// <param name="collision"></param>
     /// <returns></returns>
@@ -1195,21 +1194,21 @@ public class CharacterActor : PhysicsActor
     }
 
     /// <summary>
-    ///�ɵ���̽���㷨��������һ����ֱλ�ƣ�PostGroundProbingPosition - PreGroundProbingPosition����
+    ///ï¿½Éµï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ö±Î»ï¿½Æ£ï¿½PostGroundProbingPosition - PreGroundProbingPositionï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public Vector3 GroundProbingDisplacement { get; private set; }
 
     /// <summary>
-    /// ����̽���㷨֮ǰ�����һ������λ�á�?
+    /// ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ã·¨Ö®Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¡ï¿?
     /// </summary>
     public Vector3 PreGroundProbingPosition { get; private set; }
 
     /// <summary>
-    /// ����̽���㷨������һ������λ�á�
+    /// ï¿½ï¿½ï¿½ï¿½Ì½ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Ã¡ï¿½
     /// </summary>
     public Vector3 PostGroundProbingPosition { get; private set; }
     /// <summary>
-    /// �ж��Ƿ����ȶ�����
+    /// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="groundTransform"></param>
     /// <returns></returns>
@@ -1224,7 +1223,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// ������
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="dt"></param>
     void ProbeGround(float dt)
@@ -1234,7 +1233,7 @@ public class CharacterActor : PhysicsActor
         HitInfoFilter overlapFilter = new HitInfoFilter(ObstaclesWithoutOWPLayerMask, false, true);
 
         CollisionInfo collisionInfo = CharacterCollisions.CheckForGround(position, StepOffset, stepDownDistance, in sweepFilter, _collisionHitFilter);
-        //�����⵽û�еذ�
+        //ï¿½ï¿½ï¿½ï¿½ï¿½âµ½Ã»ï¿½ÐµØ°ï¿½
         if (!collisionInfo.hitInfo.hit)
         {
             ForceNotGrounded();
@@ -1252,7 +1251,7 @@ public class CharacterActor : PhysicsActor
             position += compensation;
         }
 
-        //���ڼ�⵽����ʱִ���ص����ԣ���ֱλ�����>ĳ����ֵ��
+        //ï¿½ï¿½ï¿½Ú¼ï¿½âµ½ï¿½ï¿½ï¿½ï¿½Ê±Ö´ï¿½ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½Ö±Î»ï¿½ï¿½ï¿½ï¿½ï¿½>Ä³ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½
         float verticalDisplcementComponent = transform.InverseTransformDirection(position - Position).y;
         bool overlapCheck = false;
 
@@ -1291,10 +1290,10 @@ public class CharacterActor : PhysicsActor
             Position = position;
     }
     /// <summary>
-    /// ǿ���ַ������ӵ�״̬��isGrounded = false������������������
-    /// ����������ǵĽ��?��Y����λ���������ø÷���
+    /// Ç¿ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Óµï¿½×´Ì¬ï¿½ï¿½isGrounded = falseï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÇµÄ½ï¿½É?ï¿½ï¿½Yï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¸Ã·ï¿½ï¿½ï¿½
     /// </summary>
-    /// <param name="ignoreGroundContactFrames">Ϊ�˷�ֹ��ɫ��ǿ�Ʋ��ӵص��ú��������½���ӵ�״�?�����ĵ� FixedUpdate ֡����</param>
+    /// <param name="ignoreGroundContactFrames">Îªï¿½Ë·ï¿½Ö¹ï¿½ï¿½É«ï¿½ï¿½Ç¿ï¿½Æ²ï¿½ï¿½ÓµØµï¿½ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½Óµï¿½×´Ì?ï¿½ï¿½ï¿½ï¿½ï¿½Äµï¿½ FixedUpdate Ö¡ï¿½ï¿½ï¿½ï¿½</param>
     public void ForceNotGrounded(int ignoreGroundContactFrames = 3)
     {
         forceNotGroundedFrames = ignoreGroundContactFrames;
@@ -1306,7 +1305,7 @@ public class CharacterActor : PhysicsActor
         forceNotGroundedFlag = true;
     }
     /// <summary>
-    /// �ж��Ƿ��Ǹ��ȶ�����ı��?
+    /// ï¿½Ð¶ï¿½ï¿½Ç·ï¿½ï¿½Ç¸ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ô?
     /// </summary>
     /// <param name="collisionInfo"></param>
     /// <returns></returns>
@@ -1325,7 +1324,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// �ȶ����������ģ��?
+    /// ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿?
     /// </summary>
     /// <param name="position"></param>
     /// <param name="displacement"></param>
@@ -1340,9 +1339,9 @@ public class CharacterActor : PhysicsActor
         while (iteration < CharacterConstants.MaxSlideIterations)
         {
             iteration++;
-            //���巢�����߼���ϰ���?
+            //ï¿½ï¿½ï¿½å·¢ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿?
             CollisionInfo collisionInfo = CharacterCollisions.CastBody(position, displacement, useFullBody ? 0f : StepOffset, in filter, false, _collisionHitFilter);
-            //���Ŀ��λ��û���ϰ���˵������ֱ�ӹ�ȥ���������?������߶���?
+            //ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½Î»ï¿½ï¿½Ã»ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó¹ï¿½È¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¶ï¿½ï¿½ï¿?
             if (collisionInfo.hitInfo.hit)
             {
                 if (CheckOneWayPlatformLayerMask(collisionInfo))
@@ -1372,7 +1371,7 @@ public class CharacterActor : PhysicsActor
                                 bool canPushThisObject = CustomUtilities.BelongsToLayerMask(collisionInfo.hitInfo.layer, pushableRigidbodyLayerMask);
                                 if (canPushThisObject)
                                 {
-                                    //ʹ��ʣ��λ�ơ�
+                                    //Ê¹ï¿½ï¿½Ê£ï¿½ï¿½Î»ï¿½Æ¡ï¿½
                                     position += displacement;
                                     break;
                                 }
@@ -1401,7 +1400,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// �жϵ�ǰ�ĵ����Ƿ��ǵ���ƽ̨
+    /// ï¿½Ð¶Ïµï¿½Ç°ï¿½Äµï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Çµï¿½ï¿½ï¿½Æ½Ì¨
     /// </summary>
     public bool IsGroundAOneWayPlatform
     {
@@ -1413,7 +1412,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ���gameobject�Ƿ��ǵ���ƽ̨
+    /// ï¿½ï¿½ï¿½gameobjectï¿½Ç·ï¿½ï¿½Çµï¿½ï¿½ï¿½Æ½Ì¨
     /// </summary>
     /// <param name="gameObject"></param>
     /// <returns></returns>
@@ -1422,7 +1421,7 @@ public class CharacterActor : PhysicsActor
         return CustomUtilities.BelongsToLayerMask(gameObject.layer, oneWayPlatformsLayerMask);
     }
     /// <summary>
-    /// ����Ƿ��?����ƽ̨
+    /// ï¿½ï¿½ï¿½ï¿½Ç·ï¿½Î?ï¿½ï¿½ï¿½ï¿½Æ½Ì¨
     /// </summary>
     /// <param name="collisionInfo"></param>
     /// <returns></returns>
@@ -1441,7 +1440,7 @@ public class CharacterActor : PhysicsActor
     public bool CanEnterGroundedState => !alwaysNotGrounded && forceNotGroundedFrames == 0;
 
     /// <summary>
-    /// ���ȶ���ײ�ͻ���
+    /// ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½×²ï¿½Í»ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="position"></param>
     /// <param name="displacement"></param>
@@ -1470,9 +1469,9 @@ public class CharacterActor : PhysicsActor
 
                 if (CheckOneWayPlatformLayerMask(collisionInfo))
                 {
-                    //����ǵ���ƽ�?�ͺ����� 
+                    //ï¿½ï¿½ï¿½ï¿½Çµï¿½ï¿½ï¿½Æ½Ì?ï¿½Íºï¿½ï¿½ï¿½ï¿½ï¿½ 
                     PhysicsComponent.IgnoreCollision(collisionInfo.hitInfo, true);
-                    //����ɫ�Ƿ���ý��ҵĵײ�ײ��ƽ�?��
+                    //ï¿½ï¿½ï¿½ï¿½É«ï¿½Ç·ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ÒµÄµ×²ï¿½×²ï¿½ï¿½Æ½Ì?ï¿½ï¿½
                     Vector3 nextPosition = position + collisionInfo.displacement;
                     bool isValidOWP = CheckOneWayPlatformCollision(collisionInfo.hitInfo.point, nextPosition);
 
@@ -1553,7 +1552,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// ��ⲻ�ȶ��ذ�?
+    /// ï¿½ï¿½â²»ï¿½È¶ï¿½ï¿½Ø°ï¿?
     /// </summary>
     /// <param name="position"></param>
     /// <param name="dt"></param>
@@ -1713,45 +1712,45 @@ public class CharacterActor : PhysicsActor
 public enum CharacterActorState
 {
     /// <summary>
-    /// δ�ڵ���
+    /// Î´ï¿½Úµï¿½ï¿½ï¿½
     /// </summary>
     NotGrounded,
     /// <summary>
-    /// ��̬����
+    /// ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     StableGrounded,
     /// <summary>
-    /// ��̬����
+    /// ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     UnstableGrounded
 }
 public enum CharacterVelocityMode
 {
     /// <summary>
-    /// ʹ�������ٶ�
+    /// Ê¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     /// </summary>
     UseInputVelocity,
     /// <summary>
-    /// ʹ��ģ��ǰ�ٶ�
+    /// Ê¹ï¿½ï¿½Ä£ï¿½ï¿½Ç°ï¿½Ù¶ï¿½
     /// </summary>
     UsePreSimulationVelocity,
     /// <summary>
-    /// ʹ��ģ����ٶ�?
+    /// Ê¹ï¿½ï¿½Ä£ï¿½ï¿½ï¿½ï¿½Ù¶ï¿?
     /// </summary>
     UsePostSimulationVelocity
 }
 public enum SizeReferenceType
 {
     /// <summary>
-    /// ����
+    /// ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     Top,
     /// <summary>
-    /// ����
+    /// ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     Center,
     /// <summary>
-    /// �ײ�
+    /// ï¿½×²ï¿½
     /// </summary>
     Bottom
 }
