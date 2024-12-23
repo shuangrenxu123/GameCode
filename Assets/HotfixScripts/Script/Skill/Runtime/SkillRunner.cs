@@ -89,7 +89,7 @@ namespace Fight
                     }
                     else if (track is ColliderTrack)
                     {
-                        clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
+                        //clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
                     }
                     else if (track is RotationTrack)
                     {
