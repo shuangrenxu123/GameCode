@@ -110,7 +110,7 @@ namespace SkillRuntimeClip
         /// </summary>
         private string name;
         private SkillSystem system;
-        public SkillGenerateClip(Action<EventClipType, object> action, string name,SkillSystem skillsystem) : base(action)
+        public SkillGenerateClip(Action<EventClipType, object> action, string name, SkillSystem skillsystem) : base(action)
         {
             this.name = name;
             this.system = skillsystem;
@@ -132,11 +132,11 @@ namespace SkillRuntimeClip
     }
     class ColliderEventClip : EventClip
     {
-        private DamageCollider collider;
+        private RayCastDamageCollider collider;
 
         protected override EventClipType clipType => EventClipType.Collider;
 
-        public ColliderEventClip(Action<EventClipType, object> action, DamageCollider collider) : base(action)
+        public ColliderEventClip(Action<EventClipType, object> action, RayCastDamageCollider collider) : base(action)
         {
             this.collider = collider;
         }
