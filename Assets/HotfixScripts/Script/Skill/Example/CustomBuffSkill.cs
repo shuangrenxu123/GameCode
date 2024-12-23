@@ -5,14 +5,14 @@ using UnityEngine;
 
 public class CustomBuffSkill : MonoBehaviour
 {
-     SkillSystem system;
+    SkillSystem system;
     /// <summary>
-    /// ÉúÐ§Ê±¼ä
+    /// ï¿½ï¿½Ð§Ê±ï¿½ï¿½
     /// </summary>
     [SerializeField]
-    float time; 
+    float time;
     /// <summary>
-    /// ¶àÉÙÃëºóÏú»Ù
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     [SerializeField]
     float DestoryTime;
@@ -27,14 +27,14 @@ public class CustomBuffSkill : MonoBehaviour
     {
         timer = 0;
     }
-    public void Init(SkillSystem system,SkillData data)
+    public void Init(SkillSystem system, SkillData data)
     {
         skillData = data;
         this.system = system;
     }
     private void Update()
     {
-        if(timer >= time)
+        if (timer >= time)
         {
             Excute();
             time += DestoryTime;
@@ -66,7 +66,6 @@ public class CustomBuffSkill : MonoBehaviour
                 break;
             case SkillEffect.HP:
                 new RegenerationAction(system.CombatEntity, target).Apply(value);
-                Debug.Log($"»Ö¸´ÁËÉúÃüÖµ{value}");
                 break;
             case SkillEffect.Attack:
                 break;

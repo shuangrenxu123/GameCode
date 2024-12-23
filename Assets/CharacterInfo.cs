@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CharacterInfo : MonoBehaviour
 {
@@ -16,4 +17,5 @@ public class CharacterInfo : MonoBehaviour
         PlanerSpeed.text = actor.PlanarVelocity.ToString();
         state.text = stateManger.controller.CurrentState.name;
     }
+
 }

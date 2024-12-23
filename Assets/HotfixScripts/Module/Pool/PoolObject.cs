@@ -1,13 +1,11 @@
 using UnityEngine;
 namespace ObjectPool
 {
-
-
     public class PoolObject : MonoBehaviour
     {
         public GameObjectGroup group;
         /// <summary>
-        /// Ìí¼Ó½ø³Ø×ÓµÄÊ±ºòµ÷ÓÃÒ»´Î
+        /// ï¿½ï¿½ï¿½Ó½ï¿½ï¿½ï¿½ï¿½Óµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
         /// </summary>
         public virtual void Init()
         {
@@ -15,18 +13,22 @@ namespace ObjectPool
         }
 
         /// <summary>
-        /// ³ö¶ÓÊ±ºòµ÷ÓÃ
+        /// ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public virtual void Push()
         {
 
         }
         /// <summary>
-        /// »ØÊÕÊ±ºòµ÷ÓÃ
+        /// ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public virtual void Pull()
         {
 
+        }
+        public void Release()
+        {
+            group.Restore(this);
         }
     }
 }

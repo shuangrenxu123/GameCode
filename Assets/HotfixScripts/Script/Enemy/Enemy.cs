@@ -1,8 +1,11 @@
+using System;
 using Fight;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Enemy : MonoBehaviour
 {
+
     public CombatEntity combatEntity;
     //public SkillSystem skillSystem;
     //public EnemyAI ai;
@@ -15,6 +18,7 @@ public class Enemy : MonoBehaviour
         //skillSystem.AddSkill(Resources.Load<SkillData>("fire"), Resources.Load<GameObject>("jili"));
 
     }
+
     private void Start()
     {
         combatEntity.Init(100);

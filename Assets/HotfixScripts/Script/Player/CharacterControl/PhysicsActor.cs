@@ -347,7 +347,7 @@ public abstract class PhysicsActor : MonoBehaviour
         Animator = this.GetComponentInBranch<CharacterActor, Animator>();
 
 #if UNITY_2023_1_OR_NEWER
-            Animator.updateMode = AnimatorUpdateMode.Fixed;
+        Animator.updateMode = AnimatorUpdateMode.Fixed;
 #else
         Animator.updateMode = AnimatorUpdateMode.AnimatePhysics;
 #endif
