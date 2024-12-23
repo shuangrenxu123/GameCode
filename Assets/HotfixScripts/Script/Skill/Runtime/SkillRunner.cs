@@ -7,14 +7,14 @@ using UnityEngine.Timeline;
 namespace Fight
 {
     /// <summary>
-    /// ¸ÃÀàÎª¾ßÌåµÄ¼¼ÄÜÖ´ĞĞÕß£¬¿ÉÒÔÀí½âÎªTimelineµÄRuntime°æ±¾
-    /// Ä¿Ç°Ö»Õë¶Ô½ÇÉ«¶øÑÔÊ¹ÓÃ¸ÃÀà£¬Èç¹ûºóĞøÓĞÆäËûµÄ¸´ÔÓ¼¼ÄÜ¿ÉÒÔ²Î¿¼¸ÃÀàÊµÏÖ
-    /// ÀíÂÛÉÏÀ´Ëµ£¬Ó¦¸ÃÍæ¼ÒËùÓĞµÄ¹¥»÷¶¯×÷¶¼ÓÉ¸ÃÀàÊµÏÖ¡£
+    /// ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªTimelineï¿½ï¿½Runtimeï¿½æ±¾
+    /// Ä¿Ç°Ö»ï¿½ï¿½Ô½ï¿½É«ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ã¸ï¿½ï¿½à£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½Ó¼ï¿½ï¿½Ü¿ï¿½ï¿½Ô²Î¿ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ĞµÄ¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¸ï¿½ï¿½ï¿½Êµï¿½Ö¡ï¿½
     /// </summary>
-    /// todo ĞŞ¸ÄÊôĞÔ×Ö¶Î£¬½«½ÇÉ«ÓëµĞÈËµÄ·Ö¿ª
+    /// todo ï¿½Ş¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶Î£ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ËµÄ·Ö¿ï¿½
     public class SkillRunner : MonoBehaviour
     {
-        SkillSystem SkillSystem=>enemyAIControl.skillSystem;
+        SkillSystem SkillSystem => enemyAIControl.skillSystem;
         public SerializedDictionary<string, DamageCollider> damageColliders;
         public CharacterActor actor;
         public bool isFinish = false;
@@ -62,6 +62,8 @@ namespace Fight
                 actor.SetYaw(currentDeltaDotation * actor.Forward);
             }
         }
+
+        //TODO: aa 
         public void LoadConfig(TimelineAsset asset)
         {
             TimelineAsset playable = asset;
@@ -69,7 +71,7 @@ namespace Fight
             foreach (var track in tracks)
             {
                 var trackRunner = new TrackRunner();
-                var events = track.GetClips();  
+                var events = track.GetClips();
                 foreach (var e in events)
                 {
                     EventClip clip = null;

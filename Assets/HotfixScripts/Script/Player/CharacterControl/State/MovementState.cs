@@ -7,7 +7,7 @@ namespace CharacterControlerStateMachine
 {
     public class MovementState : CharacterControlStateBase
     {
-        //todo ½«ÌøÔ¾£¬ÏÂ¶×µÈ¶¯»­Ìá³öÀ´£¬×îÖÕÈÃÕû¸ö±äÎª·Ö²ã×´Ì¬»ú
+        //todo ï¿½ï¿½ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½Â¶×µÈ¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½Ö²ï¿½×´Ì¬ï¿½ï¿½
         #region parameters
         public PlanarMovementParameters planarMovementParameters = new();
         public VerticalMovementParameters verticalMovementParameters = new VerticalMovementParameters();
@@ -29,17 +29,17 @@ namespace CharacterControlerStateMachine
 
         #region Events
         /// <summary>
-        /// ½ÇÉ«ÌøÔ¾Ê±´¥·¢µÄÊÂ¼þ¡££¨Ö»ÒªÌøÔ¾ÁË¾Í»á´¥·¢£©
+        /// ï¿½ï¿½É«ï¿½ï¿½Ô¾Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½Ö»Òªï¿½ï¿½Ô¾ï¿½Ë¾Í»á´¥ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public event Action OnJumpPerformed;
 
         /// <summary>
-        /// µ±½ÇÉ«´ÓµØÃæÌøÔ¾Ê±´¥·¢µÄÊÂ¼þ¡£
+        /// ï¿½ï¿½ï¿½ï¿½É«ï¿½Óµï¿½ï¿½ï¿½ï¿½ï¿½Ô¾Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½
         /// </summary>
         public event Action<bool> OnGroundedJumpPerformed;
 
         /// <summary>
-        /// ½ÇÉ«ÌøÔ¾Á¬ÌøÊ±´¥·¢µÄÊÂ¼þ£¨¼´²»ÔÚµØÃæÊ±ÌøÔ¾£©¡£
+        /// ï¿½ï¿½É«ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½Ê±ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public event Action<int> OnNotGroundedJumpPerformed;
 
@@ -51,11 +51,11 @@ namespace CharacterControlerStateMachine
         #endregion
         public MaterialControl MaterialControl;
         /// <summary>
-        /// Á¬Ìø´ÎÊý
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         protected int notGroundedJumpsLeft = 0;
         /// <summary>
-        /// ÊÇ·ñÔÊÐíÈ¡ÏûÌøÔ¾
+        /// ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½Ô¾
         /// </summary>
         protected bool isAllowedToCancelJump = false;
         protected bool wantToRun = false;
@@ -63,22 +63,22 @@ namespace CharacterControlerStateMachine
         protected bool lockFlag = false;
         protected float currentPlanarSpeedLimit = 0f;
         /// <summary>
-        /// µ±Ç°µØÃæÊÇ·ñ¿ÉÒÔÌøÔ¾
+        /// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾
         /// </summary>
         protected bool groundedJumpAvailable = true;
         /// <summary>
-        /// ÌøÔ¾µÄ·½Ïò£¬£¨ÓÃÓÚÐ±ÃæÌø°å£©
+        /// ï¿½ï¿½Ô¾ï¿½Ä·ï¿½ï¿½ò£¬£ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½å£©
         /// </summary>
         protected Vector3 JumpDirection = Vector3.zero;
         protected Vector3 targetLookingDirection = Vector3.zero;
         protected float targetHeight = 1f;
         /// <summary>
-        /// ÊÇ·ñÒª¶×ÏÂ
+        /// ï¿½Ç·ï¿½Òªï¿½ï¿½ï¿½ï¿½
         /// </summary>
         protected bool wantToCrouch = false;
         public bool isCrouched = false;
         /// <summary>
-        /// ÊÇ·ñÆôÓÃÖØÁ¦
+        /// ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public bool UseGravity
         {
@@ -157,7 +157,7 @@ namespace CharacterControlerStateMachine
             }
             CheckForInteractableObject();
         }
-        #region ËøµÐ(lock)
+        #region ï¿½ï¿½ï¿½ï¿½(lock)
 
         public bool HandleLockEnemy(Transform target)
         {
@@ -180,14 +180,14 @@ namespace CharacterControlerStateMachine
 
         }
         #endregion
-        #region ÒÆ¶¯£¨movement£©
+        #region ï¿½Æ¶ï¿½ï¿½ï¿½movementï¿½ï¿½
         private void HandleVelocity(float dt)
         {
             ProcessVerticalMovement(dt);
             ProcessPlanarMovement(dt);
         }
         /// <summary>
-        /// ´¦ÀíÊúÖ±µÄËÙ¶ÈÏà¹Ø
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         /// <param name="dt"></param>
         /// <exception cref="NotImplementedException"></exception>
@@ -197,14 +197,14 @@ namespace CharacterControlerStateMachine
             ProcessJump(dt);
         }
         /// <summary>
-        /// ´¦Àí½ÇÉ«Æ½ÃæÒÆ¶¯
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«Æ½ï¿½ï¿½ï¿½Æ¶ï¿½
         /// </summary>
         /// <param name="dt"></param>
         private void ProcessPlanarMovement(float dt)
         {
             float speedMultiplier = MaterialControl == null ? 1f : MaterialControl.CurrentSurface.speedMultiplier * MaterialControl.CurrentVolume.speedMultiplier;
             bool needToAccalerate = CustomUtilities.Multiply(CharacterStateController.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude >= CharacterActor.PlanarVelocity.sqrMagnitude;
-            //Ä¿±êËÙ¶È
+            //Ä¿ï¿½ï¿½ï¿½Ù¶ï¿½
             Vector3 targetPlanarVelocity = default;
             switch (CharacterActor.CurrentState)
             {
@@ -226,7 +226,7 @@ namespace CharacterControlerStateMachine
 
                     if (wantToCrouch || !planarMovementParameters.canRun)
                         wantToRun = false;
-                    //ÊÇ·ñÏÂ¶×
+                    //ï¿½Ç·ï¿½ï¿½Â¶ï¿½
                     if (isCrouched)
                     {
                         currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit * crouchParameters.speedMultiplier;
@@ -246,7 +246,7 @@ namespace CharacterControlerStateMachine
 
             SetMotionValues(targetPlanarVelocity);
             float acceleration = currentMotion.acceleration;
-            //ÆôÓÃ¼ÓËÙ¶È
+            //ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½Ù¶ï¿½
             if (needToAccalerate)
             {
                 acceleration *= currentMotion.angleAccelerationMultiplier;
@@ -273,7 +273,7 @@ namespace CharacterControlerStateMachine
                 CharacterActor.VerticalVelocity += CustomUtilities.Multiply(-CharacterActor.Up, gravity, dt);
         }
         #endregion
-        #region Ðý×ª£¨rotate£©
+        #region ï¿½ï¿½×ªï¿½ï¿½rotateï¿½ï¿½
         protected virtual void HandleRotation(float dt)
         {
             HandleLookingDirection(dt);
@@ -340,9 +340,9 @@ namespace CharacterControlerStateMachine
             }
         }
         #endregion
-        #region ÏÂ¶×(Crouch)
+        #region ï¿½Â¶ï¿½(Crouch)
         /// <summary>
-        /// ÏÂ¶×
+        /// ï¿½Â¶ï¿½
         /// </summary>
         /// <param name="dt"></param>
         void Crouch(float dt)
@@ -361,7 +361,7 @@ namespace CharacterControlerStateMachine
             }
         }
         /// <summary>
-        /// ÆðÁ¢
+        /// ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         /// <param name="dt"></param>
         void StandUp(float dt)
@@ -378,7 +378,7 @@ namespace CharacterControlerStateMachine
 
         }
         #endregion
-        #region ÌøÔ¾(jump)
+        #region ï¿½ï¿½Ô¾(jump)
         public enum JumpResult
         {
             Invalid,
@@ -440,7 +440,7 @@ namespace CharacterControlerStateMachine
                     {
                         isAllowedToCancelJump = false;
                     }
-                    //Èç¹ûÒÑ¾­ËÉ¿ªÁËÌøÔ¾¼üÇÒ°´ÏÂµÄÊ±¼ä³¬Ô½ÁË×îÐ¡µÄ³ÖÐøÊ±¼äÔò±»ÈÏ¶¨Îª¿ÉÒÔ½øÈëÁËÌøÔ¾×´Ì¬
+                    //ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½É¿ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾ï¿½ï¿½ï¿½Ò°ï¿½ï¿½Âµï¿½Ê±ï¿½ä³¬Ô½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½Ä³ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ï¶ï¿½Îªï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾×´Ì¬
                     else if (!CharacterActions.jump.value && CharacterActions.jump.StartedElapsedTime >= verticalMovementParameters.cancelJumpMinTime)
                     {
                         Vector3 projectJumpVerlocity = Vector3.Project(CharacterActor.Velocity, JumpDirection);
@@ -478,7 +478,7 @@ namespace CharacterControlerStateMachine
 
                 JumpDirection = SetJumpDirection();
 
-                //Ö»ÓÐµ÷ÓÃ¸Ãº¯Êý²ÅÄÜÈ¡ÏûÇ¿ÖÆ½Ó´¥µØÃæµÄ×´Ì¬£¬·ñÔòÎÞ·¨ÌøÔ¾
+                //Ö»ï¿½Ðµï¿½ï¿½Ã¸Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Ç¿ï¿½Æ½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ·ï¿½ï¿½ï¿½Ô¾
                 if (CharacterActor.IsGrounded)
                     CharacterActor.ForceNotGrounded();
 
@@ -506,14 +506,14 @@ namespace CharacterControlerStateMachine
         }
 
         /// <summary>
-        /// ·µ»ØÌøÔ¾µÄ·½Ïò£¬Ä¿Ç°ÊÇ½ÇÉ«Í·¶¥£¬¿ÉÒÔºóÐø´ÓÐ±ÆÂÉÏÆðÌøµÈ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¾ï¿½Ä·ï¿½ï¿½ï¿½Ä¿Ç°ï¿½Ç½ï¿½É«Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private Vector3 SetJumpDirection()
         {
             return CharacterActor.Up;
         }
         /// <summary>
-        /// ´¦Àí×ÔÉíµÄÏÂÂä£¬Èç´Óµ¥ÏòÆ½Ì¨ÏÂÂäµÈ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ä£¬ï¿½ï¿½Óµï¿½ï¿½ï¿½Æ½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         /// <param name="dt"></param>
         /// <returns></returns>
@@ -525,13 +525,13 @@ namespace CharacterControlerStateMachine
                 return false;
             if (!CharacterActor.IsGroundAOneWayPlatform)
                 return false;
-            //ÊÇ·ñ¶ÔËùÔÚµØÃæ½øÐÐ¹ýÂË£¨tag£©
+            //ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½Ð¹ï¿½ï¿½Ë£ï¿½tagï¿½ï¿½
             if (verticalMovementParameters.filterByTag)
             {
                 if (!CharacterActor.gameObject.CompareTag(verticalMovementParameters.jumpDownTag))
                     return false;
             }
-            //ÊÇ·ñÖ´ÐÐÁËÌøÏÂµÄÐÐÎª£¬¼´ÊÇ·ñ°´ÏÂ°´¼ü´Óµ¥ÏîÆ½Ì¨ÉÏÏÂÀ´
+            //ï¿½Ç·ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Â°ï¿½ï¿½ï¿½ï¿½Óµï¿½ï¿½ï¿½Æ½Ì¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             if (!ProcessJumpDownAction())
                 return false;
 
@@ -553,9 +553,9 @@ namespace CharacterControlerStateMachine
             return isCrouched && CharacterActions.jump.Started;
         }
         #endregion
-        #region ÇÐ»»×´Ì¬(Transform)
+        #region ï¿½Ð»ï¿½×´Ì¬(Transform)
         /// <summary>
-        /// ÇÐ»»µ½ÓëÎïÆ·½»»¥×´Ì¬(²»¿ÉÒÆ¶¯)
+        /// ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½×´Ì¬(ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½)
         /// </summary>
         private void CheckForInteractableObject()
         {
@@ -616,7 +616,7 @@ namespace CharacterControlerStateMachine
             }
         }
         /// <summary>
-        /// ´¦Àí¼ÓËÙ¶ÈÏà¹Ø
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         /// <param name="targetPlanarVelocity"></param>
         void SetMotionValues(Vector3 targetPlanarVelocity)
@@ -675,9 +675,9 @@ namespace CharacterControlerStateMachine
                 }
             }
         }
-        #region ¸üÐÂ¶¯»­(Update Animator Parmeters)
+        #region ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½(Update Animator Parmeters)
         /// <summary>
-        /// ÔÚÎïÀíÍê±ÏÖ®ºó¸üÐÂ¶¯»­£¬ÒâÎ¶×ÅÎÒÃÇÔÚ²»ÊäÈëËÙ¶ÈÇé¿öÏÂÒ²¿ÉÒÔ´¦ÀíÏà¹Ø¶¯»­
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò²ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½Ø¶ï¿½ï¿½ï¿½
         /// </summary>
         public override void PostCharacterSimulation()
         {

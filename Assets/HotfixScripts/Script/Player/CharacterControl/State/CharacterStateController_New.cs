@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class CharacterStateController_New : StateMachine
 {
-    MovementReferenceParmeters movementReferenceParmeters = new MovementReferenceParmeters();
+    MovementReferenceParameters movementReferenceParameters = new MovementReferenceParameters();
     public StateManger stateManger;
-    public MovementReferenceParmeters MovementReferenceParmeters => movementReferenceParmeters;
+    public MovementReferenceParameters MovementReferenceParameters => movementReferenceParameters;
     public CharacterActor CharacterActor { get; set; }
     public Animator Animator { get; set; }
     public bool UseRootMotion { get => CharacterActor.UseRootMotion; set => CharacterActor.UseRootMotion = value; }
@@ -14,20 +14,20 @@ public class CharacterStateController_New : StateMachine
     public CharacterBrain CharacterBrain { get; set; }
     public new CharacterControlStateBase CurrentState => (CharacterControlStateBase)base.CurrentState;
     #region MovementReference
-    public Vector3 InputMovementReference => movementReferenceParmeters.InputMovementReference;
+    public Vector3 InputMovementReference => movementReferenceParameters.InputMovementReference;
     public Transform ExternalReference
     {
-        get => movementReferenceParmeters.externalReference;
-        set => movementReferenceParmeters.externalReference = value;
+        get => movementReferenceParameters.externalReference;
+        set => movementReferenceParameters.externalReference = value;
     }
 
-    public MovementReferenceParmeters.MovementReferenceMode MovementReferenceMode
+    public MovementReferenceParameters.MovementReferenceMode MovementReferenceMode
     {
-        get => movementReferenceParmeters.movementReferenceMode;
-        set => movementReferenceParmeters.movementReferenceMode = value;
+        get => movementReferenceParameters.movementReferenceMode;
+        set => movementReferenceParameters.movementReferenceMode = value;
     }
-    public Vector3 MovementReferenceForward => movementReferenceParmeters.MovementReferenceForward;
-    public Vector3 MovementReferenceRight => movementReferenceParmeters.MovementReferenceRight;
+    public Vector3 MovementReferenceForward => movementReferenceParameters.MovementReferenceForward;
+    public Vector3 MovementReferenceRight => movementReferenceParameters.MovementReferenceRight;
     #endregion
     void PreCharacterSimulation(float dt) => CurrentState.PreCharacterSimulation();
     void PostCharacterSimulation(float dt) => CurrentState.PostCharacterSimulation();
@@ -40,7 +40,7 @@ public class CharacterStateController_New : StateMachine
         {
             CharacterActor.OnAnimatorIKEvent += OnAnimatorIK;
         }
-        MovementReferenceParmeters.Initialize(CharacterActor);
+        MovementReferenceParameters.Initialize(CharacterActor);
         base.Init();
     }
     public override void Exit()
@@ -52,7 +52,7 @@ public class CharacterStateController_New : StateMachine
     }
     public override void FixUpdate()
     {
-        MovementReferenceParmeters.UpdateData(CharacterBrain.CharacterActions.movement.value);
+        MovementReferenceParameters.UpdateData(CharacterBrain.CharacterActions.movement.value);
         CurrentState.FixUpdate();
     }
     void OnAnimatorIK(int layerIndex)

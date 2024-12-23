@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class MovementReferenceParmeters
+public class MovementReferenceParameters
 {
     public MovementReferenceMode movementReferenceMode = MovementReferenceMode.External;
 
@@ -57,7 +57,7 @@ public class MovementReferenceParmeters
                 }
                 else
                 {
-                    Debug.LogWarning("没有指定前进方向");
+                    Debug.LogWarning("没锟斤拷指锟斤拷前锟斤拷锟斤拷锟斤拷");
                 }
                 break;
             case MovementReferenceMode.Character:
