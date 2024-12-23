@@ -2,94 +2,87 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Utilities;
-using VInspector;
 [RequireComponent(typeof(CharacterBody))]
 [DefaultExecutionOrder(10)]
 public class CharacterActor : PhysicsActor
 {
-    #region 相关变量
-    [Tab("OneWayPlatform")]
+    #region 锟斤拷乇锟斤拷锟?
+
     public LayerMask oneWayPlatformsLayerMask = 0;
 
     [Range(0, 179f)]
     public float oneWayPlayformsValidArc = 175;
 
-    [Tab("stable")]
-    [Tooltip("坡度限制,只有当地面坡度必须小于或等于此值的时候才能保持稳定， 角度的计算是使用地面法线来计算，即可以爬上倾斜度更高的坡")]
+
+    [Tooltip("锟铰讹拷锟斤拷锟斤拷,只锟叫碉拷锟斤拷锟斤拷锟铰度憋拷锟斤拷小锟节伙拷锟斤拷诖锟街碉拷锟绞憋拷锟斤拷锟杰憋拷锟斤拷锟饺讹拷锟斤拷 锟角度的硷拷锟斤拷锟斤拷使锟矫碉拷锟芥法锟斤拷锟斤拷锟斤拷锟姐，锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷斜锟饺革拷锟竭碉拷锟斤拷")]
     public float slopeLimit = 55f;
-    [Tooltip("没有被此图层标记的对象将会被视为不稳定对象")]
+    [Tooltip("没锟叫憋拷锟斤拷图锟斤拷锟角的讹拷锟襟将会被锟斤拷为锟斤拷锟饺讹拷锟斤拷锟斤拷")]
     public LayerMask stableLayerMask = -1;
-    [Tooltip("是否允许将其他Character视为稳定表面")]
+    [Tooltip("锟角凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷Character锟斤拷为锟饺讹拷锟斤拷锟斤拷")]
     public bool allowCharactersAsStableSurfaces = true;
-    [Tooltip("在平面游戏中可能会因为速度过高导致翻越一些不能被翻过的障碍，该值可以通过删除额外的速度值来防止情况")]
+    [Tooltip("锟斤拷平锟斤拷锟斤拷戏锟叫匡拷锟杰伙拷锟斤拷为锟劫度癸拷锟竭碉拷锟铰凤拷越一些锟斤拷锟杰憋拷锟斤拷锟斤拷锟斤拷锟较帮拷锟斤拷锟斤拷值锟斤拷锟斤拷通锟斤拷删锟斤拷锟斤拷锟斤拷锟斤拷俣锟街碉拷锟斤拷锟街癸拷锟斤拷")]
     public bool preventtUnstableClimbing = true;
-    [Tooltip("这可以防止角色跨过不稳定的表面，如果不需要这种级别的精度可以禁用他")]
+    [Tooltip("锟斤拷锟斤拷苑锟街癸拷锟缴?锟斤拷锟斤拷锟斤拷榷锟斤拷谋锟斤拷妫?锟斤拷锟斤拷锟斤拷锟揭?锟斤拷锟街硷拷锟斤拷木锟斤拷瓤锟斤拷越锟斤拷锟斤拷锟?")]
     public bool preventBadSteps = true;
 
-    [Tab("Step handing")]
-    [Tooltip("应用于Character底部的偏移距离。更高的偏移量意味着更多的可步行表面,即可以上更高的楼梯")]
+    [Tooltip("应锟斤拷锟斤拷Character锟阶诧拷锟斤拷偏锟狡撅拷锟诫。锟斤拷锟竭碉拷偏锟斤拷锟斤拷锟斤拷味锟脚革拷锟斤拷目刹锟斤拷斜锟斤拷锟?,锟斤拷锟斤拷锟斤拷锟较革拷锟竭碉拷楼锟斤拷")]
     public float stepUpDistance = 0.5f;
-    [Tooltip("Character能检测地面的距离，使用该变量将Character固定在地面上")]
+    [Tooltip("Character锟杰硷拷锟斤拷锟斤拷木锟斤拷耄?使锟矫该憋拷锟斤拷锟斤拷Character锟教讹拷锟节碉拷锟斤拷锟斤拷")]
     public float stepDownDistance = 0.5f;
 
-    [Tab("Grounding")]
-    [Tooltip("“防止Character进入接地状态（IsGrounded 将是false")]
+    [Tooltip("锟斤拷锟斤拷止Character锟斤拷锟斤拷拥锟阶刺?锟斤拷IsGrounded 锟斤拷锟斤拷false")]
     public bool alwaysNotGrounded = false;
 
-    [Tooltip("该值会在游戏开始的时候进行地面检测，如果没检测到那么IsGround将会是false")]
+    [Tooltip("锟斤拷值锟斤拷锟斤拷锟斤拷戏锟斤拷始锟斤拷时锟斤拷锟斤拷械锟斤拷锟斤拷猓?锟斤拷锟矫伙拷锟解到锟斤拷么IsGround锟斤拷锟斤拷锟斤拷false")]
     [Condition("alwaysNotGrounded", ConditionAttribute.ConditionType.IsFalse)]
     public bool forceGroundedAtStart = true;
 
-    [Tooltip("是否启用OnTrigger等触发器函数（与地面），一般来说他们不会被触发，因为我们的角色是悬空的")]
+    [Tooltip("锟角凤拷锟斤拷锟斤拷OnTrigger锟饺达拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷妫╋拷锟揭伙拷锟斤拷锟剿碉拷锟斤拷遣锟斤拷岜伙拷锟斤拷锟斤拷锟斤拷锟轿?锟斤拷锟角的斤拷色锟斤拷锟斤拷锟秸碉拷")]
     public bool useGroundTrigger = true;
-    [Tooltip("启用该值以后，角色底部的将会被模拟为圆柱体，仅在边缘时候有效")]
+    [Tooltip("锟斤拷锟矫革拷值锟皆后，斤拷色锟阶诧拷锟侥斤拷锟结被模锟斤拷为圆锟斤拷锟藉，锟斤拷锟节憋拷缘时锟斤拷锟斤拷效")]
     public bool edgeCompensation = false;
-    [Tooltip("当角色与地面接触且站在了稳定边缘的时候 " +
-        "ture:无论怎么碰撞，字符都将会进入稳定状态" +
-        "false ： 角色将使用接触角来确定稳定性（值小于斜率限制）")]
+    [Tooltip("锟斤拷锟斤拷色锟斤拷锟斤拷锟接达拷锟斤拷站锟斤拷锟斤拷锟饺讹拷锟斤拷缘锟斤拷时锟斤拷 " +
+        "ture:锟斤拷锟斤拷锟斤拷么锟斤拷撞锟斤拷锟街凤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷榷锟阶刺?" +
+        "false 锟斤拷 锟斤拷色锟斤拷使锟矫接达拷锟斤拷锟斤拷确锟斤拷锟饺讹拷锟皆ｏ拷值小锟斤拷斜锟斤拷锟斤拷锟狡ｏ拷")]
     public bool useStableEdgeWhenLanding = true;
-    [Tooltip("如果角色的垂直速度为正，则字符是否检测到新的（和有效的）地面")]
+    [Tooltip("锟斤拷锟斤拷锟缴?锟侥达拷直锟劫讹拷为锟斤拷锟斤拷锟斤拷锟街凤拷锟角凤拷锟解到锟铰的ｏ拷锟斤拷锟斤拷效锟侥ｏ拷锟斤拷锟斤拷")]
     public bool detectGroundWhileAscending = false;
 
-    [Tab("Dynamic ground")]
-    [Tooltip("角色是否应该受到地面运动的影响")]
+    [Tooltip("锟斤拷色锟角凤拷应锟斤拷锟杰碉拷锟斤拷锟斤拷锟剿讹拷锟斤拷影锟斤拷")]
     public bool supportDynamicGround = true;
     public LayerMask dynamicGroundLayerMask = -1;
-    [Tooltip("角色的正方向会不会受到地面移动的影响")]
+    [Tooltip("锟斤拷色锟斤拷锟斤拷锟斤拷锟斤拷岵伙拷锟斤拷艿锟斤拷锟斤拷锟斤拷贫锟斤拷锟接帮拷锟?")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool rotateForwardDirection = true;
-    [Tooltip("这是角色能忍受的最大地面速度，如果地面速度太快，角色将会停止移动")]
+    [Tooltip("锟斤拷锟角斤拷色锟斤拷锟斤拷锟杰碉拷锟斤拷锟斤拷锟斤拷锟劫度ｏ拷锟斤拷锟斤拷锟斤拷锟斤拷俣锟教?锟届，锟斤拷色锟斤拷锟斤拷停止锟狡讹拷")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float maxGroundVelocityChange = 30f;
-    [Tooltip("继承动态地面速度所需的最小值（转化为水平速度）")]
+    [Tooltip("锟教承讹拷态锟斤拷锟斤拷锟劫讹拷锟斤拷锟斤拷锟斤拷锟叫≈碉拷锟阶?锟斤拷为水平锟劫度ｏ拷")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlannarlVelocityThreshold = 2f;
-    [Tooltip("继承动态地面速度的系数（转化为水平速度）")]
+    [Tooltip("锟教承讹拷态锟斤拷锟斤拷锟劫度碉拷系锟斤拷锟斤拷转锟斤拷为水平锟劫度ｏ拷")]
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlanarVelocityMultiplier = 1f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("继承动态地面速度的系数（转化为垂直速度）")]
+    [Tooltip("锟教承讹拷态锟斤拷锟斤拷锟劫度碉拷系锟斤拷锟斤拷转锟斤拷为锟斤拷直锟劫度ｏ拷")]
     public float inheritedGroundVerticalVelocityThreshold = 2f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("继承动态地面速度的系数（转化为垂直速度）")]
+    [Tooltip("锟教承讹拷态锟斤拷锟斤拷锟劫度碉拷系锟斤拷锟斤拷转锟斤拷为锟斤拷直锟劫度ｏ拷")]
     public float inheritedGroundVerticalVelocityMultiplier = 1f;
-
-    [Tab("Velocity")]
     public bool slideOnWalls = true;
 
     [SerializeField]
-    //传送后是否重置速度
+    //锟斤拷锟酵猴拷锟角凤拷锟斤拷锟斤拷锟劫讹拷
     bool resetVelocityOnTeleport = true;
 
     public CharacterVelocityMode stablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
     public CharacterVelocityMode unstablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
 
-    [Tab("Rotation")]
-    [Tooltip("该组件是否需要重新定义角色的坐标轴")]
+    [Tooltip("锟斤拷锟斤拷锟斤拷欠锟斤拷锟揭?锟斤拷锟铰讹拷锟斤拷锟缴?锟斤拷锟斤拷锟斤拷锟斤拷")]
     public bool constraintRotation = true;
 
     /// <summary>
-    /// 如果需要重新定义坐标轴，对向上的Transform的引用
+    /// 锟斤拷锟斤拷锟揭?锟斤拷锟铰讹拷锟斤拷锟斤拷锟斤拷锟结，锟斤拷锟斤拷锟较碉拷Transform锟斤拷锟斤拷锟斤拷
     /// </summary>
     [Condition("constraintRotation", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public Transform upDirectionReference = null;
@@ -101,7 +94,7 @@ public class CharacterActor : PhysicsActor
     new float[] { 0f, 0f },
     ConditionAttribute.VisibilityType.Hidden)]
     /// <summary>
-    /// 所需的向上方向
+    /// 锟斤拷锟斤拷锟斤拷锟斤拷戏锟斤拷锟?
     /// </summary>
     public Vector3 constraintUpDirection = Vector3.up;
 
@@ -113,8 +106,6 @@ public class CharacterActor : PhysicsActor
      ConditionAttribute.VisibilityType.Hidden)]
     public VerticalAlignmentSettings.VerticalReferenceMode upDirectionReferenceMode = VerticalAlignmentSettings.VerticalReferenceMode.Away;
 
-
-    [Tab("Physics")]
     public bool CanPushDynamicRigidbodies = true;
     [Condition("CanPushDynamicRigidbodies", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public LayerMask pushableRigidbodyLayerMask = -1;
@@ -143,7 +134,7 @@ public class CharacterActor : PhysicsActor
     public float StepOffset => stepUpDistance - BodySize.x / 2f;
 
     /// <summary>
-    /// 设置root motion相关
+    /// 锟斤拷锟斤拷root motion锟斤拷锟?
     /// </summary>
     /// <param name="updateRootPosition"></param>
     /// <param name="updateRootRotation"></param>
@@ -157,7 +148,7 @@ public class CharacterActor : PhysicsActor
 
     protected CharacterCollisionInfo characterCollisionInfo = new CharacterCollisionInfo();
     /// <summary>
-    /// 当前的角色地面状态，分为1.在稳定地面 2.运动地面 3.不在地面上
+    /// 锟斤拷前锟侥斤拷色锟斤拷锟斤拷状态锟斤拷锟斤拷为1.锟斤拷锟饺讹拷锟斤拷锟斤拷 2.锟剿讹拷锟斤拷锟斤拷 3.锟斤拷锟节碉拷锟斤拷锟斤拷
     /// </summary>
     public CharacterActorState CurrentState
     {
@@ -170,7 +161,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 返回上一帧的角色状态
+    /// 锟斤拷锟斤拷锟斤拷一帧锟侥斤拷色状态
     /// </summary>
     public CharacterActorState PreviousState
     {
@@ -205,29 +196,29 @@ public class CharacterActor : PhysicsActor
     public LayerMask ObstaclesWithoutOWPLayerMask => PhysicsComponent.CollisionLayerMask & ~(oneWayPlatformsLayerMask);
 
     /// <summary>
-    ///获取包含有关角色碰撞的所有信息的结构。大多数字符属性（例如 IsGrounded、IsStable、GroundObject 等）
-    ///可以从这种结构中获得。
+    ///锟斤拷取锟斤拷锟斤拷锟叫关斤拷色锟斤拷撞锟斤拷锟斤拷锟斤拷锟斤拷息锟侥结构锟斤拷锟斤拷锟斤拷锟斤拷址锟斤拷锟斤拷裕锟斤拷锟斤拷锟? IsGrounded锟斤拷IsStable锟斤拷GroundObject 锟饺ｏ拷
+    ///锟斤拷锟皆达拷锟斤拷锟街结构锟叫伙拷谩锟?
     /// </summary>
     public CharacterCollisionInfo CharacterCollisionInfo => characterCollisionInfo;
 
     /// <summary>
-    /// 角色是否在边缘上
+    /// 锟斤拷色锟角凤拷锟节憋拷缘锟斤拷
     /// </summary>
     public bool IsOnEdge => characterCollisionInfo.isOnEdge;
     /// <summary>
-    /// 边缘角度
+    /// 锟斤拷缘锟角讹拷
     /// </summary>
     public float EdgeAngle => characterCollisionInfo.edgeAngle;
     /// <summary>
-    /// 是否在地面上
+    /// 锟角凤拷锟节碉拷锟斤拷锟斤拷
     /// </summary>
     public bool IsGrounded { get; private set; }
     /// <summary>
-    /// 获取角色的UP轴向量和稳定法线之间的角度。
+    /// 锟斤拷取锟斤拷色锟斤拷UP锟斤拷锟斤拷锟斤拷锟斤拷锟饺讹拷锟斤拷锟斤拷之锟斤拷慕嵌取锟?
     /// </summary>
     public float GroundSlopeAngle => characterCollisionInfo.groundSlopeAngle;
     /// <summary>
-    /// 地面获得的接触点。
+    /// 锟斤拷锟斤拷锟矫的接达拷锟姐。
     /// </summary>
     public Vector3 GroundContactPoint => characterCollisionInfo.groundContactPoint;
     public Vector3 GroundContactNormal => characterCollisionInfo.groundContactNormal;
@@ -247,7 +238,7 @@ public class CharacterActor : PhysicsActor
     #endregion
     #region head
     /// <summary>
-    /// 获取角色的当前稳定性状态。稳定性等于“接地+坡度角<=坡度极限”。
+    /// 锟斤拷取锟斤拷色锟侥碉拷前锟饺讹拷锟斤拷状态锟斤拷锟饺讹拷锟皆碉拷锟节★拷锟接碉拷+锟铰度斤拷<=锟铰度硷拷锟睫★拷锟斤拷
     /// </summary>
     public bool IsStable { get; private set; }
     public bool HeadCollision => characterCollisionInfo.headCollision;
@@ -255,15 +246,15 @@ public class CharacterActor : PhysicsActor
     public Contact HeadContact => characterCollisionInfo.headContact;
     public bool IsOnUnstableGround => IsGrounded && characterCollisionInfo.groundSlopeAngle > slopeLimit;
     /// <summary>
-    /// 获取以前的地面状态
+    /// 锟斤拷取锟斤拷前锟侥碉拷锟斤拷状态
     /// </summary>
     public bool WasGrounded { get; private set; }
     /// <summary>
-    /// 返回上一帧的稳定状态
+    /// 锟斤拷锟斤拷锟斤拷一帧锟斤拷锟饺讹拷状态
     /// </summary>
     public bool WasStable { get; private set; }
     /// <summary>
-    /// 一个属性，指示角色在上一次物理更新期间是否已接地。
+    /// 一锟斤拷锟斤拷锟皆ｏ拷指示锟斤拷色锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟节硷拷锟角凤拷锟窖接地★拷
     /// </summary>
     public bool HasBecomeGrounded { get; private set; }
     public bool HasBecomeStable { get; private set; }
@@ -304,7 +295,7 @@ public class CharacterActor : PhysicsActor
     public float UnStableElapsedTime { get; private set; }
 
     /// <summary>
-    /// 获取/设置投影到由其向上方向形成的平面上的刚体速度。
+    /// 锟斤拷取/锟斤拷锟斤拷投影锟斤拷锟斤拷锟斤拷锟斤拷锟较凤拷锟斤拷锟轿成碉拷平锟斤拷锟较的革拷锟斤拷锟劫度★拷
     /// </summary>
     public Vector3 StableVelocity
     {
@@ -407,7 +398,7 @@ public class CharacterActor : PhysicsActor
     public CharacterCollisions CharacterCollisions { get; private set; }
     HitFilterDelegate _collisionHitFilter;
 
-    #region Unity生命周期
+    #region Unity锟斤拷锟斤拷锟斤拷锟斤拷
     protected override void Awake()
     {
         base.Awake();
@@ -427,7 +418,7 @@ public class CharacterActor : PhysicsActor
         groundTriggerCollider3D.isTrigger = true;
         groundTriggerCollider3D.radius = BodySize.x / 2f;
         groundTriggerCollider3D.center = Vector3.up * (BodySize.x / 2f - CharacterConstants.GroundTriggerOffset);
-        //忽略碰撞
+        //锟斤拷锟斤拷锟斤拷撞
         Physics.IgnoreCollision(GetComponent<CapsuleCollider>(), groundTriggerCollider3D, true);
 
         _removePenetrationAction = RemovePenetrationAction;
@@ -453,7 +444,7 @@ public class CharacterActor : PhysicsActor
         SetColliderSize();
     }
     /// <summary>
-    /// 暂时用于注册相关事件
+    /// 锟斤拷时锟斤拷锟斤拷注锟斤拷锟斤拷锟斤拷录锟?
     /// </summary>
     protected override void OnEnable()
     {
@@ -462,7 +453,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// 暂时用于取消所注册的相关事件
+    /// 锟斤拷时锟斤拷锟斤拷取锟斤拷锟斤拷注锟斤拷锟斤拷锟斤拷锟铰硷拷
     /// </summary>
     protected override void OnDisable()
     {
@@ -471,7 +462,7 @@ public class CharacterActor : PhysicsActor
     }
     #endregion
     /// <summary>
-    /// 传送后的事件，暂时只有清除速度
+    /// 锟斤拷锟酵猴拷锟斤拷录锟斤拷锟斤拷锟绞敝伙拷锟斤拷锟斤拷锟劫讹拷
     /// </summary>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
@@ -483,7 +474,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 在地面接触点沿重量方向（质量乘以重力）施加力。
+    /// 锟节碉拷锟斤拷哟锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟绞╋拷锟斤拷锟斤拷锟?
     /// </summary>
     /// <param name="contactPoint"></param>
     protected virtual void ApplyWeight(Vector3 contactPoint)
@@ -509,7 +500,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// 返回物体所接触的信息
+    /// 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟接达拷锟斤拷锟斤拷息
     /// </summary>
     public List<Contact> Contacts
     {
@@ -521,7 +512,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 获取最新的Trigger。
+    /// 锟斤拷取锟斤拷锟铰碉拷Trigger锟斤拷
     /// </summary>
     public Trigger CurrentTrigger
     {
@@ -540,27 +531,27 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 获取到在FixUpdate调用之前输入的速度值，由玩家来输入确定
+    /// 锟斤拷取锟斤拷锟斤拷FixUpdate锟斤拷锟斤拷之前锟斤拷锟斤拷锟斤拷俣锟街碉拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷确锟斤拷
     /// </summary>
     public Vector3 InputVelocity { get; private set; }
     /// <summary>
-    /// 将世界空间下的速度应用到本地空间下
+    /// 锟斤拷锟斤拷锟斤拷占锟斤拷碌锟斤拷俣锟接︼拷玫锟斤拷锟斤拷乜占锟斤拷锟?
     /// </summary>
     public Vector3 LocalInputVelocity => transform.InverseTransformDirection(InputVelocity);
     /// <summary>
-    /// 模拟前的速度
+    /// 模锟斤拷前锟斤拷锟劫讹拷
     /// </summary>
     public Vector3 PreSimulationVelocity { get; private set; }
     /// <summary>
-    /// 物理模拟后的速度
+    /// 锟斤拷锟斤拷模锟斤拷锟斤拷锟劫讹拷
     /// </summary>
     public Vector3 PostSimulationVelocity { get; private set; }
     /// <summary>
-    /// 外界所提供的速度
+    /// 锟斤拷锟斤拷锟斤拷峁╋拷锟斤拷俣锟?
     /// </summary>
     public Vector3 ExternalVelocity { get; private set; }
     /// <summary>
-    /// 处理旋转
+    /// 锟斤拷锟斤拷锟斤拷转
     /// </summary>
     void HandleRotation()
     {
@@ -577,20 +568,20 @@ public class CharacterActor : PhysicsActor
         Up = constraintUpDirection;
     }
     /// <summary>
-    /// 返回与墙壁碰撞事件相关的所有接触的点。
+    /// 锟斤拷锟斤拷锟斤拷墙锟斤拷锟斤拷撞锟铰硷拷锟斤拷氐锟斤拷锟斤拷薪哟锟斤拷牡恪?
     /// </summary>
     public List<Contact> WallContacts { get; private set; } = new List<Contact>(10);
     /// <summary>
-    /// 返回与头部碰撞事件相关的所有接触点。
+    /// 锟斤拷锟斤拷锟斤拷头锟斤拷锟斤拷撞锟铰硷拷锟斤拷氐锟斤拷锟斤拷薪哟锟斤拷恪?
     /// </summary>
     public List<Contact> HeadContacts { get; private set; } = new List<Contact>(10);
     /// <summary>
-    /// 返回与地面碰撞相关的接触点
+    /// 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟阶诧拷锟截的接达拷锟斤拷
     /// </summary>
     public List<Contact> GroundContacts { get; private set; } = new List<Contact>(10);
 
     /// <summary>
-    /// 更新碰撞信息.从所有的碰撞信息中来分类
+    /// 锟斤拷锟斤拷锟斤拷撞锟斤拷息.锟斤拷锟斤拷锟叫碉拷锟斤拷撞锟斤拷息锟斤拷锟斤拷锟斤拷锟斤拷
     /// </summary>
     void GetContactsInformation()
     {
@@ -693,7 +684,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 更新稳定情况下的Flags
+    /// 锟斤拷锟斤拷锟饺讹拷锟斤拷锟斤拷碌锟紽lags
     /// </summary>
     void UpdateStabilityFlags()
     {
@@ -707,7 +698,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// 在模拟结束后触发相关的事件
+    /// 锟斤拷模锟斤拷锟斤拷锟斤拷蟠シ锟斤拷锟截碉拷锟铰硷拷
     /// </summary>
     void UpdatePostSimulationFlags()
     {
@@ -726,7 +717,7 @@ public class CharacterActor : PhysicsActor
         inheritVelocityFlag = false;
     }
     /// <summary>
-    /// 更新相关的计时器，如在地面上的时间等
+    /// 锟斤拷锟斤拷锟斤拷氐募锟绞憋拷锟斤拷锟斤拷锟斤拷诘锟斤拷锟斤拷系锟绞憋拷锟斤拷
     /// </summary>
     /// <param name="dt"></param>
     void UpdateTimer(float dt)
@@ -755,7 +746,7 @@ public class CharacterActor : PhysicsActor
 
     #region Dynamic Ground
     /// <summary>
-    /// 是否受到动态地面影响
+    /// 锟角凤拷锟杰碉拷锟斤拷态锟斤拷锟斤拷影锟斤拷
     /// </summary>
     /// <returns></returns>
     bool IsAllowedToFollowRiggidbodyReference()
@@ -772,7 +763,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// 设置动态地面的相关数据
+    /// 锟斤拷锟矫讹拷态锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
     /// </summary>
     /// <param name="position"></param>
     void SetDynamicGroundData(Vector3 position)
@@ -785,7 +776,7 @@ public class CharacterActor : PhysicsActor
         groundToCharacter = position - GroundPosition;
     }
     /// <summary>
-    /// 让角色跟着动态地面运动,内部执行方法
+    /// 锟矫斤拷色锟斤拷锟脚讹拷态锟斤拷锟斤拷锟剿讹拷,锟节诧拷执锟叫凤拷锟斤拷
     /// </summary>
     /// <param name="position"></param>
     /// <param name="rotation"></param>
@@ -804,7 +795,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 更新当前地面的速度
+    /// 锟斤拷锟铰碉拷前锟斤拷锟斤拷锟斤拷俣锟?
     /// </summary>
     void UpdateGroundVelocity()
     {
@@ -812,7 +803,7 @@ public class CharacterActor : PhysicsActor
         GroundVelocity = GetGroundPointVelocity(GroundContactPoint);
     }
     /// <summary>
-    /// 处理动态地面上的移动
+    /// 锟斤拷锟斤拷锟斤拷态锟斤拷锟斤拷锟较碉拷锟狡讹拷
     /// </summary>
     /// <param name="dt"></param>
     void ProcessDynamicGroundMovement(float dt)
@@ -826,7 +817,7 @@ public class CharacterActor : PhysicsActor
         Vector3 targetPosition = Position;
         Quaternion targetRotation = Rotation;
         ApplyGroundMovement(ref targetPosition, ref targetRotation, dt);
-        // 降落在动态地面上时，通过从角色速度中删除平台速度来模拟无限摩擦。
+        // 锟斤拷锟斤拷锟节讹拷态锟斤拷锟斤拷锟斤拷时锟斤拷通锟斤拷锟接斤拷色锟劫讹拷锟斤拷删锟斤拷平台锟劫讹拷锟斤拷模锟斤拷锟斤拷锟斤拷摩锟斤拷锟斤拷
         if (!WasGrounded)
         {
             Vector3 planerVelocityOnPlatform = Vector3.Project(PlanarVelocity, GetGroundPointVelocity(GroundContactPoint));
@@ -872,7 +863,7 @@ public class CharacterActor : PhysicsActor
         }
         if (verticalGroundVelocity.magnitude >= inheritedGroundVerticalVelocityThreshold)
         {
-            //这可以防止角色无法跳跃的边缘情况（下降平台）
+            //锟斤拷锟斤拷苑锟街癸拷锟缴?锟睫凤拷锟斤拷跃锟侥憋拷缘锟斤拷锟斤拷锟斤拷陆锟狡教?锟斤拷
             if (LocalVelocity.y > -loaclGroundVelocity.y)
                 inheritedGroundVelocity += CustomUtilities.Multiply(verticalGroundVelocity, inheritedGroundPlanarVelocityMultiplier);
         }
@@ -883,7 +874,7 @@ public class CharacterActor : PhysicsActor
     #endregion
 
     /// <summary>
-    /// ================暂时未知===========================================================================
+    /// ================锟斤拷时未知===========================================================================
     /// </summary>
     /// <param name="position"></param>
     /// <returns></returns>
@@ -920,7 +911,7 @@ public class CharacterActor : PhysicsActor
         bodyPosition += separation;
     }
     /// <summary>
-    /// 模拟完以后更新速度
+    /// 模锟斤拷锟斤拷锟皆猴拷锟斤拷锟斤拷俣锟?
     /// </summary>
     void PostSimulationVelocityUpdate()
     {
@@ -994,27 +985,27 @@ public class CharacterActor : PhysicsActor
 
     #endregion
     /// <summary>
-    /// 获得地面的速度
+    /// 锟斤拷玫锟斤拷锟斤拷锟劫讹拷
     /// </summary>
     public Vector3 GroundVelocity { get; private set; }
     /// <summary>
-    /// 获取地面（刚体）的先前速度。
+    /// 锟斤拷取锟斤拷锟芥（锟斤拷锟藉）锟斤拷锟斤拷前锟劫度★拷
     /// </summary>
     public Vector3 PreviousGroundVelocity { get; private set; }
     /// <summary>
-    /// 地面的速度差（与上一帧的速度之差）
+    /// 锟斤拷锟斤拷锟斤拷俣炔睿?锟斤拷锟斤拷一帧锟斤拷锟劫讹拷之锟筋）
     /// </summary>
     public Vector3 GroundDeltaVelocity => GroundVelocity - PreviousGroundVelocity;
     /// <summary>
-    /// 地面的加速度
+    /// 锟斤拷锟斤拷募锟斤拷俣锟?
     /// </summary>
     public Vector3 GroundAcceleration => (GroundVelocity - PreviousGroundVelocity) / Time.fixedDeltaTime;
     /// <summary>
-    /// 地面是否在上升
+    /// 锟斤拷锟斤拷锟角凤拷锟斤拷锟斤拷锟斤拷
     /// </summary>
     public bool IsGroundAscending => transform.InverseTransformVectorUnscaled(Vector3.Project(CustomUtilities.Multiply(GroundVelocity, Time.deltaTime), Up)).y > 0;
     /// <summary>
-    /// 处理角色移动
+    /// 锟斤拷锟斤拷锟斤拷色锟狡讹拷
     /// </summary>
     /// <param name="dt"></param>
     void ProcessVelocity(float dt)
@@ -1028,7 +1019,7 @@ public class CharacterActor : PhysicsActor
         Velocity = (position - Position) / dt;
     }
     /// <summary>
-    /// 处理角色在稳定地面上的移动
+    /// 锟斤拷锟斤拷锟斤拷色锟斤拷锟饺讹拷锟斤拷锟斤拷锟较碉拷锟狡讹拷
     /// </summary>
     /// <param name="dt"></param>
     /// <param name="position"></param>
@@ -1036,7 +1027,7 @@ public class CharacterActor : PhysicsActor
     {
         ApplyWeight(GroundContactPoint);
         VerticalVelocity = Vector3.zero;
-        //根据输入的速度值来推算大致位移，不考虑障碍物的情况
+        //锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷俣锟街碉拷锟斤拷锟斤拷锟斤拷锟斤拷位锟狡ｏ拷锟斤拷锟斤拷锟斤拷锟较帮拷锟斤拷锟斤拷锟斤拷
 
         Vector3 displacement = CustomUtilities.ProjectOnTangent(
             CustomUtilities.Multiply(Velocity, dt),
@@ -1050,7 +1041,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 处理角色在非稳定地面上的移动
+    /// 锟斤拷锟斤拷锟斤拷色锟节凤拷锟饺讹拷锟斤拷锟斤拷锟较碉拷锟狡讹拷
     /// </summary>
     /// <param name="dt"></param>
     /// <param name="position"></param>
@@ -1079,7 +1070,7 @@ public class CharacterActor : PhysicsActor
 
     }
     /// <summary>
-    /// 根据给定的高度锚点（也称为大小参考）将旧大小与新大小进行比较后，获取新位置值。
+    /// 锟斤拷锟捷革拷锟斤拷锟侥高讹拷锚锟姐（也锟斤拷为锟斤拷小锟轿匡拷锟斤拷锟斤拷锟缴达拷小锟斤拷锟铰达拷小锟斤拷锟叫比较后，伙拷取锟斤拷位锟斤拷值锟斤拷
     /// </summary>
     /// <param name="size"></param>
     /// <param name="heightAnchorRatio"></param>
@@ -1140,7 +1131,7 @@ public class CharacterActor : PhysicsActor
 
     public bool CheckAndInterpolateHeight(float targetHeight, float lerpFactor, SizeReferenceType sizeReferenceType) => CheckAndInterpolateSize(new Vector2(DefaultBodySize.x, targetHeight), lerpFactor, SizeReferenceType.Bottom);
     /// <summary>
-    /// 设置碰撞体大小
+    /// 锟斤拷锟斤拷锟斤拷撞锟斤拷锟叫?
     /// </summary>
     void SetColliderSize()
     {
@@ -1159,7 +1150,7 @@ public class CharacterActor : PhysicsActor
         Position += collisionInfo.displacement;
     }
     /// <summary>
-    /// 如果可能，强制角色接地（isGrounded = true）。检测距离包括降压距离。
+    /// 锟斤拷锟斤拷锟斤拷埽锟角匡拷平锟缴?锟接地ｏ拷isGrounded = true锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟窖癸拷锟斤拷搿?
     /// </summary>
     public void ForceGrounded()
     {
@@ -1179,7 +1170,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 获得地面坡度法线
+    /// 锟斤拷玫锟斤拷锟斤拷露确锟斤拷锟?
     /// </summary>
     /// <param name="collision"></param>
     /// <returns></returns>
@@ -1204,21 +1195,21 @@ public class CharacterActor : PhysicsActor
     }
 
     /// <summary>
-    ///由地面探测算法计算的最后一个垂直位移（PostGroundProbingPosition - PreGroundProbingPosition）。
+    ///锟缴碉拷锟斤拷探锟斤拷锟姐法锟斤拷锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷直位锟狡ｏ拷PostGroundProbingPosition - PreGroundProbingPosition锟斤拷锟斤拷
     /// </summary>
     public Vector3 GroundProbingDisplacement { get; private set; }
 
     /// <summary>
-    /// 地面探测算法之前的最后一个刚体位置。
+    /// 锟斤拷锟斤拷探锟斤拷锟姐法之前锟斤拷锟斤拷锟揭伙拷锟斤拷锟斤拷锟轿伙拷谩锟?
     /// </summary>
     public Vector3 PreGroundProbingPosition { get; private set; }
 
     /// <summary>
-    /// 地面探测算法后的最后一个刚体位置。
+    /// 锟斤拷锟斤拷探锟斤拷锟姐法锟斤拷锟斤拷锟斤拷一锟斤拷锟斤拷锟斤拷位锟矫★拷
     /// </summary>
     public Vector3 PostGroundProbingPosition { get; private set; }
     /// <summary>
-    /// 判断是否是稳定地面
+    /// 锟叫讹拷锟角凤拷锟斤拷锟饺讹拷锟斤拷锟斤拷
     /// </summary>
     /// <param name="groundTransform"></param>
     /// <returns></returns>
@@ -1233,7 +1224,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// 检测地面
+    /// 锟斤拷锟斤拷锟斤拷
     /// </summary>
     /// <param name="dt"></param>
     void ProbeGround(float dt)
@@ -1243,7 +1234,7 @@ public class CharacterActor : PhysicsActor
         HitInfoFilter overlapFilter = new HitInfoFilter(ObstaclesWithoutOWPLayerMask, false, true);
 
         CollisionInfo collisionInfo = CharacterCollisions.CheckForGround(position, StepOffset, stepDownDistance, in sweepFilter, _collisionHitFilter);
-        //如果检测到没有地板
+        //锟斤拷锟斤拷锟解到没锟叫地帮拷
         if (!collisionInfo.hitInfo.hit)
         {
             ForceNotGrounded();
@@ -1261,7 +1252,7 @@ public class CharacterActor : PhysicsActor
             position += compensation;
         }
 
-        //仅在检测到步长时执行重叠测试（垂直位移组件>某个阈值）
+        //锟斤拷锟节硷拷獾斤拷锟斤拷锟绞敝达拷锟斤拷氐锟斤拷锟斤拷裕锟斤拷锟街蔽伙拷锟斤拷锟斤拷>某锟斤拷锟斤拷值锟斤拷
         float verticalDisplcementComponent = transform.InverseTransformDirection(position - Position).y;
         bool overlapCheck = false;
 
@@ -1300,10 +1291,10 @@ public class CharacterActor : PhysicsActor
             Position = position;
     }
     /// <summary>
-    /// 强制字符放弃接地状态（isGrounded = false）。即放弃吸附地面
-    /// 如果想让我们的角色在Y轴上位移则必须调用该方法
+    /// 强锟斤拷锟街凤拷锟斤拷锟斤拷锟接碉拷状态锟斤拷isGrounded = false锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷
+    /// 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷堑慕锟缴?锟斤拷Y锟斤拷锟斤拷位锟斤拷锟斤拷锟斤拷锟斤拷锟矫该凤拷锟斤拷
     /// </summary>
-    /// <param name="ignoreGroundContactFrames">为了防止角色在强制不接地调用后立即重新进入接地状态而消耗的 FixedUpdate 帧数。</param>
+    /// <param name="ignoreGroundContactFrames">为锟剿凤拷止锟斤拷色锟斤拷强锟狡诧拷锟接地碉拷锟矫猴拷锟斤拷锟斤拷锟斤拷锟铰斤拷锟斤拷拥锟阶刺?锟斤拷锟斤拷锟侥碉拷 FixedUpdate 帧锟斤拷锟斤拷</param>
     public void ForceNotGrounded(int ignoreGroundContactFrames = 3)
     {
         forceNotGroundedFrames = ignoreGroundContactFrames;
@@ -1315,7 +1306,7 @@ public class CharacterActor : PhysicsActor
         forceNotGroundedFlag = true;
     }
     /// <summary>
-    /// 判断是否是个稳定地面的边缘
+    /// 锟叫讹拷锟角凤拷锟角革拷锟饺讹拷锟斤拷锟斤拷谋锟皆?
     /// </summary>
     /// <param name="collisionInfo"></param>
     /// <returns></returns>
@@ -1334,7 +1325,7 @@ public class CharacterActor : PhysicsActor
         return true;
     }
     /// <summary>
-    /// 稳定地面的物理模拟
+    /// 锟饺讹拷锟斤拷锟斤拷锟斤拷锟斤拷锟侥ｏ拷锟?
     /// </summary>
     /// <param name="position"></param>
     /// <param name="displacement"></param>
@@ -1349,9 +1340,9 @@ public class CharacterActor : PhysicsActor
         while (iteration < CharacterConstants.MaxSlideIterations)
         {
             iteration++;
-            //身体发射射线检测障碍物
+            //锟斤拷锟藉发锟斤拷锟斤拷锟竭硷拷锟斤拷习锟斤拷锟?
             CollisionInfo collisionInfo = CharacterCollisions.CastBody(position, displacement, useFullBody ? 0f : StepOffset, in filter, false, _collisionHitFilter);
-            //如果目标位移没有障碍物说明可以直接过去，否则需要计算该走多少
+            //锟斤拷锟侥匡拷锟轿伙拷锟矫伙拷锟斤拷习锟斤拷锟剿碉拷锟斤拷锟斤拷锟街憋拷庸锟饺ワ拷锟斤拷锟斤拷锟斤拷锟揭?锟斤拷锟斤拷锟斤拷叨锟斤拷锟?
             if (collisionInfo.hitInfo.hit)
             {
                 if (CheckOneWayPlatformLayerMask(collisionInfo))
@@ -1381,7 +1372,7 @@ public class CharacterActor : PhysicsActor
                                 bool canPushThisObject = CustomUtilities.BelongsToLayerMask(collisionInfo.hitInfo.layer, pushableRigidbodyLayerMask);
                                 if (canPushThisObject)
                                 {
-                                    //使用剩余位移。
+                                    //使锟斤拷剩锟斤拷位锟狡★拷
                                     position += displacement;
                                     break;
                                 }
@@ -1410,7 +1401,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 判断当前的地面是否是单项平台
+    /// 锟叫断碉拷前锟侥碉拷锟斤拷锟角凤拷锟角碉拷锟斤拷平台
     /// </summary>
     public bool IsGroundAOneWayPlatform
     {
@@ -1422,7 +1413,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 检查gameobject是否是单项平台
+    /// 锟斤拷锟絞ameobject锟角凤拷锟角碉拷锟斤拷平台
     /// </summary>
     /// <param name="gameObject"></param>
     /// <returns></returns>
@@ -1431,7 +1422,7 @@ public class CharacterActor : PhysicsActor
         return CustomUtilities.BelongsToLayerMask(gameObject.layer, oneWayPlatformsLayerMask);
     }
     /// <summary>
-    /// 检测是否为单项平台
+    /// 锟斤拷锟斤拷欠锟轿?锟斤拷锟斤拷平台
     /// </summary>
     /// <param name="collisionInfo"></param>
     /// <returns></returns>
@@ -1450,7 +1441,7 @@ public class CharacterActor : PhysicsActor
     public bool CanEnterGroundedState => !alwaysNotGrounded && forceNotGroundedFrames == 0;
 
     /// <summary>
-    /// 不稳定碰撞和滑动
+    /// 锟斤拷锟饺讹拷锟斤拷撞锟酵伙拷锟斤拷
     /// </summary>
     /// <param name="position"></param>
     /// <param name="displacement"></param>
@@ -1479,9 +1470,9 @@ public class CharacterActor : PhysicsActor
 
                 if (CheckOneWayPlatformLayerMask(collisionInfo))
                 {
-                    //如果是单项平台就忽略他 
+                    //锟斤拷锟斤拷堑锟斤拷锟狡教?锟酵猴拷锟斤拷锟斤拷 
                     PhysicsComponent.IgnoreCollision(collisionInfo.hitInfo, true);
-                    //检查角色是否会用胶囊的底部撞击平台。
+                    //锟斤拷锟斤拷色锟角凤拷锟斤拷媒锟斤拷业牡撞锟阶诧拷锟狡教?锟斤拷
                     Vector3 nextPosition = position + collisionInfo.displacement;
                     bool isValidOWP = CheckOneWayPlatformCollision(collisionInfo.hitInfo.point, nextPosition);
 
@@ -1562,7 +1553,7 @@ public class CharacterActor : PhysicsActor
         }
     }
     /// <summary>
-    /// 检测不稳定地板
+    /// 锟斤拷獠伙拷榷锟斤拷匕锟?
     /// </summary>
     /// <param name="position"></param>
     /// <param name="dt"></param>
@@ -1722,45 +1713,45 @@ public class CharacterActor : PhysicsActor
 public enum CharacterActorState
 {
     /// <summary>
-    /// 未在地面
+    /// 未锟节碉拷锟斤拷
     /// </summary>
     NotGrounded,
     /// <summary>
-    /// 静态地面
+    /// 锟斤拷态锟斤拷锟斤拷
     /// </summary>
     StableGrounded,
     /// <summary>
-    /// 动态地面
+    /// 锟斤拷态锟斤拷锟斤拷
     /// </summary>
     UnstableGrounded
 }
 public enum CharacterVelocityMode
 {
     /// <summary>
-    /// 使用输入速度
+    /// 使锟斤拷锟斤拷锟斤拷锟劫讹拷
     /// </summary>
     UseInputVelocity,
     /// <summary>
-    /// 使用模拟前速度
+    /// 使锟斤拷模锟斤拷前锟劫讹拷
     /// </summary>
     UsePreSimulationVelocity,
     /// <summary>
-    /// 使用模拟后速度
+    /// 使锟斤拷模锟斤拷锟斤拷俣锟?
     /// </summary>
     UsePostSimulationVelocity
 }
 public enum SizeReferenceType
 {
     /// <summary>
-    /// 顶部
+    /// 锟斤拷锟斤拷
     /// </summary>
     Top,
     /// <summary>
-    /// 中心
+    /// 锟斤拷锟斤拷
     /// </summary>
     Center,
     /// <summary>
-    /// 底部
+    /// 锟阶诧拷
     /// </summary>
     Bottom
 }

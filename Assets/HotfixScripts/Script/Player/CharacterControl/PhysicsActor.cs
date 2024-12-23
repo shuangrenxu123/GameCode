@@ -1,18 +1,17 @@
 using System.Collections;
 using UnityEngine;
 using Utilities;
-using VInspector;
 /// <summary>
 /// 角色的控制核心
 /// </summary>
 public abstract class PhysicsActor : MonoBehaviour
 {
-    [Tab("Rigidbody")]
+
     //是否启用插值
     public bool interpolaterActor = true;
     [Tooltip("是否启用连续检测，避免穿墙的情况")]
     public bool useContinuousCollisionDetection = true;
-    [Tab("Root Motion")]
+
     //在爬梯子等情况下我们会需要用到rootmotion
     [Tooltip("是否启用了RootMotion")]
     public bool UseRootMotion = false;

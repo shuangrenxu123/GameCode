@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using VInspector;
+
 
 [DefaultExecutionOrder(110)]
 public class Camera3D : MonoBehaviour
 {
 
-    [Tab("ÊäÈëÉèÖÃÏà¹Ø")]
+
     [SerializeField]
     CharacterBrain characterBrain;
     [SerializeField]
@@ -16,11 +16,10 @@ public class Camera3D : MonoBehaviour
     string axes = "Camera";
 
     [SerializeField]
-    string zoomAxis = "Camera Zoom"; //zoom £º ±ä½¹
+    string zoomAxis = "Camera Zoom"; //zoom ï¿½ï¿½ ï¿½ä½¹
 
-    [Tab("Target")]
 
-    [Tooltip("ÉãÏñ»úËù¶Ô½¹µÄµã¡£Ä¬ÈÏÇé¿öÏÂÓ¦¸ÃÎªÎÒÃÇËù¿ØÖÆµÄ½ÇÉ«µÄGraphics½Úµã")]
+    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½Äµã¡£Ä¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÆµÄ½ï¿½É«ï¿½ï¿½Graphicsï¿½Úµï¿½")]
     [SerializeField]
     Transform targetTransform = null;
     [SerializeField]
@@ -31,13 +30,13 @@ public class Camera3D : MonoBehaviour
     [Tooltip("The interpolation speed used when the height of the character changes.")]
     [SerializeField]
     float heightLerpSpeed = 10f;
-    [Tab("ÊúÖ±Ðý×ª")]
+
 
     public bool updateYaw = true;
 
     public float yawSpeed = 180f;
 
-    [Tab("Ëø¶¨")]
+
     [SerializeField] float lockDistance = 20f;
     [SerializeField] float lockEnemyMaxDistance = 30f;
     [SerializeField] float lockEnemyCameraMoveSpeed = 10f;
@@ -48,7 +47,7 @@ public class Camera3D : MonoBehaviour
     Transform nearestLockOnTarget;
     bool lockbutton;
     public Transform currentLockOnTarget;
-    [Tab("Ë®Æ½ÒÆ¶¯")]
+
 
     public bool updatePitch = true;
 
@@ -63,7 +62,6 @@ public class Camera3D : MonoBehaviour
     [Range(1f, 85f)]
     public float minPitchAngle = 80f;
 
-    [Tab("¾µÍ·Ëõ·Å")]
 
     public bool updateZoom = true;
 
@@ -83,8 +81,6 @@ public class Camera3D : MonoBehaviour
     [Min(0.001f)]
     public float maxZoom = 12f;
 
-
-    [Tab("Collision")]
 
     public bool collisionDetection = true;
     public bool collisionAffectsZoom = false;
@@ -131,7 +127,7 @@ public class Camera3D : MonoBehaviour
 
         if (characterActor == null || !characterActor.isActiveAndEnabled)
         {
-            Debug.Log("character actorÎª¿Õ»òÎªÆôÓÃ");
+            Debug.Log("character actorÎªï¿½Õ»ï¿½Îªï¿½ï¿½ï¿½ï¿½");
             return false;
         }
 
@@ -206,7 +202,7 @@ public class Camera3D : MonoBehaviour
     Vector3 previousLerpedCharacterUp = Vector3.up;
 
     /// <summary>
-    /// ¸üÐÂ½ÇÉ«ÊäÈë
+    /// ï¿½ï¿½ï¿½Â½ï¿½É«ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     void UpdateInputValue()
     {
@@ -227,7 +223,7 @@ public class Camera3D : MonoBehaviour
     void UpdateCamera(float dt)
     {
 
-        //¾Û½¹ÒÆ¶¯ÖÁ½ÇÉ«´¦
+        //ï¿½Û½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½
         characterPosition = targetTransform.position;
 
         lerpedHeight = Mathf.Lerp(lerpedHeight, characterActor.BodySize.y, heightLerpSpeed * dt);
@@ -284,7 +280,7 @@ public class Camera3D : MonoBehaviour
 
         viewReference.rotation = deltaRotation * viewReference.rotation;
 
-        // ÊúÖ±Ðý×ª -----------------------------------------------------------------------------------------        
+        // ï¿½ï¿½Ö±ï¿½ï¿½×ª -----------------------------------------------------------------------------------------        
         viewReference.Rotate(lerpedCharacterUp, deltaYaw * yawSpeed * dt, Space.World);
 
         // Pitch rotation -----------------------------------------------------------------------------------------            
@@ -400,7 +396,7 @@ public class Camera3D : MonoBehaviour
                 var lockTargetDirection = Vector3.ProjectOnPlane((character.transform.position - targetTransform.position), targetTransform.up);
                 float distanceFormTargetSqr = lockTargetDirection.sqrMagnitude;
                 lockTargetDirection.Normalize();
-                //Çó³öÎÒÃÇ¿´ÏòµÐÈË·½ÏòÓëÉãÏñ»úµÄ½Ç¶È
+                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½ï¿½ï¿½ï¿½Ë·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä½Ç¶ï¿½
                 float viewableAngle = Vector3.Angle(lockTargetDirection, targetTransform.forward);
                 if (character.transform.root != targetTransform.transform.root && viewableAngle > -60
                     && viewableAngle < 60 && distanceFormTargetSqr <= lockDistance * lockDistance)
