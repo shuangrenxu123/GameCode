@@ -6,7 +6,7 @@ public class BTFindEnemy : BTAction
     private int layer;
     public string setDataName;
     private CharacterActor actor;
-    public BTFindEnemy(string name, string layer) : base(name)
+    public BTFindEnemy(string name, string layer)
     {
         this.layer = LayerMask.NameToLayer(layer);
     }

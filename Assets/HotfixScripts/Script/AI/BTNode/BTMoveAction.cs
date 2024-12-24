@@ -10,7 +10,7 @@ public class BTMoveAction : BTAction
     private EnemyAIControl control;
     private CCAnimatorConfig config => control.config;
 
-    public BTMoveAction(string name, float speed) : base(name)
+    public BTMoveAction(string name, float speed) 
     {
         this.speed = speed;
     }

@@ -8,7 +8,7 @@ public class BTRandomTargetPosition : BTAction
     public string setDataName;
 
     public Vector2 Range;
-    public BTRandomTargetPosition(string name) : base(name)
+    public BTRandomTargetPosition()
     {
         target = new GameObject("target").transform;
 

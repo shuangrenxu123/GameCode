@@ -5,7 +5,6 @@ namespace BT
     /// </summary>
     public class BTNode
     {
-        public string name;
         public bool isRunning { get; set; }
         public BTNode clearTick { get; set; }
         public DataBase database;

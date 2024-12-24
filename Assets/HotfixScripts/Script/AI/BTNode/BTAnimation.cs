@@ -8,10 +8,12 @@ namespace BT.Nodes
         AnimancerComponent animancer;
         CCAnimatorConfig config;
         bool isEnd = false;
-        public BTAnimation(AnimancerComponent anim,CCAnimatorConfig config, string name) : base(name)
+        string name;
+        public BTAnimation(AnimancerComponent anim, CCAnimatorConfig config, string name)
         {
+            this.name = name;
             this.animancer = anim;
-            this.config = config;   
+            this.config = config;
         }
         protected override void Enter()
         {
@@ -25,7 +27,7 @@ namespace BT.Nodes
         }
         protected override void Exit()
         {
-            isEnd =false;
+            isEnd = false;
             base.Exit();
         }
         private void OnAnimationEnd()

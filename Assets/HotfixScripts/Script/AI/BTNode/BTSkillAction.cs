@@ -8,7 +8,7 @@ public class BTSkillAction : BTAction
     private TimelineAsset skill;
     private SkillRunner runner;
     private CharacterActor actor;
-    public BTSkillAction(SkillRunner skillRunner, TimelineAsset skillname, string name) : base(name)
+    public BTSkillAction(SkillRunner skillRunner, TimelineAsset skillname)
     {
         this.skill = skillname;
         runner = skillRunner;

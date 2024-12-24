@@ -8,24 +8,18 @@ namespace BT
     public class BTAction : BTNode
     {
         private BTActionStatus status = BTActionStatus.Ready;
-        public BTAction(string name)
-        {
-            this.name = name;
-        }
 
         /// <summary>
         /// 在操作节点即将执行时调用。
         /// </summary>
         protected virtual void Enter()
         {
-            Debug.Log("进入了:" + this.name + " [" + this.GetType().ToString() + "]");
         }
         /// <summary>
         /// 在操作节点完成时调用。
         /// </summary>
         protected virtual void Exit()
         {
-            Debug.Log("退出了:" + this.name + " [" + this.GetType().ToString() + "]");
         }
         public override void Clear()
         {

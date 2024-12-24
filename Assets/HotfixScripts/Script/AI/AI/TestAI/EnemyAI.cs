@@ -21,7 +21,7 @@ public class EnemyAI : BTTree
     public override void SetNode()
     {
         var rootNode = new BTSequence();
-        var randomNode = new BTRandomTargetPosition("寻找随机巡逻点")
+        var randomNode = new BTRandomTargetPosition()
         {
             Range = new Vector2(10, 10),
             setDataName = "target"
@@ -30,10 +30,10 @@ public class EnemyAI : BTTree
         rootNode.AddChild(randomNode);
         rootNode.AddChild(new BTMoveAction("移动", 2));
         var randomSelectNode = new BTRandom();
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("BuffTest"), "buffTest"));
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test"), "test"));
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test2"), "test2"));
-        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("step"), "step"));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("BuffTest")));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test")));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("test2")));
+        randomSelectNode.AddChild(50, new BTSkillAction(control.skillRunner, Resources.Load<TimelineAsset>("step")));
         var node = new BTProbability(50, randomSelectNode);
         rootNode.AddChild(node);
 
