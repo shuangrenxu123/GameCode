@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace HFSM
 {
-
-
     /// <summary>
     /// 关系转化的连线
     /// </summary>
-    public class StateTransition
+    public class StateTransition<T> where T : Enum
     {
-        public string startState;
-        public string endState;
+        public T startState;
+        public T endState;
         public HashSet<StateCondition> conditions;
-        public StateTransition(string from, string to)
+        public StateTransition(T from, T to)
         {
             startState = from;
             endState = to;

@@ -1,37 +1,49 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
 /// 有限状态机类
 /// </summary>
 namespace HFSM
 {
-    public class StateMachine : StateBase, IStateMachine
+
+    public class StateMachine<T> : StateMachine<T, T> where T : Enum
     {
-        public Dictionary<string, StateBase> status = new Dictionary<string, StateBase>();
+
+    }
+    public class StateMachine<T, C> : StateBase<T>, IStateMachine where T : Enum where C : Enum
+    {
+        public Dictionary<C, StateBase<C>> status = new();
         /// <summary>
         /// 当前状态的切换
         /// </summary>
-        public List<StateTransition> activeTransitions;
+        public List<StateTransition<C>> activeTransitions;
         /// <summary>
         /// 当前激活的状态
         /// </summary>
-        public StateBase CurrentState { get; set; }
+        public C CurrentState { get; set; }
+
         /// <summary>
         /// 上一个状态
         /// </summary>
-        public StateBase lastState { get; set; }
+        public C lastState { get; set; }
+
         /// <summary>
         /// 默认状态（即进入该状态机以后进入的子状态，默认为第一个添加的状态）
         /// </summary>
-        public StateBase defaultState { get; set; }
+        public C defaultState { get; set; }
+
         /// <summary>
         /// 是否是根状态机
         /// </summary>
         public bool isRootMachine { get { return parentMachine == null; } }
+
+        public IStateMachine ParentFsm { get; set; }
+
         /// <summary>
         /// 一个空过渡线,据说可以节省性能
         /// </summary>
-        private static readonly List<StateTransition> noTransitions = new(0);
+        private static readonly List<StateTransition<C>> noTransitions = new(0);
 
         private bool isRunning = false;
         /// <summary>
@@ -48,34 +60,35 @@ namespace HFSM
             isRunning = true;
             Enter();
         }
-        public void AddState(string nodeName, StateBase state)
+
+        public void AddState(C nodeName, StateBase<C> state)
         {
             state.database = database;
-            state.name = nodeName;
             state.parentMachine = this;
             state.Init();
             if (status.Count == 0)
             {
-                defaultState = state;
+                defaultState = nodeName;
             }
             if (status.ContainsKey(nodeName))
                 Debug.LogError("状态名重复" + nodeName);
             else
                 status.Add(nodeName, state);
         }
+
         /// <summary>
         /// 给当前状态机下某个状态添加一个Transitions
         /// </summary>
         /// <param name="transition"></param>
-        public override void AddTransition(StateTransition transition)
+        public void AddTransition(StateTransition<C> transition)
         {
-            if (status.TryGetValue(transition.startState, out StateBase state))
+            if (status.TryGetValue(transition.startState, out StateBase<C> state))
             {
                 state.AddTransition(transition);
             }
             else
             {
-                Debug.LogError($"没有在状态机{name}找到状态{transition.startState}");
+                Debug.LogError($"没有在状态机找到状态{transition.startState}");
             }
         }
         /// <summary>
@@ -83,7 +96,7 @@ namespace HFSM
         /// </summary>
         /// <param name="transition"></param>
         /// <returns></returns>
-        private bool CheckTransition(StateTransition transition)
+        private bool CheckTransition(StateTransition<C> transition)
         {
             if (!transition.OnCheck())
             {
@@ -96,64 +109,79 @@ namespace HFSM
         /// 切换状态
         /// </summary>
         /// <param name="StateName"></param>
-        public void ChangeState(string stateName)
+        public void ChangeState(C stateName)
         {
-            CurrentState?.Exit();
+            var currState = FindState(CurrentState);
+            currState?.Exit();
             lastState = CurrentState;
-            if (!status.TryGetValue(stateName, out StateBase newState))
-            {
-                Debug.Log("没有该状态" + stateName);
-            }
-            activeTransitions = newState.transitions ?? noTransitions;
-            CurrentState = newState;
-            CurrentState.Enter();
+
+            var nextState = FindState(stateName);
+
+            activeTransitions = nextState.transitions ?? noTransitions;
+
+            CurrentState = stateName;
+            nextState.Enter();
         }
         /// <summary>
         /// 修改当前状态机的默认状态
         /// </summary>
-        /// <param name="stateName"></param>
-        public void SetDefaultState(string stateName)
+        /// <param name="stateType"></param>
+        public void SetDefaultState(C stateType)
         {
-            if (!status.TryGetValue(stateName, out StateBase state))
+            if (!status.TryGetValue(stateType, out StateBase<C> state))
             {
-                Debug.LogError("不存在状态" + stateName);
+                Debug.LogError("不存在状态" + stateType);
             }
             else
             {
-                defaultState = state;
+                defaultState = stateType;
             }
         }
+
+        public virtual StateBase<C> FindState(C stateType)
+        {
+            status.TryGetValue(stateType, out StateBase<C> state);
+            if (state == null)
+            {
+                throw new Exception($"Not Find State {stateType}");
+            }
+            return state;
+        }
+
+
+        #region  CallBack
         /// <summary>
         /// 需要在子类实现,该函数会在添加到状态机（即使状态机没有启动）时候调用
         /// </summary>
         public override void Init()
         {
-            Debug.Log("Init" + name);
+
         }
         public override void Enter()
         {
             base.Enter();
-            Debug.Log("enter" + name);
+
             if (defaultState == null)
             {
                 return;
             }
-            ChangeState(defaultState.name);
+
+            ChangeState(defaultState);
         }
         public override void Exit()
         {
             base.Exit();
-            if (CurrentState != null)
-            {
-                CurrentState.Exit();
-                CurrentState = null;
-            }
-            Debug.Log("Exit" + name);
+            var state = FindState(CurrentState);
+
+            state.Exit();
         }
         public override void Update()
         {
-            if (isRunning == false || CurrentState == null)
+            var state = FindState(CurrentState);
+
+            if (isRunning == false)
                 return;
+
             foreach (var i in activeTransitions)
             {
                 if (CheckTransition(i))
@@ -161,21 +189,18 @@ namespace HFSM
                     break;
                 }
             }
-            CurrentState.Update();
+            state.Update();
 
         }
         public override void FixUpdate()
         {
-            if (isRunning == false || CurrentState == null)
+            var state = FindState(CurrentState);
+
+            if (isRunning == false)
                 return;
-            CurrentState.FixUpdate();
-        }
 
-        public virtual StateBase FindState(string name)
-        {
-            status.TryGetValue(name, out StateBase state);
-            return state;
-
+            state.FixUpdate();
         }
+        #endregion
     }
 }
