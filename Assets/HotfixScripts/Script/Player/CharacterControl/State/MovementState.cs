@@ -3,7 +3,7 @@ using Audio;
 using System;
 using UIWindow;
 using UnityEngine;
-namespace CharacterControlerStateMachine
+namespace CharacterControllerStateMachine
 {
     public class MovementState : CharacterControlStateBase
     {

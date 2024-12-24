@@ -1,70 +1,73 @@
 using HFSM;
 
-public class CharacterControlStateBase : StateBase
+namespace CharacterControllerStateMachine
 {
-    public CharacterActor CharacterActor { get; protected set; }
-    public AnimactorHelper Animancer { get; set; }
-    protected CharacterBrain CharacterBrain = null;
-    public CharacterActions CharacterActions
+    public class CharacterControlStateBase : StateBase<StateType>
     {
-        get
+        public CharacterActor CharacterActor { get; protected set; }
+        public AnimactorHelper Animancer { get; set; }
+        protected CharacterBrain CharacterBrain = null;
+        public CharacterActions CharacterActions
         {
-            return CharacterBrain == null ?
-                new CharacterActions() : CharacterBrain.CharacterActions;
+            get
+            {
+                return CharacterBrain == null ?
+                    new CharacterActions() : CharacterBrain.CharacterActions;
+            }
         }
-    }
-    public CharacterStateController_New CharacterStateController { get; protected set; }
-    protected CCAnimatorConfig animatorConfig => CharacterStateController.stateManger.animatorConfig;
-    protected NetTranform netHelper => CharacterStateController.stateManger.NetHelper;
-    //public Dictionary<string, ClipTransition> animators;
-    public override void Init()
-    {
-        CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
-        CharacterBrain = (parentMachine as CharacterStateController_New).CharacterBrain;
-        CharacterStateController = (parentMachine as CharacterStateController_New);
-    }
-    public virtual void UpdateIK(int layerIndex)
-    {
+        public CharacterStateController_New CharacterStateController { get; protected set; }
+        protected CCAnimatorConfig animatorConfig => CharacterStateController.stateManger.animatorConfig;
+        protected NetTranform netHelper => CharacterStateController.stateManger.NetHelper;
+        //public Dictionary<string, ClipTransition> animators;
+        public override void Init()
+        {
+            CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
+            CharacterBrain = (parentMachine as CharacterStateController_New).CharacterBrain;
+            CharacterStateController = (parentMachine as CharacterStateController_New);
+        }
+        public virtual void UpdateIK(int layerIndex)
+        {
 
-    }
-    /// <summary>
-    /// ÔÚÖ÷Ñ­»·½áÊøºóÖ´ÐÐ
-    /// </summary>
-    public virtual void PostUpdate()
-    {
-    }
-    /// <summary>
-    /// ¸Ã·½·¨»áÔÚÖ÷Ñ­»·Ö®Ç°Ö´ÐÐ
-    /// </summary>
-    public virtual void PreUpdate()
-    {
-    }
+        }
+        /// <summary>
+        /// ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½
+        /// </summary>
+        public virtual void PostUpdate()
+        {
+        }
+        /// <summary>
+        /// ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ­ï¿½ï¿½Ö®Ç°Ö´ï¿½ï¿½
+        /// </summary>
+        public virtual void PreUpdate()
+        {
+        }
 
-    /// <summary>
-    /// ¸Ã·½·¨»áÔÚÎïÀíÄ£ÄâÇ°Ö´ÐÐ
-    /// </summary>
-    public virtual void PreCharacterSimulation()
-    {
-    }
+        /// <summary>
+        /// ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ç°Ö´ï¿½ï¿½
+        /// </summary>
+        public virtual void PreCharacterSimulation()
+        {
+        }
 
-    /// <summary>
-    /// ´Ë·½·¨ÔÚ½ÇÉ«ÎïÀíÄ£ÄâÖ®ºóÔËÐÐ¡£
-    /// </summary>
-    public virtual void PostCharacterSimulation()
-    {
+        /// <summary>
+        /// ï¿½Ë·ï¿½ï¿½ï¿½ï¿½Ú½ï¿½É«ï¿½ï¿½ï¿½ï¿½Ä£ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½
+        /// </summary>
+        public virtual void PostCharacterSimulation()
+        {
+        }
+        //public void AddStateAnimators(List<ClipTransition> anims)
+        //{
+        //    if (anims == null || anims.Count == 0)
+        //    {
+        //        Debug.LogError("ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½Ê§ï¿½ï¿½" + name);
+        //        return;
+        //    }
+        //    if (animators == null)
+        //        animators = new Dictionary<string, ClipTransition>(anims.Count);
+        //    for (int i = 0; i < anims.Count; i++)
+        //    {
+        //        animators.Add(anims[i].Clip.name, anims[i]);
+        //    }
+        //}
     }
-    //public void AddStateAnimators(List<ClipTransition> anims)
-    //{
-    //    if (anims == null || anims.Count == 0)
-    //    {
-    //        Debug.LogError("Ìí¼Ó¶¯»­Ê§°Ü" + name);
-    //        return;
-    //    }
-    //    if (animators == null)
-    //        animators = new Dictionary<string, ClipTransition>(anims.Count);
-    //    for (int i = 0; i < anims.Count; i++)
-    //    {
-    //        animators.Add(anims[i].Clip.name, anims[i]);
-    //    }
-    //}
 }

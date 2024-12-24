@@ -1,6 +1,6 @@
 using Animancer;
 using Audio;
-using CharacterControlerStateMachine;
+using CharacterControllerStateMachine;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -30,7 +30,7 @@ public class AttackState : CharacterControlStateBase
     {
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-        lastState = (CharacterControlStateBase)CharacterStateController.lastState;
+        // lastState = (CharacterControlStateBase)CharacterStateController.lastState;
 
         currentWeaponAnimator = animator.animators.First(x => x.type == GetCurrentWeaponType());
 
@@ -45,26 +45,26 @@ public class AttackState : CharacterControlStateBase
         {
             return;
         }
-        //ÕÒµ½µ±Ç°×°±¸µÄÎäÆ÷¶¯»­
+        //ï¿½Òµï¿½ï¿½ï¿½Ç°×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         AddAnimatorEvent();
-        //ÏÂ¶×¹¥»÷
+        //ï¿½Â¶×¹ï¿½ï¿½ï¿½
         if (movestate.isCrouched)
         {
             database.SetData<bool>("attack", false);
         }
-        //ÂäÏÂ¹¥»÷
+        //ï¿½ï¿½ï¿½Â¹ï¿½ï¿½ï¿½
         else if (CharacterActor.IsGrounded == false)
         {
             database.SetData<bool>("attack", false);
         }
-        // ÅÜ²½¹¥»÷
+        // ï¿½Ü²ï¿½ï¿½ï¿½ï¿½ï¿½
         else if (movestate.IsRun)
         {
             state = Animancer.Play(currentWeaponAnimator.RunlightAttackAnimator_OH[currentAnimatorIndex].clip);
         }
         else
         {
-            //²¥·ÅÇá¹¥»÷¶¯»­
+            //ï¿½ï¿½ï¿½ï¿½ï¿½á¹¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
             if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
             {
@@ -83,8 +83,8 @@ public class AttackState : CharacterControlStateBase
     {
         if (CharacterActions.attack.Started)
         {
-            //todo ÅÐ¶ÏÇáÖØ¹¥»÷
-            //todo ÅÐ¶Ï×îºóÒ»»÷
+            //todo ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ø¹ï¿½ï¿½ï¿½
+            //todo ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½
             if (currentAnimatorIndex == currentWeaponAnimator.lightAttackAnimator_OH.Count - 1)
             {
                 return;

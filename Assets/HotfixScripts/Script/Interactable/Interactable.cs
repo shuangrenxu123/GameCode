@@ -1,3 +1,4 @@
+using CharacterControllerStateMachine;
 using UnityEngine;
 
 public class Interactable : MonoBehaviour

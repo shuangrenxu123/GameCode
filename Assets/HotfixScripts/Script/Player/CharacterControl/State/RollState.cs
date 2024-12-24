@@ -1,47 +1,50 @@
 using Animancer;
 using UnityEngine;
 
-public class RollState : CharacterControlStateBase
+namespace CharacterControllerStateMachine
 {
-    #region animatorName
-    public const string roll = "Roll";
-    #endregion
-    public enum RollEnum
+    public class RollState : CharacterControlStateBase
     {
+        #region animatorName
+        public const string roll = "Roll";
+        #endregion
+        public enum RollEnum
+        {
 
-        /// <summary>
-        /// ½ÇÉ«³¯ÏòµÄ·½Ïò
-        /// </summary>
-        FacingDirection,
-        /// <summary>
-        /// ÉãÏñ»ú³¯ÏòµÄ·½Ïò
-        /// </summary>
-        CameraDirection,
-        /// <summary>
-        /// ÓÃ»§ÊäÈëµÄÖµ
-        /// </summary>
-        InputDirection,
-    }
-    private AnimancerState state;
-    public override void Init()
-    {
-        base.Init();
-    }
-    public override void Enter()
-    {
-        var targetDir = CharacterStateController.InputMovementReference;
-        Quaternion targetDeltaRotation = Quaternion.FromToRotation(CharacterActor.Forward, targetDir);
-        CharacterActor.SetYaw(targetDeltaRotation * CharacterActor.Forward);
+            /// <summary>
+            /// ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
+            /// </summary>
+            FacingDirection,
+            /// <summary>
+            /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½
+            /// </summary>
+            CameraDirection,
+            /// <summary>
+            /// ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+            /// </summary>
+            InputDirection,
+        }
+        private AnimancerState state;
+        public override void Init()
+        {
+            base.Init();
+        }
+        public override void Enter()
+        {
+            var targetDir = CharacterStateController.InputMovementReference;
+            Quaternion targetDeltaRotation = Quaternion.FromToRotation(CharacterActor.Forward, targetDir);
+            CharacterActor.SetYaw(targetDeltaRotation * CharacterActor.Forward);
 
-        CharacterActor.Velocity = Vector3.zero;
-        netHelper.SendAction("roll");
-        CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-        state = Animancer.Play(animatorConfig.clipAnimators[roll]);
-        state.Events.OnEnd += OnAnimatorEnd;
-    }
-    private void OnAnimatorEnd()
-    {
-        database.SetData<bool>("roll", false);
-        state.Events.OnEnd -= OnAnimatorEnd;
+            CharacterActor.Velocity = Vector3.zero;
+            netHelper.SendAction("roll");
+            CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+            state = Animancer.Play(animatorConfig.clipAnimators[roll]);
+            state.Events.OnEnd += OnAnimatorEnd;
+        }
+        private void OnAnimatorEnd()
+        {
+            database.SetData<bool>("roll", false);
+            state.Events.OnEnd -= OnAnimatorEnd;
+        }
     }
 }
