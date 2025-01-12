@@ -11,9 +11,8 @@ namespace Utilities.Collections
     /// <typeparam name="V"></typeparam>
     public class BiDictionary<K, V> : IEnumerable<KeyValuePair<K, V>>
     {
-        private Dictionary<K, V> k2v;
-        private Dictionary<V, K> v2k;
-
+        public Dictionary<K, V> k2v { get; private set; }
+        public Dictionary<V, K> v2k { get; private set; }
         public BiDictionary(int capacity = 4)
         {
             k2v = new(capacity);
