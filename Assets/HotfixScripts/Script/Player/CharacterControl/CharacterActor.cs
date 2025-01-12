@@ -12,77 +12,59 @@ public class CharacterActor : PhysicsActor
 
     [Range(0, 179f)]
     public float oneWayPlayformsValidArc = 175;
-
-
-    [Tooltip("ï¿½Â¶ï¿½ï¿½ï¿½ï¿½ï¿½,Ö»ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¶È±ï¿½ï¿½ï¿½Ð¡ï¿½Ú»ï¿½ï¿½ï¿½Ú´ï¿½Öµï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ ï¿½Ç¶ÈµÄ¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½Ãµï¿½ï¿½æ·¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½È¸ï¿½ï¿½ßµï¿½ï¿½ï¿½")]
     public float slopeLimit = 55f;
-    [Tooltip("Ã»ï¿½Ð±ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ÇµÄ¶ï¿½ï¿½ó½«»á±»ï¿½ï¿½Îªï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public LayerMask stableLayerMask = -1;
-    [Tooltip("ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Characterï¿½ï¿½Îªï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public bool allowCharactersAsStableSurfaces = true;
-    [Tooltip("ï¿½ï¿½Æ½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½Ð¿ï¿½ï¿½Ü»ï¿½ï¿½ï¿½Îªï¿½Ù¶È¹ï¿½ï¿½ßµï¿½ï¿½Â·ï¿½Ô½Ò»Ð©ï¿½ï¿½ï¿½Ü±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Öµï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½")]
+
     public bool preventtUnstableClimbing = true;
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ô·ï¿½Ö¹ï¿½ï¿½É?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ä±ï¿½ï¿½æ£?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Ö¼ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½È¿ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½ï¿?")]
     public bool preventBadSteps = true;
 
-    [Tooltip("Ó¦ï¿½ï¿½ï¿½ï¿½Characterï¿½×²ï¿½ï¿½ï¿½Æ«ï¿½Æ¾ï¿½ï¿½ë¡£ï¿½ï¿½ï¿½ßµï¿½Æ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¶ï¿½Å¸ï¿½ï¿½ï¿½Ä¿É²ï¿½ï¿½Ð±ï¿½ï¿½ï¿?,ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¸ï¿½ï¿½ßµï¿½Â¥ï¿½ï¿½")]
     public float stepUpDistance = 0.5f;
-    [Tooltip("Characterï¿½Ü¼ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ë£?Ê¹ï¿½Ã¸Ã±ï¿½ï¿½ï¿½ï¿½ï¿½Characterï¿½Ì¶ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½")]
+
     public float stepDownDistance = 0.5f;
 
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½Ö¹Characterï¿½ï¿½ï¿½ï¿½Óµï¿½×´Ì?ï¿½ï¿½IsGrounded ï¿½ï¿½ï¿½ï¿½false")]
     public bool alwaysNotGrounded = false;
 
-    [Tooltip("ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½Ê¼ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½â£?ï¿½ï¿½ï¿½Ã»ï¿½ï¿½âµ½ï¿½ï¿½Ã´IsGroundï¿½ï¿½ï¿½ï¿½ï¿½ï¿½false")]
     [Condition("alwaysNotGrounded", ConditionAttribute.ConditionType.IsFalse)]
     public bool forceGroundedAtStart = true;
 
-    [Tooltip("ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½OnTriggerï¿½È´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ£©ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½Ç²ï¿½ï¿½á±»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î?ï¿½ï¿½ï¿½ÇµÄ½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½")]
     public bool useGroundTrigger = true;
-    [Tooltip("ï¿½ï¿½ï¿½Ã¸ï¿½Öµï¿½Ôºó£¬½ï¿½É«ï¿½×²ï¿½ï¿½Ä½ï¿½ï¿½á±»Ä£ï¿½ï¿½ÎªÔ²ï¿½ï¿½ï¿½å£¬ï¿½ï¿½ï¿½Ú±ï¿½ÔµÊ±ï¿½ï¿½ï¿½ï¿½Ð§")]
+
     public bool edgeCompensation = false;
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½Õ¾ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½Ôµï¿½ï¿½Ê±ï¿½ï¿½ " +
-        "ture:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã´ï¿½ï¿½×²ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½×´Ì?" +
-        "false ï¿½ï¿½ ï¿½ï¿½É«ï¿½ï¿½Ê¹ï¿½Ã½Ó´ï¿½ï¿½ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ô£ï¿½ÖµÐ¡ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½Æ£ï¿½")]
+
     public bool useStableEdgeWhenLanding = true;
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½É?ï¿½Ä´ï¿½Ö±ï¿½Ù¶ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ç·ï¿½ï¿½âµ½ï¿½ÂµÄ£ï¿½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½")]
+
     public bool detectGroundWhileAscending = false;
 
-    [Tooltip("ï¿½ï¿½É«ï¿½Ç·ï¿½Ó¦ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë¶ï¿½ï¿½ï¿½Ó°ï¿½ï¿½")]
+
     public bool supportDynamicGround = true;
     public LayerMask dynamicGroundLayerMask = -1;
-    [Tooltip("ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á²»ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¶ï¿½ï¿½ï¿½Ó°ï¿½ï¿?")]
+
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public bool rotateForwardDirection = true;
-    [Tooltip("ï¿½ï¿½ï¿½Ç½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶È£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Ì?ï¿½ì£¬ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½Æ¶ï¿½")]
+
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float maxGroundVelocityChange = 30f;
-    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡Öµï¿½ï¿½×?ï¿½ï¿½ÎªË®Æ½ï¿½Ù¶È£ï¿½")]
+
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlannarlVelocityThreshold = 2f;
-    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ÎªË®Æ½ï¿½Ù¶È£ï¿½")]
+
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public float inheritedGroundPlanarVelocityMultiplier = 1f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ù¶È£ï¿½")]
+
     public float inheritedGroundVerticalVelocityThreshold = 2f;
     [Condition("supportDynamicGround", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
-    [Tooltip("ï¿½Ì³Ð¶ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶Èµï¿½Ïµï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½Îªï¿½ï¿½Ö±ï¿½Ù¶È£ï¿½")]
     public float inheritedGroundVerticalVelocityMultiplier = 1f;
     public bool slideOnWalls = true;
+
     [SerializeField]
-    //ï¿½ï¿½ï¿½Íºï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½
     bool resetVelocityOnTeleport = true;
 
     public CharacterVelocityMode stablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
     public CharacterVelocityMode unstablePostSimulationVelocity = CharacterVelocityMode.UsePostSimulationVelocity;
-
-    [Tooltip("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½ï¿½É?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public bool constraintRotation = true;
 
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½Ò?ï¿½ï¿½ï¿½Â¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á£¬ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Transformï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-    /// </summary>
     [Condition("constraintRotation", ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.VisibilityType.NotEditable)]
     public Transform upDirectionReference = null;
 
@@ -92,9 +74,6 @@ public class CharacterActor : PhysicsActor
     new ConditionAttribute.ConditionType[] { ConditionAttribute.ConditionType.IsTrue, ConditionAttribute.ConditionType.IsNull },
     new float[] { 0f, 0f },
     ConditionAttribute.VisibilityType.Hidden)]
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿?
-    /// </summary>
     public Vector3 constraintUpDirection = Vector3.up;
 
 
@@ -132,12 +111,6 @@ public class CharacterActor : PhysicsActor
     public Vector2 DefaultBodySize => CharacterBody.BodySize;
     public float StepOffset => stepUpDistance - BodySize.x / 2f;
 
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½root motionï¿½ï¿½ï¿?
-    /// </summary>
-    /// <param name="updateRootPosition"></param>
-    /// <param name="updateRootRotation"></param>
-
     public CharacterBody CharacterBody { get; private set; }
     public override RigidbodyComponent RigidbodyComponent => CharacterBody.RigidbodyComponent;
 
@@ -146,9 +119,6 @@ public class CharacterActor : PhysicsActor
     public PhysicsComponent PhysicsComponent => CharacterCollisions.PhysicsComponent;
 
     protected CharacterCollisionInfo characterCollisionInfo = new CharacterCollisionInfo();
-    /// <summary>
-    /// ï¿½ï¿½Ç°ï¿½Ä½ï¿½É«ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Îª1.ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ 2.ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ 3.ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
-    /// </summary>
     public CharacterActorState CurrentState
     {
         get
@@ -159,9 +129,6 @@ public class CharacterActor : PhysicsActor
                 return CharacterActorState.NotGrounded;
         }
     }
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½Ä½ï¿½É«×´Ì¬
-    /// </summary>
     public CharacterActorState PreviousState
     {
         get
@@ -1003,10 +970,7 @@ public class CharacterActor : PhysicsActor
     /// ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public bool IsGroundAscending => transform.InverseTransformVectorUnscaled(Vector3.Project(CustomUtilities.Multiply(GroundVelocity, Time.deltaTime), Up)).y > 0;
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Æ¶ï¿½
-    /// </summary>
-    /// <param name="dt"></param>
+
     void ProcessVelocity(float dt)
     {
         Vector3 position = Position;
@@ -1017,11 +981,7 @@ public class CharacterActor : PhysicsActor
 
         Velocity = (position - Position) / dt;
     }
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Æ¶ï¿½
-    /// </summary>
-    /// <param name="dt"></param>
-    /// <param name="position"></param>
+
     void ProcessStableMovement(float dt, ref Vector3 position)
     {
         ApplyWeight(GroundContactPoint);
@@ -1039,11 +999,7 @@ public class CharacterActor : PhysicsActor
             groundRigidbodyComponent = null;
         }
     }
-    /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½Ú·ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½Æ¶ï¿½
-    /// </summary>
-    /// <param name="dt"></param>
-    /// <param name="position"></param>
+
     void ProcessUnstableMovement(float dt, ref Vector3 position)
     {
         ProcessInheritedVelocity();
