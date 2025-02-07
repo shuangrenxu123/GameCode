@@ -2,6 +2,7 @@
 using Audio;
 using Config;
 using ConsoleLog;
+using GameSave;
 using Network;
 using ObjectPool;
 using UIWindow;
@@ -15,6 +16,7 @@ public class Main : MonoBehaviour
         a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
         a.PackageBodyCoderType = typeof(ProtobufCoder);
 
+        Engine.CreateModule<GameSaveManager>();
         Engine.CreateModule<EventManager>();
         Engine.CreateModule<UIManager>();
         Engine.CreateModule<ResourcesManager>();
