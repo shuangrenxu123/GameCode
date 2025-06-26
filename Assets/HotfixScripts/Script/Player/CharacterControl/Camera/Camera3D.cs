@@ -7,9 +7,9 @@ using UnityEngine;
 public class Camera3D : MonoBehaviour
 {
 
-
     [SerializeField]
     CharacterBrain characterBrain;
+
     [SerializeField]
     InputHandlerSettings inputHandlerSettings => characterBrain.CameraInputHandlerSettings;
 
@@ -46,7 +46,9 @@ public class Camera3D : MonoBehaviour
     private bool lockFlag = false;
     public LayerMask lockMask;
     Transform nearestLockOnTarget;
+
     bool lockbutton;
+
     public Transform currentLockOnTarget;
 
 
@@ -262,7 +264,7 @@ public class Camera3D : MonoBehaviour
         if (lockFlag)
         {
             updatePitch = updateYaw = false;
-            HandleCamreaLock(dt);
+            HandleCameraLock();
         }
         transform.position = finalPosition;
         transform.rotation = viewReference.rotation;
@@ -367,7 +369,8 @@ public class Camera3D : MonoBehaviour
         }
         return result;
     }
-    void HandleCamreaLock(float dt)
+
+    void HandleCameraLock()
     {
         Vector3 direction = currentLockOnTarget.position - viewReference.position;
         if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
@@ -382,13 +385,13 @@ public class Camera3D : MonoBehaviour
         var targetRotation = Quaternion.LookRotation(direction);
         viewReference.rotation = targetRotation;
     }
+
     bool FindLockObject()
     {
         List<Enemy> avilableTargets = new List<Enemy>();
         float shortTargetDistance = Mathf.Infinity;
 
         Collider[] colliders = Physics.OverlapSphere(targetTransform.position, lockDistance, lockMask);
-        Debug.Log("colliders :" + colliders.Length);
         for (int i = 0; i < colliders.Length; i++)
         {
             Enemy character = colliders[i].GetComponent<Enemy>();
@@ -406,7 +409,7 @@ public class Camera3D : MonoBehaviour
                 }
             }
         }
-        Debug.Log("TargetCount :" + avilableTargets.Count);
+
         for (int i = 0; i < avilableTargets.Count; i++)
         {
             if (avilableTargets[i].tag != lockEnemyTag)

@@ -1,6 +1,10 @@
+using CharacterControllerStateMachine;
+using Cysharp.Threading.Tasks;
+using LitMotion;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 public class CharacterInfo : MonoBehaviour
 {
@@ -15,7 +19,7 @@ public class CharacterInfo : MonoBehaviour
         rigiboydSpeed.text = actor.Velocity.ToString();
         localSpeed.text = actor.LocalVelocity.ToString();
         PlanerSpeed.text = actor.PlanarVelocity.ToString();
-        state.text = stateManger.controller.CurrentState.name;
+        //state.text = stateManger.controller.CurrentState.name
     }
 
 }
