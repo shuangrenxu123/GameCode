@@ -6,7 +6,7 @@ namespace BT
     public class BTNode
     {
         public bool isRunning { get; set; }
-        public BTNode clearTick { get; set; }
+
         public DataBase database;
 
         /// <summary>
@@ -16,10 +16,6 @@ namespace BT
         public virtual void Activate(DataBase database)
         {
             this.database = database;
-            if (clearTick != null)
-            {
-                clearTick.Activate(database);
-            }
         }
         /// <summary>
         /// 清除只用关心子节点的清除

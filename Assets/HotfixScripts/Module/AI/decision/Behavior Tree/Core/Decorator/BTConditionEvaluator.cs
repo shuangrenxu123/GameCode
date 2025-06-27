@@ -95,10 +95,6 @@ namespace BT
                 isRunning = false;
                 child.Clear();
             }
-            if (clearTick != null)
-            {
-                clearTick.Clear();
-            }
             _previousResult = BTResult.Failed;
 
         }

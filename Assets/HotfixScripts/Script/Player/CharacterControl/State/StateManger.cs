@@ -66,7 +66,9 @@ namespace CharacterControllerStateMachine
                 moveAudio = moveData
             };
 
-            movementState.lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Movement;
+            movementState.lookingDirectionParameters.lookingDirectionMode
+                = LookingDirectionParameters.LookingDirectionMode.Movement;
+
             var ladderClimb = new LadderClimbingState
             {
                 database = dataBase
@@ -119,7 +121,7 @@ namespace CharacterControllerStateMachine
 
 
             //controller.AddState("attack", Attack);
-            //controller.AddState("move", movementState);
+            controller.AddState(StateType.Walk, movementState);
             ////controller.AddState("ladder", ladderClimb);
             //controller.AddState("interaction", interaction);
             //controller.AddState("roll", roll);
