@@ -1,5 +1,5 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
 using UnityEngine;
 using Utilities;
 [CreateAssetMenu(menuName = "Items/consumableItem")]
@@ -30,8 +30,9 @@ public class ConsumableItemData : ItemData
             case ChangeType.HP:
                 if (value >= 0)
                 {
-                    var action = new RegenerationAction(me, new List<CombatEntity> { me });
-                    action.Apply(value);
+                    CombatActionFactor.CreateActionAndExecute<RegenerationAction>
+                        (me, new List<CombatEntity> { me }, value);
+
                 }
                 break;
             case ChangeType.MP:

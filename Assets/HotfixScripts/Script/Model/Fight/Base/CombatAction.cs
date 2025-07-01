@@ -1,6 +1,7 @@
 
 using System;
 using System.Collections.Generic;
+using ObjectPool;
 
 namespace Fight
 {
@@ -8,12 +9,20 @@ namespace Fight
     /// <summary>
     /// 对某个行为的封装
     /// </summary>
-    public abstract class CombatAction
+    public abstract class CombatAction : IReferenceObject
     {
-        private Action<CombatAction> PreCreatorAction;
-        private Action<CombatAction> PostCreatorAction;
-        private List<Action<CombatAction>> PreTargetActions = new();
-        private List<Action<CombatAction>> PostTargetActions = new();
+        protected Action<CombatAction> PreCreatorAction;
+        protected Action<CombatAction> PostCreatorAction;
+        protected List<Action<CombatAction>> PreTargetActions = new();
+        protected List<Action<CombatAction>> PostTargetActions = new();
+
+        public virtual void Setup(CombatEntity creator, List<CombatEntity> target)
+        {
+            Creator = creator;
+            Target = target;
+        }
+
+
         /// <summary>
         /// 发起者
         /// </summary>
@@ -34,21 +43,42 @@ namespace Fight
         /// 后续
         /// </summary>
         protected abstract void PostProcess(CombatEntity c, CombatEntity t);
-        public void AddPreCreatorAction(Action<CombatAction> action)
+
+        public CombatAction AddPreCreatorAction(Action<CombatAction> action)
         {
             PreCreatorAction = action;
+            return this;
         }
-        public void AddPostCreatorAction(Action<CombatAction> action)
+        public CombatAction AddPostCreatorAction(Action<CombatAction> action)
         {
             PostCreatorAction = action;
+            return this;
         }
-        public void AddPreTargetAction(Action<CombatAction> action)
+        public CombatAction AddPreTargetAction(Action<CombatAction> action)
         {
             PreTargetActions.Add(action);
+            return this;
         }
-        public void AddPostTargetAction(Action<CombatAction> action)
+        public CombatAction AddPostTargetAction(Action<CombatAction> action)
         {
             PostTargetActions.Add(action);
+            return this;
+        }
+
+        public virtual void OnInit()
+        {
+        }
+        public virtual void OnRelease()
+        {
+            PreCreatorAction = null;
+            PostCreatorAction = null;
+            PreTargetActions.Clear();
+            PostTargetActions.Clear();
+        }
+
+        protected void Release()
+        {
+            ReferenceManager.Instance.Release(this);
         }
     }
 }

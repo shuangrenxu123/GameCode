@@ -1,5 +1,5 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
 using UnityEngine;
 
 public class HemophagiaBuff : BuffBase
@@ -19,7 +19,8 @@ public class HemophagiaBuff : BuffBase
         var o = obj as DamageAction;
         if (o != null)
         {
-            new RegenerationAction(o.Creator, new List<CombatEntity>{ o.Creator }).Apply(((int)o.damage.Value / 2));
+            CombatActionFactor.CreateActionAndExecute<RegenerationAction>
+                (o.Creator, new List<CombatEntity> { o.Creator }, o.damage / 2);
         }
     }
     public override void OnDestory()

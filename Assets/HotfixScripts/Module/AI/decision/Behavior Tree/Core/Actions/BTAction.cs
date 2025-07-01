@@ -15,12 +15,14 @@ namespace BT
         protected virtual void Enter()
         {
         }
+
         /// <summary>
         /// 在操作节点完成时调用。
         /// </summary>
         protected virtual void Exit()
         {
         }
+
         public override void Clear()
         {
             base.Clear();

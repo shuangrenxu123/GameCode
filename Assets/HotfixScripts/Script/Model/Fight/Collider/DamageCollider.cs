@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using Fight;
 using NaughtyAttributes;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
@@ -51,7 +51,11 @@ public class DamageCollider : MonoBehaviour
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
             float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
-            new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
+
+            // new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
+            CombatActionFactor
+               .CreateActionAndExecute<DamageAction>(entity, new List<CombatEntity> { target }, 10);
+
             target.TakeDamageFx(directionHitFrom);
         }
     }

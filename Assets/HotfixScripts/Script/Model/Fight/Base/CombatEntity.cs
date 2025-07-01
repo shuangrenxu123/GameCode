@@ -1,10 +1,20 @@
 using System;
+using Fight.Number;
 using UnityEngine;
 
 namespace Fight
 {
+
+    public enum CombatEntityType
+    {
+        Player,
+        Enemy,
+        ally
+    }
     public class CombatEntity : MonoBehaviour
     {
+        [SerializeField]
+        CombatEntityType entityType;
         public HealthPoint hp;
         public ActionPointManager ActionPointManager;
         public CombatNumberBox numberBox;
@@ -12,10 +22,14 @@ namespace Fight
         public virtual void Awake()
         {
             hp = new HealthPoint();
+
             ActionPointManager = new ActionPointManager();
-            numberBox = new CombatNumberBox();
-            buffManager = new BuffManager(this);
             ActionPointManager.Init();
+
+            numberBox = new CombatNumberBox();
+            numberBox.Init();
+
+            buffManager = new BuffManager(this);
 
         }
         private void Update()

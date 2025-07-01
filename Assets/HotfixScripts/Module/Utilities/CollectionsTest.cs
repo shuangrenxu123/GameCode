@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Utilities.Collections
@@ -6,12 +7,13 @@ namespace Utilities.Collections
     {
         void Start()
         {
-            var biDic = new BiDictionary<string, int>();
-
-            biDic.Add("1", 1);
-            biDic.Add("2", 2);
-            biDic.Add("3", 3);
-            biDic.Add("4", 4);
+            var biDic = new BiDictionary<string, int>
+            {
+                { "1", 1 },
+                { "2", 2 },
+                { "3", 3 },
+                { "4", 4 }
+            };
 
             print($"{biDic["1"]} : {biDic[1]}");
             print($"{biDic["2"]} : {biDic[2]}");

@@ -1,5 +1,6 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
+using Fight.Number;
 using UnityEngine;
 
 public class AiData : MonoBehaviour

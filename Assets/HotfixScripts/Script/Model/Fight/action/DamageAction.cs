@@ -1,31 +1,31 @@
 using System.Collections.Generic;
+using Fight.Number;
 using UnityEngine;
 namespace Fight
 {
     public class DamageAction : CombatAction
     {
-        public IntCollector damage;
-        public DamageAction(CombatEntity creater, List<CombatEntity> targets)
+        public int damage;
+
+        public override void Setup(CombatEntity creator, List<CombatEntity> target)
         {
-            Creator = creater;
-            Target = targets;
-            damage = new IntCollector(PropertySourceType.Self);
+            base.Setup(creator, target);
         }
         public override void Apply(int baseValue)
         {
-            //int damage = baseValue;
-            damage.AddInt(new IntNumber(baseValue, PropertySourceType.Self));
+            damage = baseValue;
             foreach (var target in Target)
             {
                 PreProcess(Creator, target);
                 Process(Creator, target);
                 PostProcess(Creator, target);
             }
+            Release();
         }
 
         public void Process(CombatEntity c, CombatEntity t)
         {
-            t.hp.Minus(damage.Value);
+            t.hp.Minus(damage);
         }
         /// <summary>
         /// 后置行为
@@ -34,6 +34,13 @@ namespace Fight
         {
             Debug.Log("-------------触发了后置行为(如吸血等)-----------");
             Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
+            PostCreatorAction?.Invoke(this);
+
+            foreach (var action in PostTargetActions)
+            {
+                action?.Invoke(this);
+            }
+
             foreach (var target in Target)
             {
                 target.ActionPointManager.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
@@ -45,6 +52,12 @@ namespace Fight
         protected override void PreProcess(CombatEntity c, CombatEntity t)
         {
             Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
+            PreCreatorAction?.Invoke(this);
+            foreach (var action in PreTargetActions)
+            {
+                action?.Invoke(this);
+            }
+
             foreach (var target in Target)
             {
                 target.ActionPointManager.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);

@@ -52,15 +52,15 @@ namespace ObjectPool
         /// <summary>
         /// 从池子中获得一个物体
         /// </summary>
-        /// <param name="Poolname">池子名称</param>
+        /// <param name="poolName">池子名称</param>
         /// <param name="position">物体坐标</param>
         /// <param name="rotation">旋转角度</param>
         /// <returns></returns>
-        public T GetGameObjectToPool<T>(string Poolname, Vector3 position, Quaternion rotation) where T : PoolObject
+        public T GetGameObjectToPool<T>(string poolName, Vector3 position, Quaternion rotation) where T : PoolObject
         {
-            if (PoolMap.ContainsKey(Poolname))
+            if (PoolMap.ContainsKey(poolName))
             {
-                PoolObject Go = PoolMap[Poolname].GetGameobject(position, rotation);
+                PoolObject Go = PoolMap[poolName].GetGameObject(position, rotation);
                 return Go as T;
             }
             Debug.LogError("对象池不存在");

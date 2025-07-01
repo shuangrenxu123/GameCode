@@ -3,7 +3,8 @@ using System.Collections.Generic;
 namespace BT
 {
     /// <summary>
-    /// 该修饰节点用于判断前置条件，我们可以通过该节点，并添加一系列的前置条件来控制返回Susseecs或者Faild
+    /// 该修饰节点用于判断前置条件，我们可以通过该节点
+    /// 并添加一系列的前置条件来控制返回Susseecs或者Faild
     /// </summary>
     public class BTConditionEvaluator : BTDecorator
     {
@@ -13,7 +14,7 @@ namespace BT
         /// 是否每次Tick都要执行检测前置条件
         /// </summary>
         public bool reevaludateEveryTick;
-        public ClearChildOpt clearopt;
+        public ClearChildOpt clearOpt;
 
         private BTResult _previousResult = BTResult.Failed;
 
@@ -22,7 +23,7 @@ namespace BT
             this.conditionals = conditionals;
             this.logicOpt = logicOpt;
             this.reevaludateEveryTick = reevaludateEveryTick;
-            this.clearopt = clearopt;
+            this.clearOpt = clearopt;
         }
 
         public BTConditionEvaluator(BTLogic logicOpt, bool reevaludateEveryTick, ClearChildOpt clearopt, BTNode child) : base(child)
@@ -30,7 +31,7 @@ namespace BT
             conditionals = new List<BTConditional>();
             this.logicOpt = logicOpt;
             this.reevaludateEveryTick = reevaludateEveryTick;
-            this.clearopt = clearopt;
+            this.clearOpt = clearopt;
         }
 
         public override void Activate(DataBase database)
@@ -87,17 +88,17 @@ namespace BT
         }
         public override void Clear()
         {
-            if ((isRunning && clearopt == ClearChildOpt.OnAbortRunning) ||
-                (_previousResult == BTResult.Success && clearopt == ClearChildOpt.OnStopRunning) ||
-                clearopt == ClearChildOpt.OnNotRunning
+            if ((isRunning && clearOpt == ClearChildOpt.OnAbortRunning) ||
+                (_previousResult == BTResult.Success && clearOpt == ClearChildOpt.OnStopRunning) ||
+                clearOpt == ClearChildOpt.OnNotRunning
                 )
             {
                 isRunning = false;
                 child.Clear();
             }
-            if (clearTick != null)
+            if (child != null)
             {
-                clearTick.Clear();
+                child.Clear();
             }
             _previousResult = BTResult.Failed;
 

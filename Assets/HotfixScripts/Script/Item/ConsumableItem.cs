@@ -1,8 +1,8 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
 using UnityEngine;
 /// <summary>
-/// ÊôÐÔ¿ÉÏûºÄÆ·
+/// ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½Æ·
 /// </summary>
 public class ConsumableItem
 {
@@ -20,8 +20,8 @@ public class ConsumableItem
             case ChangeType.HP:
                 if (data.value >= 0)
                 {
-                    var action = new RegenerationAction(me, new List<CombatEntity> { me });
-                    action.Apply(data.value);
+                    CombatActionFactor.CreateActionAndExecute<RegenerationAction>
+                        (me, new List<CombatEntity> { me }, data.value);
                 }
                 break;
             case ChangeType.MP:

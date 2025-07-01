@@ -43,7 +43,7 @@ namespace ObjectPool
         /// <summary>
         /// 取一个物体
         /// </summary>
-        public PoolObject GetGameobject(Vector3 position, Quaternion rotation)
+        public PoolObject GetGameObject(Vector3 position, Quaternion rotation)
         {
             if (pool.Count == 0)
             {

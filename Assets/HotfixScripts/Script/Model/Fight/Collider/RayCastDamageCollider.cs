@@ -1,7 +1,7 @@
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Fight;
+using UnityEngine;
 public class RayCastDamageCollider : MonoBehaviour
 {
     [Header("Setting")]
@@ -87,7 +87,9 @@ public class RayCastDamageCollider : MonoBehaviour
                 if (!characterDamagedDuringThisCalculation.Contains(enemy))
                 {
                     characterDamagedDuringThisCalculation.Add(enemy);
-                    new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
+                    //   new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
+                    CombatActionFactor
+                        .CreateActionAndExecute<DamageAction>(entity, new List<CombatEntity> { target }, 10);
                 }
             }
 

@@ -1,5 +1,6 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
+using ObjectPool;
 using UnityEngine;
 
 public class PoisonedBuff : BuffBase
@@ -16,9 +17,13 @@ public class PoisonedBuff : BuffBase
     }
     public override void OnTrigger()
     {
-        if (nowtime >= deltaTime * count)
+        if (nowTime >= deltaTime * count)
         {
-            new DamageAction(BuffManager.entity, new List<CombatEntity> { BuffManager.entity }).Apply(10);
+            //new DamageAction(BuffManager.entity, new List<CombatEntity> { BuffManager.entity }).Apply(10);
+            var action = CombatActionFactor
+                .CreateActionAndExecute<DamageAction>(BuffManager.entity
+                , new List<CombatEntity> { BuffManager.entity }, 10);
+
             count += 1;
         }
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ObjectPool;
 using UnityEngine;
 
 namespace Network
@@ -129,7 +130,6 @@ namespace Network
                     break;//退出然后读够了数据再解包
                 }
                 var packager = ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
-                //DefaultNetWorkPackage packager = new DefaultNetWorkPackage();
 
                 if (MessageIDFieldType == EMessageIDFieldType.UShort)
                 {

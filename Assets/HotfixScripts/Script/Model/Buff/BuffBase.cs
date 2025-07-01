@@ -5,7 +5,7 @@ public abstract class BuffBase : IBuff
     /// <summary>
     /// 已经持续的时间
     /// </summary>
-    public float nowtime = 0;
+    public float nowTime = 0;
     public float maxTime { get { return data.Maxtime; } }
     /// <summary>
     /// 当前叠加的层数
@@ -51,6 +51,6 @@ public abstract class BuffBase : IBuff
     /// <returns></returns>
     public float Percent()
     {
-        return nowtime / maxTime;
+        return nowTime / maxTime;
     }
 }

@@ -1,7 +1,7 @@
-using Fight;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fight;
 using UnityEngine;
 
 public class BuffManager
@@ -34,8 +34,8 @@ public class BuffManager
         for (int i = _buffs.Count - 1; i >= 0; i--)
         {
             var buff = _buffs[i];
-            buff.nowtime += Time.deltaTime;
-            if (buff.nowtime >= buff.data.Maxtime)
+            buff.nowTime += Time.deltaTime;
+            if (buff.nowTime >= buff.data.Maxtime)
             {
                 RemoveBuff(buff);
                 //entity.stateUI.RemoveBuff(buff);
@@ -48,10 +48,10 @@ public class BuffManager
     public void AddBuff(string buffName, CombatEntity creater)
     {
         var buff = BuffFactory.CreateBuff(buffName, creater, this);
-        if(buff == null)
+        if (buff == null)
         {
             Debug.Log($"{buffName} : 不存在");
-            return ;
+            return;
         }
         bool canAdd = buff.data.Tag.ToList().Intersect(_mutexTags.ToList()).Count() == 0;
         if (canAdd)
@@ -61,7 +61,7 @@ public class BuffManager
                 if (buffName == i.data.name)
                 {
                     i.OnRefresh();
-                    return ;
+                    return;
                 }
             }
             buff.OnAdd();
@@ -71,13 +71,13 @@ public class BuffManager
                 _tags.Add(i);
             }
             OnAddBuff?.Invoke(buff);
-            return ;
+            return;
         }
-        return ;
+        return;
     }
     public void AddBuff(string buffName)
     {
-        AddBuff(buffName,entity);
+        AddBuff(buffName, entity);
     }
     public void RemoveBuff(BuffBase buff)
     {

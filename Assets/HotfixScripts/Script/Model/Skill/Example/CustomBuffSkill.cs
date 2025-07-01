@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using Fight;
 using Skill;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CustomBuffSkill : MonoBehaviour
@@ -15,7 +15,7 @@ public class CustomBuffSkill : MonoBehaviour
     /// �����������
     /// </summary>
     [SerializeField]
-    float DestoryTime;
+    float DestroyTime;
     [SerializeField]
     int value;
     [SerializeField]
@@ -36,16 +36,16 @@ public class CustomBuffSkill : MonoBehaviour
     {
         if (timer >= time)
         {
-            Excute();
-            time += DestoryTime;
+            Execute();
+            time += DestroyTime;
         }
-        if (timer >= DestoryTime)
+        if (timer >= DestroyTime)
         {
             Destroy();
         }
         timer += Time.deltaTime;
     }
-    void Excute()
+    void Execute()
     {
         List<CombatEntity> target = new();
         switch (skillData.AffectTargetType)
@@ -65,7 +65,8 @@ public class CustomBuffSkill : MonoBehaviour
             case SkillEffect.Damage:
                 break;
             case SkillEffect.HP:
-                new RegenerationAction(system.CombatEntity, target).Apply(value);
+                CombatActionFactor.CreateActionAndExecute<RegenerationAction>
+                (system.CombatEntity, target, value);
                 break;
             case SkillEffect.Attack:
                 break;

@@ -4,7 +4,8 @@ namespace Fight
 {
     public class ActionPointManager
     {
-        Dictionary<ActionPointType, List<Action<CombatAction>>> ActionCallback = new Dictionary<ActionPointType, List<Action<CombatAction>>>(4);
+        Dictionary<ActionPointType, List<Action<CombatAction>>> actionCallback
+            = new(4);
         /// <summary>
         /// 初始化行为。注册某个行为
         /// </summary>
@@ -14,22 +15,22 @@ namespace Fight
             //ActionCallback.Add(ActionPointType.PostCauseDamage, new List<Action<CombatAction>>(10));
             for (int i = 0; i < (int)ActionPointType.Length; i++)
             {
-                ActionCallback.Add((ActionPointType)i, new List<Action<CombatAction>>(10));
+                actionCallback.Add((ActionPointType)i, new List<Action<CombatAction>>(10));
             }
         }
         public void AddListener(ActionPointType type, Action<CombatAction> action)
         {
-            ActionCallback[type].Add(action);
+            actionCallback[type].Add(action);
         }
         public void RemoveListener(ActionPointType type, Action<CombatAction> action)
         {
-            ActionCallback[type].Remove(action);
+            actionCallback[type].Remove(action);
         }
         public void TriggerActionPoint(ActionPointType type, CombatAction action)
         {
-            if (ActionCallback.ContainsKey(type))
+            if (actionCallback.ContainsKey(type))
             {
-                foreach (var item in ActionCallback[type])
+                foreach (var item in actionCallback[type])
                 {
                     item.Invoke(action);
                 }

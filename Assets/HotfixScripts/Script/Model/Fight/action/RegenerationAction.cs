@@ -1,5 +1,5 @@
-using Fight;
 using System.Collections.Generic;
+using Fight;
 
 /// <summary>
 /// 恢复
@@ -7,11 +7,6 @@ using System.Collections.Generic;
 public class RegenerationAction : CombatAction
 {
     int result;
-    public RegenerationAction(CombatEntity creater, List<CombatEntity> targets)
-    {
-        Creator = creater;
-        Target = targets;
-    }
     public override void Apply(int baseValue)
     {
         foreach (var target in Target)
