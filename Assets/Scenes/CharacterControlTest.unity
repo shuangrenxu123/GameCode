@@ -42,7 +42,8 @@ RenderSettings:
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
-  serializedVersion: 12
+  serializedVersion: 13
+  m_BakeOnSceneLoad: 0
   m_GISettings:
     serializedVersion: 2
     m_BounceScale: 1
@@ -382,8 +383,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableType: 6
-  ItemDataConfig:
-  - _serializedList: []
 --- !u!65 &114024743
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -424,8 +423,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   InteractableType: 6
-  ItemDataConfig:
-  - _serializedList: []
 --- !u!65 &133335251
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2669,6 +2666,7 @@ MonoBehaviour:
   m_DeselectOnBackgroundClick: 1
   m_PointerBehavior: 0
   m_CursorLockBehavior: 0
+  m_ScrollDeltaPerTick: 6
 --- !u!114 &1857044814 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7132416175786917889, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
