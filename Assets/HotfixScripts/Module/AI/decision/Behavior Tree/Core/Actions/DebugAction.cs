@@ -1,6 +1,7 @@
 using BT;
 using UnityEngine;
 
+[BTNode(BTNodeAttribute.NodeType.Action, "Action/Log", "DebugActionEditor")]
 public class DebugAction : BTAction
 {
     public enum DebugActionType
@@ -9,9 +10,11 @@ public class DebugAction : BTAction
         Warning,
         Error
     }
+    [BTProperty]
     string logInfo;
+    [BTProperty]
     DebugActionType type;
-    public DebugAction(DebugActionType type, string info)
+    public DebugAction(string info, DebugActionType type)
     {
         this.type = type;
         this.logInfo = info;
