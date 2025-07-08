@@ -11,12 +11,12 @@ public class CharacterInfo : MonoBehaviour
     public TMP_Text state;
     public CharacterActor actor;
     public StateManger stateManger;
-    public void Update()
+    public void FixedUpdate()
     {
         rigiboydSpeed.text = actor.Velocity.ToString();
         localSpeed.text = actor.LocalVelocity.ToString();
         PlanerSpeed.text = actor.PlanarVelocity.ToString();
-        // state.text = stateManger.controller.CurrentState.name;
+        state.text = stateManger.controller.currentType.ToString();
     }
 
 }
