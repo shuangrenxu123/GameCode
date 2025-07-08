@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef83fc4eb87f44f279e62ce434242341, type: 3}
+  m_Name: AnimationSwordCombat_PropBoneBindingConfig_Default
+  m_EditorClassIdentifier: 
+  sourceRig: {fileID: 919132149155446097, guid: 68a29e70ae95f6a4195bf0fcbb538019, type: 3}
+  targetRig: {fileID: 919132149155446097, guid: 68a29e70ae95f6a4195bf0fcbb538019, type: 3}
+  propBoneDefinitions:
+  - parentBoneName: Hand_R
+    boneName: Prop_R
+    socketName: Prop_R_Socket
+    rotationOffset: {x: 0, y: 0, z: 0}
+    scalar: 1
+    scaleCalculationBone1: Hand_R
+    scaleCalculationBone2: Elbow_R
