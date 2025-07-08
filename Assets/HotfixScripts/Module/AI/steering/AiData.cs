@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class AiData : MonoBehaviour
 {
-    [SerializeField]
-    public CombatNumberBox CombatNumberBox;
     [HideInInspector]
     /// <summary>
     /// 目标数组
@@ -40,8 +38,6 @@ public class AiData : MonoBehaviour
 
     private void Awake()
     {
-        CombatNumberBox = new CombatNumberBox();
-        CombatNumberBox.Init();
     }
     private void Start()
     {

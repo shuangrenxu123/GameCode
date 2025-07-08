@@ -1,17 +1,14 @@
-using Animancer;
 using System.Collections.Generic;
+using Animancer;
 
-public class AnimactorHelper
+public class AnimatorHelper
 {
     public AnimancerComponent Animancer { get; private set; }
     public List<AnimancerLayer> Layers { get; private set; }
-    public AnimactorHelper(AnimancerComponent animancer)
+    public AnimatorHelper(AnimancerComponent animancer)
     {
         Animancer = animancer;
-        Layers = new List<AnimancerLayer>
-        {
-            //Animancer.Layers[0]
-        };
+        Layers = new List<AnimancerLayer>();
     }
 
     public AnimancerState Play(ClipTransition clip, int layer = 0)

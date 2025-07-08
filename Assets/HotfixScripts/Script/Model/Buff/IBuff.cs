@@ -19,6 +19,6 @@ public interface IBuff
     /// <summary>
     /// 时间结束后由Buffmanager移除
     /// </summary>
-    public void OnDestory();
+    public void OnDestroy();
 
 }

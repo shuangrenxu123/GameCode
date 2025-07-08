@@ -1,6 +1,7 @@
 using CharacterControllerStateMachine;
 using Fight;
 using UnityEngine;
+using static Fight.Number.CombatNumberBox;
 
 [RequireComponent(typeof(CharacterActor))]
 [RequireComponent(typeof(PlayerInventory))]
@@ -26,9 +27,12 @@ public class Player : MonoBehaviour
         //var ui = ResourcesManager.Instance.LoadAsset<PlayerStateUI>("ui","playerState.prefab");
         //UIManager.Instance.OpenUI<PlayerStateUI>(ui);
     }
+
     void Start()
     {
-        CombatEntity.Init(1000);
+        CombatEntity.hp.SetMaxValue(100);
+        CombatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
+        CombatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
     }
 
     public void SetStateMachineData(string key, object value)

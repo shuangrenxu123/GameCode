@@ -1,13 +1,12 @@
+using System;
 using Animancer;
 using Audio;
-using System;
 using UIWindow;
 using UnityEngine;
 namespace CharacterControllerStateMachine
 {
     public class MovementState : CharacterControlStateBase
     {
-        //todo ����Ծ���¶׵ȶ����������������������Ϊ�ֲ�״̬��
         #region parameters
         public PlanarMovementParameters planarMovementParameters = new();
         public VerticalMovementParameters verticalMovementParameters = new VerticalMovementParameters();
@@ -48,8 +47,10 @@ namespace CharacterControllerStateMachine
         #region Audio
         public AudioData moveAudio;
         private AudioAgent moveagent;
+
         #endregion
         public MaterialControl MaterialControl;
+
         /// <summary>
         /// ��������
         /// </summary>
@@ -86,6 +87,8 @@ namespace CharacterControllerStateMachine
             set => verticalMovementParameters.useGravity = value;
         }
 
+        public override StateType currentType => StateType.Walk;
+
         protected PlanarMovementParameters.PlanarMovementProperties currentMotion = new();
         bool reducedAirControlFlag = false;
         float reducedAirControlInitialTime = 0f;
@@ -106,16 +109,17 @@ namespace CharacterControllerStateMachine
             crouchMoveAnimator = animatorConfig.linearMixerAnimators["CrouchMove"];
             var state = Animancer.Animancer.States.GetOrCreate(animatorConfig.LockMovement);
             lockEnemyAnimator = (MixerState<Vector2>)state;
+            currentAnimator = normalMoveAnimator;
         }
         public override void Enter()
         {
             CharacterActor.alwaysNotGrounded = false;
             targetLookingDirection = CharacterActor.Forward;
             currentAnimator = normalMoveAnimator;
-            currentPlanarSpeedLimit = Mathf.Max(CharacterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
+            currentPlanarSpeedLimit =
+                Mathf.Max(CharacterActor.PlanarVelocity.magnitude,
+                planarMovementParameters.baseSpeedLimit);
 
-            //moveagent = AudioManager.Instance.PlayAudio(moveAudio.GetClip(MaterialControl.CurrentSurface.movementSound),moveAudio.layer,true);
-            //moveagent.Pause();
             CharacterActor.UseRootMotion = false;
 
             if (lockFlag)
@@ -131,7 +135,6 @@ namespace CharacterControllerStateMachine
         {
             CharacterActor.OnTeleport -= OnTeleport;
             reducedAirControlFlag = false;
-            //moveagent.Stop();
         }
         void OnTeleport(Vector3 position, Quaternion rotation)
         {
@@ -157,6 +160,7 @@ namespace CharacterControllerStateMachine
             }
             CheckForInteractableObject();
         }
+
         #region ����(lock)
 
         public bool HandleLockEnemy(Transform target)
@@ -196,6 +200,7 @@ namespace CharacterControllerStateMachine
             ProcessGravity(dt);
             ProcessJump(dt);
         }
+
         /// <summary>
         /// ������ɫƽ���ƶ�
         /// </summary>
@@ -203,7 +208,10 @@ namespace CharacterControllerStateMachine
         private void ProcessPlanarMovement(float dt)
         {
             float speedMultiplier = MaterialControl == null ? 1f : MaterialControl.CurrentSurface.speedMultiplier * MaterialControl.CurrentVolume.speedMultiplier;
-            bool needToAccalerate = CustomUtilities.Multiply(CharacterStateController.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude >= CharacterActor.PlanarVelocity.sqrMagnitude;
+
+            bool needToAccelerate =
+                CustomUtilities.Multiply(CharacterStateController.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude >= CharacterActor.PlanarVelocity.sqrMagnitude;
+
             //Ŀ���ٶ�
             Vector3 targetPlanarVelocity = default;
             switch (CharacterActor.CurrentState)
@@ -247,7 +255,7 @@ namespace CharacterControllerStateMachine
             SetMotionValues(targetPlanarVelocity);
             float acceleration = currentMotion.acceleration;
             //���ü��ٶ�
-            if (needToAccalerate)
+            if (needToAccelerate)
             {
                 acceleration *= currentMotion.angleAccelerationMultiplier;
             }
@@ -263,12 +271,12 @@ namespace CharacterControllerStateMachine
             if (!UseGravity)
                 return;
             verticalMovementParameters.UpdateParameters();
-            float gravityMutiplier = 1f;
+            float gravityMultiplier = 1f;
             if (MaterialControl != null)
-                gravityMutiplier = CharacterActor.LocalVelocity.y >= 0 ?
+                gravityMultiplier = CharacterActor.LocalVelocity.y >= 0 ?
                     MaterialControl.CurrentVolume.gravityAscendingMultiplier :
                     MaterialControl.CurrentVolume.gravityDescendingMultiplier;
-            float gravity = gravityMutiplier * verticalMovementParameters.gravity;
+            float gravity = gravityMultiplier * verticalMovementParameters.gravity;
             if (!CharacterActor.IsStable)
                 CharacterActor.VerticalVelocity += CustomUtilities.Multiply(-CharacterActor.Up, gravity, dt);
         }
@@ -385,6 +393,7 @@ namespace CharacterControllerStateMachine
             Grounded,
             NotGrounded,
         }
+
         JumpResult CanJump()
         {
             JumpResult jumpResult = JumpResult.Invalid;
@@ -425,6 +434,7 @@ namespace CharacterControllerStateMachine
             ProcessRegularJump(dt);
             ProcessJumpDown(dt);
         }
+
         private void ProcessRegularJump(float dt)
         {
             if (CharacterActor.IsGrounded)
@@ -497,11 +507,13 @@ namespace CharacterControllerStateMachine
         {
             if (lockFlag)
             {
-                Animancer.Play(animatorConfig.clipAnimators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(lockEnemyAnimator); };
+                Animancer.Play(animatorConfig.clipAnimators[jumpEnd])
+                    .Events.OnEnd = () => { Animancer.Play(lockEnemyAnimator); };
             }
             else
             {
-                Animancer.Play(animatorConfig.clipAnimators[jumpEnd]).Events.OnEnd = () => { Animancer.Play(currentAnimator); };
+                Animancer.Play(animatorConfig.clipAnimators[jumpEnd])
+                    .Events.OnEnd = () => { Animancer.Play(currentAnimator); };
             }
         }
 
@@ -583,6 +595,7 @@ namespace CharacterControllerStateMachine
             }
         }
         #endregion
+
         void HandleSize(float dt)
         {
             if (crouchParameters.enableCrouch)
@@ -615,10 +628,7 @@ namespace CharacterControllerStateMachine
                 StandUp(dt);
             }
         }
-        /// <summary>
-        /// �������ٶ����
-        /// </summary>
-        /// <param name="targetPlanarVelocity"></param>
+
         void SetMotionValues(Vector3 targetPlanarVelocity)
         {
             float angleCurrentTargetVelocity = Vector3.Angle(CharacterActor.PlanarVelocity, targetPlanarVelocity);
@@ -676,28 +686,12 @@ namespace CharacterControllerStateMachine
             }
         }
         #region ���¶���(Update Animator Parmeters)
-        /// <summary>
-        /// ���������֮����¶�������ζ�������ڲ������ٶ������Ҳ���Դ�����ض���
-        /// </summary>
+
+
         public override void PostCharacterSimulation()
         {
-            //if (!CharacterActor.IsAnimatorValid())
-            //{
-            //    return;
-            //}
-            // CharacterStateController.Animator.SetFloat(verticalSpeedParameter, CharacterActor.LocalVelocity.y);
-            // CharacterStateController.Animator.SetFloat(planarSpeedParmeter, CharacterActor.PlanarVelocity.magnitude);
             if (CharacterActor.IsStable)
             {
-
-                //if (CharacterActor.PlanarVelocity.magnitude > 0.01f && !moveagent.isPlaying())
-                //{
-                //    moveagent.Continue();
-                //}
-                //else if(CharacterActor.PlanarVelocity.magnitude  <= 0.01f && moveagent.isPlaying())
-                //{
-                //    moveagent.Pause();
-                //}
                 currentAnimator.State.Parameter = CharacterActor.PlanarVelocity.magnitude;
 
                 if (lockFlag)

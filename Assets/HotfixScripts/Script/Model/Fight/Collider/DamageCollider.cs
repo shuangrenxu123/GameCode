@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Fight;
-using NaughtyAttributes;
 using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
@@ -13,7 +12,6 @@ public class DamageCollider : MonoBehaviour
     List<Enemy> characterDamagedDuringThisCalculation;
     private string currentDamageAnimation;
     LayerMask Enemylayer;
-    [Tag]
     public string EnemyTag;
     private void Awake()
     {
@@ -46,7 +44,6 @@ public class DamageCollider : MonoBehaviour
             {
                 return;
             }
-            Debug.Log("������:" + enemy.name);
             characterDamagedDuringThisCalculation.Add(enemy);
             var target = other.gameObject.GetComponentInParent<CombatEntity>();
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
@@ -56,7 +53,6 @@ public class DamageCollider : MonoBehaviour
             CombatActionFactor
                .CreateActionAndExecute<DamageAction>(entity, new List<CombatEntity> { target }, 10);
 
-            target.TakeDamageFx(directionHitFrom);
         }
     }
 }

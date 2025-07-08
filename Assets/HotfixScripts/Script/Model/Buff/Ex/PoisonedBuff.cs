@@ -27,7 +27,7 @@ public class PoisonedBuff : BuffBase
             count += 1;
         }
     }
-    public override void OnDestory()
+    public override void OnDestroy()
     {
         Debug.Log("中毒buff移除");
     }

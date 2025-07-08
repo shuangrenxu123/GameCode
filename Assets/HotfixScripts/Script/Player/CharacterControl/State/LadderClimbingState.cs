@@ -33,6 +33,8 @@ namespace CharacterControllerStateMachine
         AnimatorStateInfo animatorStateInfo;
         bool isBottom = false;
 
+        public override StateType currentType => throw new System.NotImplementedException();
+
         public override void Init()
         {
             CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;

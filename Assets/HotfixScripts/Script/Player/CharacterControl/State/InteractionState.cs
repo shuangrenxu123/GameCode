@@ -8,6 +8,9 @@ namespace CharacterControllerStateMachine
         private Interactable interactable;
         private ConsumableItemData ItemData;
         private AnimancerState state;
+
+        public override StateType currentType => throw new System.NotImplementedException();
+
         public override void Init()
         {
             base.Init();

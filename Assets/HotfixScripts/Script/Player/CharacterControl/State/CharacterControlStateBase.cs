@@ -2,10 +2,10 @@ using HFSM;
 
 namespace CharacterControllerStateMachine
 {
-    public class CharacterControlStateBase : StateBase<StateType>
+    public abstract class CharacterControlStateBase : StateBase<StateType>
     {
         public CharacterActor CharacterActor { get; protected set; }
-        public AnimactorHelper Animancer { get; set; }
+        public AnimatorHelper Animancer { get; set; }
         protected CharacterBrain CharacterBrain = null;
         public CharacterActions CharacterActions
         {
@@ -17,8 +17,6 @@ namespace CharacterControllerStateMachine
         }
         public CharacterStateController_New CharacterStateController { get; protected set; }
         protected CCAnimatorConfig animatorConfig => CharacterStateController.stateManger.animatorConfig;
-        protected NetTranform netHelper => CharacterStateController.stateManger.NetHelper;
-        //public Dictionary<string, ClipTransition> animators;
         public override void Init()
         {
             CharacterActor = (parentMachine as CharacterStateController_New).CharacterActor;
@@ -29,29 +27,21 @@ namespace CharacterControllerStateMachine
         {
 
         }
-        /// <summary>
-        /// ����ѭ��������ִ��
-        /// </summary>
+
         public virtual void PostUpdate()
         {
         }
-        /// <summary>
-        /// �÷���������ѭ��֮ǰִ��
-        /// </summary>
+
         public virtual void PreUpdate()
         {
         }
 
-        /// <summary>
-        /// �÷�����������ģ��ǰִ��
-        /// </summary>
+
         public virtual void PreCharacterSimulation()
         {
         }
 
-        /// <summary>
-        /// �˷����ڽ�ɫ����ģ��֮�����С�
-        /// </summary>
+
         public virtual void PostCharacterSimulation()
         {
         }

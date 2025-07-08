@@ -2,6 +2,7 @@ using System;
 using Fight;
 using UnityEngine;
 using UnityEngine.Events;
+using static Fight.Number.CombatNumberBox;
 
 public class Enemy : MonoBehaviour
 {
@@ -21,7 +22,12 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        combatEntity.Init(100);
+        combatEntity.hp.SetMaxValue(100);
+
+        combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
+        combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
+        combatEntity.properties.RegisterAttribute(PropertyType.Speed, 10);
+
         //ai = new EnemyAI();
         //ai.Init(this, animatorHandle as EnemyAnimatorHandle, this);
     }

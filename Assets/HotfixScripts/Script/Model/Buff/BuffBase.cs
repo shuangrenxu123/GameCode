@@ -41,7 +41,7 @@ public abstract class BuffBase : IBuff
 
     }
 
-    public virtual void OnDestory()
+    public virtual void OnDestroy()
     {
 
     }

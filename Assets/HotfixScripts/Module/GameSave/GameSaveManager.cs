@@ -9,7 +9,7 @@ namespace GameSave
 
     public class GameSaveManager : ModuleSingleton<GameSaveManager>, IModule
     {
-        const string savePath = @"C:\Users\Lenovo\Desktop";
+        string savePath = Application.persistentDataPath;
         Dictionary<DataType, IGameSave> saveDataEntities = new();
         Dictionary<string, string> saveData = new();
 
@@ -20,18 +20,6 @@ namespace GameSave
         public void OnCreate(object createParam)
         {
             fileData = new();
-        }
-
-        public void OnUpdate()
-        {
-            if (Input.GetKeyDown(KeyCode.S))
-            {
-                SaveData("Test");
-            }
-            if (Input.GetKeyDown(KeyCode.L))
-            {
-                LoadDataFile("Test");
-            }
         }
 
         public void RegisterSaver(IGameSave saver)
@@ -90,5 +78,8 @@ namespace GameSave
             return defaultValue;
         }
 
+        public void OnUpdate()
+        {
+        }
     }
 }

@@ -1,13 +1,13 @@
+using System.Collections.Generic;
+using System.Linq;
 using Animancer;
 using Audio;
 using CharacterControllerStateMachine;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class AttackState : CharacterControlStateBase
 {
-    private CharacterControlStateBase lastState;
+    private StateType lastState;
     public CharacterWeaponAnimator animator;
     private AnimancerState state;
     public LookingDirectionParameters lookingDirectionParameters = new LookingDirectionParameters();
@@ -18,6 +18,8 @@ public class AttackState : CharacterControlStateBase
     private bool canDoCombo = false;
     private int currentAnimatorIndex = 0;
     private WeaponAnimator currentWeaponAnimator;
+
+    public override StateType currentType => StateType.Attack;
 
     public override void Init()
     {
@@ -30,7 +32,7 @@ public class AttackState : CharacterControlStateBase
     {
         CharacterActor.Velocity = Vector3.zero;
         CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-        // lastState = (CharacterControlStateBase)CharacterStateController.lastState;
+        lastState = CharacterStateController.lastStateType;
 
         currentWeaponAnimator = animator.animators.First(x => x.type == GetCurrentWeaponType());
 
@@ -40,15 +42,16 @@ public class AttackState : CharacterControlStateBase
 
     private void PlayFirstAnimator()
     {
-        var movestate = (lastState as MovementState);
-        if (movestate == null)
+        var moveState = CharacterStateController.FindState(lastState) as MovementState;
+        if (moveState == null)
         {
+
             return;
         }
         //�ҵ���ǰװ������������
         AddAnimatorEvent();
         //�¶׹���
-        if (movestate.isCrouched)
+        if (moveState.isCrouched)
         {
             database.SetData<bool>("attack", false);
         }
@@ -58,7 +61,7 @@ public class AttackState : CharacterControlStateBase
             database.SetData<bool>("attack", false);
         }
         // �ܲ�����
-        else if (movestate.IsRun)
+        else if (moveState.IsRun)
         {
             state = Animancer.Play(currentWeaponAnimator.RunlightAttackAnimator_OH[currentAnimatorIndex].clip);
         }
@@ -191,18 +194,18 @@ public class AttackState : CharacterControlStateBase
     }
     private void AddAnimatorEvent()
     {
-        if (CheckinWeaponType())
+        if (CheckWeaponType())
         {
             foreach (var clip in currentWeaponAnimator.lightAttackAnimator_OH)
             {
-                var sequeue = new AnimancerEvent.Sequence(4)
+                var queue = new AnimancerEvent.Sequence(4)
                 {
                     new AnimancerEvent(clip.ComboTime.x, CanDoCombo),
                     new AnimancerEvent(clip.ComboTime.y, EndDoCombo),
                     new AnimancerEvent(clip.HitTime.x,OpenWeaponCollider),
                     new AnimancerEvent(clip.HitTime.y,CloseWeaponCollider),
                 };
-                lightEvents.Add(sequeue);
+                lightEvents.Add(queue);
             }
             foreach (var clip in currentWeaponAnimator.lightAttackAnimator_TH)
             {
@@ -215,7 +218,7 @@ public class AttackState : CharacterControlStateBase
         }
 
     }
-    private bool CheckinWeaponType()
+    private bool CheckWeaponType()
     {
         return true;
     }

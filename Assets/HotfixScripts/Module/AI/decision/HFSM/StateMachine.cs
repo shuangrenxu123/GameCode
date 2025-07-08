@@ -7,11 +7,11 @@ using UnityEngine;
 namespace HFSM
 {
 
-    public class StateMachine<T> : StateMachine<T, T> where T : Enum
+    public abstract class StateMachine<T> : StateMachine<T, T> where T : Enum
     {
 
     }
-    public class StateMachine<T, C> : StateBase<T>, IStateMachine where T : Enum where C : Enum
+    public abstract class StateMachine<T, C> : StateBase<T>, IStateMachine where T : Enum where C : Enum
     {
         public Dictionary<C, StateBase<C>> status = new();
         /// <summary>
@@ -21,12 +21,12 @@ namespace HFSM
         /// <summary>
         /// 当前激活的状态
         /// </summary>
-        public C CurrentState { get; set; }
-
+        public C CurrentStateType { get; set; }
+        protected virtual StateBase<C> currentState { get; private set; }
         /// <summary>
         /// 上一个状态
         /// </summary>
-        public C lastState { get; set; }
+        public C lastStateType { get; set; }
 
         /// <summary>
         /// 默认状态（即进入该状态机以后进入的子状态，默认为第一个添加的状态）
@@ -61,19 +61,19 @@ namespace HFSM
             Enter();
         }
 
-        public void AddState(C nodeName, StateBase<C> state)
+        public void AddState(StateBase<C> state)
         {
             state.database = database;
             state.parentMachine = this;
             state.Init();
             if (status.Count == 0)
             {
-                defaultState = nodeName;
+                defaultState = state.currentType;
             }
-            if (status.ContainsKey(nodeName))
-                Debug.LogError("状态名重复" + nodeName);
+            if (status.ContainsKey(state.currentType))
+                Debug.LogError("状态名重复" + state.currentType);
             else
-                status.Add(nodeName, state);
+                status.Add(state.currentType, state);
         }
 
         /// <summary>
@@ -111,16 +111,16 @@ namespace HFSM
         /// <param name="StateName"></param>
         public void ChangeState(C stateName)
         {
-            var currState = FindState(CurrentState);
-            currState?.Exit();
-            lastState = CurrentState;
+            currentState = FindState(CurrentStateType);
+            currentState?.Exit();
 
-            var nextState = FindState(stateName);
+            lastStateType = CurrentStateType;
 
-            activeTransitions = nextState.transitions ?? noTransitions;
+            currentState = FindState(stateName);
 
-            CurrentState = stateName;
-            nextState.Enter();
+            activeTransitions = currentState.transitions ?? noTransitions;
+            CurrentStateType = stateName;
+            currentState.Enter();
         }
         /// <summary>
         /// 修改当前状态机的默认状态
@@ -171,13 +171,12 @@ namespace HFSM
         public override void Exit()
         {
             base.Exit();
-            var state = FindState(CurrentState);
 
-            state.Exit();
+            currentState.Exit();
         }
         public override void Update()
         {
-            var state = FindState(CurrentState);
+            // var state = FindState(CurrentStateType);
 
             if (isRunning == false)
                 return;
@@ -189,17 +188,16 @@ namespace HFSM
                     break;
                 }
             }
-            state.Update();
+            currentState.Update();
 
         }
         public override void FixUpdate()
         {
-            var state = FindState(CurrentState);
 
             if (isRunning == false)
                 return;
 
-            state.FixUpdate();
+            currentState.FixUpdate();
         }
         #endregion
     }

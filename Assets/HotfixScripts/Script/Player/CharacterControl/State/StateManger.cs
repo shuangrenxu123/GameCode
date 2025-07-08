@@ -1,5 +1,7 @@
 using Animancer;
 using Audio;
+using Character.Controller.MoveState;
+using Character.Controller.State;
 using CharacterControllerStateMachine;
 using HFSM;
 using UnityEngine;
@@ -8,14 +10,13 @@ namespace CharacterControllerStateMachine
 {
     public class StateManger : MonoBehaviour
     {
-        public CharacterStateController_New controller;
+        public CharacterMovementStateMachine controller;
         public Player player;
         public new Camera3D camera;
         public CharacterBrain characterBrain;
         public AnimancerComponent Animancer;
-        public AnimactorHelper AnimancerHelper;
+        public AnimatorHelper AnimancerHelper;
         public MaterialControl materialControl;
-        public NetTranform NetHelper;
         public AudioData moveData;
 
         [SerializeField]
@@ -29,13 +30,13 @@ namespace CharacterControllerStateMachine
 
         private void Awake()
         {
-            AnimancerHelper = new AnimactorHelper(Animancer);
+            AnimancerHelper = new AnimatorHelper(Animancer);
             dataBase = new();
         }
         private void Start()
         {
             CharacterActor = GetComponentInParent<CharacterActor>();
-            NetHelper = GetComponentInParent<NetTranform>();
+
             player = GetComponentInParent<Player>();
 
             InitState();
@@ -48,85 +49,93 @@ namespace CharacterControllerStateMachine
 
         private void InitState()
         {
-            controller = new CharacterStateController_New
-            {
-                CharacterActor = GetComponentInParent<CharacterActor>(),
-                CharacterBrain = characterBrain,
-                stateManger = this,
-            };
+            controller = new(CharacterActor, characterBrain);
             controller.ExternalReference = camera.transform;
-            controller.Animator = controller.CharacterActor.GetComponentInChildren<Animator>();
+            controller.animator = CharacterActor.GetComponentInChildren<Animator>();
             controller.database = dataBase;
 
-            var movementState = new MovementState
+            var movementState = new CharacterNormalMovementState
             {
                 database = dataBase,
                 Animancer = AnimancerHelper,
-                MaterialControl = materialControl,
-                moveAudio = moveData
+                materialControl = materialControl,
+                currentAnimator = animatorConfig.linearMixerAnimators["NormalMove"]
             };
 
             movementState.lookingDirectionParameters.lookingDirectionMode
                 = LookingDirectionParameters.LookingDirectionMode.Movement;
 
-            var ladderClimb = new LadderClimbingState
-            {
-                database = dataBase
-            };
-
-
-            var interaction = new InteractionState()
+            var crouchMovementState = new CharacterCrouchMovementState
             {
                 database = dataBase,
-                Animancer = this.AnimancerHelper
+                Animancer = AnimancerHelper,
+                materialControl = materialControl,
+                currentAnimator = animatorConfig.linearMixerAnimators["CrouchMove"]
             };
 
+            movementState.lookingDirectionParameters.lookingDirectionMode
+                = LookingDirectionParameters.LookingDirectionMode.Movement;
 
-            var roll = new RollState
-            {
-                database = dataBase,
-                Animancer = this.AnimancerHelper,
-            };
+            // var ladderClimb = new LadderClimbingState
+            // {
+            //     database = dataBase
+            // };
 
-            var Attack = new AttackState
-            {
-                database = dataBase,
-                Animancer = this.AnimancerHelper,
-                animator = attackAnimator
-            };
+
+            // var interaction = new InteractionState()
+            // {
+            //     database = dataBase,
+            //     Animancer = this.AnimancerHelper
+            // };
+
+
+            // var roll = new RollState
+            // {
+            //     database = dataBase,
+            //     Animancer = this.AnimancerHelper,
+            // };
+
+            // var Attack = new AttackState
+            // {
+            //     database = dataBase,
+            //     Animancer = this.AnimancerHelper,
+            //     animator = attackAnimator
+            // };
 
             // var moveToladder = new StateTransition("move", "ladder");
             // var moveToladderCondition = new StateCondition_Bool("ladder", dataBase, true);
-            //
-            //var InteractionTomove = new StateTransition("interaction", "move");
-            //var moveToInteraction = new StateTransition("move", "interaction");
-            //var InteractionTomoveCondition = new StateCondition_Bool("interaction", dataBase, false);
-            //var moveToInteractionCondition = new StateCondition_Bool("interaction", dataBase, true);
 
-            //var rollTomoveCondition = new StateCondition_Bool("roll", dataBase, false);
-            //var moveTorollCondition = new StateCondition_Bool("roll", dataBase, true);
-            //var rollTomove = new StateTransition("roll", "move");
-            //var moveToroll = new StateTransition("move", "roll");
+            // var InteractionTomove = new StateTransition("interaction", "move");
+            // var moveToInteraction = new StateTransition("move", "interaction");
+            // var InteractionTomoveCondition = new StateCondition_Bool("interaction", dataBase, false);
+            // var moveToInteractionCondition = new StateCondition_Bool("interaction", dataBase, true);
 
-            //InteractionTomove.AddCondition(InteractionTomoveCondition);
-            //moveToInteraction.AddCondition(moveToInteractionCondition);
-            ////moveToladder.AddCondition(moveToladderCondition);
-            //moveToroll.AddCondition(moveTorollCondition);
-            //rollTomove.AddCondition(rollTomoveCondition);
+            // var rollTomoveCondition = new StateCondition_Bool("roll", dataBase, false);
+            // var moveTorollCondition = new StateCondition_Bool("roll", dataBase, true);
+            // var rollTomove = new StateTransition("roll", "move");
+            // var moveToroll = new StateTransition("move", "roll");
 
-            //dataBase.SetData("ladder", false);
-            //dataBase.SetData("interaction", false);
-            //dataBase.SetData("roll", false);
-            //dataBase.SetData("attack", false);
+            // InteractionTomove.AddCondition(InteractionTomoveCondition);
+            // moveToInteraction.AddCondition(moveToInteractionCondition);
+            // //moveToladder.AddCondition(moveToladderCondition);
+            // moveToroll.AddCondition(moveTorollCondition);
+            // rollTomove.AddCondition(rollTomoveCondition);
+
+            // dataBase.SetData("ladder", false);
+            // dataBase.SetData("interaction", false);
+            // dataBase.SetData("roll", false);
+            // dataBase.SetData("attack", false);
 
 
-            //controller.AddState("attack", Attack);
-            controller.AddState(StateType.Walk, movementState);
+            // controller.AddState(StateType.Attack, Attack);
+            controller.AddState(movementState);
+            controller.AddState(crouchMovementState);
+            // controller.SetDefaultState(ECharacterMoveState.CrouchMove);
             ////controller.AddState("ladder", ladderClimb);
             //controller.AddState("interaction", interaction);
             //controller.AddState("roll", roll);
 
-            //AddCondition(controller, "attack", dataBase, "move", "attack");
+            // AddCondition(controller, "attack", dataBase, StateType.Walk, StateType.Attack);
             ////controller.AddTransition(moveToladder);
             //controller.AddTransition(moveToInteraction);
             //controller.AddTransition(InteractionTomove);
@@ -136,27 +145,29 @@ namespace CharacterControllerStateMachine
         }
 
 
-        private void AddCondition(CharacterStateController_New controller, string name, DataBase database, string form, string to)
+        private void AddCondition(CharacterStateController_New controller, string name, DataBase database, StateType form, StateType to)
         {
-            // var cond = new StateCondition_Bool(name, database, true);
-            // var transition = new StateTransition(form, to);
-            //
-            // var cond2 = new StateCondition_Bool(name, database, false);
-            // var transition2 = new StateTransition(to, form);
-            // transition.AddCondition(cond);
-            // transition2.AddCondition(cond2);
-            // controller.AddTransition(transition);
-            // controller.AddTransition(transition2);
+            var cond = new StateCondition_Bool(name, database, true);
+            var transition = new StateTransition<StateType>(form, to);
+
+            var cond2 = new StateCondition_Bool(name, database, false);
+            var transition2 = new StateTransition<StateType>(to, form);
+            transition.AddCondition(cond);
+            transition2.AddCondition(cond2);
+            controller.AddTransition(transition);
+            controller.AddTransition(transition2);
         }
+
         private void Update()
         {
             controller.Update();
         }
+
         private void FixedUpdate()
         {
             controller.FixUpdate();
         }
-        //todo �����޸ĸú���
+
         public void HandleLock()
         {
             // var movestate = controller.FindState("move") as MovementState;

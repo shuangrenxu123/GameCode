@@ -16,8 +16,9 @@ public class EnemyAIControl : MonoBehaviour
     public SkillRunner skillRunner;
     public AnimancerComponent anim;
 
-    private void Awake()
+    private void Start()
     {
+        entity = GetComponent<CombatEntity>();
         skillSystem = new(entity);
 
         skillSystem.AddSkill(Resources.Load<SkillData>("skill/buffData"), Resources.Load<GameObject>("skill/buff"));
@@ -27,10 +28,6 @@ public class EnemyAIControl : MonoBehaviour
 
         Ai.actor = actor;
         Ai.Init(null, dataBase);
-
-    }
-    private void Start()
-    {
 
     }
     private void Update()

@@ -6,6 +6,7 @@ namespace CharacterControllerStateMachine
     {
         Walk,
         Idle,
+        Attack,
 
     }
     public enum BaseStateType

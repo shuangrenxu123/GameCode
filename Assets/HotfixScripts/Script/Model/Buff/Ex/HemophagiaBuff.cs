@@ -23,7 +23,7 @@ public class HemophagiaBuff : BuffBase
                 (o.Creator, new List<CombatEntity> { o.Creator }, o.damage / 2);
         }
     }
-    public override void OnDestory()
+    public override void OnDestroy()
     {
         BuffManager.entity.ActionPointManager.RemoveListener(ActionPointType.PostCauseDamage, blood);
     }

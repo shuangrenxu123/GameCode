@@ -124,7 +124,8 @@ public class CharacterActor : PhysicsActor
         get
         {
             if (IsGrounded)
-                return IsStable ? CharacterActorState.StableGrounded : CharacterActorState.UnstableGrounded;
+                return IsStable ? CharacterActorState.StableGrounded
+                : CharacterActorState.UnstableGrounded;
             else
                 return CharacterActorState.NotGrounded;
         }
@@ -134,7 +135,8 @@ public class CharacterActor : PhysicsActor
         get
         {
             if (WasGrounded)
-                return WasStable ? CharacterActorState.StableGrounded : CharacterActorState.UnstableGrounded;
+                return WasStable ? CharacterActorState.StableGrounded
+                : CharacterActorState.UnstableGrounded;
             else
                 return CharacterActorState.NotGrounded;
         }
@@ -1084,7 +1086,8 @@ public class CharacterActor : PhysicsActor
         return validSize;
     }
 
-    public bool CheckAndInterpolateHeight(float targetHeight, float lerpFactor, SizeReferenceType sizeReferenceType) => CheckAndInterpolateSize(new Vector2(DefaultBodySize.x, targetHeight), lerpFactor, SizeReferenceType.Bottom);
+    public bool CheckAndInterpolateHeight(float targetHeight, float lerpFactor, SizeReferenceType sizeReferenceType)
+        => CheckAndInterpolateSize(new Vector2(DefaultBodySize.x, targetHeight), lerpFactor, SizeReferenceType.Bottom);
     /// <summary>
     /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½Ð?
     /// </summary>

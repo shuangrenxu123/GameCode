@@ -8,9 +8,7 @@ public class HealthPoint
     public event Action<int, int> OnHPChange;
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
-    public void Init(bool isPlayer)
-    {
-    }
+
     public void Reset()
     {
         Value = MaxValue;

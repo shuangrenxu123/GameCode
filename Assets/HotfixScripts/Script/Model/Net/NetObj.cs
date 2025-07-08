@@ -22,7 +22,7 @@ public class NetObj : MonoBehaviour
 
     #region Animator
 
-    private AnimactorHelper animacer;
+    private AnimatorHelper animacer;
     private LinearMixerTransition currentAnimator;
     [SerializeField]
     CCAnimatorConfig config;
@@ -32,7 +32,7 @@ public class NetObj : MonoBehaviour
     {
         lastMotionState = new MotionState();
         lastMotionState.lastMotionTime = float.MinValue;
-        animacer = new AnimactorHelper(GetComponentInChildren<AnimancerComponent>());
+        animacer = new AnimatorHelper(GetComponentInChildren<AnimancerComponent>());
         currentAnimator = config.linearMixerAnimators["NormalMove"];
         animacer.Play(currentAnimator);
     }

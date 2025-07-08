@@ -15,14 +15,6 @@ namespace Fight.Number
         }
         private readonly Dictionary<PropertyType, PropertyValue> properties = new();
 
-        public void Init()
-        {
-            // 注册属性
-            RegisterAttribute(PropertyType.Attack, 100);
-            RegisterAttribute(PropertyType.Defense, 50);
-        }
-
-
         public void RegisterAttribute(PropertyType type, int baseValue)
         {
             if (!properties.ContainsKey(type))

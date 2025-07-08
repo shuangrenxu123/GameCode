@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 namespace HFSM
 {
-    public class StateBase<T> : IState where T : Enum
+    public abstract class StateBase<T> : IState where T : Enum
     {
+        public abstract T currentType { get; }
 
         /// <summary>
         /// 该状态所处的状态机

@@ -45,9 +45,9 @@ public class BuffManager
             buff.OnTrigger();
         }
     }
-    public void AddBuff(string buffName, CombatEntity creater)
+    public void AddBuff(string buffName, CombatEntity creator)
     {
-        var buff = BuffFactory.CreateBuff(buffName, creater, this);
+        var buff = BuffFactory.CreateBuff(buffName, creator, this);
         if (buff == null)
         {
             Debug.Log($"{buffName} : 不存在");
@@ -81,7 +81,7 @@ public class BuffManager
     }
     public void RemoveBuff(BuffBase buff)
     {
-        buff.OnDestory();
+        buff.OnDestroy();
         _buffs.Remove(buff);
         foreach (var i in buff.data.Tag)
         {

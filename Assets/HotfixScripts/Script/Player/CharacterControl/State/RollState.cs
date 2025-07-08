@@ -25,6 +25,9 @@ namespace CharacterControllerStateMachine
             InputDirection,
         }
         private AnimancerState state;
+
+        public override StateType currentType => throw new System.NotImplementedException();
+
         public override void Init()
         {
             base.Init();
@@ -36,7 +39,6 @@ namespace CharacterControllerStateMachine
             CharacterActor.SetYaw(targetDeltaRotation * CharacterActor.Forward);
 
             CharacterActor.Velocity = Vector3.zero;
-            netHelper.SendAction("roll");
             CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
             state = Animancer.Play(animatorConfig.clipAnimators[roll]);
             state.Events.OnEnd += OnAnimatorEnd;

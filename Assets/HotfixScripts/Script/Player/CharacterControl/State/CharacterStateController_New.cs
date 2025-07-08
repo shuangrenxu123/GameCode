@@ -14,7 +14,8 @@ namespace CharacterControllerStateMachine
         public bool UpdateRootPosition { get => CharacterActor.UpdateRootPosition; set => CharacterActor.UpdateRootPosition = value; }
         public bool UpdateRootRotation { get => CharacterActor.UpdateRootRotation; set => CharacterActor.UpdateRootRotation = value; }
         public CharacterBrain CharacterBrain { get; set; }
-        public new CharacterControlStateBase CurrentState => (CharacterControlStateBase)FindState(base.CurrentState);
+        public new CharacterControlStateBase CurrentState => (CharacterControlStateBase)FindState(base.CurrentStateType);
+
         #region MovementReference
         public Vector3 InputMovementReference => movementReferenceParameters.InputMovementReference;
         public Transform ExternalReference
@@ -30,6 +31,8 @@ namespace CharacterControllerStateMachine
         }
         public Vector3 MovementReferenceForward => movementReferenceParameters.MovementReferenceForward;
         public Vector3 MovementReferenceRight => movementReferenceParameters.MovementReferenceRight;
+
+        public override StateType currentType => throw new System.NotImplementedException();
         #endregion
         void PreCharacterSimulation(float dt) => CurrentState.PreCharacterSimulation();
         void PostCharacterSimulation(float dt) => CurrentState.PostCharacterSimulation();
