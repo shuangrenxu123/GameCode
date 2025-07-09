@@ -73,11 +73,6 @@ namespace CharacterControllerStateMachine
                 currentAnimator = animatorConfig.linearMixerAnimators["CrouchMove"]
             };
 
-            movementState.lookingDirectionParameters.lookingDirectionMode
-                = LookingDirectionParameters.LookingDirectionMode.Movement;
-
-
-
             var jumpMovement = new CharacterAirMovementState
             {
                 database = dataBase,
@@ -88,87 +83,18 @@ namespace CharacterControllerStateMachine
                 jumpEndAnim = animatorConfig.clipAnimators["JumpEnd"]
             };
 
-            // var ladderClimb = new LadderClimbingState
-            // {
-            //     database = dataBase
-            // };
+            var climbMovementState = new CharacterClimbState
+            {
+                database = dataBase,
+                Animancer = AnimancerHelper,
+                climbAnimations = animatorConfig.climbAnimators
+            };
 
-
-            // var interaction = new InteractionState()
-            // {
-            //     database = dataBase,
-            //     Animancer = this.AnimancerHelper
-            // };
-
-
-            // var roll = new RollState
-            // {
-            //     database = dataBase,
-            //     Animancer = this.AnimancerHelper,
-            // };
-
-            // var Attack = new AttackState
-            // {
-            //     database = dataBase,
-            //     Animancer = this.AnimancerHelper,
-            //     animator = attackAnimator
-            // };
-
-            // var moveToladder = new StateTransition("move", "ladder");
-            // var moveToladderCondition = new StateCondition_Bool("ladder", dataBase, true);
-
-            // var InteractionTomove = new StateTransition("interaction", "move");
-            // var moveToInteraction = new StateTransition("move", "interaction");
-            // var InteractionTomoveCondition = new StateCondition_Bool("interaction", dataBase, false);
-            // var moveToInteractionCondition = new StateCondition_Bool("interaction", dataBase, true);
-
-            // var rollTomoveCondition = new StateCondition_Bool("roll", dataBase, false);
-            // var moveTorollCondition = new StateCondition_Bool("roll", dataBase, true);
-            // var rollTomove = new StateTransition("roll", "move");
-            // var moveToroll = new StateTransition("move", "roll");
-
-            // InteractionTomove.AddCondition(InteractionTomoveCondition);
-            // moveToInteraction.AddCondition(moveToInteractionCondition);
-            // //moveToladder.AddCondition(moveToladderCondition);
-            // moveToroll.AddCondition(moveTorollCondition);
-            // rollTomove.AddCondition(rollTomoveCondition);
-
-            // dataBase.SetData("ladder", false);
-            // dataBase.SetData("interaction", false);
-            // dataBase.SetData("roll", false);
-            // dataBase.SetData("attack", false);
-
-
-            // controller.AddState(StateType.Attack, Attack);
             controller.AddState(movementState);
             controller.AddState(crouchMovementState);
             controller.AddState(jumpMovement);
-            // controller.SetDefaultState(ECharacterMoveState.CrouchMove);
-            ////controller.AddState("ladder", ladderClimb);
-            //controller.AddState("interaction", interaction);
-            //controller.AddState("roll", roll);
-
-            // AddCondition(controller, "attack", dataBase, StateType.Walk, StateType.Attack);
-            ////controller.AddTransition(moveToladder);
-            //controller.AddTransition(moveToInteraction);
-            //controller.AddTransition(InteractionTomove);
-            //controller.AddTransition(moveToroll);
-            //controller.AddTransition(rollTomove);
-
-        }
-
-
-        private void AddCondition(CharacterStateController_New controller, string name, DataBase database, StateType form, StateType to)
-        {
-            var cond = new StateCondition_Bool(name, database, true);
-            var transition = new StateTransition<StateType>(form, to);
-
-            var cond2 = new StateCondition_Bool(name, database, false);
-            var transition2 = new StateTransition<StateType>(to, form);
-            transition.AddCondition(cond);
-            transition2.AddCondition(cond2);
-            controller.AddTransition(transition);
-            controller.AddTransition(transition2);
+            controller.AddState(climbMovementState);
+            // controller.SetDefaultState(ECharacterMoveState.Climb);
         }
 
         private void Update()

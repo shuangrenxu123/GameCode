@@ -37,7 +37,9 @@ public class MovementReferenceParameters
     {
         UpdateMovementReferenceData();
 
-        Vector3 inputMovementReference = CustomUtilities.Multiply(MovementReferenceRight, movementInput.x) + CustomUtilities.Multiply(MovementReferenceForward, movementInput.y);
+        Vector3 inputMovementReference =
+            CustomUtilities.Multiply(MovementReferenceRight, movementInput.x)
+            + CustomUtilities.Multiply(MovementReferenceForward, movementInput.y);
         InputMovementReference = Vector3.ClampMagnitude(inputMovementReference, 1f);
     }
 

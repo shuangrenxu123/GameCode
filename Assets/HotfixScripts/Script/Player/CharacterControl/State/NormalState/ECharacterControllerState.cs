@@ -13,6 +13,6 @@ namespace Character.Controller.State
         NormalMove,
         CrouchMove,
         Jump,
-
+        Climb
     }
 }

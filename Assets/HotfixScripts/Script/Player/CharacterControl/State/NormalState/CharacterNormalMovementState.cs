@@ -18,6 +18,10 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }
+            else if (characterActions.interact.Started)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Climb);
+            }
         }
         protected override Vector3 ProcessPlanarMovement(float dt)
         {

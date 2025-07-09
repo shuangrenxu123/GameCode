@@ -610,6 +610,7 @@ public class CharacterActor : PhysicsActor
         {
             ProcessVelocity(dt);
         }
+
         SetColliderSize();
 
         PreSimulationVelocity = Velocity;
@@ -717,7 +718,7 @@ public class CharacterActor : PhysicsActor
     /// ï¿½Ç·ï¿½ï¿½Üµï¿½ï¿½ï¿½Ì¬ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½
     /// </summary>
     /// <returns></returns>
-    bool IsAllowedToFollowRiggidbodyReference()
+    bool IsAllowedToFollowRigidbodyReference()
     {
         if (!supportDynamicGround || !IsStable || GroundObject == null)
         {
@@ -736,7 +737,7 @@ public class CharacterActor : PhysicsActor
     /// <param name="position"></param>
     void SetDynamicGroundData(Vector3 position)
     {
-        if (!IsAllowedToFollowRiggidbodyReference())
+        if (!IsAllowedToFollowRigidbodyReference())
         {
             return;
         }
@@ -776,7 +777,7 @@ public class CharacterActor : PhysicsActor
     /// <param name="dt"></param>
     void ProcessDynamicGroundMovement(float dt)
     {
-        if (!IsAllowedToFollowRiggidbodyReference())
+        if (!IsAllowedToFollowRigidbodyReference())
         {
             return;
         }
@@ -988,7 +989,6 @@ public class CharacterActor : PhysicsActor
     {
         ApplyWeight(GroundContactPoint);
         VerticalVelocity = Vector3.zero;
-        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù¶ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î»ï¿½Æ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         Vector3 displacement = CustomUtilities.ProjectOnTangent(
             CustomUtilities.Multiply(Velocity, dt),
@@ -1032,7 +1032,7 @@ public class CharacterActor : PhysicsActor
     /// <param name="size"></param>
     /// <param name="heightAnchorRatio"></param>
     /// <returns></returns>
-    Vector3 GetSizeoffsetPosition(Vector2 size, float heightAnchorRatio)
+    Vector3 GetSizeOffsetPosition(Vector2 size, float heightAnchorRatio)
     {
         float verticalOffset = (BodySize.y - size.y) * heightAnchorRatio;
         Vector3 testPosition = Position + CustomUtilities.Multiply(Up, verticalOffset);
@@ -1054,7 +1054,7 @@ public class CharacterActor : PhysicsActor
                 break;
         }
 
-        Position = GetSizeoffsetPosition(size, heightAnchorRatio);
+        Position = GetSizeOffsetPosition(size, heightAnchorRatio);
         BodySize = size;
         SetColliderSize();
     }
@@ -1256,7 +1256,7 @@ public class CharacterActor : PhysicsActor
     public void ForceNotGrounded(int ignoreGroundContactFrames = 3)
     {
         forceNotGroundedFrames = ignoreGroundContactFrames;
-        inheritVelocityFlag = IsAllowedToFollowRiggidbodyReference();
+        inheritVelocityFlag = IsAllowedToFollowRigidbodyReference();
         UpdateStabilityFlags();
 
         ResetGroundInfo();

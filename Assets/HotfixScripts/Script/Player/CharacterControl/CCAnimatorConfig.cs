@@ -9,6 +9,8 @@ public class CCAnimatorConfig : ScriptableObject
     [SerializedDictionary("ClipName", "Clip")]
     public SerializedDictionary<string, ClipTransition> clipAnimators;
 
+    [SerializedDictionary("ClipName", "Clip")]
+    public SerializedDictionary<string, ClipTransition> climbAnimators;
     [SerializeReference]
     public ITransition LockMovement;
 }

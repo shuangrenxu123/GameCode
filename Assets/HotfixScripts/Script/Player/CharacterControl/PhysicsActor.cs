@@ -374,7 +374,7 @@ public abstract class PhysicsActor : MonoBehaviour
         }
         Position += Animator.deltaPosition;
     }
-    protected virtual void UpdateKinematicRootMotionRotatino()
+    protected virtual void UpdateKinematicRootMotionRotation()
     {
         if (!UpdateRootRotation)
             return;
@@ -400,21 +400,21 @@ public abstract class PhysicsActor : MonoBehaviour
         else
             Rotation = Animator.rootRotation;
     }
-    void PresimulationRootMotionUpdate()
+    void PreSimulationRootMotionUpdate()
     {
         if (RigidbodyComponent.IsKinematic)
         {
             if (UpdateRootPosition)
                 UpdateKinematicRootMotionPosition();
             if (UpdateRootRotation)
-                UpdateKinematicRootMotionRotatino();
+                UpdateKinematicRootMotionRotation();
         }
         else
         {
             if (UpdateRootPosition)
                 UpdateDynamicRootMotionPosition();
             if (UpdateRootRotation)
-                UpdateKinematicRootMotionRotatino();
+                UpdateKinematicRootMotionRotation();
         }
     }
     void OnAnimatorIKLinkMethod(int layerIndex) => OnAnimatorIKEvent?.Invoke(layerIndex);
@@ -578,7 +578,7 @@ public abstract class PhysicsActor : MonoBehaviour
         float dt = Time.deltaTime;
         OnAnimatorMoveEvent?.Invoke();
 
-        PresimulationRootMotionUpdate();
+        PreSimulationRootMotionUpdate();
         PreSimulationUpdate(dt);
         OnPreSimulation?.Invoke(dt);
         transform.SetPositionAndRotation(Position, Rotation);
@@ -590,6 +590,7 @@ public abstract class PhysicsActor : MonoBehaviour
             return;
         float dt = Time.deltaTime;
         PreSimulationUpdate(dt);
+
         OnPreSimulation?.Invoke(dt);
         //手动同步，防止坐标值被污染。
         transform.SetLocalPositionAndRotation(Position, Rotation);
