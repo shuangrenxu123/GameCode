@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct CharacrerUIActions
+public struct CharacterUIActions
 {
 
     public BoolAction confirm;
@@ -10,7 +10,7 @@ public struct CharacrerUIActions
         confirm.Reset();
         cancel.Reset();
     }
-    public void InitalizeAcionts()
+    public void InitializeActions()
     {
         confirm = new BoolAction();
         confirm.Initialize();
@@ -18,7 +18,7 @@ public struct CharacrerUIActions
         cancel = new BoolAction();
         cancel.Initialize();
     }
-    public void SetValues(CharacrerUIActions UiActions)
+    public void SetValues(CharacterUIActions UiActions)
     {
         confirm.value = UiActions.confirm.value;
         cancel.value = UiActions.cancel.value;

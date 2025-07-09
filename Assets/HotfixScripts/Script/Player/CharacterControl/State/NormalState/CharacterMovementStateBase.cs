@@ -17,7 +17,14 @@ namespace Character.Controller.MoveState
         protected CharacterBrain characterBrain { get; private set; }
 
         public LinearMixerTransition currentAnimator;
-
+        public CharacterActions characterActions
+        {
+            get
+            {
+                return characterBrain == null ?
+                    new CharacterActions() : characterBrain.CharacterActions;
+            }
+        }
 
         protected new CharacterMovementStateMachine parentMachine
             => (CharacterMovementStateMachine)base.parentMachine;

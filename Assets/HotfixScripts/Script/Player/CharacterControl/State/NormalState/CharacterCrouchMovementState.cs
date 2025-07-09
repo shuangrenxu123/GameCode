@@ -7,13 +7,29 @@ namespace Character.Controller.MoveState
         public CrouchParameters crouchParameters = new CrouchParameters();
         public override ECharacterMoveState currentType
             => ECharacterMoveState.CrouchMove;
-
         public override void Enter()
         {
             base.Enter();
             Crouch();
         }
-
+        public override void Update()
+        {
+            base.Update();
+            if (crouchParameters.inputMode == InputMode.Hold)
+            {
+                if (characterActions.crouch.value == false)
+                {
+                    parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                }
+            }
+            else
+            {
+                if (characterActions.crouch.Started)
+                {
+                    parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                }
+            }
+        }
         void Crouch()
         {
             var dt = Time.deltaTime;

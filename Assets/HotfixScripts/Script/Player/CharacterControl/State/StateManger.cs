@@ -76,6 +76,18 @@ namespace CharacterControllerStateMachine
             movementState.lookingDirectionParameters.lookingDirectionMode
                 = LookingDirectionParameters.LookingDirectionMode.Movement;
 
+
+
+            var jumpMovement = new CharacterAirMovementState
+            {
+                database = dataBase,
+                Animancer = AnimancerHelper,
+                materialControl = materialControl,
+                jumpAnim = animatorConfig.clipAnimators["Jump"],
+                downAnim = animatorConfig.clipAnimators["JumpFall"],
+                jumpEndAnim = animatorConfig.clipAnimators["JumpEnd"]
+            };
+
             // var ladderClimb = new LadderClimbingState
             // {
             //     database = dataBase
@@ -130,6 +142,7 @@ namespace CharacterControllerStateMachine
             // controller.AddState(StateType.Attack, Attack);
             controller.AddState(movementState);
             controller.AddState(crouchMovementState);
+            controller.AddState(jumpMovement);
             // controller.SetDefaultState(ECharacterMoveState.CrouchMove);
             ////controller.AddState("ladder", ladderClimb);
             //controller.AddState("interaction", interaction);

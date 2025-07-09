@@ -4,9 +4,21 @@ namespace Character.Controller.MoveState
 {
     public class CharacterNormalMovementState : CharacterMovementStateBase
     {
-
         public override ECharacterMoveState currentType => ECharacterMoveState.NormalMove;
 
+        public override void Update()
+        {
+            base.Update();
+            if (characterActions.crouch.Started)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
+            }
+            else if (characterActions.jump.Started
+                || characterActor.IsGrounded == false)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+            }
+        }
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
             float speedMultiplier = materialControl == null ?

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// ´ËÀà¸ºÔð¼ì²âÊäÈëºÍ¹ÜÀí½ÇÉ«²Ù×÷¡£
+/// ï¿½ï¿½ï¿½à¸ºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¹ï¿½ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
 public class CharacterBrain : MonoBehaviour
 {
@@ -15,7 +15,7 @@ public class CharacterBrain : MonoBehaviour
     //CharacterAIBehaviour aiBehaviour = null;
 
     CharacterActions characterActions = new CharacterActions();
-    CharacrerUIActions characterUIActions = new CharacrerUIActions();
+    CharacterUIActions characterUIActions = new CharacterUIActions();
 
     private bool IsUIInput = false;
 
@@ -24,7 +24,7 @@ public class CharacterBrain : MonoBehaviour
     public bool IsAI => isAI;
 
     public CharacterActions CharacterActions => characterActions;
-    public CharacrerUIActions CharacterUIActions => characterUIActions;
+    public CharacterUIActions CharacterUIActions => characterUIActions;
 
     public void SetAction(CharacterActions characterActions) => this.characterActions = characterActions;
 
@@ -71,7 +71,7 @@ public class CharacterBrain : MonoBehaviour
 
     }
 
-    public void EnableUIIpnut()
+    public void EnableUIInput()
     {
         IsUIInput = true;
         characterActions.Reset();
@@ -94,13 +94,13 @@ public class CharacterBrain : MonoBehaviour
     protected virtual void Awake()
     {
         characterActions.InitializeActions();
-        characterUIActions.InitalizeAcionts();
+        characterUIActions.InitializeActions();
 
     }
     protected virtual void OnEnable()
     {
         characterActions.InitializeActions();
-        characterUIActions.InitalizeAcionts();
+        characterUIActions.InitializeActions();
         characterUIActions.Reset();
         characterActions.Reset();
     }

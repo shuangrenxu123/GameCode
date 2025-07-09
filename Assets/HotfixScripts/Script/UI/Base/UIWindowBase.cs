@@ -7,7 +7,7 @@ namespace UIWindow
     public abstract class UIWindowBase : MonoBehaviour, IUIWindow
     {
         protected CharacterBrain CharacterBrain;
-        protected CharacrerUIActions UIInput => CharacterBrain.CharacterUIActions;
+        protected CharacterUIActions UIInput => CharacterBrain.CharacterUIActions;
 
         public Canvas canves { get; set; }
         public string WindowName { get => GetType().FullName; set { return; } }
