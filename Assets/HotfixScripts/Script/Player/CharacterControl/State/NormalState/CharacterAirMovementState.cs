@@ -25,6 +25,11 @@ namespace Character.Controller.MoveState
             isEnd = false;
         }
 
+        protected override void HandleRotation(float dt)
+        {
+
+        }
+
         void Jump()
         {
             var JumpDirection = characterActor.Up;
@@ -38,10 +43,10 @@ namespace Character.Controller.MoveState
         public override void FixUpdate()
         {
             base.FixUpdate();
-
             if (characterActor.IsGrounded && !isEnd)
             {
                 isEnd = true;
+                characterActor.PlanarVelocity = Vector3.zero;
                 Animancer.Play(jumpEndAnim).Events.OnEnd = () =>
                 {
                     parentMachine.ChangeState(ECharacterMoveState.NormalMove);

@@ -590,7 +590,7 @@ public class CharacterActor : PhysicsActor
         }
         else
         {
-            Contact headContact = WallContacts[0];
+            Contact headContact = HeadContacts[0];
             characterCollisionInfo.SetHeadInfo(headContact, this);
             if (!wasCollidingwithHead)
                 OnHeadHit?.Invoke(headContact);

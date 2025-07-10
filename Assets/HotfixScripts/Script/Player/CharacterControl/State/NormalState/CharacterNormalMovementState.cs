@@ -18,9 +18,14 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }
-            else if (characterActions.interact.Started)
+            else if (characterActions.interact.Started
+                && characterActor.Triggers.Count > 0)
             {
-                parentMachine.ChangeState(ECharacterMoveState.Climb);
+                var ladder = characterActor.Triggers[0].transform.GetComponentInParent<Ladder>();
+                if (ladder != null)
+                {
+                    parentMachine.ChangeState(ECharacterMoveState.Climb);
+                }
             }
         }
         protected override Vector3 ProcessPlanarMovement(float dt)

@@ -24,7 +24,75 @@ public class PhysicsComponent3D : PhysicsComponent
             return false;
         return !Physics.GetIgnoreCollision(Collider, collider);
     }
+    void OnTriggerStay(Collider other)
+    {
+        if (ignoreCollisionMessages)
+            return;
 
+        if (!other.isTrigger)
+            return;
+
+        bool found = false;
+        float fixedTime = Time.fixedTime;
+
+        // Check if the trigger is contained inside the list
+        for (int i = 0; i < Triggers.Count && !found; i++)
+        {
+            if (Triggers[i] != other)
+                continue;
+            found = true;
+        }
+
+        if (!found)
+            Triggers.Add(new Trigger(other, Time.fixedTime));
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (ignoreCollisionMessages)
+            return;
+
+        for (int i = Triggers.Count - 1; i >= 0; i--)
+        {
+            if (Triggers[i].collider3D == other)
+            {
+                Triggers.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (ignoreCollisionMessages)
+            return;
+
+        int bufferHits = collision.GetContacts(_contactsBuffer);
+
+        // Add the contacts to the list
+        for (int i = 0; i < bufferHits; i++)
+        {
+            ContactPoint contact = _contactsBuffer[i];
+            Contact outputContact = new Contact(true, contact, collision);
+            Contacts.Add(outputContact);
+        }
+    }
+
+    void OnCollisionStay(Collision collision)
+    {
+        if (ignoreCollisionMessages)
+            return;
+
+        int bufferHits = collision.GetContacts(_contactsBuffer);
+
+        // Add the contacts to the list
+        for (int i = 0; i < bufferHits; i++)
+        {
+            ContactPoint contact = _contactsBuffer[i];
+            Contact outputContact = new Contact(false, contact, collision);
+            Contacts.Add(outputContact);
+        }
+    }
     public override int FilterOverlaps(int overlaps, LayerMask ignoredLayerMask, HitFilterDelegate hitFilter)
     {
         int filteredOverlaps = overlaps;
@@ -89,7 +157,7 @@ public class PhysicsComponent3D : PhysicsComponent
             {
                 IgnoreLayerCollision(i, ignore);
             }
-            //×óÒÆÒ»Î»ºóÖØÐÂ¸³Öµ
+            //ï¿½ï¿½ï¿½ï¿½Ò»Î»ï¿½ï¿½ï¿½ï¿½ï¿½Â¸ï¿½Öµ
             currentLayer <<= 1;
         }
         if (ignore)

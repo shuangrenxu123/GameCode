@@ -12,7 +12,7 @@ namespace Character.Controller.State
         #endregion
 
         public override ECharacterControllerState currentType => ECharacterControllerState.Move;
-       
+
         public Transform ExternalReference
         {
             get => movementReferenceParameters.externalReference;
@@ -35,7 +35,7 @@ namespace Character.Controller.State
             this.characterBrain = brain;
         }
 
-        protected new CharacterMovementStateBase currentState
+        public new CharacterMovementStateBase currentState
             => (CharacterMovementStateBase)base.currentState;
 
         void PreCharacterSimulation(float dt) => currentState.PreCharacterSimulation();

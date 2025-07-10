@@ -17,12 +17,42 @@ namespace Character.Controller.MoveState
         bool inMove = false;
         float YSpeed;
         bool isLiftFoot;
+        int currentStep = 1;
+        int targetStep = 10;
         public override void Enter()
         {
             UseGravity = false;
             characterActor.alwaysNotGrounded = true;
             characterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
-            Animancer.Play(climbAnimations["ds"]);
+
+            inMove = true;
+            var trigger = characterActor.Triggers[0];
+            var ladder = trigger.transform.GetComponentInParent<Ladder>();
+
+            ClipTransition startAnim = null;
+
+            if (trigger.collider3D.gameObject == ladder.topReference.gameObject)
+            {
+                isLiftFoot = false;
+                currentStep = ladder.climbCount;
+                startAnim = climbAnimations["us"];
+                characterActor.Position = ladder.topReference.position;
+                characterActor.SetYaw(ladder.topReference.forward);
+                targetStep = ladder.climbCount;
+
+            }
+            else
+            {
+                targetStep = ladder.climbCount;
+                isLiftFoot = false;
+                currentStep = 1;
+                startAnim = climbAnimations["ds"];
+                characterActor.Position = ladder.bottomReference.position;
+                characterActor.SetYaw(ladder.bottomReference.forward);
+
+            }
+            Animancer.Play(startAnim).Events.OnEnd = () => inMove = false;
+
         }
 
         public override void FixUpdate()
@@ -41,40 +71,82 @@ namespace Character.Controller.MoveState
 
         void PlayAnimation()
         {
-            ClipTransition nextAnim = null;
-            if (YSpeed > 0)
+            if (currentStep == targetStep && YSpeed > 0)
             {
-                if (isLiftFoot)
-                {
-                    nextAnim = climbAnimations["ur"];
-                }
-                else
-                {
-                    nextAnim = climbAnimations["ul"];
-                }
-            }
-            else if (YSpeed < 0)
-            {
-                if (isLiftFoot)
-                {
-                    nextAnim = climbAnimations["dr"];
-                }
-                else
-                {
-                    nextAnim = climbAnimations["dl"];
-                }
-            }
-            if (nextAnim != null)
-            {
+                ClipTransition exitAnimation = null;
 
-                inMove = true;
-                //交换当前的脚
-                isLiftFoot = !isLiftFoot;
-                Animancer.Play(nextAnim).Events.OnEnd = PlayAnimation;
+                if (isLiftFoot)
+                {
+                    exitAnimation = climbAnimations["ure"];
+                }
+                else
+                {
+                    exitAnimation = climbAnimations["ule"];
+                }
+
+                if (exitAnimation != null)
+                {
+                    Animancer.Play(exitAnimation).Events.OnEnd =
+                        () => parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                }
+            }
+            else if (currentStep == 1 && YSpeed < 0)
+            {
+                ClipTransition exitAnimation = null;
+                if (isLiftFoot)
+                {
+                    exitAnimation = climbAnimations["dre"];
+                }
+                else
+                {
+                    exitAnimation = climbAnimations["dle"];
+                }
+
+                if (exitAnimation != null)
+                {
+                    Animancer.Play(exitAnimation).Events.OnEnd =
+                        () => parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                }
             }
             else
             {
-                inMove = false;
+                ClipTransition nextAnim = null;
+                if (YSpeed > 0)
+                {
+                    if (isLiftFoot)
+                    {
+                        nextAnim = climbAnimations["ur"];
+                    }
+                    else
+                    {
+                        nextAnim = climbAnimations["ul"];
+                    }
+                    currentStep++;
+                }
+                else if (YSpeed < 0)
+                {
+                    if (isLiftFoot)
+                    {
+                        nextAnim = climbAnimations["dr"];
+                    }
+                    else
+                    {
+                        nextAnim = climbAnimations["dl"];
+                    }
+                    currentStep--;
+                }
+                if (nextAnim != null)
+                {
+
+                    inMove = true;
+                    //交换当前的脚
+                    isLiftFoot = !isLiftFoot;
+                    Animancer.Play(nextAnim).Events.OnEnd = PlayAnimation;
+                }
+                else
+                {
+                    inMove = false;
+                }
             }
         }
 
@@ -83,8 +155,9 @@ namespace Character.Controller.MoveState
             base.Exit();
             UseGravity = true;
             characterActor.alwaysNotGrounded = false;
-
-
+            characterActor.UseRootMotion = false;
+            inMove = false;
+            characterActor.VerticalVelocity = Vector3.zero;
         }
 
         public override void PreCharacterSimulation()

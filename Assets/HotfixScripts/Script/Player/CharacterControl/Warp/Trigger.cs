@@ -2,14 +2,12 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// °üº¬´Ó³åÍ»ÏûÏ¢£¨¡°Enter ¡±ºÍ¡°Í£Áô¡±£©ÊÕ¼¯µÄÁªÏµÈËĞÅÏ¢µÄ½á¹¹¡£
-/// IEquatableÓÃÓÚÅĞ¶Ï£¬Ëü¿ÉÒÔ±ÜÃâÒ»Ğ©×°ÏäÓë²ğÏäÎÊÌâ
+/// ï¿½ï¿½ï¿½ï¿½ï¿½Ó³ï¿½Í»ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½Enter ï¿½ï¿½ï¿½Í¡ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ä½á¹¹ï¿½ï¿½
+/// IEquatableï¿½ï¿½ï¿½ï¿½ï¿½Ğ¶Ï£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½Ò»Ğ©×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 /// </summary>
-public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>, IEquatable<Collider2D>
+public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>
 {
     public bool firstContact;
-
-    public Collider2D collider2D;
     public Collider collider3D;
     public GameObject gameObject;
     public Transform transform;
@@ -23,26 +21,10 @@ public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>, IEquatable<Co
         gameObject = collider.gameObject;
         transform = collider.transform;
     }
-    public Trigger(Collider2D collider, float fixedTime) : this()
-    {
-        collider2D = collider;
-        this.fixedTime = fixedTime;
-        firstContact = true;
-        gameObject = collider.gameObject;
-        transform = collider.transform;
-    }
+
     public override int GetHashCode()
     {
         return gameObject.GetHashCode();
-    }
-    public void Set(bool firstContact, Collider2D collider)
-    {
-        if (firstContact)
-            fixedTime = Time.fixedTime;
-        this.firstContact = firstContact;
-        collider2D = collider;
-        gameObject = collider.gameObject;
-        transform = collider.transform;
     }
     public bool Equals(Trigger other)
     {
@@ -53,12 +35,6 @@ public struct Trigger : IEquatable<Trigger>, IEquatable<Collider>, IEquatable<Co
     {
         if (other == null) return false;
         return collider3D == other;
-    }
-
-    public bool Equals(Collider2D other)
-    {
-        if (other == null) return false;
-        return collider2D == other;
     }
 
     public static bool operator ==(Trigger a, Collider b) => a.Equals(b);

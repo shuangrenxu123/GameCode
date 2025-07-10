@@ -16,7 +16,7 @@ public class CharacterInfo : MonoBehaviour
         rigiboydSpeed.text = actor.Velocity.ToString();
         localSpeed.text = actor.LocalVelocity.ToString();
         PlanerSpeed.text = actor.PlanarVelocity.ToString();
-        state.text = stateManger.controller.currentType.ToString();
+        state.text = stateManger.controller.currentState.currentType.ToString();
     }
 
 }
