@@ -34,54 +34,54 @@ public class AttackState : CharacterControlStateBase
         CharacterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
         lastState = CharacterStateController.lastStateType;
 
-        currentWeaponAnimator = animator.animators.First(x => x.type == GetCurrentWeaponType());
+        currentWeaponAnimator = animator.animators[GetCurrentWeaponType()];
 
-        PlayFirstAnimator();
-
-    }
-
-    private void PlayFirstAnimator()
-    {
-        var moveState = CharacterStateController.FindState(lastState) as MovementState;
-        if (moveState == null)
-        {
-
-            return;
-        }
-        //�ҵ���ǰװ������������
-        AddAnimatorEvent();
-        //�¶׹���
-        if (moveState.isCrouched)
-        {
-            database.SetData<bool>("attack", false);
-        }
-        //���¹���
-        else if (CharacterActor.IsGrounded == false)
-        {
-            database.SetData<bool>("attack", false);
-        }
-        // �ܲ�����
-        else if (moveState.IsRun)
-        {
-            state = Animancer.Play(currentWeaponAnimator.RunlightAttackAnimator_OH[currentAnimatorIndex].clip);
-        }
-        else
-        {
-            //�����ṥ������
-            state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-            if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
-            {
-                AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
-            }
-            state.Events.AddRange(lightEvents[currentAnimatorIndex]);
-        }
-        if (state == null)
-        {
-            return;
-        }
-        state.Events.OnEnd += OnAnimatorEnd;
+        // PlayFirstAnimator();
 
     }
+
+    // private void PlayFirstAnimator()
+    // {
+    //     var moveState = CharacterStateController.FindState(lastState) as MovementState;
+    //     if (moveState == null)
+    //     {
+
+    //         return;
+    //     }
+    //     //�ҵ���ǰװ������������
+    //     AddAnimatorEvent();
+    //     //�¶׹���
+    //     if (moveState.isCrouched)
+    //     {
+    //         database.SetData<bool>("attack", false);
+    //     }
+    //     //���¹���
+    //     else if (CharacterActor.IsGrounded == false)
+    //     {
+    //         database.SetData<bool>("attack", false);
+    //     }
+    //     // �ܲ�����
+    //     else if (moveState.IsRun)
+    //     {
+    //         state = Animancer.Play(currentWeaponAnimator.RunLightAttackAnimator_OH[currentAnimatorIndex].clip);
+    //     }
+    //     else
+    //     {
+    //         //�����ṥ������
+    //         state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
+    //         if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+    //         {
+    //             AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+    //         }
+    //         state.Events.AddRange(lightEvents[currentAnimatorIndex]);
+    //     }
+    //     if (state == null)
+    //     {
+    //         return;
+    //     }
+    //     state.Events.OnEnd += OnAnimatorEnd;
+
+    // }
     public override void Update()
     {
         if (CharacterActions.attack.Started)
@@ -98,12 +98,12 @@ public class AttackState : CharacterControlStateBase
                 currentAnimatorIndex += 1;
                 EndDoCombo();
                 CloseWeaponCollider();
-                state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
-                if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
-                {
-                    AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
+                // state = Animancer.Play(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].clip);
+                // if (currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip != null)
+                // {
+                //     AudioManager.Instance.PlayAudio(currentWeaponAnimator.lightAttackAnimator_OH[currentAnimatorIndex].attackAirClip, AudioLayer.Sound);
 
-                }
+                // }
 
                 state.Events.AddRange(lightEvents[currentAnimatorIndex]);
                 state.Events.OnEnd += OnAnimatorEnd;
@@ -200,10 +200,10 @@ public class AttackState : CharacterControlStateBase
             {
                 var queue = new AnimancerEvent.Sequence(4)
                 {
-                    new AnimancerEvent(clip.ComboTime.x, CanDoCombo),
-                    new AnimancerEvent(clip.ComboTime.y, EndDoCombo),
-                    new AnimancerEvent(clip.HitTime.x,OpenWeaponCollider),
-                    new AnimancerEvent(clip.HitTime.y,CloseWeaponCollider),
+                    // new AnimancerEvent(clip.ComboTime.x, CanDoCombo),
+                    // new AnimancerEvent(clip.ComboTime.y, EndDoCombo),
+                    // new AnimancerEvent(clip.HitTime.x,OpenWeaponCollider),
+                    // new AnimancerEvent(clip.HitTime.y,CloseWeaponCollider),
                 };
                 lightEvents.Add(queue);
             }

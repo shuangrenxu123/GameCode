@@ -1,6 +1,6 @@
+using System;
 using Animancer;
 using Fight;
-using System;
 using UnityEngine;
 
 namespace SkillRuntimeClip

@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
 using Utilities;
 [RequireComponent(typeof(CharacterBody))]
 [DefaultExecutionOrder(10)]
 public class CharacterActor : PhysicsActor
 {
-    #region ï¿½ï¿½Ø±ï¿½ï¿½ï¿?
+    #region 角色物理参数
 
     public LayerMask oneWayPlatformsLayerMask = 0;
 
@@ -119,6 +120,7 @@ public class CharacterActor : PhysicsActor
     public PhysicsComponent PhysicsComponent => CharacterCollisions.PhysicsComponent;
 
     protected CharacterCollisionInfo characterCollisionInfo = new CharacterCollisionInfo();
+
     public CharacterActorState CurrentState
     {
         get
@@ -164,29 +166,29 @@ public class CharacterActor : PhysicsActor
     public LayerMask ObstaclesWithoutOWPLayerMask => PhysicsComponent.CollisionLayerMask & ~(oneWayPlatformsLayerMask);
 
     /// <summary>
-    ///ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ð¹Ø½ï¿½É«ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½Ä½á¹¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½Ô£ï¿½ï¿½ï¿½ï¿½ï¿? IsGroundedï¿½ï¿½IsStableï¿½ï¿½GroundObject ï¿½È£ï¿½
-    ///ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½Ö½á¹¹ï¿½Ð»ï¿½Ã¡ï¿?
+    /// 获取角色碰撞信息，包含地面检测、墙壁碰撞等状态
+    /// 可通过IsGrounded、IsStable、GroundObject等属性访问具体信息
     /// </summary>
     public CharacterCollisionInfo CharacterCollisionInfo => characterCollisionInfo;
 
     /// <summary>
-    /// ï¿½ï¿½É«ï¿½Ç·ï¿½ï¿½Ú±ï¿½Ôµï¿½ï¿½
+    /// 是否处于边缘状态
     /// </summary>
     public bool IsOnEdge => characterCollisionInfo.isOnEdge;
     /// <summary>
-    /// ï¿½ï¿½Ôµï¿½Ç¶ï¿½
+    /// 边缘角度
     /// </summary>
     public float EdgeAngle => characterCollisionInfo.edgeAngle;
     /// <summary>
-    /// ï¿½Ç·ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½
+    /// 是否在地面上
     /// </summary>
     public bool IsGrounded { get; private set; }
     /// <summary>
-    /// ï¿½ï¿½È¡ï¿½ï¿½É«ï¿½ï¿½UPï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¶ï¿½ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½Ä½Ç¶È¡ï¿?
+    /// 地面坡度角度(相对于角色Up方向)
     /// </summary>
     public float GroundSlopeAngle => characterCollisionInfo.groundSlopeAngle;
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ÃµÄ½Ó´ï¿½ï¿½ã¡£
+    /// 地面接触点坐标
     /// </summary>
     public Vector3 GroundContactPoint => characterCollisionInfo.groundContactPoint;
     public Vector3 GroundContactNormal => characterCollisionInfo.groundContactNormal;
@@ -206,7 +208,7 @@ public class CharacterActor : PhysicsActor
     #endregion
     #region head
     /// <summary>
-    /// ï¿½ï¿½È¡ï¿½ï¿½É«ï¿½Äµï¿½Ç°ï¿½È¶ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½È¶ï¿½ï¿½Ôµï¿½ï¿½Ú¡ï¿½ï¿½Óµï¿½+ï¿½Â¶È½ï¿½<=ï¿½Â¶È¼ï¿½ï¿½Þ¡ï¿½ï¿½ï¿½
+    /// 获取/设置角色头部碰撞状态(当头部碰撞角度>=最小角度时触发)
     /// </summary>
     public bool IsStable { get; private set; }
     public bool HeadCollision => characterCollisionInfo.headCollision;
@@ -214,11 +216,11 @@ public class CharacterActor : PhysicsActor
     public Contact HeadContact => characterCollisionInfo.headContact;
     public bool IsOnUnstableGround => IsGrounded && characterCollisionInfo.groundSlopeAngle > slopeLimit;
     /// <summary>
-    /// ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½Äµï¿½ï¿½ï¿½×´Ì¬
+    /// 获取上一帧是否在地面上的状态
     /// </summary>
     public bool WasGrounded { get; private set; }
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»Ö¡ï¿½ï¿½ï¿½È¶ï¿½×´Ì¬
+    /// 获取上一帧是否处于稳定地面的状态
     /// </summary>
     public bool WasStable { get; private set; }
     /// <summary>
@@ -366,7 +368,7 @@ public class CharacterActor : PhysicsActor
     public CharacterCollisions CharacterCollisions { get; private set; }
     HitFilterDelegate _collisionHitFilter;
 
-    #region Unityï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    #region Unity生命周期方法
     protected override void Awake()
     {
         base.Awake();
@@ -1568,8 +1570,14 @@ public class CharacterActor : PhysicsActor
             return LocalVelocity.y <= 0f || unstableGroundContactTime >= CharacterConstants.MaxUnstableGroundContactTime || hitInfo.IsRigidbody;
     }
 
+    /// <summary>
+    /// 预测的地面对象
+    /// </summary>
     public GameObject PredictedGround { get; private set; }
 
+    /// <summary>
+    /// 预测的地面距离
+    /// </summary>
     public float PredictedGroundDistance { get; private set; }
 
     void SetGroundInfo(CollisionInfo collisionInfo)

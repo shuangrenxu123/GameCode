@@ -23,12 +23,11 @@ namespace Character.Controller.MoveState
         {
             UseGravity = false;
             characterActor.alwaysNotGrounded = true;
-            characterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
+            characterActor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, true, RootMotionRotationType.SetRotation);
 
             inMove = true;
             var trigger = characterActor.Triggers[0];
             var ladder = trigger.transform.GetComponentInParent<Ladder>();
-
             ClipTransition startAnim = null;
 
             if (trigger.collider3D.gameObject == ladder.topReference.gameObject)
@@ -36,7 +35,7 @@ namespace Character.Controller.MoveState
                 isLiftFoot = false;
                 currentStep = ladder.climbCount;
                 startAnim = climbAnimations["us"];
-                characterActor.Position = ladder.topReference.position;
+                characterActor.Teleport(ladder.topReference.position);
                 characterActor.SetYaw(ladder.topReference.forward);
                 targetStep = ladder.climbCount;
 
@@ -47,7 +46,7 @@ namespace Character.Controller.MoveState
                 isLiftFoot = false;
                 currentStep = 1;
                 startAnim = climbAnimations["ds"];
-                characterActor.Position = ladder.bottomReference.position;
+                characterActor.Teleport(ladder.bottomReference.position);
                 characterActor.SetYaw(ladder.bottomReference.forward);
 
             }
@@ -71,8 +70,10 @@ namespace Character.Controller.MoveState
 
         void PlayAnimation()
         {
+
             if (currentStep == targetStep && YSpeed > 0)
             {
+                inMove = true;
                 ClipTransition exitAnimation = null;
 
                 if (isLiftFoot)
@@ -92,6 +93,7 @@ namespace Character.Controller.MoveState
             }
             else if (currentStep == 1 && YSpeed < 0)
             {
+                inMove = true;
                 ClipTransition exitAnimation = null;
                 if (isLiftFoot)
                 {
@@ -154,8 +156,10 @@ namespace Character.Controller.MoveState
         {
             base.Exit();
             UseGravity = true;
+            characterActor.IsKinematic = false;
             characterActor.alwaysNotGrounded = false;
             characterActor.UseRootMotion = false;
+            characterActor.ForceGrounded();
             inMove = false;
             characterActor.VerticalVelocity = Vector3.zero;
         }

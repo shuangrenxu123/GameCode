@@ -1,54 +1,43 @@
-using Animancer;
 using System;
 using System.Collections.Generic;
+using Animancer;
+using AYellowpaper.SerializedCollections;
 using UnityEngine;
+using UnityEngine.Timeline;
 
-[CreateAssetMenu(fileName = "WeaponAniamtor", menuName = "AniamtorConfig/WeaponAniamtor")]
+[CreateAssetMenu(fileName = "HumanWeaponAnims", menuName = "AnimationConfig/HumanWeaponAnims")]
 public class CharacterWeaponAnimator : ScriptableObject
 {
-    public List<WeaponAnimator> animators;
+    public SerializedDictionary<WeaponType, WeaponAnimator> animators;
 }
 
-[Serializable]
-public class WeaponAnimator
+[CreateAssetMenu(fileName = "weaponAnimations", menuName = "AnimationConfig/weaponAnim")]
+public class WeaponAnimator : ScriptableObject
 {
-    [Serializable]
-    public class Clip
-    {
-        public ClipTransition clip;
-
-        [Header("Evnets")]
-        [Tooltip("开启连击与关闭连击的时间，X为开启时间，Y为结束时间")]
-        public Vector2 ComboTime;
-        public Vector2 HitTime;
-
-        public AudioClip attackAirClip;
-        public AudioClip attackEnemyClip;
-    }
     public WeaponType type;
-    public List<Clip> lightAttackAnimator_OH;
-    public List<Clip> heavyAttackAnimator_OH;
-    public List<Clip> lightAttackAnimator_TH;
-    public List<Clip> heavyAttackAnimator_TH;
-    public List<Clip> RunlightAttackAnimator_OH;
-    public List<Clip> RunlightAttackAnimator_TH;
-    public List<Clip> RunHeavyAttackAnimator_TH;
-    public List<Clip> RunHeavyAttackAnimator_OH;
-    public Clip frontAttack;
-    public Clip Backstab;
+    public List<TimelineAsset> lightAttackAnimator_OH;
+    public List<TimelineAsset> heavyAttackAnimator_OH;
+    public List<TimelineAsset> lightAttackAnimator_TH;
+    public List<TimelineAsset> heavyAttackAnimator_TH;
+    public List<TimelineAsset> RunLightAttackAnimator_OH;
+    public List<TimelineAsset> RunLightAttackAnimator_TH;
+    public List<TimelineAsset> RunHeavyAttackAnimator_TH;
+    public List<TimelineAsset> RunHeavyAttackAnimator_OH;
+    public TimelineAsset frontAttack;
+    public TimelineAsset BackStab;
 }
 public enum WeaponType
 {
     /// <summary>
-    /// 拳头
+    /// 鎷冲
     /// </summary>
-    None = 0,
+    Gloves = 0,
     /// <summary>
-    /// 直剑
+    /// 鐩村墤
     /// </summary>
     StraightSword = 1,
     /// <summary>
-    /// 普通斧
+    /// 鏂у瓙
     /// </summary>
     Axe = 2,
 

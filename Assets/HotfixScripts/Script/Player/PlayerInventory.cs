@@ -17,7 +17,7 @@ public class PlayerInventory : MonoBehaviour
     private Dictionary<int, (ItemData, int)> items = new(30);
     public Dictionary<int, (ItemData, int)> Items => items;
 
-    public WeaponType WeaponType { get; private set; } = WeaponType.None;
+    public WeaponType WeaponType { get; private set; } = WeaponType.Gloves;
     #region Event 
     public event Action<ItemData, int> OnItemAdd;
     public event Action<ItemData, int> OnItemRemove;

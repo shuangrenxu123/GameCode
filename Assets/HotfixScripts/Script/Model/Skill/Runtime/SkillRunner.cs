@@ -1,7 +1,7 @@
+using System.Collections.Generic;
 using Animancer;
 using AYellowpaper.SerializedCollections;
 using SkillRuntimeClip;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Timeline;
 namespace Fight
