@@ -13,12 +13,20 @@ namespace Character.Controller.LoginState
         protected new CharacterLoginStateMachine parentMachine
           => (CharacterLoginStateMachine)base.parentMachine;
 
+        public CharacterActions characterActions
+        {
+            get
+            {
+                return characterBrain == null ?
+                    new CharacterActions() : characterBrain.CharacterActions;
+            }
+        }
         public CharacterMovementStateMachine movementMachine;
 
         protected ECharacterMoveState GetMovementState()
         {
             return movementMachine.currentState.currentType;
         }
-        
+
     }
 }

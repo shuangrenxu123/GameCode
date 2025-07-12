@@ -4,9 +4,11 @@ using UnityEngine;
 
 namespace Character.Controller.LoginState
 {
-    public class CharacterLoginStateMachine : StateMachine<ECharacterControllerState, ECharacterLoginState>
+    public class CharacterLoginStateMachine
+        : StateMachine<ECharacterControllerState, ECharacterLoginState>
     {
-        public override ECharacterControllerState currentType => ECharacterControllerState.Login;
+        public override ECharacterControllerState currentType
+            => ECharacterControllerState.Login;
 
 
     }

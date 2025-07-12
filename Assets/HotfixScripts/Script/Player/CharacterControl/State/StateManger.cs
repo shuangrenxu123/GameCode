@@ -1,5 +1,6 @@
 using Animancer;
 using Audio;
+using Character.Controller.LoginState;
 using Character.Controller.MoveState;
 using Character.Controller.State;
 using CharacterControllerStateMachine;
@@ -10,7 +11,8 @@ namespace CharacterControllerStateMachine
 {
     public class StateManger : MonoBehaviour
     {
-        public CharacterMovementStateMachine controller;
+        public CharacterMovementStateMachine stateMachine;
+        public CharacterLoginStateMachine loginMachine;
         public Player player;
         public new Camera3D camera;
         public CharacterBrain characterBrain;
@@ -44,16 +46,23 @@ namespace CharacterControllerStateMachine
             SetStateMachineData("CombatEntity", player.CombatEntity);
 
 
-            controller.Start();
+            stateMachine.Start();
         }
 
         private void InitState()
         {
-            controller = new(CharacterActor, characterBrain);
-            controller.ExternalReference = camera.transform;
-            controller.animator = CharacterActor.GetComponentInChildren<Animator>();
-            controller.database = dataBase;
-            controller.animancer = AnimancerHelper;
+            InitMovementState();
+            InitLoginState();
+            // controller.SetDefaultState(ECharacterMoveState.Climb);
+        }
+
+        void InitMovementState()
+        {
+            stateMachine = new(CharacterActor, characterBrain);
+            stateMachine.ExternalReference = camera.transform;
+            stateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
+            stateMachine.database = dataBase;
+            stateMachine.animancer = AnimancerHelper;
 
             var movementState = new CharacterNormalMovementState
             {
@@ -70,9 +79,9 @@ namespace CharacterControllerStateMachine
 
             var jumpMovement = new CharacterAirMovementState
             {
-                jumpAnim = animatorConfig.clipAnimators["Jump"],
-                downAnim = animatorConfig.clipAnimators["JumpFall"],
-                jumpEndAnim = animatorConfig.clipAnimators["JumpEnd"]
+                jumpAnim = animatorConfig.Interaction["Jump"],
+                downAnim = animatorConfig.Interaction["JumpFall"],
+                jumpEndAnim = animatorConfig.Interaction["JumpEnd"]
             };
 
             var climbMovementState = new CharacterClimbState
@@ -82,21 +91,34 @@ namespace CharacterControllerStateMachine
                 climbAnimations = animatorConfig.climbAnimators
             };
 
-            controller.AddState(movementState);
-            controller.AddState(crouchMovementState);
-            controller.AddState(jumpMovement);
-            controller.AddState(climbMovementState);
-            // controller.SetDefaultState(ECharacterMoveState.Climb);
-        }
+            stateMachine.AddState(movementState);
+            stateMachine.AddState(crouchMovementState);
+            stateMachine.AddState(jumpMovement);
+            stateMachine.AddState(climbMovementState);
 
+
+        }
+        void InitLoginState()
+        {
+            loginMachine = new();
+            var emptyState = new CharacterEmptyLoginState();
+            var interactState = new CharacterInteractionState()
+            {
+                // interactAnimations = animatorConfig.Interaction
+            };
+            loginMachine.AddState(emptyState);
+            loginMachine.SetDefaultState(ECharacterLoginState.Empty);
+        }
         private void Update()
         {
-            controller.Update();
+            stateMachine.Update();
+            loginMachine.Update();
         }
 
         private void FixedUpdate()
         {
-            controller.FixUpdate();
+            stateMachine.FixUpdate();
+            loginMachine.FixUpdate();
         }
 
         public void HandleLock()
@@ -107,7 +129,7 @@ namespace CharacterControllerStateMachine
 
         public void SetStateMachineData(string key, object value)
         {
-            controller.database.SetData(key, value);
+            stateMachine.database.SetData(key, value);
         }
         private void OnDrawGizmos()
         {

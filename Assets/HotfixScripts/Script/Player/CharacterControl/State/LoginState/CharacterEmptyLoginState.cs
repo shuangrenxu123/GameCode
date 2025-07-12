@@ -13,7 +13,7 @@ namespace Character.Controller.LoginState
             {
                 var trigger = characterActor.Triggers[0];
                 var Interaction = trigger.gameObject.GetComponent<Intractable>();
-                if (Interaction)
+                if (Interaction && characterActions.interact.Started)
                 {
                     parentMachine.ChangeState(ECharacterLoginState.Interaction);
                 }
