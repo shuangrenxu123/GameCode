@@ -16,11 +16,32 @@ namespace Character.Controller.LoginState
             var trigger = characterActor.Triggers[0];
             var interaction = trigger.gameObject.GetComponent<Intractable>();
 
+            //确定坐标
             characterActor.Position = interaction.reference.position;
             characterActor.SetYaw(interaction.reference.forward);
 
-            Animancer.Play(interactAnimations[interaction.intractableType.ToString()]);
+            //RootMotion
+            if (interaction.UseRootMotion)
+            {
+                characterActor.SetUpRootMotion(true, true);
+            }
+            var animState = Animancer.Play(interactAnimations[interaction.intractableType.ToString()]);
+            animState.Events.OnEnd = () =>
+            {
+                parentMachine.ChangeState(ECharacterLoginState.Empty);
+            };
+
+
+            parentMachine.movementStateMachine.DisableMachine();
             interaction.Interactive();
         }
+
+        public override void Exit()
+        {
+            base.Exit();
+            parentMachine.movementStateMachine.EnableMachine();
+            characterActor.UseRootMotion = false;
+        }
+
     }
 }

@@ -10,6 +10,16 @@ namespace Character.Controller.LoginState
         public override ECharacterControllerState currentType
             => ECharacterControllerState.Login;
 
+        public CharacterMovementStateMachine movementStateMachine;
+        public AnimatorHelper animancer;
 
+        public CharacterLoginStateMachine
+            (CharacterActor actor, CharacterBrain characterBrain)
+        {
+            this.characterBrain = characterBrain;
+            this.characterActor = actor;
+        }
+        public CharacterActor characterActor { get; private set; }
+        public CharacterBrain characterBrain { get; private set; }
     }
 }

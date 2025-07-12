@@ -18,14 +18,16 @@ namespace GameLogin.Interact
     {
         public IntractableType intractableType;
         public Transform reference;
-
+        [SerializeField]
+        bool useRootMotion = true;
+        public bool UseRootMotion => useRootMotion;
 
         public UnityEvent onIntractableStart = new();
-        public UnityEvent onIntractableEnd = new();
 
         public void Interactive()
         {
             onIntractableStart.Invoke();
         }
+
     }
 }

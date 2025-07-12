@@ -15,6 +15,7 @@ namespace CharacterControllerStateMachine
         public CharacterLoginStateMachine loginMachine;
         public Player player;
         public new Camera3D camera;
+        private CharacterActor CharacterActor;
         public CharacterBrain characterBrain;
         public AnimancerComponent Animancer;
         public AnimatorHelper AnimancerHelper;
@@ -27,7 +28,6 @@ namespace CharacterControllerStateMachine
         [SerializeField]
         private CharacterWeaponAnimator attackAnimator;
 
-        private CharacterActor CharacterActor;
         DataBase dataBase;
 
         private void Awake()
@@ -47,6 +47,7 @@ namespace CharacterControllerStateMachine
 
 
             stateMachine.Start();
+            loginMachine.Start();
         }
 
         private void InitState()
@@ -79,9 +80,9 @@ namespace CharacterControllerStateMachine
 
             var jumpMovement = new CharacterAirMovementState
             {
-                jumpAnim = animatorConfig.Interaction["Jump"],
-                downAnim = animatorConfig.Interaction["JumpFall"],
-                jumpEndAnim = animatorConfig.Interaction["JumpEnd"]
+                jumpAnim = animatorConfig.clipAnimators["Jump"],
+                downAnim = animatorConfig.clipAnimators["JumpFall"],
+                jumpEndAnim = animatorConfig.clipAnimators["JumpEnd"]
             };
 
             var climbMovementState = new CharacterClimbState
@@ -100,13 +101,16 @@ namespace CharacterControllerStateMachine
         }
         void InitLoginState()
         {
-            loginMachine = new();
+            loginMachine = new(CharacterActor, characterBrain);
+            loginMachine.movementStateMachine = stateMachine;
+            loginMachine.animancer = AnimancerHelper;
             var emptyState = new CharacterEmptyLoginState();
             var interactState = new CharacterInteractionState()
             {
-                // interactAnimations = animatorConfig.Interaction
+                interactAnimations = animatorConfig.clipAnimators
             };
             loginMachine.AddState(emptyState);
+            loginMachine.AddState(interactState);
             loginMachine.SetDefaultState(ECharacterLoginState.Empty);
         }
         private void Update()

@@ -6,9 +6,14 @@ namespace Character.Controller.LoginState
     public class CharacterEmptyLoginState : CharacterLoginBaseState
     {
         public override ECharacterLoginState currentType => ECharacterLoginState.Empty;
-        public override void FixUpdate()
+
+        public override void Enter()
         {
-            base.FixUpdate();
+            base.Enter();
+        }
+        public override void Update()
+        {
+            base.Update();
             if (characterActor.Triggers.Count != 0)
             {
                 var trigger = characterActor.Triggers[0];

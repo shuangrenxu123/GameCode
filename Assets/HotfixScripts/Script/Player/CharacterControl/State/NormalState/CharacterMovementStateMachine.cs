@@ -6,6 +6,8 @@ namespace Character.Controller.State
     public class CharacterMovementStateMachine
         : StateMachine<ECharacterControllerState, ECharacterMoveState>
     {
+
+        public bool enable { get; private set; } = true;
         #region parameters
         public MovementReferenceParameters movementReferenceParameters = new();
         public Vector3 InputMovementReference => movementReferenceParameters.InputMovementReference;
@@ -40,8 +42,22 @@ namespace Character.Controller.State
         public new CharacterMovementStateBase currentState
             => (CharacterMovementStateBase)base.currentState;
 
-        void PreCharacterSimulation(float dt) => currentState.PreCharacterSimulation();
-        void PostCharacterSimulation(float dt) => currentState.PostCharacterSimulation();
+        void PreCharacterSimulation(float dt)
+        {
+            if (!enable)
+            {
+                return;
+            }
+            currentState.PreCharacterSimulation();
+        }
+        void PostCharacterSimulation(float dt)
+        {
+            if (!enable)
+            {
+                return;
+            }
+            currentState.PostCharacterSimulation();
+        }
 
         public override void Init()
         {
@@ -61,8 +77,21 @@ namespace Character.Controller.State
             if (animator != null)
                 characterActor.OnAnimatorIKEvent -= OnAnimatorIK;
         }
+        public override void Update()
+        {
+            if (!enable)
+            {
+                return;
+            }
+            base.Update();
+        }
+
         public override void FixUpdate()
         {
+            if (!enable)
+            {
+                return;
+            }
             movementReferenceParameters.UpdateData(characterBrain.CharacterActions.movement.value);
             currentState.FixUpdate();
         }
@@ -77,6 +106,16 @@ namespace Character.Controller.State
         public void ResetIKWeights()
         {
             characterActor.ResetIKWeights();
+        }
+
+        public void DisableMachine()
+        {
+            enable = false;
+        }
+        public void EnableMachine()
+        {
+            enable = true;
+            animancer.Play(currentState.currentAnimator);
         }
     }
 }

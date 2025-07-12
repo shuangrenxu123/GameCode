@@ -13,6 +13,15 @@ namespace Character.Controller.LoginState
         protected new CharacterLoginStateMachine parentMachine
           => (CharacterLoginStateMachine)base.parentMachine;
 
+
+
+        public override void Init()
+        {
+            base.Init();
+            characterActor = parentMachine.characterActor;
+            characterBrain = parentMachine.characterBrain;
+            Animancer = parentMachine.animancer;
+        }
         public CharacterActions characterActions
         {
             get
