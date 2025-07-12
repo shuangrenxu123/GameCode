@@ -57,6 +57,7 @@ namespace Character.Controller.MoveState
         public override void FixUpdate()
         {
             base.FixUpdate();
+  
             YSpeed = characterBrain.CharacterActions.movement.value.y;
             if (YSpeed != 0 && !inMove)
             {

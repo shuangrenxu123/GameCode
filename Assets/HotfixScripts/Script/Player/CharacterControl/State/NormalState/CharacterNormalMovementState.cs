@@ -13,8 +13,8 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
             }
-            else if (characterActions.jump.Started
-                || characterActor.IsFalling)
+            else if (characterActions.jump.Started ||
+                (!characterActor.IsGrounded && characterActor.IsFalling))
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }
