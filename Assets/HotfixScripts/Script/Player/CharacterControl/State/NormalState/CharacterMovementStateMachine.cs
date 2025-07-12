@@ -29,6 +29,8 @@ namespace Character.Controller.State
         public CharacterActor characterActor { get; private set; }
         public CharacterBrain characterBrain { get; private set; }
         public Animator animator { get; set; }
+        public AnimatorHelper animancer;
+        public MaterialControl materialControl;
         public CharacterMovementStateMachine(CharacterActor characterActor, CharacterBrain brain)
         {
             this.characterActor = characterActor;

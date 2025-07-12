@@ -34,7 +34,6 @@ namespace Character.Controller.MoveState
         /// </summary>
         public MaterialControl materialControl;
 
-
         public override void Enter()
         {
             base.Enter();
@@ -51,6 +50,9 @@ namespace Character.Controller.MoveState
         {
             characterActor = parentMachine.characterActor;
             characterBrain = parentMachine.characterBrain;
+            database = parentMachine.database;
+            Animancer = parentMachine.animancer;
+            materialControl = parentMachine.materialControl;
         }
         public virtual void UpdateIK(int layerIndex)
         {

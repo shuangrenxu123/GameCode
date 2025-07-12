@@ -53,12 +53,10 @@ namespace CharacterControllerStateMachine
             controller.ExternalReference = camera.transform;
             controller.animator = CharacterActor.GetComponentInChildren<Animator>();
             controller.database = dataBase;
+            controller.animancer = AnimancerHelper;
 
             var movementState = new CharacterNormalMovementState
             {
-                database = dataBase,
-                Animancer = AnimancerHelper,
-                materialControl = materialControl,
                 currentAnimator = animatorConfig.linearMixerAnimators["NormalMove"]
             };
 
@@ -67,17 +65,11 @@ namespace CharacterControllerStateMachine
 
             var crouchMovementState = new CharacterCrouchMovementState
             {
-                database = dataBase,
-                Animancer = AnimancerHelper,
-                materialControl = materialControl,
                 currentAnimator = animatorConfig.linearMixerAnimators["CrouchMove"]
             };
 
             var jumpMovement = new CharacterAirMovementState
             {
-                database = dataBase,
-                Animancer = AnimancerHelper,
-                materialControl = materialControl,
                 jumpAnim = animatorConfig.clipAnimators["Jump"],
                 downAnim = animatorConfig.clipAnimators["JumpFall"],
                 jumpEndAnim = animatorConfig.clipAnimators["JumpEnd"]

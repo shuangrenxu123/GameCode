@@ -1,0 +1,13 @@
+using Character.Controller.State;
+using HFSM;
+using UnityEngine;
+
+namespace Character.Controller.LoginState
+{
+    public class CharacterLoginStateMachine : StateMachine<ECharacterControllerState, ECharacterLoginState>
+    {
+        public override ECharacterControllerState currentType => ECharacterControllerState.Login;
+
+
+    }
+}

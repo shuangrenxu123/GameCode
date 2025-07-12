@@ -6,6 +6,7 @@ namespace Character.Controller.State
     public enum ECharacterControllerState
     {
         Move,
+        Login,
     }
     public enum ECharacterMoveState
     {
@@ -14,5 +15,12 @@ namespace Character.Controller.State
         CrouchMove,
         Jump,
         Climb
+    }
+    public enum ECharacterLoginState
+    {
+        Empty,
+        Interaction,
+        Attack,
+
     }
 }

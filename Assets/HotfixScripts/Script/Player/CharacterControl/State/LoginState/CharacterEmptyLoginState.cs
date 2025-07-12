@@ -1,0 +1,23 @@
+using Character.Controller.State;
+using GameLogin.Interact;
+using UnityEngine;
+namespace Character.Controller.LoginState
+{
+    public class CharacterEmptyLoginState : CharacterLoginBaseState
+    {
+        public override ECharacterLoginState currentType => ECharacterLoginState.Empty;
+        public override void FixUpdate()
+        {
+            base.FixUpdate();
+            if (characterActor.Triggers.Count != 0)
+            {
+                var trigger = characterActor.Triggers[0];
+                var Interaction = trigger.gameObject.GetComponent<Intractable>();
+                if (Interaction)
+                {
+                    parentMachine.ChangeState(ECharacterLoginState.Interaction);
+                }
+            }
+        }
+    }
+}
