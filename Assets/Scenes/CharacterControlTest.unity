@@ -2864,7 +2864,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topReference: {fileID: 1407172580}
   bottomReference: {fileID: 812890949}
-  climbCount: 8
+  climbCount: 1
 --- !u!1 &1004832126
 GameObject:
   m_ObjectHideFlags: 0
@@ -3359,19 +3359,7 @@ MonoBehaviour:
   useRootMotion: 1
   onIntractableStart:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1200337361}
-        m_TargetAssemblyTypeName: LitMotion.Animation.LitMotionAnimation, LitMotion.Animation
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &1200337360
 Transform:
   m_ObjectHideFlags: 0
@@ -4287,22 +4275,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   intractableType: 2
   reference: {fileID: 1052012695}
-  useRootMotion: 0
+  useRootMotion: 1
   onIntractableStart:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1604172672}
-        m_TargetAssemblyTypeName: LitMotion.Animation.LitMotionAnimation, LitMotion.Animation
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!4 &1604172675
 Transform:
   m_ObjectHideFlags: 0
@@ -6825,7 +6801,7 @@ PrefabInstance:
     - target: {fileID: 6860333679610632849, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.62
+      value: 2.286
       objectReference: {fileID: 0}
     - target: {fileID: 6860333679610632849, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
