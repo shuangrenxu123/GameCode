@@ -6,7 +6,7 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.LoginState
 {
-    public class CharacterInteractionState : CharacterLoginBaseState
+    public class CharacterInteractionState : CharacterLogicBaseState
     {
         public override ECharacterLoginState currentType => ECharacterLoginState.Interaction;
         public Dictionary<string, ClipTransition> interactAnimations;

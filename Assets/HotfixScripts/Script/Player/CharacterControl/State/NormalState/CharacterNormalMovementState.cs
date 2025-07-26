@@ -6,9 +6,9 @@ namespace Character.Controller.MoveState
     {
         public override ECharacterMoveState currentType => ECharacterMoveState.NormalMove;
 
-        public override void FixUpdate()
+        public override void Update()
         {
-            base.FixUpdate();
+            base.Update();
             if (characterActions.crouch.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);

@@ -4,7 +4,7 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.LoginState
 {
-    public abstract class CharacterLoginBaseState : StateBase<ECharacterLoginState>
+    public abstract class CharacterLogicBaseState : StateBase<ECharacterLoginState>
     {
         public AnimatorHelper Animancer { get; set; }
         protected CharacterActor characterActor { get; private set; }

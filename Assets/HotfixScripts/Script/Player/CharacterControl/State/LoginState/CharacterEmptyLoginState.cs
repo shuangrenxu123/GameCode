@@ -3,7 +3,7 @@ using GameLogin.Interact;
 using UnityEngine;
 namespace Character.Controller.LoginState
 {
-    public class CharacterEmptyLoginState : CharacterLoginBaseState
+    public class CharacterEmptyLoginState : CharacterLogicBaseState
     {
         public override ECharacterLoginState currentType => ECharacterLoginState.Empty;
 
@@ -21,7 +21,15 @@ namespace Character.Controller.LoginState
                 if (Interaction && characterActions.interact.Started)
                 {
                     parentMachine.ChangeState(ECharacterLoginState.Interaction);
+                    return;
                 }
+            }
+
+            if (characterActions.attack.Started)
+            {
+                parentMachine.ChangeState(ECharacterLoginState.Attack);
+
+                return;
             }
         }
     }

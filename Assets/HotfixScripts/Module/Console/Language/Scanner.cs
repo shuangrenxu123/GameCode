@@ -4,7 +4,8 @@ namespace Helper
 {
     public class Scanner
     {
-        Dictionary<string, TokenType> keywords;
+        Dictionary<string, TokenType> strKeywords;
+        Dictionary<char, TokenType> charToken;
         List<Token> tokens = new();
         string source;
         int line;
@@ -13,7 +14,7 @@ namespace Helper
         bool IsEnd => current >= source.Length;
         public Scanner()
         {
-            keywords = new()
+            strKeywords = new()
             {
                 { "else", TokenType.Else },
                 { "false", TokenType.False },
@@ -25,6 +26,20 @@ namespace Helper
                 { "nil", TokenType.Nil },
                 { "var", TokenType.Var },
                 { "while", TokenType.While },
+            };
+            charToken = new()
+            {
+                { '(', TokenType.Left_Paren },
+                { ')', TokenType.Right_Paren },
+                { '{', TokenType.Left_Brace },
+                { '}', TokenType.Right_Brace },
+                { ',', TokenType.Comma },
+                { '.', TokenType.Dot },
+                { '-', TokenType.Minus },
+                { '+', TokenType.Plus },
+                { ';', TokenType.Semicolon },
+                { '*', TokenType.Star },
+                { '!', TokenType.Bang },
             };
         }
 
@@ -47,98 +62,75 @@ namespace Helper
         void ScanToken()
         {
             char c = Advance();
-            switch (c)
+            if (charToken.ContainsKey(c))
             {
-                case '(':
-                    AddToken(TokenType.Left_Paren);
-                    break;
-                case ')':
-                    AddToken(TokenType.Right_Paren);
-                    break;
-                case '{':
-                    AddToken(TokenType.Left_Brace);
-                    break;
-                case '}':
-                    AddToken(TokenType.Right_Brace);
-                    break;
-                case ',':
-                    AddToken(TokenType.Comma);
-                    break;
-                case '.':
-                    AddToken(TokenType.Dot);
-                    break;
-                case '-':
-                    AddToken(TokenType.Minus);
-                    break;
-                case '+':
-                    AddToken(TokenType.Plus);
-                    break;
-                case ';':
-                    AddToken(TokenType.Semicolon);
-                    break;
-                case '*':
-                    AddToken(TokenType.Star);
-                    break;
-                case '!':
-                    AddToken(Match('=') ? TokenType.Bang_Equal : TokenType.Bang);
-                    break;
-                case '<':
-                    AddToken(Match('=') ? TokenType.Less_Equal : TokenType.Less);
-                    break;
-                case '=':
-                    AddToken(Match('=') ? TokenType.Equal_Equal : TokenType.Equal);
-                    break;
-                case '>':
-                    AddToken(Match('=') ? TokenType.Greater_Equal : TokenType.Greater);
-                    break;
-                case '/':
-                    if (Match('/'))
-                    {
-                        //如果是 //的情况，那么就一直推进到本行的结尾，即一直读取到 结束或者换行符
-                        while (Peek() != '\n' && !IsEnd)
+                AddToken(charToken[c]);
+            }
+            else
+            {
+                switch (c)
+                {
+                    case '!':
+                        AddToken(Match('=') ? TokenType.Bang_Equal : TokenType.Bang);
+                        break;
+                    case '<':
+                        AddToken(Match('=') ? TokenType.Less_Equal : TokenType.Less);
+                        break;
+                    case '=':
+                        AddToken(Match('=') ? TokenType.Equal_Equal : TokenType.Equal);
+                        break;
+                    case '>':
+                        AddToken(Match('=') ? TokenType.Greater_Equal : TokenType.Greater);
+                        break;
+                    case '/':
+                        if (Match('/'))
                         {
-                            Advance();
+                            //如果是 //的情况，那么就一直推进到本行的结尾，即一直读取到 结束或者换行符
+                            while (Peek() != '\n' && !IsEnd)
+                            {
+                                Advance();
+                            }
                         }
-                    }
-                    else
-                    {
-                        AddToken(TokenType.Slash);
-                    }
-                    break;
-                // 或许我们可以在之前就剔除所有的空格与特殊字符
-                case ' ':
-                case '\r':
-                case '\t':
-                    break;
+                        else
+                        {
+                            AddToken(TokenType.Slash);
+                        }
+                        break;
+                    // 或许我们可以在之前就剔除所有的空格与特殊字符
+                    case ' ':
+                    case '\r':
+                    case '\t':
+                        break;
 
-                case '\n':
-                    line++;
-                    break;
-                case '"':
-                    NextString();
-                    break;
-                default:
-                    if (IsDigit(c))
-                    {
-                        NextNumber();
-                    }
-                    else if (IsAlpha(c))
-                    {
-                        NextIdentifier();
-                    }
-                    else if (c == '&' && Match('&'))
-                    {
-                        AddToken(TokenType.And);
-                    }
-                    else if (c == '|' && Match('|'))
-                    {
-                        AddToken(TokenType.Or);
-                    }
-                    else
-                    {
-                        //Program.Error(line, "Unexpected character");
-                    }
-                    break;
+                    case '\n':
+                        line++;
+                        break;
+                    case '"':
+                        NextString();
+                        break;
+                    default:
+                        if (IsDigit(c))
+                        {
+                            NextNumber();
+                        }
+                        else if (IsAlpha(c))
+                        {
+                            NextIdentifier();
+                        }
+                        else if (c == '&' && Match('&'))
+                        {
+                            AddToken(TokenType.And);
+                        }
+                        else if (c == '|' && Match('|'))
+                        {
+                            AddToken(TokenType.Or);
+                        }
+                        else
+                        {
+                            throw new System.Exception($"Unexpected character {c}");
+                        }
+                        break;
+                }
             }
         }
         void NextNumber()
@@ -172,7 +164,7 @@ namespace Helper
                 Advance();
             string text = source.Substring(start, current - start);
 
-            if (!keywords.TryGetValue(text, out var type))
+            if (!strKeywords.TryGetValue(text, out var type))
             {
                 type = TokenType.Identifier;
             }

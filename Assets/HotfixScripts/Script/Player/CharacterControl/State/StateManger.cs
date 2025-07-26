@@ -4,13 +4,17 @@ using Character.Controller.LoginState;
 using Character.Controller.MoveState;
 using Character.Controller.State;
 using CharacterControllerStateMachine;
+using Fight;
 using HFSM;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CharacterControllerStateMachine
 {
     public class StateManger : MonoBehaviour
     {
+        [SerializeField, ReadOnly]
+        ECharacterLoginState loginState;
         public CharacterMovementStateMachine stateMachine;
         public CharacterLoginStateMachine loginMachine;
         public Player player;
@@ -24,10 +28,13 @@ namespace CharacterControllerStateMachine
 
         [SerializeField]
         public CCAnimatorConfig animatorConfig;
-        [Header("��������")]
+        [Header("攻击相关")]
         [SerializeField]
         private CharacterWeaponAnimator attackAnimator;
-
+        [SerializeField]
+        private WeaponActionChangeGraph actionChangeGraph;
+        [SerializeField]
+        private SkillRunner skillRunner;
         DataBase dataBase;
 
         private void Awake()
@@ -109,6 +116,14 @@ namespace CharacterControllerStateMachine
             {
                 interactAnimations = animatorConfig.clipAnimators
             };
+
+            var attackState = new CharacterAttackState()
+            {
+                attackAnimator = attackAnimator,
+                actionChangeGraph = actionChangeGraph,
+                timelineExecutor = skillRunner,
+            };
+            loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
             loginMachine.SetDefaultState(ECharacterLoginState.Empty);
@@ -117,6 +132,7 @@ namespace CharacterControllerStateMachine
         {
             stateMachine.Update();
             loginMachine.Update();
+            loginState = loginMachine.CurrentStateType;
         }
 
         private void FixedUpdate()

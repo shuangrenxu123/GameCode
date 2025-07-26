@@ -17,7 +17,7 @@ public class BTSkillAction : BTAction
     protected override void Enter()
     {
         base.Enter();
-        runner.LoadConfig(skill);
+        runner.LoadTimeLineAsset(skill);
         actor = database.GetData<CharacterActor>("actor");
         actor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
     }

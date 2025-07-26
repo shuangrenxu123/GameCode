@@ -2,33 +2,36 @@ using System.Collections.Generic;
 using Animancer;
 using AYellowpaper.SerializedCollections;
 using SkillRuntimeClip;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Timeline;
 namespace Fight
 {
-    /// <summary>
-    /// ����Ϊ����ļ���ִ���ߣ���������ΪTimeline��Runtime�汾
-    /// Ŀǰֻ��Խ�ɫ����ʹ�ø��࣬��������������ĸ��Ӽ��ܿ��Բο�����ʵ��
-    /// ��������˵��Ӧ��������еĹ����������ɸ���ʵ�֡�
-    /// </summary>
-    /// todo �޸������ֶΣ�����ɫ����˵ķֿ�
     public class SkillRunner : MonoBehaviour
     {
-        SkillSystem SkillSystem => enemyAIControl.skillSystem;
-        public SerializedDictionary<string, DamageCollider> damageColliders;
-        public CharacterActor actor;
-        public bool isFinish = false;
+        [SerializeField]
+        SerializedDictionary<string, DamageCollider> damageColliders;
+        [SerializeField]
+        CharacterActor actor;
+        public bool isFinish { get; private set; } = false;
         public AnimancerComponent anim;
-        private AudioSource AudioSource;
-        private List<TrackRunner> trackRunners = new();
+
+        AudioSource audioSource;
+        List<TrackRunner> trackRunners = new();
+
         [SerializeField]
         private CCAnimatorConfig animatorConfig;
-        [SerializeField]
-        private EnemyAIControl enemyAIControl;
-        private DataBase dataBase => enemyAIControl.dataBase;
+
+        public UnityEvent onFinish;
+
         public void OnUpdate()
         {
             int trackCount = trackRunners.Count;
+            if (isFinish)
+            {
+                return;
+            }
             if (trackCount == 0)
             {
                 isFinish = true;
@@ -49,22 +52,21 @@ namespace Fight
                 OnFinish();
             }
         }
-        public void OnClipUpdate(EventClipType clipType, object arg)
-        {
-            if (clipType == EventClipType.Rotation)
-            {
-                float speed = (float)arg;
-                var target = dataBase.GetData<Transform>("target");
-                Vector3 direction = target.position - actor.Position;
-                var targetLookingDirection = Vector3.ProjectOnPlane(direction, actor.Up).normalized;
-                Quaternion targetDeltaRotation = Quaternion.FromToRotation(actor.Forward, targetLookingDirection);
-                Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity, targetDeltaRotation, speed * Time.deltaTime);
-                actor.SetYaw(currentDeltaDotation * actor.Forward);
-            }
-        }
+        // public void OnClipUpdate(EventClipType clipType, object arg)
+        // {
+        //     if (clipType == EventClipType.Rotation)
+        //     {
+        //         float speed = (float)arg;
+        //         var target = dataBase.GetData<Transform>("target");
+        //         Vector3 direction = target.position - actor.Position;
+        //         var targetLookingDirection = Vector3.ProjectOnPlane(direction, actor.Up).normalized;
+        //         Quaternion targetDeltaRotation = Quaternion.FromToRotation(actor.Forward, targetLookingDirection);
+        //         Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity, targetDeltaRotation, speed * Time.deltaTime);
+        //         actor.SetYaw(currentDeltaDotation * actor.Forward);
+        //     }
+        // }
 
-        //TODO: aa 
-        public void LoadConfig(TimelineAsset asset)
+        public void LoadTimeLineAsset(TimelineAsset asset)
         {
             TimelineAsset playable = asset;
             var tracks = playable.GetOutputTracks();
@@ -77,15 +79,16 @@ namespace Fight
                     EventClip clip = null;
                     if (track is AnimationTrack)
                     {
-                        clip = new AnimEventClip(OnClipUpdate, animatorConfig.clipAnimators[e.displayName], anim);
+                        clip = new AnimEventClip
+                            (animatorConfig.weaponAnimators[WeaponType.Gloves].attackAnimations[e.displayName], anim);
                     }
                     else if (track is AudioTrack)
                     {
-                        clip = new AudioEventClip(OnClipUpdate, AudioSource, e.displayName);
+                        clip = new AudioEventClip(audioSource, e.displayName);
                     }
                     else if (track is SkillTrack)
                     {
-                        clip = new SkillGenerateClip(OnClipUpdate, e.displayName, SkillSystem);
+                        clip = new SkillGenerateClip(e.displayName);
                     }
                     else if (track is ColliderTrack)
                     {
@@ -94,18 +97,20 @@ namespace Fight
                     else if (track is RotationTrack)
                     {
                         var c = e.asset as RotationClip;
-                        clip = new RotationEventClip(OnClipUpdate, actor, c.RotationSpeed);
+                        clip = new RotationEventClip(actor, c.RotationSpeed);
                     }
                     clip.StartTime = (float)e.start;
                     clip.EndTime = (float)e.end;
                     trackRunner.AddEvent(clip);
                 }
                 trackRunners.Add(trackRunner);
+                isFinish = false;
             }
         }
         private void OnFinish()
         {
             trackRunners.Clear();
+            onFinish.Invoke();
         }
 
         public void OnReset()

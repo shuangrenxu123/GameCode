@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Animancer;
 using AYellowpaper.SerializedCollections;
 using UnityEngine;
@@ -13,4 +14,6 @@ public class CCAnimatorConfig : ScriptableObject
     public SerializedDictionary<string, ClipTransition> climbAnimators;
     [SerializeReference]
     public ITransition LockMovement;
+
+    public SerializedDictionary<WeaponType, WeaponAttackAnimation> weaponAnimators;
 }
