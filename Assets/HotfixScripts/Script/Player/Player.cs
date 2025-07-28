@@ -4,11 +4,9 @@ using UnityEngine;
 using static Fight.Number.CombatNumberBox;
 
 [RequireComponent(typeof(CharacterActor))]
-[RequireComponent(typeof(PlayerInventory))]
-public class Player : MonoBehaviour
+public class Player : MonoSingleton<Player>
 {
     public CombatEntity CombatEntity { get; private set; }
-    public NetTranform Net { get; private set; }
     public PlayerInventory Inventory { get; private set; }
     public CharacterActor Actor { get; private set; }
     public StateManger StateManager { get; private set; }
@@ -18,14 +16,8 @@ public class Player : MonoBehaviour
     private void Awake()
     {
         CombatEntity = GetComponent<CombatEntity>();
-        Net = GetComponent<NetTranform>();
-        Inventory = GetComponent<PlayerInventory>();
         Actor = GetComponent<CharacterActor>();
         StateManager = GetComponentInChildren<StateManger>();
-        //backStep = GetComponentInChildren<BackStepCollider>();
-        //UIManager.Instance.OpenUI<PlayerStateUI>(UnityEngine.Resources.Load<PlayerStateUI>("playerState"));
-        //var ui = ResourcesManager.Instance.LoadAsset<PlayerStateUI>("ui","playerState.prefab");
-        //UIManager.Instance.OpenUI<PlayerStateUI>(ui);
     }
 
     void Start()
