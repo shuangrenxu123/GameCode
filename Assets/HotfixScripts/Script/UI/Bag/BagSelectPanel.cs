@@ -51,7 +51,6 @@ public class BagSelectPanel : UIWindowBase
 
     private void UseClick(PointerEventData eventdata)
     {
-        inventory.UseItem(currentItem as ConsumableItemData);
         UIManager.Instance.CloseUI<BagSelectPanel>();
         UIManager.Instance.CloseUI<BagPanel>();
         UIManager.Instance.CloseUI<GameUIMgr>();
@@ -60,16 +59,6 @@ public class BagSelectPanel : UIWindowBase
 
     private void EquipmentClick(PointerEventData eventdata)
     {
-
-        var equipe = currentItem as EquipItemData;
-        if (equipe != null)
-        {
-            equipe.Equip(inventory);
-        }
-        else
-        {
-            inventory.ReplaceRightWeapon(currentItem as WeaponItemData);
-        }
 
         UIManager.Instance.CloseUI<BagSelectPanel>();
     }

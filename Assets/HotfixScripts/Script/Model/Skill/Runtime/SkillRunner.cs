@@ -13,7 +13,7 @@ namespace Fight
         [SerializeField]
         SerializedDictionary<string, DamageCollider> damageColliders;
         [SerializeField]
-        CharacterActor actor;
+        public CharacterActor actor;
         public bool isFinish { get; private set; } = false;
         public AnimancerComponent anim;
 
@@ -80,24 +80,24 @@ namespace Fight
                     if (track is AnimationTrack)
                     {
                         clip = new AnimEventClip
-                            (animatorConfig.weaponAnimators[WeaponType.Gloves].attackAnimations[e.displayName], anim);
+                            (this, animatorConfig.weaponAnimators[WeaponType.Gloves].attackAnimations[e.displayName], anim);
                     }
                     else if (track is AudioTrack)
                     {
-                        clip = new AudioEventClip(audioSource, e.displayName);
+                        clip = new AudioEventClip(this, audioSource, e.displayName);
                     }
                     else if (track is SkillTrack)
                     {
-                        clip = new SkillGenerateClip(e.displayName);
+                        clip = new SkillGenerateClip(this, e.displayName);
                     }
                     else if (track is ColliderTrack)
                     {
                         //clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
                     }
-                    else if (track is RotationTrack)
+                    else if (track is RootMotionTrack)
                     {
-                        var c = e.asset as RotationClip;
-                        clip = new RotationEventClip(actor, c.RotationSpeed);
+                        var c = e.asset as RootMotionClip;
+                        clip = new SkillRuntimeClip.RootMotionClip(this, c.usePositionRootMotion, c.useRotationRootMotion);
                     }
                     clip.StartTime = (float)e.start;
                     clip.EndTime = (float)e.end;

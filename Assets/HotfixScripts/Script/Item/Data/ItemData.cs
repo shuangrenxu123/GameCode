@@ -13,19 +13,19 @@ public class ItemData : ScriptableObject
 public enum ItemType
 {
     /// <summary>
-    /// ÏûºÄÆ·
+    /// ï¿½ï¿½ï¿½ï¿½Æ·
     /// </summary>
     Consumable,
     /// <summary>
-    /// ×°±¸
+    /// ×°ï¿½ï¿½
     /// </summary>
     Equip = 2,
     /// <summary>
-    /// ÎäÆ÷
+    /// ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     Weapon = 3,
     /// <summary>
-    /// ÆäËû
+    /// ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     other
 }

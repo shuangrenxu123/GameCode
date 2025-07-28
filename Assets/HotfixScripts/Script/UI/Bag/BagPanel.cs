@@ -21,11 +21,6 @@ public class BagPanel : UIWindowBase, IUIWindow
     void UpdateBagSlot()
     {
         int index = 0;
-        foreach (var item in inventory.Items)
-        {
-            slots[index].SetItemData(item.Value.Item1, item.Value.Item2);
-            index++;
-        }
     }
     public void OnClick(PointerEventData eventData)
     {

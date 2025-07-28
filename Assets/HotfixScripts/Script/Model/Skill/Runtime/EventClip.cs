@@ -11,10 +11,12 @@ namespace SkillRuntimeClip
         public bool isFinished = false;
         public float StartTime;
         public float EndTime;
+        protected SkillRunner runner;
         protected Action<EventClipType, object> onUpdateAction;
         protected abstract EventClipType clipType { get; }
-        public EventClip()
+        public EventClip(SkillRunner skillRunner)
         {
+            this.runner = skillRunner;
         }
         public virtual void Init()
         {
@@ -43,7 +45,8 @@ namespace SkillRuntimeClip
     {
         private AnimancerComponent animator;
         private AnimationClip clip;
-        public AnimEventClip(AnimationClip clip, AnimancerComponent anim)
+        public AnimEventClip(SkillRunner skillRunner, AnimationClip clip, AnimancerComponent anim)
+        : base(skillRunner)
         {
             animator = anim;
             this.clip = clip;
@@ -80,7 +83,7 @@ namespace SkillRuntimeClip
 
         protected override EventClipType clipType => EventClipType.Audio;
 
-        public AudioEventClip(AudioSource s, string clipName)
+        public AudioEventClip(SkillRunner skillRunner, AudioSource s, string clipName) : base(skillRunner)
         {
             //this.clip = Resources.Load<AudioClip>(clipName);
             this.source = s;
@@ -102,6 +105,35 @@ namespace SkillRuntimeClip
 
         }
     }
+
+    class RootMotionClip : EventClip
+    {
+        bool usePositionRootMotion;
+        bool useRotationRootMotion;
+
+        protected override EventClipType clipType => EventClipType.RootMotion;
+        public RootMotionClip(SkillRunner skillRunner,
+            bool usePositionRootMotion,
+            bool useRotationRootMotion) : base(skillRunner)
+        {
+            this.usePositionRootMotion = usePositionRootMotion;
+            this.useRotationRootMotion = useRotationRootMotion;
+        }
+        public override void OnStart()
+        {
+            base.OnStart();
+            runner.actor.SetUpRootMotion(usePositionRootMotion, useRotationRootMotion);
+        }
+        public override void OnFinish()
+        {
+            base.OnFinish();
+            runner.actor.SetUpRootMotion(true, true);
+        }
+        public override void OnUpdate()
+        {
+
+        }
+    }
     class SkillGenerateClip : EventClip
     {
         /// <summary>
@@ -109,7 +141,7 @@ namespace SkillRuntimeClip
         /// </summary>
         private string name;
         private SkillSystem system;
-        public SkillGenerateClip(string name)
+        public SkillGenerateClip(SkillRunner skillRunner, string name) : base(skillRunner)
         {
             this.name = name;
         }
@@ -134,7 +166,8 @@ namespace SkillRuntimeClip
 
         protected override EventClipType clipType => EventClipType.Collider;
 
-        public ColliderEventClip(RayCastDamageCollider collider)
+        public ColliderEventClip(SkillRunner skillRunner, RayCastDamageCollider collider)
+            : base(skillRunner)
         {
             this.collider = collider;
         }
@@ -153,30 +186,11 @@ namespace SkillRuntimeClip
             onUpdateAction(clipType, null);
         }
     }
-    class RotationEventClip : EventClip
-    {
-        private float speed;
-        private CharacterActor actor;
-        protected override EventClipType clipType => EventClipType.Rotation;
-        public RotationEventClip(CharacterActor actor, float speed)
-        {
-            this.speed = speed;
-            this.actor = actor;
-        }
-        public override void OnStart()
-        {
-            actor.SetUpRootMotion(true, false);
-        }
-        public override void OnUpdate()
-        {
-            onUpdateAction?.Invoke(clipType, speed);
-        }
-    }
 
     public enum EventClipType
     {
         Audio,
-        Rotation,
+        RootMotion,
         Collider,
         Animator,
         Skill,

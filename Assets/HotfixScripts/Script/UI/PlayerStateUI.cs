@@ -26,9 +26,8 @@ public class PlayerStateUI : UIWindowBase
         magicSlot.gameObject.SetActive(false);
         itemSlot.gameObject.SetActive(false);
 
-        player = FindObjectOfType<Player>();
-        player.Inventory.OnRightWeaponLoad += OnLoadRightWeapon;
-        player.Inventory.OnLeftWeaponLoad += OnLoadLeftWeapon;
+        player = Player.Instance;
+
         player.CombatEntity.hp.OnHPChange += OnHPChange;
     }
 

@@ -18,11 +18,10 @@ public class WeaponAttackAnimationData : ScriptableObject
     public WeaponType type;
     void OnValidate()
     {
-        attackAnimations.Clear();
-
         foreach (var a in anim)
         {
-            attackAnimations.Add(a.name, new(a));
+            if (!attackAnimations.ContainsKey(a.name))
+                attackAnimations.Add(a.name, new(a));
         }
     }
 }
