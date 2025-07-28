@@ -8,7 +8,7 @@ public abstract class PhysicsActor : MonoBehaviour
 {
 
     //是否启用插值
-    public bool interpolaterActor = true;
+    public bool interpolateActor = true;
     [Tooltip("是否启用连续检测，避免穿墙的情况")]
     public bool useContinuousCollisionDetection = true;
 
@@ -286,13 +286,13 @@ public abstract class PhysicsActor : MonoBehaviour
     /// <param name="pivot">空间中的旋转枢轴。</param>
     public virtual void RotateYaw(float angle, Vector3 pivot)
     {
-        Quaternion delatRotation = Quaternion.AngleAxis(angle, Up);
-        RotateAround(delatRotation, pivot);
+        Quaternion deltaRotation = Quaternion.AngleAxis(angle, Up);
+        RotateAround(deltaRotation, pivot);
     }
     /// <summary>
     /// 绕着Right轴旋转
     /// </summary>
-    /// <param name="angle">The angle in degrees.</param>   
+    /// <param name="angle">The angle in degrees.</param>
     public virtual void RotatePitch(float angle)
     {
         Rotation = Quaternion.AngleAxis(angle, Right) * Rotation;
@@ -301,8 +301,8 @@ public abstract class PhysicsActor : MonoBehaviour
     /// <summary>
     /// 绕着Right轴旋转
     /// </summary>
-    /// <param name="angle">The angle in degrees.</param>       
-    /// <param name="pivot">The rotation pivot in space.</param>      
+    /// <param name="angle">The angle in degrees.</param>
+    /// <param name="pivot">The rotation pivot in space.</param>
     public virtual void RotatePitch(float angle, Vector3 pivot)
     {
         Quaternion deltaRotation = Quaternion.AngleAxis(angle, Right);
@@ -312,7 +312,7 @@ public abstract class PhysicsActor : MonoBehaviour
     /// <summary>
     /// 绕着Forward轴旋转
     /// </summary>
-    /// <param name="angle">The angle in degrees.</param>  
+    /// <param name="angle">The angle in degrees.</param>
     public virtual void RotateRoll(float angle)
     {
         Rotation = Quaternion.AngleAxis(angle, Forward) * Rotation;
@@ -321,8 +321,8 @@ public abstract class PhysicsActor : MonoBehaviour
     /// <summary>
     /// 绕着Forward轴旋转
     /// </summary>
-    /// <param name="angle">The angle in degrees.</param>        
-    /// <param name="pivot">The rotation pivot in space.</param>     
+    /// <param name="angle">The angle in degrees.</param>
+    /// <param name="pivot">The rotation pivot in space.</param>
     public virtual void RotateRoll(float angle, Vector3 pivot)
     {
         Quaternion deltaRotation = Quaternion.AngleAxis(angle, Forward);
@@ -414,7 +414,7 @@ public abstract class PhysicsActor : MonoBehaviour
             if (UpdateRootPosition)
                 UpdateDynamicRootMotionPosition();
             if (UpdateRootRotation)
-                UpdateKinematicRootMotionRotation();
+                UpdateDynamicRootMotionRotation();
         }
     }
     void OnAnimatorIKLinkMethod(int layerIndex) => OnAnimatorIKEvent?.Invoke(layerIndex);
@@ -422,7 +422,7 @@ public abstract class PhysicsActor : MonoBehaviour
     bool internalResetFlag = true;
     public void SyncBody()
     {
-        if (!interpolaterActor)
+        if (!interpolateActor)
             return;
         if (!wasInterpolatingActor)
         {
@@ -444,7 +444,7 @@ public abstract class PhysicsActor : MonoBehaviour
 
     public void InterpolateBody()
     {
-        if (!interpolaterActor)
+        if (!interpolateActor)
             return;
         if (wasInterpolatingActor)
         {
@@ -465,7 +465,7 @@ public abstract class PhysicsActor : MonoBehaviour
     /// </summary>
     public void UpdateInterpolationTargets()
     {
-        if (!interpolaterActor)
+        if (!interpolateActor)
         {
             return;
         }
@@ -566,7 +566,7 @@ public abstract class PhysicsActor : MonoBehaviour
     {
         InterpolateBody();
 
-        wasInterpolatingActor = interpolaterActor;
+        wasInterpolatingActor = interpolateActor;
         internalResetFlag = true;
     }
     void OnAnimatorMoveLinkMethod()
