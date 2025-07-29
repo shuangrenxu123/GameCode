@@ -71,7 +71,8 @@ namespace Character.Controller.MoveState
             ProcessVelocity(dt);
 
             if (parentMachine.rotationInput
-                && !(characterActor.UpdateRootRotation
+                && !(characterActor.UseRootMotion
+                    && characterActor.UpdateRootRotation
                     && characterActor.rootMotionRotationType == RootMotionRotationType.SetRotation))
             {
                 HandleRotation(dt);
