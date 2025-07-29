@@ -67,7 +67,7 @@ namespace SkillRuntimeClip
         }
         public override void OnStart()
         {
-            animator.Play(clip, 0.25f);
+            animator.Play(clip);
             base.OnStart();
         }
 

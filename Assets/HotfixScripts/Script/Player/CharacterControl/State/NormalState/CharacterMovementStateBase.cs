@@ -67,8 +67,15 @@ namespace Character.Controller.MoveState
         {
             base.FixUpdate();
             float dt = Time.deltaTime;
+
             ProcessVelocity(dt);
-            HandleRotation(dt);
+
+            if (parentMachine.rotationInput
+                && !(characterActor.UpdateRootRotation
+                    && characterActor.rootMotionRotationType == RootMotionRotationType.SetRotation))
+            {
+                HandleRotation(dt);
+            }
         }
 
         public virtual void PostCharacterSimulation()
@@ -79,28 +86,30 @@ namespace Character.Controller.MoveState
 
         void ProcessVelocity(float dt)
         {
-            var targetVelocity = ProcessPlanarMovement(dt);
-            var motionInfo = SetMotionValues(targetVelocity);
-
-
-            float acceleration = motionInfo.acceleration;
-
-            bool needToAccelerate = CustomUtilities.Multiply
-                (parentMachine.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude
-                    >= characterActor.PlanarVelocity.sqrMagnitude;
-
-
-            if (needToAccelerate)
+            if (parentMachine.positionInput)
             {
-                acceleration *= motionInfo.angleAccelerationMultiplier;
-            }
-            else
-            {
-                acceleration = motionInfo.deceleration;
-            }
+                var targetVelocity = ProcessPlanarMovement(dt);
+                var motionInfo = SetMotionValues(targetVelocity);
 
-            characterActor.PlanarVelocity =
-                Vector3.MoveTowards(characterActor.PlanarVelocity, targetVelocity, acceleration * dt);
+
+                float acceleration = motionInfo.acceleration;
+
+                bool needToAccelerate = CustomUtilities.Multiply
+                    (parentMachine.InputMovementReference, currentPlanarSpeedLimit).sqrMagnitude
+                        >= characterActor.PlanarVelocity.sqrMagnitude;
+
+
+                if (needToAccelerate)
+                {
+                    acceleration *= motionInfo.angleAccelerationMultiplier;
+                }
+                else
+                {
+                    acceleration = motionInfo.deceleration;
+                }
+                characterActor.PlanarVelocity =
+                    Vector3.MoveTowards(characterActor.PlanarVelocity, targetVelocity, acceleration * dt);
+            }
             ProcessGravity(dt);
         }
 

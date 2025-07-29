@@ -16,9 +16,12 @@ namespace Character.Controller.LoginState
             var trigger = characterActor.Triggers[0];
             var interaction = trigger.gameObject.GetComponent<Intractable>();
 
-            //确定坐标
-            characterActor.Position = interaction.reference.position;
-            characterActor.SetYaw(interaction.reference.forward);
+            // //确定坐标
+            // characterActor.Position = interaction.reference.position;
+            // characterActor.SetYaw(interaction.reference.forward);
+            characterActor.Velocity = Vector3.zero;
+            parentMachine.movementStateMachine.EnableMachine(false, false);
+            characterActor.Teleport(interaction.reference.position, interaction.reference.rotation);
 
             //RootMotion
             if (interaction.UseRootMotion)
@@ -32,14 +35,13 @@ namespace Character.Controller.LoginState
             };
 
 
-            parentMachine.movementStateMachine.DisableMachine();
             interaction.Interactive();
         }
 
         public override void Exit()
         {
             base.Exit();
-            parentMachine.movementStateMachine.EnableMachine();
+            parentMachine.movementStateMachine.EnableMachine(true, true);
             characterActor.UseRootMotion = false;
         }
 

@@ -17,11 +17,13 @@ namespace Character.Controller.LoginState
 
         string currentActionName = string.Empty;
         bool canInput = true;
+        bool isInput = false;
+
+        float timer = 0;
+        float nextActionInputTime = 0;
         public override void Enter()
         {
             base.Enter();
-            parentMachine.movementStateMachine.DisableMachine();
-
             if (characterActions.attack.Started)
             {
                 if (currentActionName == string.Empty)
@@ -37,11 +39,7 @@ namespace Character.Controller.LoginState
                         parentMachine.movementStateMachine.CurrentStateType);
                 }
 
-                UpdateActionData();
-                timelineExecutor.LoadTimeLineAsset
-                    (currentActionData.timelineAsset);
-
-                // currentActionName = string.Empty;
+                PlayerAction();
             }
 
             characterActor.Velocity = Vector3.zero;
@@ -51,17 +49,27 @@ namespace Character.Controller.LoginState
         public override void Update()
         {
             base.Update();
+
+            if (timer < nextActionInputTime)
+            {
+                timer += Time.deltaTime;
+            }
+            else
+            {
+                canInput = true;
+            }
+
             timelineExecutor.OnUpdate();
             if (characterActions.attack.Started)
             {
-                if (canInput)
+                if (canInput && isInput == false)
                 {
                     currentActionName = actionChangeGraph
                         .GetNextActionName(AttackKeyBoard.Light, currentActionName,
                         parentMachine.movementStateMachine.CurrentStateType);
 
                     timelineExecutor.onFinish.AddListener(PlayerNextAttackAction);
-                    canInput = false;
+                    isInput = true;
                     return;
                 }
             }
@@ -74,18 +82,22 @@ namespace Character.Controller.LoginState
 
         private void PlayerNextAttackAction()
         {
-            UpdateActionData();
-            canInput = true;
-            timelineExecutor.LoadTimeLineAsset
-                (currentActionData.timelineAsset);
+            isInput = false;
+            PlayerAction();
+
             timelineExecutor.onFinish.RemoveListener(PlayerNextAttackAction);
         }
 
-        void UpdateActionData()
+        void PlayerAction()
         {
             //temp Test
             currentActionData = attackAnimator.animators[WeaponType.Gloves]
                     .attackAnimations[currentActionName];
+            timelineExecutor.LoadTimeLineAsset
+                (currentActionData.timelineAsset);
+            nextActionInputTime = currentActionData.inputTime;
+            timer = 0;
+            canInput = false;
         }
 
         public override void Exit()
@@ -93,8 +105,8 @@ namespace Character.Controller.LoginState
             base.Exit();
             currentActionName = string.Empty;
             characterActor.SetUpRootMotion(false, false);
-            parentMachine.movementStateMachine.EnableMachine();
+            characterActor.UseRootMotion = false;
+            parentMachine.movementStateMachine.RefreshAnimator();
         }
-
     }
 }
