@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Network.Tcp;
 
 namespace Network
 {
-    public abstract class NetWorkpackCoder
+    public abstract class NetWorkPackCoder
     {
         public int PackageBodyMaxSize;
 
-        protected TcpChannel tcpChannel;
         protected IPackageCoder _packageCoder;
-        public void Init(TcpChannel channel, int size, Type coderType)
+        public void Init(int size, Type coderType)
         {
-            tcpChannel = channel;
             PackageBodyMaxSize = size;
             _packageCoder = (IPackageCoder)Activator.CreateInstance(coderType);
         }

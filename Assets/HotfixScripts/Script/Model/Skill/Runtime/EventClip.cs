@@ -2,6 +2,7 @@ using System;
 using Animancer;
 using Fight;
 using UnityEngine;
+using static Fight.Number.CombatNumberBox;
 
 namespace SkillRuntimeClip
 {
@@ -110,24 +111,45 @@ namespace SkillRuntimeClip
     {
         bool usePositionRootMotion;
         bool useRotationRootMotion;
+        public int rotationMultiplier = 100;
+        public int positionMultiplier = 100;
+
 
         protected override EventClipType clipType => EventClipType.RootMotion;
         public RootMotionClip(SkillRunner skillRunner,
             bool usePositionRootMotion,
-            bool useRotationRootMotion) : base(skillRunner)
+            bool useRotationRootMotion,
+            int positionMultiplier, int rotationMultiplier) : base(skillRunner)
         {
+            this.positionMultiplier = positionMultiplier;
+            this.rotationMultiplier = rotationMultiplier;
             this.usePositionRootMotion = usePositionRootMotion;
             this.useRotationRootMotion = useRotationRootMotion;
         }
+        Guid speedChange, rotationChange;
         public override void OnStart()
         {
             base.OnStart();
             runner.actor.SetUpRootMotion(usePositionRootMotion, useRotationRootMotion);
+
+            var properties = runner.actor.GetComponent<CombatEntity>().properties;
+            speedChange = properties.AddModifier(PropertyType.SpeedMultiplier
+                  , positionMultiplier
+                  , Fight.Number.ModifierType.Percent
+                  , Fight.Number.PropertySourceTypes.Buff);
+            rotationChange = properties.AddModifier(PropertyType.RotationMultiplier
+                   , rotationMultiplier
+                   , Fight.Number.ModifierType.Percent
+                   , Fight.Number.PropertySourceTypes.Buff);
         }
         public override void OnFinish()
         {
             base.OnFinish();
             runner.actor.SetUpRootMotion(true, true);
+            var properties = runner.actor.GetComponent<CombatEntity>().properties;
+            properties.RemoveModifier(PropertyType.SpeedMultiplier, speedChange);
+            properties.RemoveModifier(PropertyType.RotationMultiplier, rotationChange);
+
         }
         public override void OnUpdate()
         {

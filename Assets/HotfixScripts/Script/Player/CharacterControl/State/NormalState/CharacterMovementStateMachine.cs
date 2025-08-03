@@ -1,4 +1,5 @@
 using Character.Controller.MoveState;
+using CharacterControllerStateMachine;
 using HFSM;
 using UnityEngine;
 namespace Character.Controller.State
@@ -6,6 +7,7 @@ namespace Character.Controller.State
     public class CharacterMovementStateMachine
         : StateMachine<ECharacterControllerState, ECharacterMoveState>
     {
+        public StateManger stateManger;
         public bool positionInput { get; private set; } = true;
         public bool rotationInput { get; private set; } = true;
         #region parameters

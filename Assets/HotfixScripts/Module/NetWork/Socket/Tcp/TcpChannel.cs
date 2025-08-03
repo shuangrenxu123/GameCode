@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Net.Sockets;
 
-namespace Network
+namespace Network.Tcp
 {
     public class TcpChannel : IDisposable
     {
         private SocketAsyncEventArgs receiveArgs = new SocketAsyncEventArgs();
         private SocketAsyncEventArgs sendArgs = new SocketAsyncEventArgs();
-        private NetWorkpackCoder packageCoder;
+        private NetWorkPackCoder packageCoder;
 
         private readonly Queue<System.Object> sendQueue = new Queue<object>();
         private readonly Queue<System.Object> receiveQueue = new Queue<object>();
@@ -32,25 +32,25 @@ namespace Network
         /// <param name="context"></param>
         /// <param name="sock">与服务端链接的socket</param>
         /// <param name="type">编码器类型</param>
-        /// <param name="Bodysize">包长</param>
+        /// <param name="bodySize">包长</param>
         /// <exception cref="System.ArgumentException"></exception>
-        public void Init(MainThreadSyncContext context, Socket sock, Type packageCodetype, Type bodyCodeType, int Bodysize)
+        public void Init(MainThreadSyncContext context, Socket sock, Type packageCodetype, Type bodyCodeType, int bodySize)
         {
             if (packageCodetype == null)
                 throw new System.ArgumentException($"packageCoderType is null.");
             if (bodyCodeType == null)
                 throw new System.ArgumentException("bodyType is null");
-            if (Bodysize <= 0)
-                throw new System.ArgumentException($"packageMaxSize is invalid : {Bodysize}");
+            if (bodySize <= 0)
+                throw new System.ArgumentException($"packageMaxSize is invalid : {bodySize}");
 
             socket = sock;
-            packageMaxSize = Bodysize;
+            packageMaxSize = bodySize;
             //创建编码解码器
-            packageCoder = (NetWorkpackCoder)Activator.CreateInstance(packageCodetype);
+            packageCoder = (NetWorkPackCoder)Activator.CreateInstance(packageCodetype);
             //初始化编码解码
-            packageCoder.Init(this, Bodysize, bodyCodeType);
+            packageCoder.Init(bodySize, bodyCodeType);
             //最大的尺寸等于 包体加包头
-            packageMaxSize = Bodysize + packageCoder.GetPackageHeadSize();
+            packageMaxSize = bodySize + packageCoder.GetPackageHeadSize();
             this.context = context;
             //创建字节缓冲类，推荐4倍最大包体长度
             int byteBufferSize = packageMaxSize * 4;
@@ -60,11 +60,11 @@ namespace Network
             receiveBuffer = new byte[tempBufferSize];
 
             //创建IOCP接收类
-            receiveArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Comleted);
+            receiveArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
             receiveArgs.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
 
             //创建IOCP发送类
-            sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Comleted);
+            sendArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
             sendArgs.SetBuffer(sendBuffer.GetBuffer(), 0, sendBuffer.Capacity);
 
         }
@@ -226,7 +226,7 @@ namespace Network
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="s"></param>
-        private void IO_Comleted(object sender, SocketAsyncEventArgs s)
+        private void IO_Completed(object sender, SocketAsyncEventArgs s)
         {
             //上个操作的类型
             switch (s.LastOperation)

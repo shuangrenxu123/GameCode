@@ -14,7 +14,7 @@ public class BagSelectPanel : UIWindowBase
     public override void OnCreate()
     {
         base.OnCreate();
-        inventory = FindObjectOfType<Player>().Inventory;
+        inventory = Player.Instance.Inventory;
         var panel = UIManager.Instance.GetUIWindow<BagPanel>();
         currentItem = panel.currentSelectSlot.ItemData;
 

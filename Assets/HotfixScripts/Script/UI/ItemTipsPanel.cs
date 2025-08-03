@@ -8,7 +8,7 @@ public class ItemTipsPanel : UIWindowBase
     GameObject prefab;
     private void Start()
     {
-        Player = FindObjectOfType<Player>();
+        Player = Player.Instance;
         Player.Inventory.OnItemAdd += OnPlayerAddItem;
     }
 

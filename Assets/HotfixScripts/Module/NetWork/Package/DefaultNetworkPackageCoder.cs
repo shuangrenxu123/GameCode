@@ -5,13 +5,13 @@ using UnityEngine;
 
 namespace Network
 {
-    public class DefaultNetworkPackageCoder : NetWorkpackCoder
+    public class DefaultNetworkPackageCoder : NetWorkPackCoder
     {
         /// <summary>
         /// 包裹大小的字段类型
         /// 包裹有包头和包体组成
         /// </summary>
-        public enum EpackageSizeFieldType
+        public enum EPackageSizeFieldType
         {
             /// <summary>
             /// 包裹最大大约64kb
@@ -38,7 +38,7 @@ namespace Network
             Int = 4,
         }
 
-        public EpackageSizeFieldType PackageSizeFieldType = EpackageSizeFieldType.UShort;
+        public EPackageSizeFieldType PackageSizeFieldType = EPackageSizeFieldType.UShort;
 
         public EMessageIDFieldType MessageIDFieldType = EMessageIDFieldType.UShort;
         public override int GetPackageHeadSize()
@@ -62,14 +62,14 @@ namespace Network
                 Debug.LogError("发送的包不合逻辑");
                 return;
             }
-            if (package.Msgobj == null)
+            if (package.MsgObj == null)
             {
                 Debug.LogError("消息为null");
                 return;
             }
             //获得包体数据
             byte[] bytes;
-            bytes = _packageCoder.EnCode(package.Msgobj);
+            bytes = _packageCoder.EnCode(package.MsgObj);
             if (bytes.Length > PackageBodyMaxSize)
             {
                 return;
@@ -78,7 +78,7 @@ namespace Network
             //由于bytebuff底层将string的长度定位为ushort。所以这里只用加两个字节即可
             int packagerSize = (ushort)MessageIDFieldType + bytes.Length + 2;
             //写入包长
-            if (PackageSizeFieldType == EpackageSizeFieldType.UShort)
+            if (PackageSizeFieldType == EPackageSizeFieldType.UShort)
             {
                 sendBuffer.WriteUshort((ushort)packagerSize);
             }
@@ -120,7 +120,7 @@ namespace Network
                 if (receiveBuffer.ReadableBytes() < (int)PackageSizeFieldType)
                     break;
                 int packageSize;
-                if (PackageSizeFieldType == EpackageSizeFieldType.UShort)
+                if (PackageSizeFieldType == EPackageSizeFieldType.UShort)
                     packageSize = receiveBuffer.ReadUshort();
                 else
                     packageSize = receiveBuffer.ReadInt();
@@ -155,8 +155,8 @@ namespace Network
 
                     if (classType != null)
                     {
-                        packager.Msgobj = _packageCoder.DeCode(classType, body);
-                        if (packager.Msgobj != null)
+                        packager.MsgObj = _packageCoder.DeCode(classType, body);
+                        if (packager.MsgObj != null)
                         {
                             outputList.Add(packager);
                         }

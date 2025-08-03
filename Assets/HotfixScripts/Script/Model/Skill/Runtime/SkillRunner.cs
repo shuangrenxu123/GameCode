@@ -97,7 +97,9 @@ namespace Fight
                     else if (track is RootMotionTrack)
                     {
                         var c = e.asset as RootMotionClip;
-                        clip = new SkillRuntimeClip.RootMotionClip(this, c.usePositionRootMotion, c.useRotationRootMotion);
+                        clip = new SkillRuntimeClip.RootMotionClip
+                            (this, c.usePositionRootMotion, c.useRotationRootMotion,
+                            c.positionMultiplier, c.rotationMultiplier);
                     }
                     clip.StartTime = (float)e.start;
                     clip.EndTime = (float)e.end;

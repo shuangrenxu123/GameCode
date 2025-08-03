@@ -50,7 +50,7 @@ public class NetObj : MonoBehaviour
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
-        var state = (move)arg0.Msgobj;
+        var state = (move)arg0.MsgObj;
         if (state != null)
         {
             syncDelta = Time.time - lastMotionState.lastMotionTime;
@@ -67,7 +67,7 @@ public class NetObj : MonoBehaviour
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)
     {
-        var animName = (Action)arg0.Msgobj;
+        var animName = (Action)arg0.MsgObj;
         if (animName != null)
         {
             animacer.Play(config.clipAnimators[animName.Actionname]);

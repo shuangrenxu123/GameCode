@@ -31,10 +31,16 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float speedMultiplier = materialControl == null ?
-                1f :
-                materialControl.CurrentSurface.speedMultiplier * materialControl.CurrentVolume.speedMultiplier;
+            float characterSpeedMultiplier = parentMachine.stateManger.player
+                .CombatEntity.properties
+                .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.SpeedMultiplier) / 100f;
 
+            float groundSpeedMultiplier = materialControl == null ?
+                1f :
+                materialControl.CurrentSurface.speedMultiplier
+                    * materialControl.CurrentVolume.speedMultiplier;
+
+            float finalSpeedMultiplier = characterSpeedMultiplier * groundSpeedMultiplier;
             //Ŀ���ٶ�
             Vector3 targetPlanarVelocity = default;
 
@@ -48,21 +54,21 @@ namespace Character.Controller.MoveState
                     }
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, speedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
                     break;
 
                 case CharacterActorState.StableGrounded:
                     currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, speedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
                     break
                     ;
                 case CharacterActorState.UnstableGrounded:
                     currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, speedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
                     break;
             }
             return targetPlanarVelocity;

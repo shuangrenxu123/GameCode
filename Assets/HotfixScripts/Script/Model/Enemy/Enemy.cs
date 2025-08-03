@@ -26,7 +26,7 @@ public class Enemy : MonoBehaviour
 
         combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
         combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
-        combatEntity.properties.RegisterAttribute(PropertyType.Speed, 10);
+        combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 10);
 
         //ai = new EnemyAI();
         //ai.Init(this, animatorHandle as EnemyAnimatorHandle, this);

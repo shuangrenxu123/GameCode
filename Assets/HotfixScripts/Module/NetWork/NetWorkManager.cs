@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using Network.Tcp;
 using ObjectPool;
 using UnityEngine;
 using UnityEngine.Events;
+using TcpClient = Network.Tcp.TcpClient;
 
 namespace Network
 {
@@ -42,7 +44,7 @@ namespace Network
             if (createParam == null)
                 Debug.LogError("传入的参数不对");
 
-            client = new TcpClient(c.PackageCoderType, c.PackageBodyCoderType, c.PackageMaxSize);
+            client = new Tcp.TcpClient(c.PackageCoderType, c.PackageBodyCoderType, c.PackageMaxSize);
             register = new NetworkMessageRegister();
             handles = new Dictionary<int, PackageEvent>();
             register.Init();
@@ -160,7 +162,7 @@ namespace Network
                 //var t = new DefaultNetWorkPackage();
                 t.SenderId = senderid;
                 t.MsgId = Msgid;
-                t.Msgobj = package;
+                t.MsgObj = package;
 
                 client.SendPackage(t);
             }

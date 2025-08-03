@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using UnityEngine;
-namespace Network
+namespace Network.Tcp
 {
     /// <summary>
     /// Tcp客户端
@@ -15,18 +15,18 @@ namespace Network
         }
         private readonly Type packageCoderType;//单个逻辑包类型
         private readonly Type packageBodyCoderType;//数据解码器类型
-        private readonly int packagebodyMaxSize;
+        private readonly int packageBodyMaxSize;
         /// <summary>
         /// 具体的socket
         /// </summary>
         private TcpChannel channel;
 
         private MainThreadSyncContext context;
-        public TcpClient(Type packagetype, Type bodyType, int size)
+        public TcpClient(Type packageType, Type bodyType, int size)
         {
-            packageCoderType = packagetype;
+            packageCoderType = packageType;
             packageBodyCoderType = bodyType;
-            packagebodyMaxSize = size;
+            packageBodyMaxSize = size;
             context = new MainThreadSyncContext();
         }
 
@@ -35,11 +35,11 @@ namespace Network
             channel = new TcpChannel();
             if (e == null)
             {
-                channel.Init(context, null, packageCoderType, packageBodyCoderType, packagebodyMaxSize);
+                channel.Init(context, null, packageCoderType, packageBodyCoderType, packageBodyMaxSize);
             }
             else
             {
-                channel.Init(context, e.ConnectSocket, packageCoderType, packageBodyCoderType, packagebodyMaxSize);
+                channel.Init(context, e.ConnectSocket, packageCoderType, packageBodyCoderType, packageBodyMaxSize);
             }
         }
         public void Dispose()
@@ -104,7 +104,7 @@ namespace Network
             };
             SocketAsyncEventArgs args = new SocketAsyncEventArgs();
             args.RemoteEndPoint = ip;
-            args.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptEventArgs_Comletep);
+            args.Completed += new EventHandler<SocketAsyncEventArgs>(AcceptEventArgs_Completed);
             args.UserToken = token;
 
             Socket clientSocket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
@@ -143,7 +143,7 @@ namespace Network
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void AcceptEventArgs_Comletep(object sender, SocketAsyncEventArgs e)
+        private void AcceptEventArgs_Completed(object sender, SocketAsyncEventArgs e)
         {
             switch (e.LastOperation)
             {

@@ -71,6 +71,7 @@ namespace CharacterControllerStateMachine
             stateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
             stateMachine.database = dataBase;
             stateMachine.animancer = AnimancerHelper;
+            stateMachine.stateManger = this;
 
             var movementState = new CharacterNormalMovementState
             {

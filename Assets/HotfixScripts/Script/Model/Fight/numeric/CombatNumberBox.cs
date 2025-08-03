@@ -10,7 +10,8 @@ namespace Fight.Number
         {
             Attack,
             Defense,
-            Speed,
+            SpeedMultiplier,
+            RotationMultiplier
 
         }
         private readonly Dictionary<PropertyType, PropertyValue> properties = new();

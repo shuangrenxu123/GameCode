@@ -25,6 +25,9 @@ public class Player : MonoSingleton<Player>
         CombatEntity.hp.SetMaxValue(100);
         CombatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
         CombatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
+        CombatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 100);
+        CombatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
+
     }
 
     public void SetStateMachineData(string key, object value)

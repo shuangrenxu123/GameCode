@@ -243,9 +243,13 @@ namespace Character.Controller.MoveState
             Quaternion targetDeltaRotation = Quaternion.FromToRotation(characterActor.Forward,
                 targetLookingDirection);
 
+            var rotationMultiplier = parentMachine.stateManger.player
+                .CombatEntity.properties
+                .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.RotationMultiplier) / 100f;
+
             Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity,
                 targetDeltaRotation,
-                lookingDirectionParameters.speed * dt);
+                lookingDirectionParameters.speed * rotationMultiplier * dt);
 
             characterActor.SetYaw(currentDeltaDotation * characterActor.Forward);
         }

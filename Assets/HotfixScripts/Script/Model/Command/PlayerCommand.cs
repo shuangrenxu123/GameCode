@@ -1,6 +1,6 @@
-using ConsoleLog;
 using System.Collections;
 using System.Collections.Generic;
+using ConsoleLog;
 using UnityEngine;
 
 public class PlayerCommand : MonoBehaviour
@@ -11,25 +11,15 @@ public class PlayerCommand : MonoBehaviour
     {
         player = FindFirstObjectByType<Player>();
     }
+    [Command("Help")]
+    static void Help()
+    {
+        ConsoleManager.Instance.OutputToConsole("Help=========", ColorUtility.ToHtmlStringRGB(Color.green));
+    }
+
     [Command("Test")]
     static void Test()
     {
         ConsoleManager.Instance.OutputToConsole($"TestCommand");
-    }
-    [Command("PlayerInfo")]
-    static void PrintPlayerInfo()
-    {
-
-    }
-    [Command("giveItem")]
-    static void AddItem(int id, int num = 1)
-    {
-        Debug.Log("add " + id);
-        ConsoleManager.Instance.OutputToConsole($"�����Ʒ{num}��");
-    }
-    [Command("AddBuff")]
-    static void AddBuff(string name)
-    {
-        player.CombatEntity.buffManager.AddBuff(name);
     }
 }

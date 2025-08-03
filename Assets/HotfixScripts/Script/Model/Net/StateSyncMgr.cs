@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using Network;
 using PlayerInfo;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class StateSyncMgr : MonoBehaviour
@@ -109,7 +109,7 @@ public class StateSyncMgr : MonoBehaviour
     }
     private void SetPingValue(DefaultNetWorkPackage data)
     {
-        var obj = data.Msgobj as ping;
+        var obj = data.MsgObj as ping;
         if (obj != null)
         {
             //UIManager.Instance.GetUIWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));

@@ -62,7 +62,7 @@ public class BagPanel : UIWindowBase, IUIWindow
         {
             slots.Add(slotParent.transform.GetChild(i).GetComponent<BagSlot>());
         }
-        var player = FindObjectOfType<Player>();
+        var player = Player.Instance;
         inventory = player.Inventory;
         UpdateBagSlot();
 
