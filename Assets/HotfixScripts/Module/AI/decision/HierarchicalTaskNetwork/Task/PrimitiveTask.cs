@@ -5,11 +5,11 @@ namespace HTN
     public enum HTNResults
     {
         /// <summary>
-        /// Ö´ÐÐ³É¹¦
+        /// Ö´ï¿½Ð³É¹ï¿½
         /// </summary>
         succeed,
         /// <summary>
-        /// Ö´ÐÐÊ§°Ü
+        /// Ö´ï¿½ï¿½Ê§ï¿½ï¿½
         /// </summary>
         fail,
     }
@@ -17,20 +17,20 @@ namespace HTN
     {
         public PrimitiveTask(DomainBase domain, string name, TaskType t, List<HTNCondition> c = null) : base(domain, name, t, c)
         {
-
+            bevList = new List<BevBase>();
         }
         /// <summary>
-        /// Ö´ÐÐºó»á¶ÔÊÀ½çÔì³ÉµÄÓ°Ïì
+        /// Ö´ï¿½Ðºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Éµï¿½Ó°ï¿½ï¿½
         /// </summary>
         public Action<WorldState> ApplyEffects;
         /// <summary>
-        /// ÆÚÍûÓ°Ïì£¨Ö»ÔÚ¹æ»®¡¢¼ì²é½×¶Î¶ÔÊÀ½ç×´Ì¬²úÉúÓ°Ïì£©
+        /// ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì£¨Ö»ï¿½Ú¹æ»®ï¿½ï¿½ï¿½ï¿½ï¿½×¶Î¶ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì£©
         /// </summary>
         public Action<WorldState> ApplyExpectedEffects;
 
         public List<BevBase> bevList;
         /// <summary>
-        /// Ìí¼Ó¶ÔÊÀ½çµÄÓ°Ïìº¯Êý
+        /// ï¿½ï¿½ï¿½Ó¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ìº¯ï¿½ï¿½
         /// </summary>
         /// <returns></returns>
         public PrimitiveTask AddEffects(Action<WorldState> a)
@@ -39,9 +39,9 @@ namespace HTN
             return this;
         }
         /// <summary>
-        /// Ìí¼Ó ¶ÔÊÀ½ç×´Ì¬Ê©¼ÓÓ°Ïì µÄÎ¯ÍÐ£ºÆÚÍûÓ°Ïì£¨Ö»ÔÚ¹æ»®¡¢¼ì²é½×¶Î¶ÔÊÀ½ç×´Ì¬²úÉúÓ°Ïì£©
+        /// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬Ê©ï¿½ï¿½Ó°ï¿½ï¿½ ï¿½ï¿½Î¯ï¿½Ð£ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì£¨Ö»ï¿½Ú¹æ»®ï¿½ï¿½ï¿½ï¿½ï¿½×¶Î¶ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ì£©
         /// </summary>
-        /// <param name="applyExpectedEffects">ÆÚÍûÓ°Ïì</param>
+        /// <param name="applyExpectedEffects">ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½</param>
         /// <returns></returns>
         public PrimitiveTask AddExpectedEffects(Action<WorldState> applyExpectedEffects)
         {
@@ -49,7 +49,7 @@ namespace HTN
             return this;
         }
         /// <summary>
-        /// Ö´ÐÐµ±Ç°ÐÐÎª
+        /// Ö´ï¿½Ðµï¿½Ç°ï¿½ï¿½Îª
         /// </summary>
         /// <returns></returns>
         public virtual HTNResults Execute()
@@ -66,7 +66,8 @@ namespace HTN
 
         public PrimitiveTask AddBev(BevBase bev)
         {
-            bevList.Add(bev);
+            if (bevList != null && bev != null)
+                bevList.Add(bev);
             return this;
         }
     }

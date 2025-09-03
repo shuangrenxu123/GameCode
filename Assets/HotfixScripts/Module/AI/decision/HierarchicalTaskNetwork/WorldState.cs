@@ -5,62 +5,88 @@ using UnityEngine;
 namespace HTN
 {
     /// <summary>
-    /// »ù±¾µÄµÄÊÀ½ç×´Ì¬ĞÅÏ¢¡£
+    /// ä¸–ç•Œçš„ä¸–ç•ŒçŠ¶æ€ä¿¡æ¯
     /// </summary>
     public enum WSProperties
     {
         /// <summary>
-        /// ËùÔÚÎ»ÖÃ£¨Enum£©
+        /// å½“å‰ä½ç½®ï¼ŒEnumç±»å‹
         /// </summary>
         WS_Location,
+
         /// <summary>
-        /// ÊÇ·ñ¿ÉÒÔ¿´¼ûµĞÈË£¨Bool£©
+        /// æ˜¯å¦èƒ½çœ‹è§æ•Œäººï¼ŒBoolç±»å‹
         /// </summary>
         WS_CanSeeEnemy,
+
         /// <summary>
-        /// Ê÷¸É£¨ÎäÆ÷£©ÄÍ¾Ã¶È£¨Int£©
+        /// æ ‘å¹²å¥åº·åº¦ï¼ŒIntç±»å‹
         /// </summary>
         WS_TrunkHealth,
+
         /// <summary>
-        /// ×î½üÊÇ·ñ¿´¼û¹ıµĞÈË£¨Bool£©
+        /// æ˜¯å¦æœ€è¿‘çœ‹è§æ•Œäººï¼ŒBoolç±»å‹
         /// </summary>
         WS_HasSeenEnemyRecently,
+
         /// <summary>
-        /// ½üÆÚÊÇ·ñ¹¥»÷¹ı£¨Bool£©
+        /// æ˜¯å¦æœ€è¿‘è¢«æ”»å‡»ï¼ŒBoolç±»å‹
         /// </summary>
         WS_AttackedRecently,
+
         /// <summary>
-        /// ÊÇ·ñ¿ÉÑ°Â·µ½µĞÈËÎ»ÖÃ£¨Bool£©
+        /// æ˜¯å¦èƒ½å¯¼èˆªåˆ°æ•Œäººä½ç½®ï¼ŒBoolç±»å‹
         /// </summary>
         WS_CanNavigateToEnemy,
+
+        /// <summary>
+        /// å†œå¤«ä½“åŠ›å€¼ï¼ŒIntç±»å‹
+        /// </summary>
+        WS_FarmerStamina,
+
+        /// <summary>
+        /// æœ¨ææ•°é‡ï¼ŒIntç±»å‹
+        /// </summary>
+        WS_WoodCount,
+
+        /// <summary>
+        /// æ–§å¤´è€ä¹…åº¦ï¼ŒIntç±»å‹
+        /// </summary>
+        WS_AxeDurability,
     }
+
     public enum Location
     {
         /// <summary>
-        /// ÔÚµĞÈË¸½½ü
+        /// æ•Œäººé™„è¿‘
         /// </summary>
         EnemyLocRef,
+
         /// <summary>
-        /// ÇÅ¸½½ü
+        /// æ¡¥é™„è¿‘
         /// </summary>
         NextBridgeLocRef,
+
         /// <summary>
-        /// Ê÷¸É¸½½ü
+        /// æ‰¾åˆ°çš„æ ‘å¹²
         /// </summary>
         FoundTrunk,
+
         /// <summary>
-        /// ×î½üÒ»´ÎµĞÈËµÄÎ»ÖÃ
+        /// æœ€åä¸€æ¬¡æ•Œäººçš„ä½ç½®
         /// </summary>
         LastEnemyPos,
     }
+
     public class WorldState
     {
         public WorldState()
         {
             Reset();
         }
+
         /// <summary>
-        /// ÊÀ½ç×´Ì¬µÄ»º´æ
+        /// ä¸–ç•ŒçŠ¶æ€çš„å­˜å‚¨
         /// </summary>
         private Dictionary<WSProperties, Enum> wsEnum;
         private Dictionary<WSProperties, int> wsInt;
@@ -69,7 +95,7 @@ namespace HTN
         private Dictionary<WSProperties, object> wsObj;
 
         /// <summary>
-        /// ÖØÖÃÊı¾İ
+        /// åˆå§‹åŒ–è®¾ç½®
         /// </summary>
         public void Reset()
         {
@@ -85,8 +111,13 @@ namespace HTN
             Add(WSProperties.WS_AttackedRecently, false);
             Add(WSProperties.WS_CanNavigateToEnemy, true);
 
+            // å†œå¤«Demoçš„åˆå§‹çŠ¶æ€
+            Add(WSProperties.WS_FarmerStamina, 100);  // åˆå§‹ä½“åŠ›100
+            Add(WSProperties.WS_WoodCount, 0);       // åˆå§‹æœ¨æ0
+            Add(WSProperties.WS_AxeDurability, 10);  // åˆå§‹æ–§å¤´è€ä¹…10
         }
-        #region Add:Ìí¼ÓÊÀ½ç×´Ì¬ÊôĞÔ
+
+        #region Add:æ·»åŠ ä¸–ç•ŒçŠ¶æ€å±æ€§
         public void Add(WSProperties p, Enum v)
         {
             wsEnum[p] = v;
@@ -108,7 +139,8 @@ namespace HTN
             wsObj[p] = v;
         }
         #endregion
-        #region Get:»ñµÃÊÀ½ç×´Ì¬ÊôĞÔ
+
+        #region Get:è·å–ä¸–ç•ŒçŠ¶æ€å±æ€§
         public Enum GetEnum(WSProperties p)
         {
             return wsEnum[p];
@@ -130,12 +162,13 @@ namespace HTN
             return wsObj[p];
         }
         #endregion
-        #region Set:ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+
+        #region Set:è®¾ç½®ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// <summary>
-        /// ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+        /// è®¾ç½®æšä¸¾ç±»å‹çš„ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// </summary>
-        /// <param name="propType">ÊôĞÔÃ¶¾Ù</param>
-        /// <param name="value">ÊôĞÔÖµ</param>
+        /// <param name="propType">å±æ€§ç±»å‹</param>
+        /// <param name="value">å±æ€§å€¼</param>
         /// <returns></returns>
         public bool Set(WSProperties propType, Enum value)
         {
@@ -147,10 +180,10 @@ namespace HTN
             return false;
         }
         /// <summary>
-        /// ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+        /// è®¾ç½®intç±»å‹çš„ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// </summary>
-        /// <param name="propType">ÊôĞÔÃ¶¾Ù</param>
-        /// <param name="value">ÊôĞÔÖµ</param>
+        /// <param name="propType">å±æ€§ç±»å‹</param>
+        /// <param name="value">å±æ€§å€¼</param>
         /// <returns></returns>
         public bool Set(WSProperties propType, int value)
         {
@@ -162,10 +195,10 @@ namespace HTN
             return false;
         }
         /// <summary>
-        /// ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+        /// è®¾ç½®boolç±»å‹çš„ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// </summary>
-        /// <param name="propType">ÊôĞÔÃ¶¾Ù</param>
-        /// <param name="value">ÊôĞÔÖµ</param>
+        /// <param name="propType">å±æ€§ç±»å‹</param>
+        /// <param name="value">å±æ€§å€¼</param>
         /// <returns></returns>
         public bool Set(WSProperties propType, bool value)
         {
@@ -177,10 +210,10 @@ namespace HTN
             return false;
         }
         /// <summary>
-        /// ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+        /// è®¾ç½®floatç±»å‹çš„ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// </summary>
-        /// <param name="propType">ÊôĞÔÃ¶¾Ù</param>
-        /// <param name="value">ÊôĞÔÖµ</param>
+        /// <param name="propType">å±æ€§ç±»å‹</param>
+        /// <param name="value">å±æ€§å€¼</param>
         /// <returns></returns>
         public bool Set(WSProperties propType, float value)
         {
@@ -192,10 +225,10 @@ namespace HTN
             return false;
         }
         /// <summary>
-        /// ÉèÖÃÊÀ½ç×´Ì¬ÊôĞÔ
+        /// è®¾ç½®objectç±»å‹çš„ä¸–ç•ŒçŠ¶æ€å±æ€§
         /// </summary>
-        /// <param name="propType">ÊôĞÔÃ¶¾Ù</param>
-        /// <param name="value">ÊôĞÔÖµ</param>
+        /// <param name="propType">å±æ€§ç±»å‹</param>
+        /// <param name="value">å±æ€§å€¼</param>
         /// <returns></returns>
         public bool Set(WSProperties propType, object value)
         {
@@ -207,9 +240,10 @@ namespace HTN
             return false;
         }
         #endregion
-        #region Contains£ºÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+
+        #region Containsæ£€æŸ¥æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// <summary>
-        /// ÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+        /// æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// </summary>
         /// <param name="cond"></param>
         /// <returns></returns>
@@ -222,7 +256,7 @@ namespace HTN
             return true;
         }
         /// <summary>
-        /// ÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+        /// æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// </summary>
         /// <param name="cond"></param>
         /// <returns></returns>
@@ -235,7 +269,7 @@ namespace HTN
             return true;
         }
         /// <summary>
-        /// ÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+        /// æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// </summary>
         /// <param name="cond"></param>
         /// <returns></returns>
@@ -248,7 +282,7 @@ namespace HTN
             return true;
         }
         /// <summary>
-        /// ÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+        /// æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// </summary>
         /// <param name="cond"></param>
         /// <returns></returns>
@@ -261,7 +295,7 @@ namespace HTN
             return true;
         }
         /// <summary>
-        /// ÊÇ·ñ°üº¬Ä³Ğ©Ìõ¼ş
+        /// æ˜¯å¦åŒ…å«æŸäº›å±æ€§
         /// </summary>
         /// <param name="cond"></param>
         /// <returns></returns>
@@ -274,8 +308,9 @@ namespace HTN
             return true;
         }
         #endregion
+
         /// <summary>
-        /// ·µ»ØÒ»¸öÊÀ½ç×´Ì¬µÄ¸±±¾
+        /// ä»å¦ä¸€ä¸ªä¸–ç•ŒçŠ¶æ€å¤åˆ¶
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
@@ -305,32 +340,54 @@ namespace HTN
         }
 
         /// <summary>
-        /// ´òÓ¡ÊÀ½ç×´Ì¬£¨²âÊÔÊ¹ÓÃ£©
+        /// æ‰“å°ä¸–ç•ŒçŠ¶æ€ä¿¡æ¯ç”¨äºè°ƒè¯•
         /// </summary>
         public void LogWorldState(string title)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (var item in wsEnum)
+            if (wsEnum != null)
             {
-                sb.Append("//ÊÀ½çÊôĞÔ£º").Append(item.Key.ToString()).Append("--ÊôĞÔÖµ£º").Append(item.Value.ToString()).Append("//\n");
+                foreach (var item in wsEnum)
+                {
+                    sb.Append("//çŠ¶æ€å±æ€§ï¼š").Append(item.Key.ToString()).Append("--çŠ¶æ€å€¼ï¼š").Append(item.Value?.ToString()).Append("//\n");
+                }
             }
-            foreach (var item in wsInt)
+            if (wsInt != null)
             {
-                sb.Append("//ÊÀ½çÊôĞÔ£º").Append(item.Key.ToString()).Append("--ÊôĞÔÖµ£º").Append(item.Value.ToString()).Append("//\n");
+                foreach (var item in wsInt)
+                {
+                    sb.Append("//çŠ¶æ€å±æ€§ï¼š").Append(item.Key.ToString()).Append("--çŠ¶æ€å€¼ï¼š").Append(item.Value.ToString()).Append("//\n");
+                }
             }
-            foreach (var item in wsBool)
+            if (wsBool != null)
             {
-                sb.Append("//ÊÀ½çÊôĞÔ£º").Append(item.Key.ToString()).Append("--ÊôĞÔÖµ£º").Append(item.Value.ToString()).Append("//\n");
+                foreach (var item in wsBool)
+                {
+                    sb.Append("//çŠ¶æ€å±æ€§ï¼š").Append(item.Key.ToString()).Append("--çŠ¶æ€å€¼ï¼š").Append(item.Value.ToString()).Append("//\n");
+                }
             }
-            foreach (var item in wsFloat)
+            if (wsFloat != null)
             {
-                sb.Append("//ÊÀ½çÊôĞÔ£º").Append(item.Key.ToString()).Append("--ÊôĞÔÖµ£º").Append(item.Value.ToString()).Append("//\n");
+                foreach (var item in wsFloat)
+                {
+                    sb.Append("//çŠ¶æ€å±æ€§ï¼š").Append(item.Key.ToString()).Append("--çŠ¶æ€å€¼ï¼š").Append(item.Value.ToString()).Append("//\n");
+                }
             }
-            foreach (var item in wsObj)
+            if (wsObj != null)
             {
-                sb.Append("//ÊÀ½çÊôĞÔ£º").Append(item.Key.ToString()).Append("--ÊôĞÔÖµ£º").Append(item.Value.ToString()).Append("//\n");
+                foreach (var item in wsObj)
+                {
+                    sb.Append("//çŠ¶æ€å±æ€§ï¼š").Append(item.Key.ToString()).Append("--çŠ¶æ€å€¼ï¼š").Append(item.Value?.ToString()).Append("//\n");
+                }
             }
-            Debug.LogWarning(title + "  LogWorldState£º\n" + sb.ToString());
+            // æ˜¾ç¤ºç²¾ç®€çš„çŠ¶æ€æ¦‚è§ˆ
+            string toolStatus = GetInt(WSProperties.WS_AxeDurability) > 0
+                ? $"æ–§å¤´(è€é»˜: {GetInt(WSProperties.WS_AxeDurability)}/10)"
+                : "å¾’æ‰‹(æ— æ–§å¤´)";
+
+            Debug.LogWarning($"{title} çŠ¶æ€ | ä½“:{GetInt(WSProperties.WS_FarmerStamina)} | æœ¨:{GetInt(WSProperties.WS_WoodCount)} | å·¥å…·:{toolStatus}");
+            // å¦‚æœéœ€è¦è¯¦ç»†æ—¥å¿—ï¼Œå¯ä»¥å–æ¶ˆæ³¨é‡Šä¸‹é¢çš„è¡Œ
+            // Debug.Log(sb.ToString());
         }
     }
 }

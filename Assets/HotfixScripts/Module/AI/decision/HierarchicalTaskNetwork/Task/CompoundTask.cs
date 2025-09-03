@@ -1,13 +1,14 @@
 using System.Collections.Generic;
+using UnityEngine;
 namespace HTN
 {
     public class Method
     {
         public int id;
-        // ÕâÀïĞ´ÉÏÒ»¸öÌõ¼ş¿ÉÒÔ¿ìËÙÌø¹ı¼ì²â
+        // ï¿½ï¿½ï¿½ï¿½Ğ´ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         public HTNCondition cond;
         /// <summary>
-        /// ¸ÃMethodÏÂµÄ×Ó·½·¨,ÒòÎªÓĞ¿ÉÄÜ»áÓĞ·ÖÖ§£¬ËùÒÔÓ¦¸ÃÊÇĞ´Taskbase
+        /// ï¿½ï¿½Methodï¿½Âµï¿½ï¿½Ó·ï¿½ï¿½ï¿½,ï¿½ï¿½Îªï¿½Ğ¿ï¿½ï¿½Ü»ï¿½ï¿½Ğ·ï¿½Ö§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ğ´Taskbase
         /// </summary>
         public List<TaskBase> SubTasks;
         public Method(int id, HTNCondition c = null)
@@ -47,19 +48,33 @@ namespace HTN
         }
 
         /// <summary>
-        /// ´«ÈëÊÀ½ç×´Ì¬£¬È»ºó¼ì²éÄÄ¸ömethodÊÇ¸´ºÏ½á¹ûµÄÈ»ºó·µ»Ø¶ÔÓ¦µÄmethod
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½methodï¿½Ç¸ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ï¿½È»ï¿½ó·µ»Ø¶ï¿½Ó¦ï¿½ï¿½method
         /// </summary>
         /// <param name="ws"></param>
         /// <returns></returns>
         public Method FindValidMethod(WorldState ws)
         {
+            if (methods == null || ws == null)
+            {
+                Debug.LogError("FindValidMethod: æ–¹æ³•åˆ—è¡¨æˆ–ä¸–ç•ŒçŠ¶æ€ä¸ºç©º");
+                return null;
+            }
+
             foreach (var i in methods)
             {
+                if (i == null || i.cond == null)
+                {
+                    continue;
+                }
+
+                // æ£€æŸ¥æ¡ä»¶ - é™¤äº†åœ¨StaminaConditionä¸­ä¿æŒå¿…è¦æ—¥å¿—ï¼Œå…¶ä»–ä¸€å¾‹ç§»é™¤è¯¦ç»†è°ƒè¯•æ‰“å°
                 if (i.cond.Check(ws))
                 {
                     return i;
                 }
             }
+
+            Debug.LogError($"å¤åˆä»»åŠ¡ '{Name}' æ²¡æœ‰æ‰¾åˆ°ä»»ä½•æœ‰æ•ˆçš„æ–¹æ³•ï¼æ‰€æœ‰ {methods.Count} ä¸ªæ–¹æ³•æ¡ä»¶éƒ½ä¸æ»¡è¶³ã€‚");
             return null;
         }
     }

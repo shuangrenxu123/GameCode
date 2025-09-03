@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace HTN
 {
@@ -6,15 +7,15 @@ namespace HTN
     {
         protected List<TaskBase> mTaskToProcess = new List<TaskBase>();
         /// <summary>
-        /// ×îÖÕÍÆÑİ³öÀ´µÄ¼Æ»®
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ³ï¿½ï¿½ï¿½ï¿½Ä¼Æ»ï¿½
         /// </summary>
         protected List<PrimitiveTask> mFinalPlan = new List<PrimitiveTask>();
         /// <summary>
-        /// µ±Ç°ÍÆÑİÖĞµÄMethod
+        /// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½Ğµï¿½Method
         /// </summary>
         protected Method mCurMethod;
         /// <summary>
-        /// ËùÁ¥ÊôµÄ¸´ºÏ½Úµã
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½Ï½Úµï¿½
         /// </summary>
         protected TaskBase mBelongCompound;
 
@@ -59,28 +60,28 @@ namespace HTN
     public class Planner
     {
         /// <summary>
-        /// µ±Ç°ÊÀ½ç×´Ì¬
+        /// ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½×´Ì¬
         /// </summary>
         protected WorldState mCurWorldState;
         /// <summary>
-        /// ¹¤×÷ÊÀ½ç×´Ì¬£¨ÊÀ½ç×´Ì¬µÄ¸±±¾£©
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         protected WorldState mWorkingWorldState;
 
         /// <summary>
-        /// Task¼¯ºÏµÄ¸±±¾
+        /// Taskï¿½ï¿½ï¿½ÏµÄ¸ï¿½ï¿½ï¿½
         /// </summary>
         protected List<TaskBase> mTaskList = new();
         /// <summary>
-        /// ´ı´¦ÀíµÄTask
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Task
         /// </summary>
         protected Stack<TaskBase> mTaskToProcess = new();
         /// <summary>
-        /// ×îÖÕÈÎÎñ¶ÓÁĞ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         protected Queue<PrimitiveTask> mFinalPlan = new();
         ///<summary>
-        ///µ±Ç°ÈÎÎñ
+        ///ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
         ///</summary>
         protected TaskBase mCurTask;
 
@@ -89,57 +90,74 @@ namespace HTN
         {
             mCurWorldState = ws;
             mDomain = domain;
+            mWorkingWorldState = new WorldState();
             mWorkingWorldState.CopyFrom(ws);
             CopyDomain(domain);
         }
         public void Reset()
         {
-            mCurWorldState.Reset();
-            mWorkingWorldState.Reset();
+            if (mCurWorldState != null)
+                mCurWorldState.Reset();
+            if (mWorkingWorldState != null)
+                mWorkingWorldState.Reset();
             mTaskList.Clear();
             mTaskToProcess.Clear();
         }
 
         /// <summary>
-        /// Éú³ÉÔ¤²â¼Æ»®±í
+        /// ï¿½ï¿½ï¿½ï¿½Ô¤ï¿½ï¿½Æ»ï¿½ï¿½ï¿½
         /// </summary>
         public void BuildPlan()
         {
+            if (mCurWorldState == null || mWorkingWorldState == null || mTaskList == null || mTaskList.Count == 0)
+            {
+                Debug.LogError($"Planner.BuildPlan: ç¼ºå¤±è§„åˆ’ç»„ä»¶ - WS:{mCurWorldState != null}, WorkingWS:{mWorkingWorldState != null}, Tasks:{mTaskList?.Count ?? 0}");
+                return;
+            }
+    
+
             mWorkingWorldState.CopyFrom(mCurWorldState);
             Method vaildmethod = null;
             CompoundTask cTask = null;
             PrimitiveTask pTask = null;
             PlanMemento memento = new PlanMemento();
+            mFinalPlan.Clear();  // æ¸…ç©ºä¹‹å‰çš„è§„åˆ’
+            mTaskToProcess.Clear();
+
             mTaskToProcess.Push(mTaskList[0]);
+
             while (mTaskToProcess.Count > 0)
             {
                 mCurTask = mTaskToProcess.Pop();
+
                 if (mCurTask.type == TaskType.Compound)
                 {
                     cTask = mCurTask as CompoundTask;
                     vaildmethod = cTask.FindValidMethod(mWorkingWorldState);
-                    if (vaildmethod != null)
+                    if (vaildmethod != null && vaildmethod.SubTasks != null)
                     {
                         memento.Save(mTaskToProcess, mFinalPlan, vaildmethod, cTask);
                         InsertTop(vaildmethod.SubTasks);
                     }
-
                     else
                     {
+                        Debug.LogWarning($"å¤åˆä»»åŠ¡ \"{cTask.Name}\" æ‰¾ä¸åˆ°æœ‰æ•ˆæ–¹æ³•ï¼Œå¼€å§‹å›é€€...");
                         memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref vaildmethod, ref mCurTask);
                     }
                 }
                 else
                 {
                     pTask = mCurTask as PrimitiveTask;
-                    if (pTask.CheckTaskConditions())
+                    if (pTask.CheckTaskConditions(mWorkingWorldState))
                     {
                         pTask.ApplyEffects(mWorkingWorldState);
-                        pTask.ApplyExpectedEffects(mWorkingWorldState);
+                        if (pTask.ApplyExpectedEffects != null)
+                            pTask.ApplyExpectedEffects(mWorkingWorldState);
                         mFinalPlan.Enqueue(pTask);
                     }
                     else
                     {
+                        Debug.LogWarning($"åŸå­ä»»åŠ¡ \"{pTask.Name}\" æ¡ä»¶ä¸æ»¡è¶³ï¼Œå¼€å§‹å›é€€...");
                         memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref vaildmethod, ref mCurTask);
                     }
                 }
@@ -148,13 +166,19 @@ namespace HTN
 
         public void InsertTop(List<TaskBase> tasks)
         {
+            if (tasks == null || mTaskToProcess == null)
+                return;
+
             for (int i = tasks.Count - 1; i >= 0; i--)
             {
-                mTaskToProcess.Push(tasks[i]);
+                if (tasks[i] != null)
+                {
+                    mTaskToProcess.Push(tasks[i]);
+                }
             }
         }
         /// <summary>
-        /// »ñµÃ×îÖÕµÄ³ÉĞÍ¼Æ»®±í
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÕµÄ³ï¿½ï¿½Í¼Æ»ï¿½ï¿½ï¿½
         /// </summary>
         /// <returns></returns>
         public Queue<PrimitiveTask> GetFinalTask()
@@ -163,13 +187,16 @@ namespace HTN
         }
 
         /// <summary>
-        /// ¸üĞÂÊÀ½ç×´Ì¬
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
         /// </summary>
         /// <param name="ws"></param>
         public void UpdateCurWorldState(WorldState ws)
         {
             mCurWorldState = ws;
-            mWorkingWorldState.CopyFrom(ws);
+            if (mWorkingWorldState != null)
+                mWorkingWorldState.CopyFrom(ws);
+            else
+                Debug.LogWarning("UpdateCurWorldState: mWorkingWorldState is null");
         }
 
         public void CopyDomain(DomainBase domain)
