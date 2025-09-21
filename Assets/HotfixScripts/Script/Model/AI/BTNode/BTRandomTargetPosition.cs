@@ -1,11 +1,11 @@
 using BT;
 using UnityEngine;
 
-public class BTRandomTargetPosition : BTAction
+public class BTRandomTargetPosition<TKey, TValue> : BTAction<TKey, TValue>
 {
     private CharacterActor actor;
     private Transform target;
-    public string setDataName;
+    public TKey setDataName;
 
     public Vector2 Range;
     public BTRandomTargetPosition()
@@ -13,11 +13,11 @@ public class BTRandomTargetPosition : BTAction
         target = new GameObject("target").transform;
 
     }
-    public override void Activate(DataBase database)
+    public override void Activate(DataBase<TKey, TValue> database)
     {
         base.Activate(database);
-        actor = database.GetData<CharacterActor>("actor");
-        database.SetData(setDataName, target);
+        actor = database.GetData<CharacterActor>((dynamic)"actor");
+        database.SetData(setDataName, (dynamic)target);
     }
     protected override BTResult Execute()
     {

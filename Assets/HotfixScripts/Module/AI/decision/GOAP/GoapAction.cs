@@ -4,135 +4,73 @@ using UnityEngine;
 namespace GOAP
 {
     /// <summary>
-    /// ×îÖÕµÄÖ´ĞĞ½Úµã£¬
+    ///  åŸºç¡€çš„GOAPè¡Œä¸º
     /// </summary>
-    public abstract class GoapAction
+    public abstract class GoapAction<T, V>
     {
         /// <summary>
-        /// Ç°ÖÃÌõ¼ş
+        /// è¡Œä¸ºæ‰€éœ€è¦çš„å‰ç½®æ¡ä»¶
         /// </summary>
-        private HashSet<KeyValuePair<string, object>> preconditions;
-        /// <summary>
-        /// Ö´ĞĞµÄÓ°Ïì
-        /// </summary>
-        private HashSet<KeyValuePair<string, object>> effects;
-        /// <summary>
-        /// ÊÇ·ñÔÚ·¶Î§ÄÚ
-        /// </summary>
-        private bool inRange = false;
-        /// <summary>
-        /// ³É±¾£¨´ú¼Û£©
-        /// </summary>
-        public float cost = 1f;
-        /// <summary>
-        /// Òª²Ù×÷µÄÎïÌå,µ«ÊÇ²»Ò»¶¨ÓĞ
-        /// </summary>
-        public GameObject target = null;
-        public GoapAction()
-        {
-            preconditions = new HashSet<KeyValuePair<string, object>>();
-            effects = new HashSet<KeyValuePair<string, object>>();
-        }
-        /// <summary>
-        /// ÖØÖÃ
-        /// </summary>
-        public void doReset()
-        {
-            inRange = false;
-            target = null;
-            Reset();
-        }
-        /// <summary>
-        /// ÖØÖÃ
-        /// </summary>
-        protected abstract void Reset();
-        /// <summary>
-        /// ÊÇ·ñ½áÊø
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool isDone();
-        /// <summary>
-        /// ¼ì²éÊÇ·ñ¿ÉÒÔÔËĞĞ£¬²»Ò»¶¨ËùÓĞµÄĞèÒª
-        /// </summary>
-        /// <param name="gameObject"></param>
-        /// <returns></returns>
-        public abstract bool CheckProceduralPreconition(HashSet<KeyValuePair<string, object>> state);
-        /// <summary>
-        /// ÔËĞĞaction£¬ÒòÎªÓĞĞ©Çé¿ö»á´ò¶ÏÔËĞĞ£¬ËùÒÔĞèÒª·µ»ØÖµ
-        /// </summary>
-        /// <param name="target"></param>
-        /// <returns>ÊÇ·ñÔËĞĞ³É¹¦</returns>
-        public abstract bool Perform(GameObject target);
-        /// <summary>
-        /// ÎïÌåÊÇ·ñĞèÒªÔÚ·¶Î§ÄÚ£¬
-        /// </summary>
-        /// <returns></returns>
-        public abstract bool RequiresInRange();
-        /// <summary>
-        /// ÊÇ·ñÔÚ·¶Î§ÄÚ
-        /// </summary>
-        /// <returns></returns>
-        public bool IsInRange()
-        {
-            return inRange;
-        }
-        public void SetInRange(bool inrange)
-        {
-            inRange = inrange;
-        }
+        protected Dictionary<T, V> preconditions;
 
-        #region Ìí¼ÓºÍÒÆ³ı  Ç°ÖÃÓëÓ°Ïì
-        public void AddPrecondition(string key, object value)
-        {
-            preconditions.Add(new KeyValuePair<string, object>(key, value));
-        }
-        public void RemovePrecondition(string key)
-        {
-            KeyValuePair<string, object> temp = default;
-            foreach (var i in preconditions)
-            {
-                if (i.Key == key)
-                {
-                    temp = i;
-                    break;
-                }
-            }
-            preconditions.Remove(temp);
-        }
-        public void AddEffect(string key, object value)
-        {
-            effects.Add(new KeyValuePair<string, object>(key, value));
-        }
-        public void RemoveEffect(string key)
-        {
-            KeyValuePair<string, object> temp = default;
-            foreach (var i in effects)
-            {
-                if (i.Key == key)
-                {
-                    temp = i;
-                    break;
-                }
-            }
-            effects.Remove(temp);
-        }
-        #endregion
         /// <summary>
-        /// ·µ»ØÇ°ÖÃÌõ¼ş
+        /// è¡Œä¸ºæ‰§è¡Œå®Œæ¯•åé€ æˆçš„å½±å“
         /// </summary>
-        public HashSet<KeyValuePair<string, object>> Preconditions
+        protected Dictionary<T, V> effects;
+
+        public Dictionary<T, V> Preconditions
         {
             get
             {
                 return preconditions;
             }
         }
-        public HashSet<KeyValuePair<string, object>> Effects
+        public Dictionary<T, V> Effects
         {
             get
             {
                 return effects;
             }
+        }
+        /// <summary>
+        /// è¡Œä¸ºä»£ä»·
+        /// </summary>
+        public float cost = 1f;
+
+        public string name = "";
+        protected bool executed = false;
+        public GoapAction()
+        {
+            preconditions = new();
+            effects = new();
+        }
+
+
+        public bool IsDone()
+        {
+            return executed;
+        }
+
+        protected abstract void Reset();
+
+        public abstract bool CheckProceduralPreCondition(Dictionary<T, V> state);
+
+
+        public virtual void PlanEnter()
+        {
+            executed = false;
+        }
+
+        public virtual void PlanExecute()
+        {
+            if (!executed)
+            {
+                Debug.Log("Executing: " + name);
+            }
+        }
+        public virtual void PlanExit()
+        {
+
         }
     }
 }

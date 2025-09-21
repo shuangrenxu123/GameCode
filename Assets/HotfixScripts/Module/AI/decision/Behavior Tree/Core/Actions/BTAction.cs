@@ -3,7 +3,7 @@ namespace BT
     /// <summary>
     /// 最终的执行的节点，只能为叶子节点
     /// </summary>
-    public class BTAction : BTNode
+    public class BTAction<TKey, TValue> : BTNode<TKey, TValue>
     {
         private BTActionStatus status = BTActionStatus.Ready;
 

@@ -1,7 +1,7 @@
 using BT;
 using UnityEngine;
 
-public class BTMoveAction : BTAction
+public class BTMoveAction<TKey, TValue> : BTAction<TKey, TValue>
 {
     private Transform targetTransform;
     private float speed;
@@ -14,19 +14,19 @@ public class BTMoveAction : BTAction
     {
         this.speed = speed;
     }
-    public override void Activate(DataBase database)
+    public override void Activate(DataBase<TKey, TValue> database)
     {
         base.Activate(database);
 
-        actor = database.GetData<CharacterActor>("actor");
-        control = database.GetData<EnemyAIControl>("control");
+        actor = database.GetData<CharacterActor>((dynamic)"actor");
+        control = database.GetData<EnemyAIControl>((dynamic)"control");
 
 
     }
     protected override void Enter()
     {
         base.Enter();
-        targetTransform = database.GetData<Transform>("target");
+        targetTransform = database.GetData<Transform>((dynamic)"target");
         var moveAnim = config.linearMixerAnimators["move"];
         control.anim.Play(moveAnim);
         moveAnim.State.Parameter = speed;

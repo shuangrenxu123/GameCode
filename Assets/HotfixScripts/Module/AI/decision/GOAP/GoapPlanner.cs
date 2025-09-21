@@ -4,54 +4,93 @@ using UnityEngine;
 
 namespace GOAP
 {
-    public class GoapPlanner
+    class Node<T, V>
+    {
+        /// <summary>
+        /// çˆ¶èŠ‚ç‚¹
+        /// </summary>
+        public Node<T, V> parent;
+
+        /// <summary>
+        /// è¿è¡Œæ—¶ä»£ä»·
+        /// </summary>
+        public float runningCost;
+
+        public Dictionary<T, V> state;
+
+        /// <summary>
+        /// Action
+        /// </summary>
+        public GoapAction<T, V> action;
+
+        public Node(Node<T, V> parent, float runningCost, Dictionary<T, V> state, GoapAction<T, V> action)
+        {
+            this.parent = parent;
+            this.runningCost = runningCost;
+            this.state = state;
+            this.action = action;
+        }
+    }
+
+    public class GoapPlanner<T, V>
     {
 
-        public Queue<GoapAction> Plan(GameObject gameObject, HashSet<GoapAction> availableActions, HashSet<KeyValuePair<string, object>> worldState
-            , HashSet<KeyValuePair<string, object>> goal)
+        HashSet<GoapAction<T, V>> usableActions = new();
+
+        /// <summary>
+        /// å¶å­èŠ‚ç‚¹
+        /// </summary>
+        List<Node<T, V>> leavesNodes = new();
+
+        /// <summary>
+        /// ç”Ÿæˆè¡ŒåŠ¨è®¡åˆ’é˜Ÿåˆ—ã€‚è¿‡æ»¤å¯ç”¨è¡ŒåŠ¨ï¼Œæ„å»ºçŠ¶æ€å›¾æ‰¾åˆ°è¾¾åˆ°ç›®æ ‡çš„æœ€ä½ä»£ä»·è·¯å¾„ã€‚
+        /// </summary>
+        /// <param name="availableActions">æ‰€æœ‰å¯ç”¨è¡ŒåŠ¨é›†åˆ</param>
+        /// <param name="worldState">å½“å‰ä¸–ç•ŒçŠ¶æ€</param>
+        /// <param name="goal">ç›®æ ‡çŠ¶æ€</param>
+        /// <returns>å¦‚æœæ‰¾åˆ°è·¯å¾„ï¼Œè¿”å›è¡ŒåŠ¨é˜Ÿåˆ—ï¼›å¦åˆ™è¿”å›null</returns>
+        public Queue<GoapAction<T, V>> Plan(HashSet<GoapAction<T, V>> availableActions,
+            Dictionary<T, V> worldState,
+            Dictionary<T, V> goal)
         {
-            //ÖØÖÃËùÓĞĞĞÎª
+            usableActions.Clear();
             foreach (var a in availableActions)
             {
-                a.doReset();
-            }
-            //½«¿ÉÒÔÖ´ĞĞµÄaction·ÅÈëÀïÃæ
-            HashSet<GoapAction> usebleActions = new HashSet<GoapAction>();
-            foreach (var a in availableActions)
-            {
-                if (a.CheckProceduralPreconition(worldState))
+                if (a.CheckProceduralPreCondition(worldState))
                 {
-                    usebleActions.Add(a);
+                    usableActions.Add(a);
                 }
             }
-            List<Node> leaves = new List<Node>();
-            Node start = new Node(null, 0, worldState, null);
-            bool succes = BuildGraph(start, leaves, usebleActions, goal);
 
-            if (!succes)
+            leavesNodes.Clear();
+            Node<T, V> start = new(null, 0, worldState, null);
+            bool success = BuildGraph(start, leavesNodes, usableActions, goal);
+
+            if (!success)
             {
-                Debug.LogError("Ã»ÓĞÕÒµ½plan");
+                Debug.LogError("ã€GOAPã€‘æ²¡èƒ½æˆåŠŸæ‰¾åˆ°ä¸€ä¸ªå¯ç”¨çš„è¡Œä¸ºåˆ—è¡¨");
                 return null;
             }
-            Node cheapest = null;
-            ///ÕÒ³ö´ú¼Û×îĞ¡µÄÒ»ÌõÂ·¾¶
-            foreach (Node leaf in leaves)
+
+            Node<T, V> cheapestNode = null;
+            //æ‰¾åˆ°ä»£ä»·æœ€å°çš„èŠ‚ç‚¹
+            foreach (Node<T, V> leaf in leavesNodes)
             {
-                if (cheapest == null)
+                if (cheapestNode == null)
                 {
-                    cheapest = leaf;
+                    cheapestNode = leaf;
                 }
                 else
                 {
-                    if (leaf.runningCost < cheapest.runningCost)
+                    if (leaf.runningCost < cheapestNode.runningCost)
                     {
-                        cheapest = leaf;
+                        cheapestNode = leaf;
                     }
                 }
             }
 
-            List<GoapAction> result = new List<GoapAction>();
-            Node n = cheapest;
+            List<GoapAction<T, V>> result = new List<GoapAction<T, V>>();
+            Node<T, V> n = cheapestNode;
 
             while (n != null)
             {
@@ -61,58 +100,59 @@ namespace GOAP
                 }
                 n = n.parent;
             }
-            //ÖÁ´Ë¡£ÎÒÃÇ»ñµÃÁËÒ»¸öÕıÈ·µÄactionË³Ğò
-            Queue<GoapAction> queue = new();
+            Queue<GoapAction<T, V>> queue = new();
             foreach (var i in result)
             {
                 queue.Enqueue(i);
             }
             return queue;
         }
+
         /// <summary>
-        /// Éú³ÉÍ¼
+        /// é€’å½’æ„å»ºçŠ¶æ€æœç´¢å›¾ï¼Œæ¢ç´¢è¡ŒåŠ¨åºåˆ—ç›´åˆ°è¾¾åˆ°ç›®æ ‡çŠ¶æ€ã€‚
+        /// ä½¿ç”¨æ·±åº¦ä¼˜å…ˆæœç´¢ï¼Œå‰ªæè¡ŒåŠ¨ï¼Œæ”¶é›†åˆ°è¾¾ç›®æ ‡çš„å¶å­èŠ‚ç‚¹ã€‚
         /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="leaves"></param>
-        /// <param name="usebleActions"></param>
-        /// <param name="goal"></param>
-        /// <returns></returns>
-        private bool BuildGraph(Node parent, List<Node> leaves, HashSet<GoapAction> usebleActions, HashSet<KeyValuePair<string, object>> goal)
+        /// <param name="parent">å½“å‰çˆ¶èŠ‚ç‚¹</param>
+        /// <param name="leaves">æ”¶é›†çš„å¶å­èŠ‚ç‚¹åˆ—è¡¨ï¼ˆåˆ°è¾¾ç›®æ ‡çš„èŠ‚ç‚¹ï¼‰</param>
+        /// <param name="usableActions">å½“å‰å¯ç”¨çš„è¡ŒåŠ¨é›†åˆ</param>
+        /// <param name="goal">ç›®æ ‡çŠ¶æ€</param>
+        /// <returns>å¦‚æœæ‰¾åˆ°è·¯å¾„ï¼Œè¿”å›true</returns>
+        private bool BuildGraph(Node<T, V> parent,
+            List<Node<T, V>> leaves,
+            HashSet<GoapAction<T, V>> usableActions,
+            Dictionary<T, V> goal)
         {
             bool foundOnd = false;
-            foreach (var action in usebleActions)
+            foreach (var action in usableActions)
             {
-                //Ç°ÖÃÌõ¼şÒ²Ëãµ¥¶ÀµÄÊÀ½ç×´Ì¬
-                //if (InState(action.Preconditions, parent.state))
-                //{
-                //    //Èç¹ûÓĞ£¬ÄÇÎÒÃÇ³¢ÊÔ¸Ä±ä£¬È»ºó·µ»ØÖ´ĞĞºóµÄÊÀ½ç×´Ì¬¡£È»ºóÀ´³¢ÊÔ¿´¿´¸ü¸ÄºóµÄÊÀ½ç×´Ì¬Âú²»Âú×ãÒªÇóÖĞµÄ
-                //    HashSet<KeyValuePair<string, object>> currentState = PopulateState(parent.state, action.Effects);
-                //    //ÏÂÒ»¸ö½Úµã¡£
-                //    Node node = new Node(parent,parent.runningCost+action.cost,currentState,action);
-                //    //Ä¿±êÊÀ½ç×´Ì¬ºÍÖ´ĞĞÁËÒ»¸öµÄÊÀ½ç×´Ì¬
-                //    if (InState(goal,currentState))
-                //    {
-                //        leaves.Add(node);
-                //        foundOnd = true;
-                //    }
-                //    else
-                //    {
-                //        //»¹Ã»ÓĞ½â¾ö·½°¸£¬ËùÒÔ²âÊÔËùÓĞÊ£ÓàµÄ²Ù×÷²¢·ÖÖ§³öÊ÷
-                //        HashSet<GoapAction> subset = ActionSubset(usebleActions,action);
-                //        bool found = BuildGraph(node,leaves,subset,goal);
-                //        if (found)
-                //        {
-                //            foundOnd = true;
-                //        }
-                //    }
-                //}
-                HashSet<KeyValuePair<string, object>> currentWorldState = PopulateState(parent.state, action.Effects);
+                if (InState(action.Preconditions, parent.state))
+                {
+                    Dictionary<T, V> currentState = PopulateState(parent.state, action.Effects);
+                    Node<T, V> node = new(parent, parent.runningCost + action.cost, currentState, action);
+                    if (InState(goal, currentState))
+                    {
+                        leaves.Add(node);
+                        node.action.PlanEnter();
+                        foundOnd = true;
+                    }
+                    else
+                    {
+                        HashSet<GoapAction<T, V>> subset = ActionSubset(usableActions, action);
+                        bool found = BuildGraph(node, leaves, subset, goal);
+                        if (found)
+                        {
+                            foundOnd = true;
+                        }
+                    }
+                }
+
+                Dictionary<T, V> currentWorldState = PopulateState(parent.state, action.Effects);
                 if (InState(goal, currentWorldState))
                 {
-                    Node node = new Node(parent, parent.runningCost + action.cost, currentWorldState, action);
+                    Node<T, V> node = new(parent, parent.runningCost + action.cost, currentWorldState, action);
                     if (!InState(action.Preconditions, currentWorldState))
                     {
-                        HashSet<GoapAction> subset = ActionSubset(usebleActions, action);
+                        HashSet<GoapAction<T, V>> subset = ActionSubset(usableActions, action);
                         bool found = BuildGraph(node, leaves, subset, action.Preconditions);
                         if (found)
                         {
@@ -122,23 +162,23 @@ namespace GOAP
                     else
                     {
                         leaves.Add(node);
+                        node.action.PlanEnter();
                         foundOnd = true;
                     }
                 }
             }
             return foundOnd;
         }
+
         /// <summary>
-        /// ´´½¨³ıremoveMeÖ®Íâaction×÷×Ó¼¯¡£´´½¨ĞÂ¼¯ºÏ¡£
+        /// ä»è¡ŒåŠ¨é›†åˆä¸­ç§»é™¤æŒ‡å®šè¡ŒåŠ¨ï¼Œè¿”å›æ–°çš„å­é›†åˆï¼Œç”¨äºé€’å½’æœç´¢ä¸­çš„actionç»„åˆã€‚
         /// </summary>
-        /// <param name="usebleActions"></param>
-        /// <param name="action"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        private HashSet<GoapAction> ActionSubset(HashSet<GoapAction> actions, GoapAction removeMe)
+        /// <param name="actions">åŸå§‹è¡ŒåŠ¨é›†åˆ</param>
+        /// <param name="removeMe">è¦ç§»é™¤çš„è¡ŒåŠ¨</param>
+        /// <returns>ç§»é™¤æŒ‡å®šè¡ŒåŠ¨åçš„æ–°é›†åˆ</returns>
+        private HashSet<GoapAction<T, V>> ActionSubset(HashSet<GoapAction<T, V>> actions, GoapAction<T, V> removeMe)
         {
-            ///×Ó¼¯
-            HashSet<GoapAction> subset = new HashSet<GoapAction>();
+            HashSet<GoapAction<T, V>> subset = new();
             foreach (var a in actions)
             {
                 if (!a.Equals(removeMe))
@@ -148,94 +188,61 @@ namespace GOAP
             }
             return subset;
         }
+
         /// <summary>
-        /// Ó¦ÓÃÊÀ½ç×´Ì¬
+        /// æ ¹æ®è¡ŒåŠ¨çš„å½±å“æ›´æ–°çŠ¶æ€é›†ã€‚è‹¥çŠ¶æ€é”®å­˜åœ¨ï¼Œåˆ™ç´¯åŠ æ•°å€¼ï¼ˆæ”¯æŒå¢é‡ï¼‰ï¼›è‹¥ä¸å­˜åœ¨ï¼Œåˆ™æ·»åŠ æ–°é”®å€¼ã€‚
+        /// ä¿®æ”¹ç‰ˆæœ¬ï¼šå‡è®¾Vä¸ºintï¼Œæ”¯æŒå¢é‡è®¡ç®—è€Œéè¦†ç›–ã€‚
         /// </summary>
-        /// <param name="state"></param>
-        /// <param name="effects"></param>
-        /// <returns></returns>
-        private HashSet<KeyValuePair<string, object>> PopulateState(HashSet<KeyValuePair<string, object>> Currentstate, HashSet<KeyValuePair<string, object>> stateChange)
+        /// <param name="currentState">å½“å‰çŠ¶æ€é›†</param>
+        /// <param name="stateChange">å¾…åº”ç”¨çš„çŠ¶æ€å˜åŒ–é›†</param>
+        /// <returns>æ›´æ–°åçš„æ–°çŠ¶æ€é›†</returns>
+        private Dictionary<T, V> PopulateState
+            (Dictionary<T, V> currentState,
+            Dictionary<T, V> stateChange)
         {
-            ///µ±Ç°ÊÀ½ç×´Ì¬µÄ¸±±¾
-            HashSet<KeyValuePair<string, object>> state = new HashSet<KeyValuePair<string, object>>(Currentstate);
+            Dictionary<T, V> state = new Dictionary<T, V>(currentState);
 
             foreach (var change in stateChange)
             {
-                bool exits = false;
-                //ÅĞ¶ÏÓ°ÏìÊÇ·ñ´æÔÚÓÚÊÀ½ç×´Ì¬
-                foreach (var s in state)
+                if (state.ContainsKey(change.Key))
                 {
-                    if (s.Equals(change))
+                    // å‡è®¾ V æ˜¯ intï¼Œè¿›è¡Œå¢é‡æ›´æ–°
+                    if (typeof(V) == typeof(int))
                     {
-                        exits = true;
-                        break;
+                        int newVal = ((int)(object)state[change.Key]) + ((int)(object)change.Value);
+                        state[change.Key] = (V)(object)newVal;
                     }
-                }
-
-                if (exits)
-                {
-                    state.RemoveWhere((KeyValuePair<string, object> kvp) => { return kvp.Key.Equals(change.Key); });
-                    KeyValuePair<string, object> updated = new KeyValuePair<string, object>(change.Key, change.Value);
-                    state.Add(updated);
+                    else
+                    {
+                        state[change.Key] = change.Value;
+                    }
                 }
                 else
                 {
-                    state.Add(new KeyValuePair<string, object>(change.Key, change.Value));
+                    state.Add(change.Key, change.Value);
                 }
             }
             return state;
-
         }
-        ///<summary>
-        /// ¼ì²éÇ°ÖÃÒªÇóÊÇ·ñ ¿ÉÒÔ¿¿ÊÀ½ç×´Ì¬Âú×ã£¬¼´ÊÀ½ç×´Ì¬ÊÇ·ñ´æÔÚÕâ¸öÌõ¼ş
-        /// 
+
+        /// <summary>
+        /// æ£€æŸ¥å‰ææ¡ä»¶æ˜¯å¦åœ¨å½“å‰çŠ¶æ€ä¸­å®Œå…¨åŒ¹é…ã€‚
+        /// å‰ææ¡ä»¶çš„æ¯ä¸ªé”®å€¼å¯¹å¿…é¡»åœ¨çŠ¶æ€é›†ä¸­å­˜åœ¨å¹¶ç›¸ç­‰ã€‚
         /// </summary>
-        private bool InState(HashSet<KeyValuePair<string, object>> preconditions, HashSet<KeyValuePair<string, object>> state)
+        /// <param name="preconditions">å‰ææ¡ä»¶é›†</param>
+        /// <param name="state">å½“å‰çŠ¶æ€é›†</param>
+        /// <returns>å¦‚æœæ‰€æœ‰å‰ææ¡ä»¶æ»¡è¶³ï¼Œè¿”å›true</returns>
+        private bool InState(Dictionary<T, V> preconditions, Dictionary<T, V> state)
         {
-            bool allMatch = true;
-            foreach (var i in preconditions)
+            foreach (var kvp in preconditions)
             {
-                bool match = false;
-                foreach (var s in state)
+                if (!state.ContainsKey(kvp.Key) || !EqualityComparer<V>.Default.Equals(state[kvp.Key], kvp.Value))
                 {
-                    if (s.Equals(i))
-                    {
-                        match = true;
-                        break;
-                    }
-                }
-                if (!match)
-                {
-                    allMatch = false;
+                    return false;
                 }
             }
-            return allMatch;
+            return true;
         }
     }
-    class Node
-    {
-        /// <summary>
-        /// ¸¸½Úµã
-        /// </summary>
-        public Node parent;
-        /// <summary>
-        /// ÔËĞĞ´ú¼Û
-        /// </summary>
-        public float runningCost;
-        /// <summary>
-        /// ÊÀ½ç×´Ì¬
-        /// </summary>
-        public HashSet<KeyValuePair<string, object>> state;
-        /// <summary>
-        /// ĞĞÎª
-        /// </summary>
-        public GoapAction action;
-        public Node(Node parent, float runningCost, HashSet<KeyValuePair<string, object>> state, GoapAction action)
-        {
-            this.parent = parent;
-            this.runningCost = runningCost;
-            this.state = state;
-            this.action = action;
-        }
-    }
+
 }

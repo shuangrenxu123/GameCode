@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class EnemyAIControl : MonoBehaviour
 {
-    EnemyAI Ai;
+    EnemyAI<string, object> Ai;
     [SerializeField]
     CharacterActor actor;
     [SerializeField]
     CombatEntity entity;
     public SkillSystem skillSystem;
-    public DataBase dataBase { get; private set; }
+    public DataBase<string, object> dataBase { get; private set; }
     public CCAnimatorConfig config;
     public SkillRunner skillRunner;
     public AnimancerComponent anim;
@@ -23,8 +23,8 @@ public class EnemyAIControl : MonoBehaviour
 
         skillSystem.AddSkill(Resources.Load<SkillData>("skill/buffData"), Resources.Load<GameObject>("skill/buff"));
 
-        Ai = new EnemyAI(this);
-        dataBase = new();
+        Ai = new EnemyAI<string, object>(this);
+        dataBase = new DataBase<string, object>();
 
         Ai.actor = actor;
         Ai.Init(null, dataBase);

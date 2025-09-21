@@ -2,7 +2,7 @@ using BT;
 using UnityEngine;
 using Utility;
 
-public class BTStrafing : BTAction
+public class BTStrafing<TKey, TValue> : BTAction<TKey, TValue>
 {
     private Enemy enemy;
     private float verticalMovementValue = 0;
@@ -29,7 +29,7 @@ public class BTStrafing : BTAction
             attack = Probability.GetBool(70);
             timer = 0;
         }
-        var target = database.GetData<Transform>("targetTransform");
+        var target = database.GetData<Transform>((dynamic)"targetTransform");
         Vector3 lookat = target.position - enemy.transform.position;
         lookat.y = 0;
         enemy.transform.rotation = Quaternion.LookRotation(lookat);

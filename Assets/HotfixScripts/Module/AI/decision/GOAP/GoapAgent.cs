@@ -3,70 +3,96 @@ using UnityEngine;
 
 namespace GOAP
 {
-    public class GoapAgent : MonoBehaviour
+    public class GoapAgent<T, V>
     {
-        private HashSet<GoapAction> availabActions;
+        Dictionary<T, V> worldState = new(); //世界状态
+        public Dictionary<T, V> WorldState { get { return worldState; } set { worldState = value; } }
+        private HashSet<GoapAction<T, V>> availableActions;
+        private Queue<GoapAction<T, V>> currentActions;
 
-        private Queue<GoapAction> currentActions;
+        public List<Goal<T, V>> goals;
+        // private IGoap dataProvider;
 
-        private IGoap dataProvider;
+        /// <summary>
+        /// 默认构造函数，初始化内部集合
+        /// </summary>
+        public GoapAgent()
+        {
+            availableActions = new HashSet<GoapAction<T, V>>();
+            currentActions = new Queue<GoapAction<T, V>>();
+            planner = new GoapPlanner<T, V>();
+            goals = new List<Goal<T, V>>();
+        }
 
-        private GoapPlanner planner;
+        /// <summary>
+        /// 每次重新获得计划的间隔时间
+        /// </summary>
+        float planDeltaTime = 1f;
 
-        private bool Runing = false;
+
+        //==========RunTime====================
+
+        /// <summary>
+        /// 是否正在计划中
+        /// </summary>
+        bool isPlanning = false;
+
+        /// <summary>
+        /// 上一次计划的时间
+        /// </summary>
+        public float LastPlanTime => lastPlanTime;
+        float lastPlanTime = 0;
+
+        private GoapPlanner<T, V> planner;
+
+        private bool running = false;
         private void Start()
         {
-            availabActions = new HashSet<GoapAction>();
-            currentActions = new Queue<GoapAction>();
-            planner = new GoapPlanner();
-            findDataProvider();
-            InitAction();
-        }
-
-        private void InitAction()
-        {
-            availabActions = dataProvider.InitAction();
-        }
-
-        private void Update()
-        {
-            if (BuildPlan() && Runing == false)
-            {
-                Runing = true;
-            }
-            if (Runing)
-            {
-                Runing = !RunPlan();
-            }
+            availableActions = new();
+            currentActions = new();
+            planner = new();
 
         }
-        private void findDataProvider()
-        {
-            foreach (Component comp in gameObject.GetComponents(typeof(Component)))
-            {
-                if (typeof(IGoap).IsAssignableFrom(comp.GetType()))
-                {
-                    dataProvider = (IGoap)comp;
-                    return;
-                }
-            }
-        }
+
 
         private bool HasActionPlan()
         {
             return currentActions.Count > 0;
         }
 
+        public void AddAction(GoapAction<T, V> action)
+        {
+            availableActions.Add(action);
+        }
+        public void RemoveAction(GoapAction<T, V> action)
+        {
+            availableActions.Remove(action);
+        }
         /// <summary>
-        /// �Ƿ��ҵ��˺��ʵļƻ�
+        /// 获取可用Action的数量（用于测试验证）
+        /// </summary>
+        /// <returns>Action数量</returns>
+        public int GetAvailableActionsCount()
+        {
+            return availableActions != null ? availableActions.Count : 0;
+        }
+        /// <summary>
+        /// �Ƿ��ҵ��˺��ʵļƻ�
         /// </summary>
         /// <returns></returns>
-        private bool BuildPlan()
+        public bool BuildPlan(bool forcePlan = true)
         {
-            HashSet<KeyValuePair<string, object>> worldState = dataProvider.GetWorldState();
+            if (running && !forcePlan)
+            {
+                return false;
+            }
+            if (Time.time - lastPlanTime < planDeltaTime && !forcePlan)
+            {
+                return false;
+            }
+            lastPlanTime = Time.time;
 
-            HashSet<Goal> goals = dataProvider.CreateGoalState();
-            Goal goal = null;
+            Goal<T, V> goal = null;
             foreach (var g in goals)
             {
                 if (goal == null)
@@ -82,55 +108,91 @@ namespace GOAP
                 }
             }
 
-            //��� Actions
-            Queue<GoapAction> plan = planner.Plan(gameObject, availabActions, worldState, goal.goal);
+            //��� Actions
+            Queue<GoapAction<T, V>> plan = planner.Plan(availableActions, worldState, goal.goal);
             if (plan != null)
             {
                 currentActions = plan;
-                dataProvider.planFound(goal.goal, plan);
+                running = true;
                 return true;
             }
             else
             {
-                dataProvider.planFailed(goal.goal);
                 return false;
             }
         }
+
+        public bool ForceBuildPlan()
+        {
+            lastPlanTime = 0;
+            return BuildPlan(true);
+        }
+
+        public void AddGoal(Goal<T, V> goal)
+        {
+            goals.Add(goal);
+        }
+
         /// <summary>
-        /// ִ��plan
+        /// ִ��plan
         /// </summary>
-        /// <returns>�Ƿ��������</returns>
-        private bool RunPlan()
+        /// <returns>�Ƿ��������</returns>
+        public void RunPlan()
         {
             if (!HasActionPlan())
             {
-                dataProvider.ActionFinished();
-                return true;
+                running = false;
+                return;
             }
-            GoapAction action = currentActions.Peek();
-            if (action.isDone())
+
+            GoapAction<T, V> action = currentActions.Peek();
+
+            if (action.IsDone())
             {
+                action.PlanExit();
+                // 在Action完成执行后应用其Effect
                 currentActions.Dequeue();
+                ApplyActionEffects(action);
             }
-            if (HasActionPlan())
+            if (action != null)
             {
-                action = currentActions.Peek();
-                bool sucees = action.Perform(gameObject);
-                if (!sucees)
+                action.PlanExecute();
+
+            }
+        }
+        private Dictionary<T, V> PopulateState
+            (Dictionary<T, V> currentState,
+            Dictionary<T, V> stateChange)
+        {
+            Dictionary<T, V> state = new Dictionary<T, V>(currentState);
+
+            foreach (var change in stateChange)
+            {
+                if (state.ContainsKey(change.Key))
                 {
-                    dataProvider.planAborted(action);
-                    return true;
+                    // 假设 V 是 int，进行增量更新
+                    if (typeof(V) == typeof(int))
+                    {
+                        int newVal = ((int)(object)state[change.Key]) + ((int)(object)change.Value);
+                        state[change.Key] = (V)(object)newVal;
+                    }
+                    else
+                    {
+                        state[change.Key] = change.Value;
+                    }
                 }
                 else
                 {
-                    return false;
+                    state.Add(change.Key, change.Value);
                 }
             }
-            else
-            {
-                dataProvider.ActionFinished();
-                return true;
-            }
+            return state;
+        }
+
+        public void ApplyActionEffects(GoapAction<T, V> action)
+        {
+            worldState = PopulateState(worldState, action.Effects);
         }
     }
 }
+

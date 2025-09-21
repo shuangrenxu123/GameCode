@@ -7,11 +7,11 @@ namespace AI
     public enum ShapeType
     {
         /// <summary>
-        /// ¾ØÐÎ
+        /// ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         Rect,
         /// <summary>
-        /// ÉÈÐÎ
+        /// ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         Sector,
         /// <summary>
@@ -20,19 +20,19 @@ namespace AI
         Circle
     }
     /// <summary>
-    /// AIµÄ¸ÐÖªÆ÷»ýÀÛ
+    /// AIï¿½Ä¸ï¿½Öªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public abstract class Sensor : MonoBehaviour
     {
-        protected DataBase database;
+        protected DataBase<string, object> database;
         protected ShapeType shapeType;
-        protected void Init(DataBase database)
+        protected void Init(DataBase<string, object> database)
         {
             this.database = database;
         }
 
         /// <summary>
-        /// ¸Ãº¯ÊýÊÇÌá¹©¸øÍâ½ç£¬ÓÉÌØÊâµÄ´¥·¢Æ÷À´Ö÷¶¯Í¨Öª
+        /// ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ç£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Öª
         /// </summary>
         /// <param name="trigger"></param>
         public abstract void Notify(Trigger trigger);

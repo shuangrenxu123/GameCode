@@ -5,9 +5,9 @@ namespace BT
     /// 被用作与特定的修饰节点中，需要自己在子类中实现一个检测
     /// 他最终会被用于 BTConditionEvaluator中来进行一个判断
     /// </summary>
-    public abstract class BTConditional : BTDecorator
+    public abstract class BTConditional<TKey, TValue> : BTDecorator<TKey, TValue>
     {
-        protected BTConditional(BTNode child) : base(child)
+        protected BTConditional(BTNode<TKey, TValue> child) : base(child)
         {
         }
 

@@ -3,7 +3,7 @@ using Fight;
 using UnityEngine;
 using UnityEngine.Timeline;
 
-public class BTSkillAction : BTAction
+public class BTSkillAction<TKey, TValue> : BTAction<TKey, TValue>
 {
     private TimelineAsset skill;
     private SkillRunner runner;
@@ -18,7 +18,7 @@ public class BTSkillAction : BTAction
     {
         base.Enter();
         runner.LoadTimeLineAsset(skill);
-        actor = database.GetData<CharacterActor>("actor");
+        actor = database.GetData<CharacterActor>((dynamic)"actor");
         actor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
     }
 

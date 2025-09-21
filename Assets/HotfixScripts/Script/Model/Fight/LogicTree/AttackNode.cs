@@ -3,12 +3,10 @@ using BT;
 using UnityEngine;
 namespace Fight
 {
-    public class AttackNode : BTAction
+    public class AttackNode : BTAction<string, object>
     {
         protected override BTResult Execute()
         {
-            var target = database.GetData<List<CombatEntity>>("Target");
-            // CombatActionFactor.CreateActionAndExecute<DamageAction>();
             return BTResult.Success;
         }
     }

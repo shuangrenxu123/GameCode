@@ -3,75 +3,28 @@ using UnityEngine;
 /// <summary>
 /// 单个AI的数据存储。
 /// </summary>
-public class DataBase
+public class DataBase<TKey, TValue>
 {
-    private List<object> _dataList = new List<object>();
-    private List<string> _dataNames = new List<string>();
-    public T GetData<T>(string dataName)
+    private Dictionary<TKey, TValue> _data = new Dictionary<TKey, TValue>();
+    public T GetData<T>(TKey dataName)
     {
-        int dataId = IndexOfDataId(dataName);
-        if (dataId == -1)
+        if (!_data.ContainsKey(dataName))
         {
             Debug.LogError("没有在黑板中找到相关数据");
             return default;
         }
-
-        return (T)_dataList[dataId];
+        return (T)(object)_data[dataName];
     }
-    public T GetData<T>(int dataId)
+    public void SetData<T>(TKey dataName, T data)
     {
-        return (T)_dataList[dataId];
+        _data[dataName] = (TValue)(object) data;
     }
-
-    public void SetData<T>(string dataName, T data)
+    public bool CheckDataNull(TKey dataName)
     {
-        int dataId = GetDataId(dataName);
-        _dataList[dataId] = (object)data;
+        return !_data.ContainsKey(dataName) || _data[dataName] == null || _data[dataName].Equals(null);
     }
-
-    public void SetData<T>(int dataId, T data)
+    public bool ContainsData(TKey dataName)
     {
-        _dataList[dataId] = (object)data;
-    }
-
-
-    public bool CheckDataNull(string dataName)
-    {
-        int dataId = IndexOfDataId(dataName);
-        if (dataId == -1) return true;
-
-        return CheckDataNull(dataId);
-    }
-    public bool CheckDataNull(int dataId)
-    {
-        return _dataList[dataId] == null || _dataList[dataId].Equals(null);
-    }
-    public int GetDataId(string dataName)
-    {
-        int dataId = IndexOfDataId(dataName);
-        if (dataId == -1)
-        {
-            _dataNames.Add(dataName);
-            _dataList.Add(null);
-            dataId = _dataNames.Count - 1;
-        }
-
-        return dataId;
-    }
-
-    private int IndexOfDataId(string dataName)
-    {
-        for (int i = 0; i < _dataNames.Count; i++)
-        {
-            if (_dataNames[i].Equals(dataName))
-                return i;
-        }
-
-        return -1;
-    }
-
-    public bool ContainsData(string dataName)
-    {
-        return IndexOfDataId(dataName) != -1;
+        return _data.ContainsKey(dataName);
     }
 }

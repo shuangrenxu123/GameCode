@@ -5,31 +5,31 @@ namespace BT
     /// <summary>
     /// 组合节点，用于控制叶子节点怎么执行
     /// </summary>
-    public class BTComposite : BTNode
+    public class BTComposite<TKey, TValue> : BTNode<TKey, TValue>
     {
-        private List<BTNode> _children;
-        public List<BTNode> children
+        private List<BTNode<TKey, TValue>> _children;
+        public List<BTNode<TKey, TValue>> children
         {
             get
             {
                 if (_children == null)
                 {
-                    _children = new List<BTNode>();
+                    _children = new List<BTNode<TKey, TValue>>();
                 }
                 return _children;
             }
         }
-        public override void Activate(DataBase database)
+        public override void Activate(DataBase<TKey, TValue> database)
         {
             base.Activate(database);
 
-            foreach (BTNode child in children)
+            foreach (BTNode<TKey, TValue> child in children)
             {
                 child.Activate(database);
             }
         }
 
-        public virtual BTComposite AddChild(BTNode node)
+        public virtual BTComposite<TKey, TValue> AddChild(BTNode<TKey, TValue> node)
         {
             if (node != null)
             {
@@ -38,14 +38,14 @@ namespace BT
             return this;
         }
 
-        public virtual void RemoveChild(BTNode node)
+        public virtual void RemoveChild(BTNode<TKey, TValue> node)
         {
             children.Remove(node);
         }
         public override void Clear()
         {
             base.Clear();
-            foreach (BTNode child in children)
+            foreach (BTNode<TKey, TValue> child in children)
             {
                 child.Clear();
             }

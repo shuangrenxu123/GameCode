@@ -3,7 +3,7 @@ namespace BT
     /// <summary>
     /// 选择器会直到有一个返回了成功。
     /// </summary>
-    public class BTSelector : BTComposite
+    public class BTSelector<TKey, TValue> : BTComposite<TKey, TValue>
     {
         private int _activeChildIndex = -1;
         /// <summary>

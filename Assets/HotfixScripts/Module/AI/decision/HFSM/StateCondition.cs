@@ -3,9 +3,9 @@ namespace HFSM
     public abstract class StateCondition
     {
         public string dataName;
-        protected DataBase dataBase;
+        protected DataBase<string, object> dataBase;
         public abstract bool Check();
-        public StateCondition(string name, DataBase dataBase)
+        public StateCondition(string name, DataBase<string, object> dataBase)
         {
             dataName = name;
             this.dataBase = dataBase;
@@ -18,7 +18,7 @@ namespace HFSM
         /// 期望值
         /// </summary>
         private bool condition;
-        public StateCondition_Bool(string name, DataBase dataBase, bool cond) : base(name, dataBase)
+        public StateCondition_Bool(string name, DataBase<string, object> dataBase, bool cond) : base(name, dataBase)
         {
             condition = cond;
         }
@@ -36,7 +36,7 @@ namespace HFSM
     {
         private float condition;
         private FloatOpt opt;
-        public StateCondition_Float(string name, DataBase dataBase, float cond, FloatOpt opt) : base(name, dataBase)
+        public StateCondition_Float(string name, DataBase<string, object> dataBase, float cond, FloatOpt opt) : base(name, dataBase)
         {
             condition = cond;
             this.opt = opt;

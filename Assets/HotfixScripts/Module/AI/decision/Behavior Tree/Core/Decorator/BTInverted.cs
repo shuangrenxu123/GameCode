@@ -1,11 +1,11 @@
 namespace BT
 {
     /// <summary>
-    /// È¡·´ÐÞÊÎ½Úµã
+    /// È¡ï¿½ï¿½ï¿½ï¿½ï¿½Î½Úµï¿½
     /// </summary>
-    public class BTInverted : BTDecorator
+    public class BTInverted<TKey, TValue> : BTDecorator<TKey, TValue>
     {
-        public BTInverted(BTNode child) : base(child)
+        public BTInverted(BTNode<TKey, TValue> child) : base(child)
         {
 
         }

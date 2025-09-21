@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 namespace BT.Nodes
 {
-    public class BTAnimation : BTAction
+    public class BTAnimation<TKey, TValue> : BTAction<TKey, TValue>
     {
         AnimancerComponent animancer;
         CCAnimatorConfig config;

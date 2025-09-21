@@ -1,11 +1,11 @@
 namespace BT
 {
     /// <summary>
-    /// ÖØÊÔ½Úµã
+    /// ï¿½ï¿½ï¿½Ô½Úµï¿½
     /// </summary>
-    public class BTRepeat : BTDecorator
+    public class BTRepeat<TKey, TValue> : BTDecorator<TKey, TValue>
     {
-        public BTRepeat(BTNode child) : base(child)
+        public BTRepeat(BTNode<TKey, TValue> child) : base(child)
         {
 
         }

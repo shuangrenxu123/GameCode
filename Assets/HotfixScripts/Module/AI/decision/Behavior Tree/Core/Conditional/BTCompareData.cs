@@ -3,16 +3,14 @@ namespace BT
     /// <summary>
     ///
     /// 它将提供的数据与BTDatabase中的数据进行比较。
-	/// 如果它们相等，则返回 true，否则返回 false。
+  /// 如果它们相等，则返回 true，否则返回 false。
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class BTCompareData<T> : BTConditional
+    public class BTCompareData<TKey, TValue> : BTConditional<TKey, TValue>
     {
-        private string readDataName;
-        private int readDataId;
-        private T rhs;
+        private TKey readDataName;
+        private TValue rhs;
 
-        public BTCompareData(string readDataName, T rhs, BTNode child) : base(child)
+        public BTCompareData(TKey readDataName, TValue rhs, BTNode<TKey, TValue> child) : base(child)
         {
             this.readDataName = readDataName;
             this.rhs = rhs;
@@ -21,9 +19,9 @@ namespace BT
         {
             if (rhs == null)
             {
-                return database.CheckDataNull(readDataId);
+                return database.CheckDataNull(readDataName);
             }
-            return database.GetData<T>(readDataId).Equals(rhs);
+            return database.GetData<TValue>(readDataName).Equals(rhs);
         }
     }
 }

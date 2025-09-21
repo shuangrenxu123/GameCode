@@ -35,12 +35,12 @@ namespace CharacterControllerStateMachine
         private WeaponActionChangeGraph actionChangeGraph;
         [SerializeField]
         private SkillRunner skillRunner;
-        DataBase dataBase;
+        DataBase<string, object> dataBase;
 
         private void Awake()
         {
             AnimancerHelper = new AnimatorHelper(Animancer);
-            dataBase = new();
+            dataBase = new DataBase<string, object>();
         }
         private void Start()
         {

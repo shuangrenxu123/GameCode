@@ -1,19 +1,19 @@
 using BT;
 using UnityEngine;
 
-public class BTFindEnemy : BTAction
+public class BTFindEnemy<TKey, TValue> : BTAction<TKey, TValue>
 {
     private int layer;
-    public string setDataName;
+    public TKey setDataName;
     private CharacterActor actor;
     public BTFindEnemy(string name, string layer)
     {
         this.layer = LayerMask.NameToLayer(layer);
     }
-    public override void Activate(DataBase database)
+    public override void Activate(DataBase<TKey, TValue> database)
     {
         base.Activate(database);
-        actor = database.GetData<CharacterActor>("actor");
+        actor = database.GetData<CharacterActor>((dynamic)"actor");
     }
     protected override BTResult Execute()
     {
@@ -34,7 +34,7 @@ public class BTFindEnemy : BTAction
                 if (angle < 60 && angle > -60)
                 {
                     target = collider;
-                    database.SetData(setDataName, target.transform);
+                    database.SetData(setDataName, (dynamic)target.transform);
                     return BTResult.Success;
                 }
             }

@@ -13,7 +13,7 @@ namespace HFSM
         public List<StateTransition<T>> transitions;
 
 
-        public DataBase database;
+        public DataBase<string, object> database;
 
         /// <summary>
         /// 进入状态时调用

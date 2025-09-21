@@ -2,14 +2,14 @@ using BT;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BTUpdateTime : BTAction
+public class BTUpdateTime<TKey, TValue> : BTAction<TKey, TValue>
 {
-    public List<string> timers;
+    public List<TKey> timers;
     public BTUpdateTime()
     {
-        timers = new List<string>();
+        timers = new List<TKey>();
     }
-    public BTNode AddTimer(string name)
+    public BTNode<TKey, TValue> AddTimer(TKey name)
     {
         timers.Add(name);
         return this;
@@ -20,11 +20,11 @@ public class BTUpdateTime : BTAction
         {
             if (database.CheckDataNull(name))
             {
-                database.SetData(name, 0f);
+                database.SetData(name, (dynamic)0f);
             }
             var value = database.GetData<float>(name);
             value += Time.deltaTime;
-            database.SetData(name, value);
+            database.SetData(name, (dynamic)value);
         }
         return BTResult.Success;
     }
