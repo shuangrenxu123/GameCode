@@ -46,11 +46,10 @@ namespace Character.Controller.LoginState
                 else
                 {
                     PlayerAction();
+                    characterActor.Velocity = Vector3.zero;
                 }
+                characterActor.SetUpRootMotion(true, true);
             }
-
-            characterActor.Velocity = Vector3.zero;
-            characterActor.SetUpRootMotion(true, true);
         }
 
         public override void Update()
@@ -112,7 +111,7 @@ namespace Character.Controller.LoginState
             base.Exit();
             currentActionName = string.Empty;
             characterActor.SetUpRootMotion(false, false);
-            characterActor.UseRootMotion = false;
+            // characterActor.UseRootMotion = false;
             parentMachine.movementStateMachine.RefreshAnimator();
         }
     }

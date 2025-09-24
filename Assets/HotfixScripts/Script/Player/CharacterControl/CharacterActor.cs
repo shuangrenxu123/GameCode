@@ -146,9 +146,9 @@ public class CharacterActor : PhysicsActor
     #endregion
     public void SetUpRootMotion(bool updateRootPosition = true, bool updateRootRotation = true)
     {
-        UseRootMotion = true;
         UpdateRootPosition = updateRootPosition;
         UpdateRootRotation = updateRootRotation;
+        UseRootMotion = updateRootPosition || updateRootRotation;
     }
     public void SetUpRootMotion(bool updateRootPosition = true, RootMotionVelocityType rootMotionVelocityType = RootMotionVelocityType.SetVelocity,
         bool updateRootRotation = true, RootMotionRotationType rootMotionRotationType = RootMotionRotationType.AddRotation)
