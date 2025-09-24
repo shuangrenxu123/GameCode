@@ -100,7 +100,7 @@ namespace Character.Controller.State
 
         public void RefreshAnimator()
         {
-            animancer.Play(currentState.currentAnimator);
+            currentState.RefreshAnimator();
         }
     }
 }

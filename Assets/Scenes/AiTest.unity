@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cffbe50272c369f4d9a4eeccf736bae5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  interpolaterActor: 1
+  interpolateActor: 1
   useContinuousCollisionDetection: 1
   UseRootMotion: 0
   UpdateRootPosition: 1
@@ -334,10 +334,11 @@ MonoBehaviour:
     - Key: weapon
       Value: {fileID: 0}
   actor: {fileID: 534142793}
-  isFinish: 0
   anim: {fileID: 1837599163}
   animatorConfig: {fileID: 11400000, guid: f2bf061ee92d16540baee4ee347bbafa, type: 2}
-  enemyAIControl: {fileID: 433142584}
+  onFinish:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &534142800
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -537,7 +538,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -545,6 +545,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1001 &1621371430
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -748,17 +749,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Version: 3
   m_UsePipelineSettings: 1
   m_AdditionalLightsShadowResolutionTier: 2
-  m_LightLayerMask: 1
-  m_RenderingLayers: 1
   m_CustomShadowLayers: 0
-  m_ShadowLayerMask: 1
-  m_ShadowRenderingLayers: 1
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
+  m_RenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_ShadowRenderingLayersMask:
+    serializedVersion: 0
+    m_Bits: 1
+  m_Version: 4
+  m_LightLayerMask: 1
+  m_ShadowLayerMask: 1
+  m_RenderingLayers: 1
+  m_ShadowRenderingLayers: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

@@ -80,5 +80,9 @@ namespace Character.Controller.MoveState
                 }
             }
         }
+        public override void RefreshAnimator()
+        {
+
+        }
     }
 }

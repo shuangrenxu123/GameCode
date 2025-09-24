@@ -32,6 +32,7 @@ namespace Character.Controller.LoginState
             animState.Events.OnEnd = () =>
             {
                 parentMachine.ChangeState(ECharacterLoginState.Empty);
+                animState.Events.OnEnd = null;
             };
 
 
@@ -42,6 +43,7 @@ namespace Character.Controller.LoginState
         {
             base.Exit();
             parentMachine.movementStateMachine.EnableMachine(true, true);
+            parentMachine.movementStateMachine.RefreshAnimator();
             characterActor.UseRootMotion = false;
         }
 

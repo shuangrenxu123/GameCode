@@ -281,5 +281,10 @@ namespace Character.Controller.MoveState
                 }
             }
         }
+
+        public virtual void RefreshAnimator()
+        {
+            Animancer.Play(currentAnimator);
+        }
     }
 }

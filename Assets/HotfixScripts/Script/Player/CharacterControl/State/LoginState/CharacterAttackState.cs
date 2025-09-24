@@ -29,7 +29,8 @@ namespace Character.Controller.LoginState
                 if (currentActionName == string.Empty)
                 {
                     // 获取当前动作名称
-                    currentActionName = actionChangeGraph.defaultActionName;
+                    currentActionName = actionChangeGraph.GetDefaultActionName(AttackKeyBoard.Light,
+                        parentMachine.movementStateMachine.CurrentStateType);
                 }
                 else
                 {
@@ -38,8 +39,14 @@ namespace Character.Controller.LoginState
                         AttackKeyBoard.Light, currentActionName,
                         parentMachine.movementStateMachine.CurrentStateType);
                 }
-
-                PlayerAction();
+                if (currentActionName == null)
+                {
+                    parentMachine.ChangeState(ECharacterLoginState.Empty);
+                }
+                else
+                {
+                    PlayerAction();
+                }
             }
 
             characterActor.Velocity = Vector3.zero;

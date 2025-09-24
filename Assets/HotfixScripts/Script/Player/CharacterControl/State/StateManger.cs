@@ -15,7 +15,10 @@ namespace CharacterControllerStateMachine
     {
         [SerializeField, ReadOnly]
         ECharacterLoginState loginState;
-        public CharacterMovementStateMachine stateMachine;
+        [SerializeField, ReadOnly]
+        ECharacterMoveState moveState;
+
+        public CharacterMovementStateMachine moveStateMachine;
         public CharacterLoginStateMachine loginMachine;
         public Player player;
         public new Camera3D camera;
@@ -52,7 +55,7 @@ namespace CharacterControllerStateMachine
             SetStateMachineData("CombatEntity", player.CombatEntity);
 
 
-            stateMachine.Start();
+            moveStateMachine.Start();
             loginMachine.Start();
         }
 
@@ -65,12 +68,12 @@ namespace CharacterControllerStateMachine
 
         void InitMovementState()
         {
-            stateMachine = new(CharacterActor, characterBrain);
-            stateMachine.ExternalReference = camera.transform;
-            stateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
-            stateMachine.database = dataBase;
-            stateMachine.animancer = AnimancerHelper;
-            stateMachine.stateManger = this;
+            moveStateMachine = new(CharacterActor, characterBrain);
+            moveStateMachine.ExternalReference = camera.transform;
+            moveStateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
+            moveStateMachine.database = dataBase;
+            moveStateMachine.animancer = AnimancerHelper;
+            moveStateMachine.stateManger = this;
 
             var movementState = new CharacterNormalMovementState
             {
@@ -99,17 +102,17 @@ namespace CharacterControllerStateMachine
                 climbAnimations = animatorConfig.climbAnimators
             };
 
-            stateMachine.AddState(movementState);
-            stateMachine.AddState(crouchMovementState);
-            stateMachine.AddState(jumpMovement);
-            stateMachine.AddState(climbMovementState);
+            moveStateMachine.AddState(movementState);
+            moveStateMachine.AddState(crouchMovementState);
+            moveStateMachine.AddState(jumpMovement);
+            moveStateMachine.AddState(climbMovementState);
 
 
         }
         void InitLoginState()
         {
             loginMachine = new(CharacterActor, characterBrain);
-            loginMachine.movementStateMachine = stateMachine;
+            loginMachine.movementStateMachine = moveStateMachine;
             loginMachine.animancer = AnimancerHelper;
             var emptyState = new CharacterEmptyLoginState();
             var interactState = new CharacterInteractionState()
@@ -130,14 +133,15 @@ namespace CharacterControllerStateMachine
         }
         private void Update()
         {
-            stateMachine.Update();
+            moveStateMachine.Update();
             loginMachine.Update();
             loginState = loginMachine.CurrentStateType;
+            moveState = moveStateMachine.CurrentStateType;
         }
 
         private void FixedUpdate()
         {
-            stateMachine.FixUpdate();
+            moveStateMachine.FixUpdate();
             loginMachine.FixUpdate();
         }
 
@@ -149,7 +153,7 @@ namespace CharacterControllerStateMachine
 
         public void SetStateMachineData(string key, object value)
         {
-            stateMachine.database.SetData(key, value);
+            moveStateMachine.database.SetData(key, value);
         }
         private void OnDrawGizmos()
         {

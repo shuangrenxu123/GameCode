@@ -15,7 +15,20 @@ public class WeaponActionChangeGraph : ScriptableObject
     [SerializeField]
     public List<ActionGraph> actionGraphs = new();
 
-
+    public string GetDefaultActionName(AttackKeyBoard keyBoard, ECharacterMoveState moveState)
+    {
+        foreach (var actionGraph in actionGraphs)
+        {
+            foreach (var targetAction in actionGraph.targetActions)
+            {
+                if (targetAction.KeyBoard == keyBoard && targetAction.moveState == moveState)
+                {
+                    return targetAction.targetName;
+                }
+            }
+        }
+        return null;
+    }
     public string GetNextActionName(AttackKeyBoard keyBoard, string currentActionName, ECharacterMoveState moveState)
     {
         foreach (var actionGraph in actionGraphs)
