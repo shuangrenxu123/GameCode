@@ -80,30 +80,19 @@ namespace HTN
 
     public class WorldState
     {
+        private DataBase<WSProperties, object> db = new();
+
         public WorldState()
         {
             Reset();
         }
 
         /// <summary>
-        /// 世界状态的存储
-        /// </summary>
-        private Dictionary<WSProperties, Enum> wsEnum;
-        private Dictionary<WSProperties, int> wsInt;
-        private Dictionary<WSProperties, float> wsFloat;
-        private Dictionary<WSProperties, bool> wsBool;
-        private Dictionary<WSProperties, object> wsObj;
-
-        /// <summary>
         /// 初始化设置
         /// </summary>
         public void Reset()
         {
-            wsEnum = new Dictionary<WSProperties, Enum>();
-            wsInt = new Dictionary<WSProperties, int>();
-            wsFloat = new Dictionary<WSProperties, float>();
-            wsBool = new Dictionary<WSProperties, bool>();
-            wsObj = new Dictionary<WSProperties, object>();
+            db.Reset();
 
             Add(WSProperties.WS_CanSeeEnemy, true);
             Add(WSProperties.WS_Location, Location.NextBridgeLocRef);
@@ -120,46 +109,46 @@ namespace HTN
         #region Add:添加世界状态属性
         public void Add(WSProperties p, Enum v)
         {
-            wsEnum[p] = v;
+            db.SetData(p, v);
         }
         public void Add(WSProperties p, int v)
         {
-            wsInt[p] = v;
+            db.SetData(p, v);
         }
         public void Add(WSProperties p, float v)
         {
-            wsFloat[p] = v;
+            db.SetData(p, v);
         }
         public void Add(WSProperties p, bool v)
         {
-            wsBool[p] = v;
+            db.SetData(p, v);
         }
         public void Add(WSProperties p, object v)
         {
-            wsObj[p] = v;
+            db.SetData(p, v);
         }
         #endregion
 
         #region Get:获取世界状态属性
         public Enum GetEnum(WSProperties p)
         {
-            return wsEnum[p];
+            return (Enum)db.GetData<object>(p);
         }
         public int GetInt(WSProperties p)
         {
-            return wsInt[p];
+            return (int)db.GetData<object>(p);
         }
         public bool GetBool(WSProperties p)
         {
-            return wsBool[p];
+            return (bool)db.GetData<object>(p);
         }
         public float GetFloat(WSProperties p)
         {
-            return wsFloat[p];
+            return (float)db.GetData<object>(p);
         }
         public object GetObj(WSProperties p)
         {
-            return wsObj[p];
+            return db.GetData<object>(p);
         }
         #endregion
 
@@ -172,9 +161,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, Enum value)
         {
-            if (wsEnum.ContainsKey(propType))
+            if (db.ContainsData(propType))
             {
-                wsEnum[propType] = value;
+                db.SetData(propType, value);
                 return true;
             }
             return false;
@@ -187,9 +176,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, int value)
         {
-            if (wsInt.ContainsKey(propType))
+            if (db.ContainsData(propType))
             {
-                wsInt[propType] = value;
+                db.SetData(propType, value);
                 return true;
             }
             return false;
@@ -202,9 +191,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, bool value)
         {
-            if (wsBool.ContainsKey(propType))
+            if (db.ContainsData(propType))
             {
-                wsBool[propType] = value;
+                db.SetData(propType, value);
                 return true;
             }
             return false;
@@ -217,9 +206,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, float value)
         {
-            if (wsFloat.ContainsKey(propType))
+            if (db.ContainsData(propType))
             {
-                wsFloat[propType] = value;
+                db.SetData(propType, value);
                 return true;
             }
             return false;
@@ -232,9 +221,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, object value)
         {
-            if (wsObj.ContainsKey(propType))
+            if (db.ContainsData(propType))
             {
-                wsObj[propType] = value;
+                db.SetData(propType, value);
                 return true;
             }
             return false;
@@ -249,7 +238,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, Enum> cond)
         {
-            if (wsEnum.ContainsKey(cond.Key) == false || wsEnum[cond.Key] != cond.Value)
+            if (!db.ContainsData(cond.Key) || (Enum)db.GetData<object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -262,7 +251,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, int> cond)
         {
-            if (wsInt.ContainsKey(cond.Key) == false || wsInt[cond.Key] != cond.Value)
+            if (!db.ContainsData(cond.Key) || (int)db.GetData<object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -275,7 +264,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, bool> cond)
         {
-            if (wsBool.ContainsKey(cond.Key) == false || wsBool[cond.Key] != cond.Value)
+            if (!db.ContainsData(cond.Key) || (bool)db.GetData<object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -288,7 +277,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, float> cond)
         {
-            if (wsFloat.ContainsKey(cond.Key) == false || wsFloat[cond.Key] != cond.Value)
+            if (!db.ContainsData(cond.Key) || (float)db.GetData<object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -301,7 +290,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, object> cond)
         {
-            if (wsObj.ContainsKey(cond.Key) == false || wsObj[cond.Key] != cond.Value)
+            if (!db.ContainsData(cond.Key) || db.GetData<object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -316,78 +305,13 @@ namespace HTN
         /// <returns></returns>
         public void CopyFrom(WorldState ws)
         {
-            WorldState w = new WorldState();
-            foreach (var item in ws.wsEnum)
+            foreach (WSProperties prop in Enum.GetValues(typeof(WSProperties)))
             {
-                Add(item.Key, item.Value);
-            }
-            foreach (var item in ws.wsInt)
-            {
-                Add(item.Key, item.Value);
-            }
-            foreach (var item in ws.wsBool)
-            {
-                Add(item.Key, item.Value);
-            }
-            foreach (var item in ws.wsFloat)
-            {
-                Add(item.Key, item.Value);
-            }
-            foreach (var item in ws.wsObj)
-            {
-                Add(item.Key, item.Value);
-            }
-        }
-
-        /// <summary>
-        /// 打印世界状态信息用于调试
-        /// </summary>
-        public void LogWorldState(string title)
-        {
-            StringBuilder sb = new StringBuilder();
-            if (wsEnum != null)
-            {
-                foreach (var item in wsEnum)
+                if (ws.db.ContainsData(prop))
                 {
-                    sb.Append("//状态属性：").Append(item.Key.ToString()).Append("--状态值：").Append(item.Value?.ToString()).Append("//\n");
+                    Add(prop, ws.GetObj(prop));
                 }
             }
-            if (wsInt != null)
-            {
-                foreach (var item in wsInt)
-                {
-                    sb.Append("//状态属性：").Append(item.Key.ToString()).Append("--状态值：").Append(item.Value.ToString()).Append("//\n");
-                }
-            }
-            if (wsBool != null)
-            {
-                foreach (var item in wsBool)
-                {
-                    sb.Append("//状态属性：").Append(item.Key.ToString()).Append("--状态值：").Append(item.Value.ToString()).Append("//\n");
-                }
-            }
-            if (wsFloat != null)
-            {
-                foreach (var item in wsFloat)
-                {
-                    sb.Append("//状态属性：").Append(item.Key.ToString()).Append("--状态值：").Append(item.Value.ToString()).Append("//\n");
-                }
-            }
-            if (wsObj != null)
-            {
-                foreach (var item in wsObj)
-                {
-                    sb.Append("//状态属性：").Append(item.Key.ToString()).Append("--状态值：").Append(item.Value?.ToString()).Append("//\n");
-                }
-            }
-            // 显示精简的状态概览
-            string toolStatus = GetInt(WSProperties.WS_AxeDurability) > 0
-                ? $"斧头(耐默: {GetInt(WSProperties.WS_AxeDurability)}/10)"
-                : "徒手(无斧头)";
-
-            Debug.LogWarning($"{title} 状态 | 体:{GetInt(WSProperties.WS_FarmerStamina)} | 木:{GetInt(WSProperties.WS_WoodCount)} | 工具:{toolStatus}");
-            // 如果需要详细日志，可以取消注释下面的行
-            // Debug.Log(sb.ToString());
         }
     }
 }

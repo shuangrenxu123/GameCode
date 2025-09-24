@@ -6,17 +6,11 @@ namespace HTN
     public class PlanMemento
     {
         protected List<TaskBase> mTaskToProcess = new List<TaskBase>();
-        /// <summary>
-        /// �������ݳ����ļƻ�
-        /// </summary>
+
         protected List<PrimitiveTask> mFinalPlan = new List<PrimitiveTask>();
-        /// <summary>
-        /// ��ǰ�����е�Method
-        /// </summary>
+
         protected Method mCurMethod;
-        /// <summary>
-        /// �������ĸ��Ͻڵ�
-        /// </summary>
+
         protected TaskBase mBelongCompound;
 
         public TaskBase BelongCompound => mBelongCompound;
@@ -41,17 +35,21 @@ namespace HTN
             mCurMethod = method;
             mBelongCompound = BelongCompound;
         }
-        public void Recover(ref Stack<TaskBase> taskToProcess, ref Queue<PrimitiveTask> finalplan, ref Method method, ref TaskBase belongCompound)
+        public void Recover
+            (ref Stack<TaskBase> taskToProcess,
+            ref Queue<PrimitiveTask> finalPlan,
+            ref Method method,
+            ref TaskBase belongCompound)
         {
             taskToProcess.Clear();
-            finalplan.Clear();
+            finalPlan.Clear();
             for (int i = mTaskToProcess.Count - 1; i >= 0; i--)
             {
                 taskToProcess.Push(mTaskToProcess[i]);
             }
             for (int i = 0; i < mFinalPlan.Count; i++)
             {
-                finalplan.Enqueue(mFinalPlan[i]);
+                finalPlan.Enqueue(mFinalPlan[i]);
             }
             method = mCurMethod;
             belongCompound = mBelongCompound;
@@ -59,30 +57,16 @@ namespace HTN
     }
     public class Planner
     {
-        /// <summary>
-        /// ��ǰ����״̬
-        /// </summary>
-        protected WorldState mCurWorldState;
-        /// <summary>
-        /// ��������״̬������״̬�ĸ�����
-        /// </summary>
-        protected WorldState mWorkingWorldState;
 
-        /// <summary>
-        /// Task���ϵĸ���
-        /// </summary>
+        protected WorldState mCurWorldState;
+
+        protected WorldState mWorkingWorldState;
         protected List<TaskBase> mTaskList = new();
-        /// <summary>
-        /// ��������Task
-        /// </summary>
+
         protected Stack<TaskBase> mTaskToProcess = new();
-        /// <summary>
-        /// �����������
-        /// </summary>
+
         protected Queue<PrimitiveTask> mFinalPlan = new();
-        ///<summary>
-        ///��ǰ����
-        ///</summary>
+
         protected TaskBase mCurTask;
 
         protected DomainBase mDomain;
@@ -104,9 +88,6 @@ namespace HTN
             mTaskToProcess.Clear();
         }
 
-        /// <summary>
-        /// ����Ԥ��ƻ���
-        /// </summary>
         public void BuildPlan()
         {
             if (mCurWorldState == null || mWorkingWorldState == null || mTaskList == null || mTaskList.Count == 0)
@@ -114,10 +95,10 @@ namespace HTN
                 Debug.LogError($"Planner.BuildPlan: 缺失规划组件 - WS:{mCurWorldState != null}, WorkingWS:{mWorkingWorldState != null}, Tasks:{mTaskList?.Count ?? 0}");
                 return;
             }
-    
+
 
             mWorkingWorldState.CopyFrom(mCurWorldState);
-            Method vaildmethod = null;
+            Method validMethod = null;
             CompoundTask cTask = null;
             PrimitiveTask pTask = null;
             PlanMemento memento = new PlanMemento();
@@ -133,16 +114,16 @@ namespace HTN
                 if (mCurTask.type == TaskType.Compound)
                 {
                     cTask = mCurTask as CompoundTask;
-                    vaildmethod = cTask.FindValidMethod(mWorkingWorldState);
-                    if (vaildmethod != null && vaildmethod.SubTasks != null)
+                    validMethod = cTask.FindValidMethod(mWorkingWorldState);
+                    if (validMethod != null && validMethod.SubTasks != null)
                     {
-                        memento.Save(mTaskToProcess, mFinalPlan, vaildmethod, cTask);
-                        InsertTop(vaildmethod.SubTasks);
+                        memento.Save(mTaskToProcess, mFinalPlan, validMethod, cTask);
+                        InsertTop(validMethod.SubTasks);
                     }
                     else
                     {
                         Debug.LogWarning($"复合任务 \"{cTask.Name}\" 找不到有效方法，开始回退...");
-                        memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref vaildmethod, ref mCurTask);
+                        memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref validMethod, ref mCurTask);
                     }
                 }
                 else
@@ -158,7 +139,7 @@ namespace HTN
                     else
                     {
                         Debug.LogWarning($"原子任务 \"{pTask.Name}\" 条件不满足，开始回退...");
-                        memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref vaildmethod, ref mCurTask);
+                        memento.Recover(ref mTaskToProcess, ref mFinalPlan, ref validMethod, ref mCurTask);
                     }
                 }
             }
@@ -177,19 +158,12 @@ namespace HTN
                 }
             }
         }
-        /// <summary>
-        /// ������յĳ��ͼƻ���
-        /// </summary>
-        /// <returns></returns>
+
         public Queue<PrimitiveTask> GetFinalTask()
         {
             return mFinalPlan;
         }
 
-        /// <summary>
-        /// ��������״̬
-        /// </summary>
-        /// <param name="ws"></param>
         public void UpdateCurWorldState(WorldState ws)
         {
             mCurWorldState = ws;
