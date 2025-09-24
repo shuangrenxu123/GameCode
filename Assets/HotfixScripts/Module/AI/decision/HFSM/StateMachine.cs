@@ -11,18 +11,22 @@ namespace HFSM
     {
 
     }
-    public abstract class StateMachine<T, C> : StateBase<T>, IStateMachine where T : Enum where C : Enum
+    public abstract class StateMachine<T, C> : StateBase<T>, IStateMachine<C> where T : Enum where C : Enum
     {
-        public Dictionary<C, StateBase<C>> status = new();
+        Dictionary<C, StateBase<C>> status = new();
+
         /// <summary>
         /// 当前状态的切换
         /// </summary>
-        public List<StateTransition<C>> activeTransitions;
+        List<StateTransition<C>> activeTransitions;
+
         /// <summary>
         /// 当前激活的状态
         /// </summary>
-        public C CurrentStateType { get; set; }
+        public C CurrentStateType { get; private set; }
+
         protected virtual StateBase<C> currentState { get; private set; }
+
         /// <summary>
         /// 上一个状态
         /// </summary>
@@ -38,7 +42,7 @@ namespace HFSM
         /// </summary>
         public bool isRootMachine { get { return parentMachine == null; } }
 
-        public IStateMachine ParentFsm { get; set; }
+        public IStateMachine<T> ParentFsm { get; }
 
         /// <summary>
         /// 一个空过渡线,据说可以节省性能
@@ -46,6 +50,7 @@ namespace HFSM
         private static readonly List<StateTransition<C>> noTransitions = new(0);
 
         private bool isRunning = false;
+
         /// <summary>
         /// 运行有限状态机，不然不会调用Init与Enter函数
         /// </summary>
@@ -91,6 +96,7 @@ namespace HFSM
                 Debug.LogError($"没有在状态机找到状态{transition.startState}");
             }
         }
+
         /// <summary>
         /// 检测能否切换为另一个状态，如果可以转化则直接切换
         /// </summary>
@@ -105,13 +111,13 @@ namespace HFSM
             ChangeState(transition.endState);
             return true;
         }
+
         /// <summary>
         /// 切换状态
         /// </summary>
         /// <param name="StateName"></param>
         public void ChangeState(C stateName)
         {
-            currentState = FindState(CurrentStateType);
             currentState?.Exit();
 
             lastStateType = CurrentStateType;
@@ -155,6 +161,7 @@ namespace HFSM
         /// </summary>
         public override void Init()
         {
+
 
         }
         public override void Enter()

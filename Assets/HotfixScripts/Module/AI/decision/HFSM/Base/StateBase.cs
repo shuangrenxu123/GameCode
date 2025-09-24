@@ -9,7 +9,7 @@ namespace HFSM
         /// <summary>
         /// 该状态所处的状态机
         /// </summary>
-        public IStateMachine parentMachine;
+        public IStateMachine<T> parentMachine;
         public List<StateTransition<T>> transitions;
 
 

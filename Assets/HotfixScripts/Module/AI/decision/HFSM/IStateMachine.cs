@@ -2,8 +2,10 @@ using System;
 
 namespace HFSM
 {
-    public interface IStateMachine
+    public interface IStateMachine<C>
     {
-        IStateMachine ParentFsm { get; set; }
+        public C lastStateType { get; }
+        public C CurrentStateType { get;  }
+
     }
 }

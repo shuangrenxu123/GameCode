@@ -66,9 +66,7 @@ public readonly struct HitInfo
     {
         get
         {
-            if (rigidbody2D != null)
-                return rigidbody2D.isKinematic;
-            else if (rigidbody3D != null)
+            if (rigidbody3D != null)
                 return rigidbody3D.isKinematic;
 
             return false;

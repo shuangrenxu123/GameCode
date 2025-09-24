@@ -19,14 +19,13 @@ namespace CharacterControllerStateMachine
         public CharacterLoginStateMachine loginMachine;
         public Player player;
         public new Camera3D camera;
-        private CharacterActor CharacterActor;
         public CharacterBrain characterBrain;
         public AnimancerComponent Animancer;
         public AnimatorHelper AnimancerHelper;
         public MaterialControl materialControl;
         public AudioData moveData;
 
-        [SerializeField]
+        private CharacterActor CharacterActor;
         public CCAnimatorConfig animatorConfig;
         [Header("攻击相关")]
         [SerializeField]
