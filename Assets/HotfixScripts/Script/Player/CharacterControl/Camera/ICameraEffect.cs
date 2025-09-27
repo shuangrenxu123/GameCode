@@ -83,12 +83,6 @@ namespace CharacterController.Camera
         void Deactivate();
 
         /// <summary>
-        /// 更新效果
-        /// </summary>
-        /// <param name="deltaTime">时间增量</param>
-        void Update(float deltaTime);
-
-        /// <summary>
         /// 处理相机效果并返回修改后的上下文
         /// </summary>
         /// <param name="context">当前相机效果上下文</param>
@@ -122,14 +116,29 @@ namespace CharacterController.Camera
         public Quaternion baseRotation;
 
         /// <summary>
+        /// 基础视野角度
+        /// </summary>
+        public float baseFieldOfView;
+
+        /// <summary>
         /// 时间增量
         /// </summary>
         public float deltaTime;
 
         /// <summary>
-        /// 自定义参数字典
+        /// 当前位置（处理过程中的中间结果）
         /// </summary>
-        public Dictionary<string, object> parameters;
+        public Vector3 currentPosition;
+
+        /// <summary>
+        /// 当前旋转（处理过程中的中间结果）
+        /// </summary>
+        public Quaternion currentRotation;
+
+        /// <summary>
+        /// 当前视野角度（处理过程中的中间结果）
+        /// </summary>
+        public float currentFieldOfView;
     }
 
     /// <summary>
@@ -169,7 +178,7 @@ namespace CharacterController.Camera
     }
 
     /// <summary>
-    /// 相机效果结果
+    /// 相机效果结果（已废弃，现在直接在CameraEffectContext中存储中间结果）
     /// </summary>
     public struct CameraEffectResult
     {
@@ -187,79 +196,5 @@ namespace CharacterController.Camera
         /// 修改后的视野角度
         /// </summary>
         public float modifiedFieldOfView;
-
-        /// <summary>
-        /// 是否覆盖位置
-        /// </summary>
-        public bool overridePosition;
-
-        /// <summary>
-        /// 是否覆盖旋转
-        /// </summary>
-        public bool overrideRotation;
-
-        /// <summary>
-        /// 是否覆盖视野角度
-        /// </summary>
-        public bool overrideFOV;
-
-        /// <summary>
-        /// 创建一个默认结果，不修改任何参数
-        /// </summary>
-        public static CameraEffectResult Default =>
-            new CameraEffectResult
-            {
-                overridePosition = false,
-                overrideRotation = false,
-                overrideFOV = false
-            };
-
-        /// <summary>
-        /// 创建只修改位置的结果
-        /// </summary>
-        /// <param name="position">修改后的位置</param>
-        /// <returns>效果结果</returns>
-        public static CameraEffectResult Position(Vector3 position)
-        {
-            return new CameraEffectResult
-            {
-                modifiedPosition = position,
-                overridePosition = true,
-                overrideRotation = false,
-                overrideFOV = false
-            };
-        }
-
-        /// <summary>
-        /// 创建只修改旋转的结果
-        /// </summary>
-        /// <param name="rotation">修改后的旋转</param>
-        /// <returns>效果结果</returns>
-        public static CameraEffectResult Rotation(Quaternion rotation)
-        {
-            return new CameraEffectResult
-            {
-                modifiedRotation = rotation,
-                overridePosition = false,
-                overrideRotation = true,
-                overrideFOV = false
-            };
-        }
-
-        /// <summary>
-        /// 创建只修改视野角度的结果
-        /// </summary>
-        /// <param name="fov">修改后的视野角度</param>
-        /// <returns>效果结果</returns>
-        public static CameraEffectResult FOV(float fov)
-        {
-            return new CameraEffectResult
-            {
-                modifiedFieldOfView = fov,
-                overridePosition = false,
-                overrideRotation = false,
-                overrideFOV = true
-            };
-        }
     }
 }

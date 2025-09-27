@@ -48,7 +48,7 @@ namespace CharacterController.Camera
         /// <summary>
         /// 添加效果到管理器
         /// </summary>
-        public void AddEffect(ICameraEffect effect, Dictionary<string, object> parameters = null)
+        public void AddEffect(ICameraEffect effect)
         {
             if (effect == null || m_ActiveEffects.Contains(effect)) return;
 
@@ -58,8 +58,11 @@ namespace CharacterController.Camera
                 targetTransform = m_TargetTransform,
                 basePosition = m_CameraTransform != null ? m_CameraTransform.position : Vector3.zero,
                 baseRotation = m_CameraTransform != null ? m_CameraTransform.rotation : Quaternion.identity,
+                baseFieldOfView = m_TargetCamera != null ? m_TargetCamera.fieldOfView : 60f,
                 deltaTime = Time.deltaTime,
-                parameters = parameters ?? new Dictionary<string, object>()
+                currentPosition = m_CameraTransform != null ? m_CameraTransform.position : Vector3.zero,
+                currentRotation = m_CameraTransform != null ? m_CameraTransform.rotation : Quaternion.identity,
+                currentFieldOfView = m_TargetCamera != null ? m_TargetCamera.fieldOfView : 60f
             };
 
             effect.Activate(context);
@@ -77,7 +80,7 @@ namespace CharacterController.Camera
         /// <summary>
         /// 添加效果到管理器（简化版本，不传递参数）
         /// </summary>
-        public void AddEffect(ICameraEffect effect)
+        public void AddEffectSimple(ICameraEffect effect)
         {
             if (effect == null || m_ActiveEffects.Contains(effect)) return;
 
@@ -96,10 +99,10 @@ namespace CharacterController.Camera
         /// <summary>
         /// 根据类型添加效果
         /// </summary>
-        public void AddEffect<T>(Dictionary<string, object> parameters = null) where T : ICameraEffect, new()
+        public void AddEffect<T>() where T : ICameraEffect, new()
         {
             var effect = new T();
-            AddEffect(effect, parameters);
+            AddEffect(effect);
         }
 
         /// <summary>
@@ -155,28 +158,6 @@ namespace CharacterController.Camera
             return m_EffectLookup.ContainsKey(effectType);
         }
 
-        /// <summary>
-        /// 更新所有效果
-        /// </summary>
-        public void UpdateEffects(float deltaTime)
-        {
-            if (!m_IsEnabled) return;
-
-            // 更新所有激活的效果
-            for (int i = m_ActiveEffects.Count - 1; i >= 0; i--)
-            {
-                var effect = m_ActiveEffects[i];
-                if (effect.IsActive)
-                {
-                    effect.Update(deltaTime);
-                }
-                else
-                {
-                    // 移除非激活的效果
-                    RemoveEffect(effect);
-                }
-            }
-        }
 
         /// <summary>
         /// 每帧处理所有激活效果的Context链式传递
@@ -200,59 +181,6 @@ namespace CharacterController.Camera
             }
 
             return currentContext;
-        }
-
-        /// <summary>
-        /// 计算组合后的效果结果
-        /// </summary>
-        public CameraEffectResult CalculateCombinedEffects(CameraEffectInput input)
-        {
-            if (!m_IsEnabled || m_ActiveEffects.Count == 0)
-            {
-                return CameraEffectResult.Default;
-            }
-
-            // 创建初始上下文
-            CameraEffectContext context = new CameraEffectContext
-            {
-                targetCamera = input.cameraTransform != null ? input.cameraTransform.GetComponent<UnityEngine.Camera>() : null,
-                targetTransform = input.targetTransform,
-                basePosition = input.basePosition,
-                baseRotation = input.baseRotation,
-                deltaTime = Time.deltaTime,
-                parameters = new Dictionary<string, object>()
-            };
-
-            // 按优先级排序处理效果（高优先级先处理）
-            foreach (var effect in m_ActiveEffects.OrderByDescending(e => e.Priority))
-            {
-                if (!effect.IsActive) continue;
-
-                // 每个效果处理并返回修改后的上下文
-                context = effect.ProcessEffect(context);
-            }
-
-            // 从最终上下文构建结果
-            CameraEffectResult result = CameraEffectResult.Default;
-            if (context.parameters.ContainsKey("overridePosition") && (bool)context.parameters["overridePosition"])
-            {
-                result.modifiedPosition = (Vector3)context.parameters["modifiedPosition"];
-                result.overridePosition = true;
-            }
-
-            if (context.parameters.ContainsKey("overrideRotation") && (bool)context.parameters["overrideRotation"])
-            {
-                result.modifiedRotation = (Quaternion)context.parameters["modifiedRotation"];
-                result.overrideRotation = true;
-            }
-
-            if (context.parameters.ContainsKey("overrideFOV") && (bool)context.parameters["overrideFOV"])
-            {
-                result.modifiedFieldOfView = (float)context.parameters["modifiedFieldOfView"];
-                result.overrideFOV = true;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -364,7 +292,7 @@ namespace CharacterController.Camera
         public void EnableLockOnEffect(Dictionary<string, object> parameters = null)
         {
             var lockOnEffect = new CameraLockOnEffect();
-            AddEffect(lockOnEffect, parameters);
+            // AddEffect(lockOnEffect, parameters);
         }
 
         /// <summary>

@@ -53,17 +53,6 @@ namespace CharacterController.Camera
             isActive = false;
         }
 
-        public void Update(float deltaTime)
-        {
-            if (!isActive || characterActor == null)
-                return;
-
-            characterPosition = characterActor.transform.position;
-
-            float targetHeight = characterActor.BodySize.y * 0.8f; // 使用80%高度作为头部位置
-            lerpedHeight = Mathf.Lerp(lerpedHeight, targetHeight, heightLerpSpeed * deltaTime);
-            UpdateCharacterUp(deltaTime);
-        }
 
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
@@ -71,6 +60,12 @@ namespace CharacterController.Camera
             {
                 return context;
             }
+
+            // Update逻辑开始：更新角色位置和高度插值
+            characterPosition = characterActor.transform.position;
+            float targetHeight = characterActor.BodySize.y * 0.8f; // 使用80%高度作为头部位置
+            lerpedHeight = Mathf.Lerp(lerpedHeight, targetHeight, heightLerpSpeed * context.deltaTime);
+            UpdateCharacterUp(context.deltaTime);
 
             // 获取缩放效果的当前距离
             float distance = GetCurrentDistance(context);
@@ -83,20 +78,19 @@ namespace CharacterController.Camera
             Vector3 backDirection = context.baseRotation * Vector3.forward;
             Vector3 cameraPosition = targetPosition - backDirection * distance;
 
-            // 创建修改后的上下文
+            // 创建修改后的上下文，直接设置当前处理的位置
             var modifiedContext = new CameraEffectContext
             {
                 targetCamera = context.targetCamera,
                 targetTransform = context.targetTransform,
-                basePosition = cameraPosition, // 修改位置
+                basePosition = context.basePosition,
                 baseRotation = context.baseRotation,
+                baseFieldOfView = context.baseFieldOfView,
                 deltaTime = context.deltaTime,
-                parameters = new Dictionary<string, object>(context.parameters)
+                currentPosition = cameraPosition, // 直接设置当前处理的位置
+                currentRotation = context.currentRotation,
+                currentFieldOfView = context.currentFieldOfView
             };
-
-            // 标记位置被覆盖
-            modifiedContext.parameters["overridePosition"] = true;
-            modifiedContext.parameters["modifiedPosition"] = cameraPosition;
 
             return modifiedContext;
         }
@@ -113,13 +107,8 @@ namespace CharacterController.Camera
 
         private float GetCurrentDistance(CameraEffectContext context)
         {
-            // 从参数中查找缩放效果的当前距离
-            if (context.parameters.ContainsKey("zoomDistance"))
-            {
-                return (float)context.parameters["zoomDistance"];
-            }
-
-            // 如果没有找到缩放效果，返回默认距离
+            // 从缩放效果的当前距离获取（需要通过效果管理器获取）
+            // 这里暂时返回默认距离，实际实现需要在CameraFollowEffect中添加对缩放效果的引用
             return 5f;
         }
     }

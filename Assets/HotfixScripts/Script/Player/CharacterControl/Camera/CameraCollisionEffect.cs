@@ -57,10 +57,6 @@ namespace CharacterController.Camera
             isActive = false;
         }
 
-        public void Update(float deltaTime)
-        {
-            // 碰撞检测在ModifyCamera中执行
-        }
 
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
@@ -89,20 +85,19 @@ namespace CharacterController.Camera
                 // 返回调整后的位置
                 Vector3 adjustedPosition = targetPosition + displacement;
 
-                // 创建修改后的上下文
+                // 创建修改后的上下文，直接设置当前处理的位置
                 var modifiedContext = new CameraEffectContext
                 {
                     targetCamera = context.targetCamera,
                     targetTransform = context.targetTransform,
-                    basePosition = adjustedPosition, // 修改位置
+                    basePosition = context.basePosition,
                     baseRotation = context.baseRotation,
+                    baseFieldOfView = context.baseFieldOfView,
                     deltaTime = context.deltaTime,
-                    parameters = new Dictionary<string, object>(context.parameters)
+                    currentPosition = adjustedPosition, // 直接设置当前处理的位置
+                    currentRotation = context.currentRotation,
+                    currentFieldOfView = context.currentFieldOfView
                 };
-
-                // 标记位置被覆盖
-                modifiedContext.parameters["overridePosition"] = true;
-                modifiedContext.parameters["modifiedPosition"] = adjustedPosition;
 
                 return modifiedContext;
             }

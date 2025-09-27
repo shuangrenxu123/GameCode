@@ -71,12 +71,6 @@ namespace CharacterController.Camera
             isActive = false;
         }
 
-        public void Update(float deltaTime)
-        {
-            if (!isActive || characterActor == null) return;
-
-            UpdateCharacterUp();
-        }
 
         public void UpdateWithCameraTransform(Transform cameraTransform)
         {
@@ -101,6 +95,9 @@ namespace CharacterController.Camera
                 return context;
             }
 
+            // Update逻辑开始：更新角色Up向量
+            UpdateCharacterUp();
+
             // 计算朝向（看向玩家，使用角色位置）
             float targetHeight = characterActor.BodySize.y * 0.5f;
             Vector3 lookAtPoint = characterActor.transform.position + characterActor.Up * targetHeight;
@@ -111,20 +108,19 @@ namespace CharacterController.Camera
             // 应用用户输入旋转（基于当前旋转）
             Quaternion targetRotation = CalculateTargetRotation(baseRotation, context.baseRotation);
 
-            // 修改上下文中的旋转
+            // 修改上下文中的旋转，直接设置当前处理的旋转
             var modifiedContext = new CameraEffectContext
             {
                 targetCamera = context.targetCamera,
                 targetTransform = context.targetTransform,
                 basePosition = context.basePosition,
-                baseRotation = targetRotation, // 使用新的旋转
+                baseRotation = context.baseRotation,
+                baseFieldOfView = context.baseFieldOfView,
                 deltaTime = context.deltaTime,
-                parameters = new Dictionary<string, object>(context.parameters)
+                currentPosition = context.currentPosition,
+                currentRotation = targetRotation, // 直接设置当前处理的旋转
+                currentFieldOfView = context.currentFieldOfView
             };
-
-            // 标记旋转被覆盖
-            modifiedContext.parameters["overrideRotation"] = true;
-            modifiedContext.parameters["modifiedRotation"] = targetRotation;
 
             return modifiedContext;
         }

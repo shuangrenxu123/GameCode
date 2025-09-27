@@ -61,17 +61,6 @@ namespace CharacterController.Camera
             currentLockTarget = null;
         }
 
-        public void Update(float deltaTime)
-        {
-            if (!isActive || currentLockTarget == null) return;
-
-            Vector3 direction = currentLockTarget.position - characterTransform.position;
-            if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
-            {
-                currentLockTarget = null;
-                if (stateManager != null) stateManager.HandleLock();
-            }
-        }
 
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
@@ -80,28 +69,41 @@ namespace CharacterController.Camera
                 return context;
             }
 
-            Vector3 direction = (currentLockTarget.position + lockOffsetPosition) - context.basePosition;
-            direction.Normalize();
-
-            Quaternion targetRotation = Quaternion.LookRotation(direction);
-            Quaternion smoothedRotation = Quaternion.Slerp(context.baseRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
-
-            // 创建修改后的上下文
-            var modifiedContext = new CameraEffectContext
+            // Update逻辑开始：检查锁定目标距离
+            Vector3 direction = currentLockTarget.position - characterTransform.position;
+            if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
             {
-                targetCamera = context.targetCamera,
-                targetTransform = context.targetTransform,
-                basePosition = context.basePosition,
-                baseRotation = smoothedRotation, // 修改旋转
-                deltaTime = context.deltaTime,
-                parameters = new Dictionary<string, object>(context.parameters)
-            };
+                currentLockTarget = null;
+                if (stateManager != null) stateManager.HandleLock();
+            }
 
-            // 标记旋转被覆盖
-            modifiedContext.parameters["overrideRotation"] = true;
-            modifiedContext.parameters["modifiedRotation"] = smoothedRotation;
+            // 如果目标仍然有效，继续处理相机旋转
+            if (currentLockTarget != null)
+            {
+                Vector3 lookDirection = (currentLockTarget.position + lockOffsetPosition) - context.basePosition;
+                lookDirection.Normalize();
 
-            return modifiedContext;
+                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
+                Quaternion smoothedRotation = Quaternion.Slerp(context.baseRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
+
+                // 创建修改后的上下文，直接设置当前处理的旋转
+                var modifiedContext = new CameraEffectContext
+                {
+                    targetCamera = context.targetCamera,
+                    targetTransform = context.targetTransform,
+                    basePosition = context.basePosition,
+                    baseRotation = context.baseRotation,
+                    baseFieldOfView = context.baseFieldOfView,
+                    deltaTime = context.deltaTime,
+                    currentPosition = context.currentPosition,
+                    currentRotation = smoothedRotation, // 直接设置当前处理的旋转
+                    currentFieldOfView = context.currentFieldOfView
+                };
+
+                return modifiedContext;
+            }
+
+            return context;
         }
 
         private void FindLockTarget()

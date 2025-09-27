@@ -108,15 +108,13 @@ namespace CharacterController.Camera
         public LayerMask layerMask = -1; // 检测所有层级
 
         CharacterActor characterActor = null;
+        UnityEngine.Camera camera;
 
-        void OnValidate()
-        {
-            initialPitch = Mathf.Clamp(initialPitch, -minPitchAngle, maxPitchAngle);
-        }
 
         void Awake()
         {
             Initialize(targetTransform);
+            camera = GetComponent<UnityEngine.Camera>();
             InitializeCameraEffectManager();
         }
 
@@ -261,7 +259,7 @@ namespace CharacterController.Camera
             }
 
             UpdateInputValue();
-            float dt = Time.fixedDeltaTime;
+            float dt = Time.deltaTime;
             UpdateCameraWithEffects(dt);
 
         }
@@ -271,43 +269,26 @@ namespace CharacterController.Camera
         /// </summary>
         private void UpdateCameraWithEffects(float dt)
         {
-            // 更新效果状态
-            effectManager.UpdateEffects(dt);
-
             // 创建初始上下文
             CameraEffectContext initialContext = new CameraEffectContext
             {
-                targetCamera = GetComponent<UnityEngine.Camera>(),
+                targetCamera = camera,
                 targetTransform = targetTransform,
                 basePosition = targetTransform.position,
                 baseRotation = transform.rotation,
+                baseFieldOfView = camera.fieldOfView,
                 deltaTime = dt,
-                parameters = new Dictionary<string, object>()
+                currentPosition = transform.position,
+                currentRotation = transform.rotation,
+                currentFieldOfView = camera.fieldOfView
             };
 
-            // 处理效果链
+            // 处理效果链（现在包含了所有Update逻辑）
             CameraEffectContext finalContext = effectManager.ProcessEffectChain(initialContext);
 
-            // 应用最终结果
-            if (finalContext.parameters.ContainsKey("overridePosition") && (bool)finalContext.parameters["overridePosition"])
-            {
-                transform.position = (Vector3)finalContext.parameters["modifiedPosition"];
-            }
-
-            if (finalContext.parameters.ContainsKey("overrideRotation") && (bool)finalContext.parameters["overrideRotation"])
-            {
-                transform.rotation = (Quaternion)finalContext.parameters["modifiedRotation"];
-            }
-
-            // 处理FOV变化
-            if (finalContext.parameters.ContainsKey("overrideFOV") && (bool)finalContext.parameters["overrideFOV"])
-            {
-                var camera = GetComponent<UnityEngine.Camera>();
-                if (camera != null)
-                {
-                    camera.fieldOfView = (float)finalContext.parameters["modifiedFieldOfView"];
-                }
-            }
+            // 应用最终结果 - 直接使用处理后的中间值
+            transform.position = finalContext.currentPosition;
+            transform.rotation = finalContext.currentRotation;
         }
 
         void OnTeleport(Vector3 position, Quaternion rotation)

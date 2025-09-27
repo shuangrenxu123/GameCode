@@ -60,17 +60,6 @@ namespace CharacterController.Camera
             isActive = false;
         }
 
-        public void Update(float deltaTime)
-        {
-            if (!isActive) return;
-
-            // 更新目标距离
-            currentDistanceToTarget += deltaZoom * zoomInOutSpeed * deltaTime;
-            currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
-
-            // 平滑过渡到目标距离
-            smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * deltaTime);
-        }
 
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
@@ -79,26 +68,32 @@ namespace CharacterController.Camera
                 return context;
             }
 
+            // Update逻辑开始：更新缩放距离
+            // 更新目标距离
+            currentDistanceToTarget += deltaZoom * zoomInOutSpeed * context.deltaTime;
+            currentDistanceToTarget = Mathf.Clamp(currentDistanceToTarget, minZoom, maxZoom);
+
+            // 平滑过渡到目标距离
+            smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * context.deltaTime);
+
             // 计算缩放后的相机位置
             Vector3 forwardDirection = context.baseRotation * Vector3.forward;
             Vector3 zoomOffset = -forwardDirection * smoothedDistanceToTarget;
             Vector3 newPosition = context.basePosition + zoomOffset;
 
-            // 创建修改后的上下文
+            // 创建修改后的上下文，直接设置当前处理的位置
             var modifiedContext = new CameraEffectContext
             {
                 targetCamera = context.targetCamera,
                 targetTransform = context.targetTransform,
-                basePosition = newPosition, // 修改位置
+                basePosition = context.basePosition,
                 baseRotation = context.baseRotation,
+                baseFieldOfView = context.baseFieldOfView,
                 deltaTime = context.deltaTime,
-                parameters = new Dictionary<string, object>(context.parameters)
+                currentPosition = newPosition, // 直接设置当前处理的位置
+                currentRotation = context.currentRotation,
+                currentFieldOfView = context.currentFieldOfView
             };
-
-            // 标记位置被覆盖，并保存缩放距离供其他效果使用
-            modifiedContext.parameters["overridePosition"] = true;
-            modifiedContext.parameters["modifiedPosition"] = newPosition;
-            modifiedContext.parameters["zoomDistance"] = smoothedDistanceToTarget;
 
             return modifiedContext;
         }
