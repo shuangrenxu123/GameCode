@@ -89,11 +89,11 @@ namespace CharacterController.Camera
         void Update(float deltaTime);
 
         /// <summary>
-        /// 修改相机参数
+        /// 处理相机效果并返回修改后的上下文
         /// </summary>
-        /// <param name="input">输入参数</param>
-        /// <returns>修改后的相机参数</returns>
-        CameraEffectResult ModifyCamera(CameraEffectInput input);
+        /// <param name="context">当前相机效果上下文</param>
+        /// <returns>修改后的相机效果上下文</returns>
+        CameraEffectContext ProcessEffect(CameraEffectContext context);
     }
 
     /// <summary>

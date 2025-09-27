@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -64,23 +65,40 @@ namespace CharacterController.Camera
             UpdateCharacterUp(deltaTime);
         }
 
-        public CameraEffectResult ModifyCamera(CameraEffectInput input)
+        public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive || characterActor == null) return CameraEffectResult.Default;
+            if (!isActive || characterActor == null)
+            {
+                return context;
+            }
 
             // 获取缩放效果的当前距离
-            float distance = GetCurrentDistance(input);
+            float distance = GetCurrentDistance(context);
 
             // 只计算目标位置，不涉及朝向
             Vector3 targetPosition = characterPosition + characterActor.Up * lerpedHeight +
                                    characterActor.transform.TransformDirection(offsetFromHead);
 
             // 应用缩放距离：相机位置 = 目标位置 - 朝向方向 * 距离
-            Vector3 backDirection = input.baseRotation * Vector3.forward;
+            Vector3 backDirection = context.baseRotation * Vector3.forward;
             Vector3 cameraPosition = targetPosition - backDirection * distance;
 
-            // 只返回位置，不修改朝向或FOV
-            return CameraEffectResult.Position(cameraPosition);
+            // 创建修改后的上下文
+            var modifiedContext = new CameraEffectContext
+            {
+                targetCamera = context.targetCamera,
+                targetTransform = context.targetTransform,
+                basePosition = cameraPosition, // 修改位置
+                baseRotation = context.baseRotation,
+                deltaTime = context.deltaTime,
+                parameters = new Dictionary<string, object>(context.parameters)
+            };
+
+            // 标记位置被覆盖
+            modifiedContext.parameters["overridePosition"] = true;
+            modifiedContext.parameters["modifiedPosition"] = cameraPosition;
+
+            return modifiedContext;
         }
 
         private void UpdateCharacterUp(float deltaTime)
@@ -93,18 +111,12 @@ namespace CharacterController.Camera
             previousLerpedCharacterUp = lerpedCharacterUp;
         }
 
-        private float GetCurrentDistance(CameraEffectInput input)
+        private float GetCurrentDistance(CameraEffectContext context)
         {
-            // 从活跃效果中查找缩放效果
-            if (input.activeEffects != null)
+            // 从参数中查找缩放效果的当前距离
+            if (context.parameters.ContainsKey("zoomDistance"))
             {
-                foreach (var effect in input.activeEffects)
-                {
-                    if (effect.EffectType == CameraEffectType.Zoom && effect.IsActive)
-                    {
-                        return (effect as CameraZoomEffect)?.GetCurrentDistance() ?? 5f;
-                    }
-                }
+                return (float)context.parameters["zoomDistance"];
             }
 
             // 如果没有找到缩放效果，返回默认距离

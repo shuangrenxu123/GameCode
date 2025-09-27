@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -93,9 +94,12 @@ namespace CharacterController.Camera
             cameraTransform.rotation = deltaRotation * cameraTransform.rotation;
         }
 
-        public CameraEffectResult ModifyCamera(CameraEffectInput input)
+        public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive || characterActor == null) return CameraEffectResult.Default;
+            if (!isActive || characterActor == null)
+            {
+                return context;
+            }
 
             // 计算朝向（看向玩家，使用角色位置）
             float targetHeight = characterActor.BodySize.y * 0.5f;
@@ -105,10 +109,24 @@ namespace CharacterController.Camera
             Quaternion baseRotation = Quaternion.LookRotation(direction);
 
             // 应用用户输入旋转（基于当前旋转）
-            Quaternion targetRotation = CalculateTargetRotation(baseRotation, input.cameraTransform.rotation);
+            Quaternion targetRotation = CalculateTargetRotation(baseRotation, context.baseRotation);
 
-            // 只返回旋转，不修改位置或FOV
-            return CameraEffectResult.Rotation(targetRotation);
+            // 修改上下文中的旋转
+            var modifiedContext = new CameraEffectContext
+            {
+                targetCamera = context.targetCamera,
+                targetTransform = context.targetTransform,
+                basePosition = context.basePosition,
+                baseRotation = targetRotation, // 使用新的旋转
+                deltaTime = context.deltaTime,
+                parameters = new Dictionary<string, object>(context.parameters)
+            };
+
+            // 标记旋转被覆盖
+            modifiedContext.parameters["overrideRotation"] = true;
+            modifiedContext.parameters["modifiedRotation"] = targetRotation;
+
+            return modifiedContext;
         }
 
         private void UpdateCharacterUp()

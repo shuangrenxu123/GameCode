@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
@@ -273,104 +274,40 @@ namespace CharacterController.Camera
             // 更新效果状态
             effectManager.UpdateEffects(dt);
 
-            // 获取所有活跃效果
-            var activeEffects = new List<ICameraEffect>(effectManager.ActiveEffects);
-
-            // 创建基础输入（使用角色位置作为基准）
-            var baseInput = new CameraEffectInput
+            // 创建初始上下文
+            CameraEffectContext initialContext = new CameraEffectContext
             {
+                targetCamera = GetComponent<UnityEngine.Camera>(),
+                targetTransform = targetTransform,
                 basePosition = targetTransform.position,
                 baseRotation = transform.rotation,
-                baseFieldOfView = GetComponent<UnityEngine.Camera>()?.fieldOfView ?? 60f,
-                targetTransform = targetTransform,
-                cameraTransform = transform,
-                activeEffects = activeEffects
+                deltaTime = dt,
+                parameters = new Dictionary<string, object>()
             };
 
-            // 第一步：计算朝向（基于角色位置）
-            Quaternion finalRotation = CalculateRotation(baseInput);
+            // 处理效果链
+            CameraEffectContext finalContext = effectManager.ProcessEffectChain(initialContext);
 
-            // 第二步：计算位置（基于朝向）
-            Vector3 finalPosition = CalculatePosition(baseInput, finalRotation);
-
-            // 一次性应用结果
-            transform.position = finalPosition;
-            transform.rotation = finalRotation;
-        }
-
-        /// <summary>
-        /// 计算朝向（基于角色位置，不依赖相机当前位置）
-        /// </summary>
-        private Quaternion CalculateRotation(CameraEffectInput baseInput)
-        {
-            var rotationEffect = effectManager.GetEffect<CameraRotationEffect>();
-            if (rotationEffect == null || !rotationEffect.IsActive)
+            // 应用最终结果
+            if (finalContext.parameters.ContainsKey("overridePosition") && (bool)finalContext.parameters["overridePosition"])
             {
-                return baseInput.baseRotation;
+                transform.position = (Vector3)finalContext.parameters["modifiedPosition"];
             }
 
-            // 使用角色位置计算朝向，避免循环依赖
-            var rotationInput = new CameraEffectInput
+            if (finalContext.parameters.ContainsKey("overrideRotation") && (bool)finalContext.parameters["overrideRotation"])
             {
-                basePosition = baseInput.targetTransform.position, // 使用角色位置
-                baseRotation = baseInput.baseRotation,
-                baseFieldOfView = baseInput.baseFieldOfView,
-                targetTransform = baseInput.targetTransform,
-                cameraTransform = baseInput.cameraTransform,
-                activeEffects = baseInput.activeEffects
-            };
-
-            var rotationResult = rotationEffect.ModifyCamera(rotationInput);
-            return rotationResult.overrideRotation ? rotationResult.modifiedRotation : baseInput.baseRotation;
-        }
-
-        /// <summary>
-        /// 计算位置（基于朝向）
-        /// </summary>
-        private Vector3 CalculatePosition(CameraEffectInput baseInput, Quaternion rotation)
-        {
-            var followEffect = effectManager.GetEffect<CameraFollowEffect>();
-            if (followEffect == null || !followEffect.IsActive)
-            {
-                return baseInput.basePosition;
+                transform.rotation = (Quaternion)finalContext.parameters["modifiedRotation"];
             }
 
-            // 计算跟随位置
-            var followInput = new CameraEffectInput
+            // 处理FOV变化
+            if (finalContext.parameters.ContainsKey("overrideFOV") && (bool)finalContext.parameters["overrideFOV"])
             {
-                basePosition = baseInput.targetTransform.position, // 使用角色位置
-                baseRotation = rotation, // 使用计算出的朝向
-                baseFieldOfView = baseInput.baseFieldOfView,
-                targetTransform = baseInput.targetTransform,
-                cameraTransform = baseInput.cameraTransform,
-                activeEffects = baseInput.activeEffects
-            };
-
-            var followResult = followEffect.ModifyCamera(followInput);
-            Vector3 position = followResult.overridePosition ? followResult.modifiedPosition : baseInput.targetTransform.position;
-
-            // 应用碰撞检测
-            var collisionEffect = effectManager.GetEffect<CameraCollisionEffect>();
-            if (collisionEffect != null && collisionEffect.IsActive)
-            {
-                var collisionInput = new CameraEffectInput
+                var camera = GetComponent<UnityEngine.Camera>();
+                if (camera != null)
                 {
-                    basePosition = position,
-                    baseRotation = rotation,
-                    baseFieldOfView = baseInput.baseFieldOfView,
-                    targetTransform = baseInput.targetTransform,
-                    cameraTransform = baseInput.cameraTransform,
-                    activeEffects = baseInput.activeEffects
-                };
-
-                var collisionResult = collisionEffect.ModifyCamera(collisionInput);
-                if (collisionResult.overridePosition)
-                {
-                    position = collisionResult.modifiedPosition;
+                    camera.fieldOfView = (float)finalContext.parameters["modifiedFieldOfView"];
                 }
             }
-
-            return position;
         }
 
         void OnTeleport(Vector3 position, Quaternion rotation)

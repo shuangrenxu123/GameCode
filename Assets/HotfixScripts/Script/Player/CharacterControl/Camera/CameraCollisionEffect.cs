@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -61,12 +62,15 @@ namespace CharacterController.Camera
             // 碰撞检测在ModifyCamera中执行
         }
 
-        public CameraEffectResult ModifyCamera(CameraEffectInput input)
+        public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive) return CameraEffectResult.Default;
+            if (!isActive)
+            {
+                return context;
+            }
 
-            targetPosition = input.targetTransform.position;
-            cameraPosition = input.basePosition;
+            targetPosition = context.targetTransform.position;
+            cameraPosition = context.basePosition;
 
             // 计算从目标位置到相机位置的方向和距离
             Vector3 displacement = cameraPosition - targetPosition;
@@ -84,10 +88,26 @@ namespace CharacterController.Camera
             {
                 // 返回调整后的位置
                 Vector3 adjustedPosition = targetPosition + displacement;
-                return CameraEffectResult.Position(adjustedPosition);
+
+                // 创建修改后的上下文
+                var modifiedContext = new CameraEffectContext
+                {
+                    targetCamera = context.targetCamera,
+                    targetTransform = context.targetTransform,
+                    basePosition = adjustedPosition, // 修改位置
+                    baseRotation = context.baseRotation,
+                    deltaTime = context.deltaTime,
+                    parameters = new Dictionary<string, object>(context.parameters)
+                };
+
+                // 标记位置被覆盖
+                modifiedContext.parameters["overridePosition"] = true;
+                modifiedContext.parameters["modifiedPosition"] = adjustedPosition;
+
+                return modifiedContext;
             }
 
-            return CameraEffectResult.Default;
+            return context;
         }
 
         private bool DetectCollisions(ref Vector3 displacement, Vector3 lookAtPosition)

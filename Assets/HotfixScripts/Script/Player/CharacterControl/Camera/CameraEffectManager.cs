@@ -179,6 +179,30 @@ namespace CharacterController.Camera
         }
 
         /// <summary>
+        /// 每帧处理所有激活效果的Context链式传递
+        /// </summary>
+        public CameraEffectContext ProcessEffectChain(CameraEffectContext initialContext)
+        {
+            if (!m_IsEnabled || m_ActiveEffects.Count == 0)
+            {
+                return initialContext;
+            }
+
+            CameraEffectContext currentContext = initialContext;
+
+            // 按优先级排序处理效果（高优先级先处理）
+            foreach (var effect in m_ActiveEffects.OrderByDescending(e => e.Priority))
+            {
+                if (!effect.IsActive) continue;
+
+                // 每个效果处理并返回修改后的上下文
+                currentContext = effect.ProcessEffect(currentContext);
+            }
+
+            return currentContext;
+        }
+
+        /// <summary>
         /// 计算组合后的效果结果
         /// </summary>
         public CameraEffectResult CalculateCombinedEffects(CameraEffectInput input)
@@ -188,33 +212,44 @@ namespace CharacterController.Camera
                 return CameraEffectResult.Default;
             }
 
-            CameraEffectResult result = CameraEffectResult.Default;
+            // 创建初始上下文
+            CameraEffectContext context = new CameraEffectContext
+            {
+                targetCamera = input.cameraTransform != null ? input.cameraTransform.GetComponent<UnityEngine.Camera>() : null,
+                targetTransform = input.targetTransform,
+                basePosition = input.basePosition,
+                baseRotation = input.baseRotation,
+                deltaTime = Time.deltaTime,
+                parameters = new Dictionary<string, object>()
+            };
 
             // 按优先级排序处理效果（高优先级先处理）
             foreach (var effect in m_ActiveEffects.OrderByDescending(e => e.Priority))
             {
                 if (!effect.IsActive) continue;
 
-                CameraEffectResult effectResult = effect.ModifyCamera(input);
+                // 每个效果处理并返回修改后的上下文
+                context = effect.ProcessEffect(context);
+            }
 
-                // 组合效果结果
-                if (effectResult.overridePosition)
-                {
-                    result.modifiedPosition = effectResult.modifiedPosition;
-                    result.overridePosition = true;
-                }
+            // 从最终上下文构建结果
+            CameraEffectResult result = CameraEffectResult.Default;
+            if (context.parameters.ContainsKey("overridePosition") && (bool)context.parameters["overridePosition"])
+            {
+                result.modifiedPosition = (Vector3)context.parameters["modifiedPosition"];
+                result.overridePosition = true;
+            }
 
-                if (effectResult.overrideRotation)
-                {
-                    result.modifiedRotation = effectResult.modifiedRotation;
-                    result.overrideRotation = true;
-                }
+            if (context.parameters.ContainsKey("overrideRotation") && (bool)context.parameters["overrideRotation"])
+            {
+                result.modifiedRotation = (Quaternion)context.parameters["modifiedRotation"];
+                result.overrideRotation = true;
+            }
 
-                if (effectResult.overrideFOV)
-                {
-                    result.modifiedFieldOfView = effectResult.modifiedFieldOfView;
-                    result.overrideFOV = true;
-                }
+            if (context.parameters.ContainsKey("overrideFOV") && (bool)context.parameters["overrideFOV"])
+            {
+                result.modifiedFieldOfView = (float)context.parameters["modifiedFieldOfView"];
+                result.overrideFOV = true;
             }
 
             return result;

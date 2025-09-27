@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -71,16 +72,35 @@ namespace CharacterController.Camera
             smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * deltaTime);
         }
 
-        public CameraEffectResult ModifyCamera(CameraEffectInput input)
+        public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive) return CameraEffectResult.Default;
+            if (!isActive)
+            {
+                return context;
+            }
 
             // 计算缩放后的相机位置
-            Vector3 forwardDirection = input.baseRotation * Vector3.forward;
+            Vector3 forwardDirection = context.baseRotation * Vector3.forward;
             Vector3 zoomOffset = -forwardDirection * smoothedDistanceToTarget;
-            Vector3 newPosition = input.basePosition + zoomOffset;
+            Vector3 newPosition = context.basePosition + zoomOffset;
 
-            return CameraEffectResult.Position(newPosition);
+            // 创建修改后的上下文
+            var modifiedContext = new CameraEffectContext
+            {
+                targetCamera = context.targetCamera,
+                targetTransform = context.targetTransform,
+                basePosition = newPosition, // 修改位置
+                baseRotation = context.baseRotation,
+                deltaTime = context.deltaTime,
+                parameters = new Dictionary<string, object>(context.parameters)
+            };
+
+            // 标记位置被覆盖，并保存缩放距离供其他效果使用
+            modifiedContext.parameters["overridePosition"] = true;
+            modifiedContext.parameters["modifiedPosition"] = newPosition;
+            modifiedContext.parameters["zoomDistance"] = smoothedDistanceToTarget;
+
+            return modifiedContext;
         }
 
         /// <summary>

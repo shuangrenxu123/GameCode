@@ -73,17 +73,35 @@ namespace CharacterController.Camera
             }
         }
 
-        public CameraEffectResult ModifyCamera(CameraEffectInput input)
+        public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive || currentLockTarget == null) return CameraEffectResult.Default;
+            if (!isActive || currentLockTarget == null)
+            {
+                return context;
+            }
 
-            Vector3 direction = (currentLockTarget.position + lockOffsetPosition) - input.basePosition;
+            Vector3 direction = (currentLockTarget.position + lockOffsetPosition) - context.basePosition;
             direction.Normalize();
 
             Quaternion targetRotation = Quaternion.LookRotation(direction);
-            Quaternion smoothedRotation = Quaternion.Slerp(input.baseRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
+            Quaternion smoothedRotation = Quaternion.Slerp(context.baseRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
 
-            return CameraEffectResult.Rotation(smoothedRotation);
+            // 创建修改后的上下文
+            var modifiedContext = new CameraEffectContext
+            {
+                targetCamera = context.targetCamera,
+                targetTransform = context.targetTransform,
+                basePosition = context.basePosition,
+                baseRotation = smoothedRotation, // 修改旋转
+                deltaTime = context.deltaTime,
+                parameters = new Dictionary<string, object>(context.parameters)
+            };
+
+            // 标记旋转被覆盖
+            modifiedContext.parameters["overrideRotation"] = true;
+            modifiedContext.parameters["modifiedRotation"] = smoothedRotation;
+
+            return modifiedContext;
         }
 
         private void FindLockTarget()
