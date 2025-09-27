@@ -47,8 +47,8 @@ namespace Character.Controller.LoginState
                 {
                     PlayerAction();
                     characterActor.Velocity = Vector3.zero;
+                    characterActor.SetUpRootMotion(true, true);
                 }
-                characterActor.SetUpRootMotion(true, true);
             }
         }
 

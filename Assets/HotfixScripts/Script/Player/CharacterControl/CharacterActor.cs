@@ -153,7 +153,7 @@ public class CharacterActor : PhysicsActor
     public void SetUpRootMotion(bool updateRootPosition = true, RootMotionVelocityType rootMotionVelocityType = RootMotionVelocityType.SetVelocity,
         bool updateRootRotation = true, RootMotionRotationType rootMotionRotationType = RootMotionRotationType.AddRotation)
     {
-        UseRootMotion = true;
+        UseRootMotion = updateRootPosition || updateRootRotation;
         UpdateRootPosition = updateRootPosition;
         UpdateRootRotation = updateRootRotation;
         this.rootMotionRotationType = rootMotionRotationType;
