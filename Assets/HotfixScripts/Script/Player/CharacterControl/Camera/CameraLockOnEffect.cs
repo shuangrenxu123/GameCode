@@ -13,6 +13,8 @@ namespace CharacterController.Camera
         public float Priority { get; set; } = 200f;
         public bool IsActive => isActive && currentLockTarget != null;
 
+        public bool isDefaultActive => false;
+
         private float lockDistance = 20f;
         private float lockEnemyMaxDistance = 30f;
         private float lockCameraMoveSpeed = 10f;

@@ -13,6 +13,8 @@ namespace CharacterController.Camera
         public float Priority { get; set; } = 70;
         public bool IsActive => isActive;
 
+        public bool isDefaultActive => true;
+
         [SerializeField, LabelText("水平旋转速度")]
         private float yawSpeed = 180f;
         [SerializeField, LabelText("垂直旋转速度")]
@@ -21,6 +23,10 @@ namespace CharacterController.Camera
         private float maxPitchAngle = 80f;
         [SerializeField, LabelText("最小俯仰角度")]
         private float minPitchAngle = -80f;
+        [SerializeField, LabelText("启用输入控制")]
+        private bool enableInput = true;
+        [SerializeField, LabelText("自动对准速度"), ShowIf("enableInput", false)]
+        private float autoLookAtSpeed = 5f;
 
         private float deltaYaw = 0f;
         private float deltaPitch = 0f;
@@ -39,17 +45,22 @@ namespace CharacterController.Camera
             this.deltaPitch = deltaPitch;
         }
 
-        public void Activate(CameraEffectContext context)
+        /// <summary>
+        /// 设置是否启用输入控制
+        /// </summary>
+        /// <param name="enabled">是否启用输入控制</param>
+        public void SetInputEnabled(bool enabled)
         {
-            characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
-            isActive = true;
+            enableInput = enabled;
+        }
 
-            previousLerpedCharacterUp = context.targetTransform.up;
-            lerpedCharacterUp = previousLerpedCharacterUp;
-
-            // 重置输入增量，确保从零开始
-            deltaYaw = 0f;
-            deltaPitch = 0f;
+        /// <summary>
+        /// 获取是否启用输入控制
+        /// </summary>
+        /// <returns>是否启用输入控制</returns>
+        public bool IsInputEnabled()
+        {
+            return enableInput;
         }
 
         public void Activate()
@@ -68,8 +79,11 @@ namespace CharacterController.Camera
 
         public void UpdateWithCameraTransform(Transform cameraTransform)
         {
-            if (!isActive || characterActor == null || cameraTransform == null) return;
+            if (!isActive || characterActor == null || cameraTransform == null)
+            {
 
+                return;
+            }
             // 更新角色Up向量
             Vector3 currentUp = characterActor.Up;
 
@@ -86,6 +100,7 @@ namespace CharacterController.Camera
         {
             if (!isActive || characterActor == null)
             {
+                characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
                 return context;
             }
 
@@ -128,6 +143,12 @@ namespace CharacterController.Camera
 
         private Quaternion CalculateTargetRotation(Quaternion baseRotation, Quaternion currentRotation)
         {
+            // 如果不启用输入，自动对准玩家
+            if (!enableInput)
+            {
+                return CalculateAutoLookAtRotation(baseRotation, currentRotation);
+            }
+
             // 获取当前欧拉角，确保Z轴为0
             Vector3 currentEuler = currentRotation.eulerAngles;
             currentEuler.z = 0f; // 强制Z轴为0
@@ -183,6 +204,28 @@ namespace CharacterController.Camera
 
             // 重新创建四元数，确保Z轴为0
             return Quaternion.Euler(eulerAngles);
+        }
+
+        private Quaternion CalculateAutoLookAtRotation(Quaternion baseRotation, Quaternion currentRotation)
+        {
+            if (characterActor == null)
+            {
+                return currentRotation;
+            }
+
+            // 计算朝向（看向玩家，使用角色位置）
+            float targetHeight = characterActor.BodySize.y * 0.5f;
+            Vector3 lookAtPoint = characterActor.transform.position + characterActor.Up * targetHeight;
+            Vector3 direction = (lookAtPoint - characterActor.transform.position).normalized;
+
+            // 使用基础旋转作为基准，然后平滑过渡到看向玩家的方向
+            Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+            // 使用Slerp进行平滑过渡
+            float smoothSpeed = autoLookAtSpeed * Time.deltaTime;
+            Quaternion smoothedRotation = Quaternion.Slerp(currentRotation, targetRotation, smoothSpeed);
+
+            return ClampRotation(smoothedRotation);
         }
     }
 }

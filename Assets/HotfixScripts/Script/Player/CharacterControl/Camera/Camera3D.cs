@@ -76,8 +76,6 @@ namespace CharacterController.Camera
                 effectManager = new CameraEffectManager();
             }
 
-            effectManager.Initialize(transform, targetTransform, GetComponent<UnityEngine.Camera>());
-
             SetupDefaultEffects();
         }
 
@@ -95,7 +93,6 @@ namespace CharacterController.Camera
             foreach (var effect in effects)
             {
                 effectManager.AddEffect(effect);
-                effect.Activate();
             }
         }
 

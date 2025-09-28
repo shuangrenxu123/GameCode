@@ -41,6 +41,11 @@ namespace CharacterController.Camera
         Rotation,
 
         /// <summary>
+        /// 固定在某个点位
+        ///  </summary>
+        FixPosition,
+
+        /// <summary>
         /// 路径跟随效果 - 沿预设路径移动
         /// </summary>
         PathFollowing,
@@ -66,11 +71,7 @@ namespace CharacterController.Camera
         /// </summary>
         bool IsActive { get; }
 
-        /// <summary>
-        /// 激活效果
-        /// </summary>
-        /// <param name="context">相机效果上下文</param>
-        void Activate(CameraEffectContext context);
+        bool isDefaultActive { get; }
 
         /// <summary>
         /// 激活效果（无参数版本）

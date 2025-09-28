@@ -13,6 +13,8 @@ namespace CharacterController.Camera
         public float Priority { get; set; } = 25f;
         public bool IsActive => isActive;
 
+        public bool isDefaultActive => true;
+
         [SerializeField, LabelText("检测半径")]
         private float detectionRadius = 0.3f; // 优化检测半径，对于相机碰撞检测更合适
         [SerializeField, LabelText("检测层级")]

@@ -13,6 +13,8 @@ namespace CharacterController.Camera
         public float Priority { get; set; } = 50f;
         public bool IsActive => isActive;
 
+        public bool isDefaultActive => true;
+
         [SerializeField, LabelText("缩放速度")]
         float zoomInOutSpeed = 40f;
 
@@ -55,11 +57,6 @@ namespace CharacterController.Camera
         public void SetZoomInput(float deltaZoom)
         {
             this.deltaZoom = deltaZoom;
-        }
-
-        public void Activate(CameraEffectContext context)
-        {
-            isActive = true;
         }
 
         public void Activate()

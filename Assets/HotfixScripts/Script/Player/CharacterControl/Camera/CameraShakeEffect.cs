@@ -7,11 +7,13 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机震动效果，处理屏幕震动
     /// </summary>
-    public class CameraShakeEffect :MonoBehaviour, ICameraEffect
+    public class CameraShakeEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.Shake;
         public float Priority { get; set; } = 200f; // 最高优先级，最后应用震动
         public bool IsActive => isActive && isShaking;
+
+        public bool isDefaultActive => true;
 
         private bool isActive = false;
         private bool isShaking = false;
@@ -54,20 +56,6 @@ namespace CharacterController.Camera
             shakeOffset = Vector3.zero;
         }
 
-        /// <summary>
-        /// 设置震动参数
-        /// </summary>
-        public void SetParameters(float dampingSpeed = 2f)
-        {
-            this.dampingSpeed = dampingSpeed;
-        }
-
-        public void Activate(CameraEffectContext context)
-        {
-            isActive = true;
-            isShaking = false;
-            shakeOffset = Vector3.zero;
-        }
 
         public void Activate()
         {
@@ -95,7 +83,7 @@ namespace CharacterController.Camera
             // 检查震动是否结束
             if (shakeTimer >= shakeDuration)
             {
-                StopShake();
+                Deactivate();
                 return context;
             }
 

@@ -10,20 +10,8 @@ namespace CharacterController.Camera
     public class CameraEffectManager
     {
         private readonly List<ICameraEffect> m_ActiveEffects = new List<ICameraEffect>();
-        private readonly Dictionary<CameraEffectType, ICameraEffect> m_EffectLookup = new Dictionary<CameraEffectType, ICameraEffect>();
-        private Transform m_CameraTransform;
-        private Transform m_TargetTransform;
-        private UnityEngine.Camera m_TargetCamera;
+        private readonly Dictionary<CameraEffectType, ICameraEffect> m_EffectLookup = new();
         private bool m_IsEnabled = true;
-
-        /// <summary>
-        /// 是否启用效果管理器
-        /// </summary>
-        public bool IsEnabled
-        {
-            get => m_IsEnabled;
-            set => m_IsEnabled = value;
-        }
 
         /// <summary>
         /// 激活效果的数量
@@ -35,37 +23,22 @@ namespace CharacterController.Camera
         /// </summary>
         public IReadOnlyList<ICameraEffect> ActiveEffects => m_ActiveEffects;
 
-        /// <summary>
-        /// 初始化管理器
-        /// </summary>
-        public void Initialize(Transform cameraTransform, Transform targetTransform, UnityEngine.Camera targetCamera)
-        {
-            m_CameraTransform = cameraTransform;
-            m_TargetTransform = targetTransform;
-            m_TargetCamera = targetCamera;
-        }
 
         /// <summary>
         /// 添加效果到管理器
         /// </summary>
         public void AddEffect(ICameraEffect effect)
         {
-            if (effect == null || m_ActiveEffects.Contains(effect)) return;
-
-            CameraEffectContext context = new CameraEffectContext
+            if (effect == null || m_ActiveEffects.Contains(effect))
             {
-                targetCamera = m_TargetCamera,
-                targetTransform = m_TargetTransform,
-                basePosition = m_CameraTransform != null ? m_CameraTransform.position : Vector3.zero,
-                baseRotation = m_CameraTransform != null ? m_CameraTransform.rotation : Quaternion.identity,
-                baseFieldOfView = m_TargetCamera != null ? m_TargetCamera.fieldOfView : 60f,
-                deltaTime = Time.deltaTime,
-                currentPosition = m_CameraTransform != null ? m_CameraTransform.position : Vector3.zero,
-                currentRotation = m_CameraTransform != null ? m_CameraTransform.rotation : Quaternion.identity,
-                currentFieldOfView = m_TargetCamera != null ? m_TargetCamera.fieldOfView : 60f
-            };
+                return;
+            }
 
-            effect.Activate(context);
+            if (effect.isDefaultActive)
+            {
+                effect.Activate();
+            }
+
             m_ActiveEffects.Add(effect);
 
             // 更新查找表
@@ -75,34 +48,6 @@ namespace CharacterController.Camera
             }
 
             SortEffects();
-        }
-
-        /// <summary>
-        /// 添加效果到管理器（简化版本，不传递参数）
-        /// </summary>
-        public void AddEffectSimple(ICameraEffect effect)
-        {
-            if (effect == null || m_ActiveEffects.Contains(effect)) return;
-
-            effect.Activate();
-            m_ActiveEffects.Add(effect);
-
-            // 更新查找表
-            if (!m_EffectLookup.ContainsKey(effect.EffectType))
-            {
-                m_EffectLookup.Add(effect.EffectType, effect);
-            }
-
-            SortEffects();
-        }
-
-        /// <summary>
-        /// 根据类型添加效果
-        /// </summary>
-        public void AddEffect<T>() where T : ICameraEffect, new()
-        {
-            var effect = new T();
-            AddEffect(effect);
         }
 
         /// <summary>
@@ -142,15 +87,6 @@ namespace CharacterController.Camera
         }
 
         /// <summary>
-        /// 获取指定类型的效果
-        /// </summary>
-        public ICameraEffect GetEffect(CameraEffectType effectType)
-        {
-            m_EffectLookup.TryGetValue(effectType, out ICameraEffect effect);
-            return effect;
-        }
-
-        /// <summary>
         /// 检查是否包含指定类型的效果
         /// </summary>
         public bool HasEffect(CameraEffectType effectType)
@@ -182,20 +118,6 @@ namespace CharacterController.Camera
 
             return currentContext;
         }
-
-        /// <summary>
-        /// 清除所有效果
-        /// </summary>
-        public void ClearAllEffects()
-        {
-            foreach (var effect in m_ActiveEffects)
-            {
-                effect.Deactivate();
-            }
-            m_ActiveEffects.Clear();
-            m_EffectLookup.Clear();
-        }
-
 
         /// <summary>
         /// 禁用指定类型的效果

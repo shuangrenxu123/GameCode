@@ -12,6 +12,9 @@ namespace CharacterController.Camera
         public CameraEffectType EffectType => CameraEffectType.Follow;
         public float Priority { get; set; } = 100f;
         public bool IsActive => isActive;
+
+        public bool isDefaultActive => true;
+
         [SerializeField, LabelText("高度插值速度")]
         private float heightLerpSpeed = 10f;
         private Vector3 offsetFromHead = Vector3.zero;
@@ -21,19 +24,6 @@ namespace CharacterController.Camera
         private Vector3 previousLerpedCharacterUp = Vector3.up;
         private Vector3 characterPosition;
         private bool isActive = false;
-
-
-        public void Activate(CameraEffectContext context)
-        {
-            characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
-
-            isActive = true;
-
-            characterPosition = context.targetTransform.position;
-            previousLerpedCharacterUp = context.targetTransform.up;
-            lerpedCharacterUp = previousLerpedCharacterUp;
-            lerpedHeight = characterActor?.BodySize.y ?? 1.7f;
-        }
 
         public void Activate()
         {
@@ -50,6 +40,7 @@ namespace CharacterController.Camera
         {
             if (!isActive || characterActor == null)
             {
+                characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
                 return context;
             }
 
