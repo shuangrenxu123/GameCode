@@ -10,11 +10,6 @@ namespace CharacterController.Camera
     [DefaultExecutionOrder(110)]
     public class Camera3D : MonoBehaviour
     {
-        [Header("Camera Effect System")]
-        [SerializeField]
-        [LabelText("是否使用相机效果系统")]
-        private bool useCameraEffectSystem = true;
-
         [SerializeField]
         [LabelText("角色大脑组件")]
         CharacterBrain characterBrain;
@@ -32,7 +27,7 @@ namespace CharacterController.Camera
 
         [SerializeField]
         [LabelText("相机效果管理器")]
-        private CameraEffectManager effectManager;
+        public CameraEffectManager effectManager;
 
         [SerializeField]
         [LabelText("目标变换")]
@@ -76,8 +71,6 @@ namespace CharacterController.Camera
         /// </summary>
         void InitializeCameraEffectManager()
         {
-            if (!useCameraEffectSystem) return;
-
             if (effectManager == null)
             {
                 effectManager = new CameraEffectManager();
@@ -85,10 +78,7 @@ namespace CharacterController.Camera
 
             effectManager.Initialize(transform, targetTransform, GetComponent<UnityEngine.Camera>());
 
-            if (useCameraEffectSystem)
-            {
-                SetupDefaultEffects();
-            }
+            SetupDefaultEffects();
         }
 
         /// <summary>
@@ -101,7 +91,7 @@ namespace CharacterController.Camera
                 return;
             }
 
-            var effects = GetComponents<ICameraEffect>();
+            var effects = GetComponentsInChildren<ICameraEffect>();
             foreach (var effect in effects)
             {
                 effectManager.AddEffect(effect);
@@ -145,7 +135,7 @@ namespace CharacterController.Camera
         void Start()
         {
             // 设置初始旋转，确保相机看向玩家
-            if (useCameraEffectSystem && effectManager != null)
+            if (effectManager != null)
             {
                 // 使用CameraEffect系统设置初始旋转
                 var rotationEffect = effectManager.GetEffect<CameraRotationEffect>();
@@ -233,73 +223,6 @@ namespace CharacterController.Camera
             {
                 effectManager.SetZoomInput(-inputHandlerSettings.InputHandler.GetFloat(zoomAxis));
             }
-
-
-            // 按键触发震动
-            if (Input.GetKeyDown(KeyCode.Y))
-            {
-                StartShake(2f, .5f, 10);
-                Debug.Log($"启动相机震动: 持续时间={0.5f}s, 强度={.1f}, 频率={10}");
-            }
-
-            // 按键停止震动
-            if (Input.GetKeyDown(KeyCode.U))
-            {
-                StopShake();
-                Debug.Log("停止相机震动");
-            }
-
-            // 显示震动状态
-            if (IsShaking())
-            {
-                float remainingTime = GetRemainingShakeTime();
-                Debug.Log($"震动中... 剩余时间: {remainingTime:F2}秒");
-            }
-        }
-
-        /// <summary>
-        /// 启动相机震动效果
-        /// </summary>
-        /// <param name="duration">震动持续时间</param>
-        /// <param name="intensity">震动强度</param>
-        /// <param name="frequency">震动频率</param>
-        public void StartShake(float duration, float intensity, float frequency = 10f)
-        {
-            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
-            if (shakeEffect != null)
-            {
-                shakeEffect.StartShake(duration, intensity, frequency);
-            }
-        }
-
-        /// <summary>
-        /// 停止相机震动效果
-        /// </summary>
-        public void StopShake()
-        {
-            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
-            if (shakeEffect != null)
-            {
-                shakeEffect.StopShake();
-            }
-        }
-
-        /// <summary>
-        /// 获取震动效果状态
-        /// </summary>
-        public bool IsShaking()
-        {
-            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
-            return shakeEffect?.IsShaking() ?? false;
-        }
-
-        /// <summary>
-        /// 获取剩余震动时间
-        /// </summary>
-        public float GetRemainingShakeTime()
-        {
-            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
-            return shakeEffect?.GetRemainingShakeTime() ?? 0f;
         }
     }
 }

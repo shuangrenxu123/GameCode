@@ -1,3 +1,4 @@
+using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using Fight;
 using UnityEngine;
@@ -10,9 +11,11 @@ public class Player : MonoSingleton<Player>
     public PlayerInventory Inventory { get; private set; }
     public CharacterActor Actor { get; private set; }
     public StateManger StateManager { get; private set; }
+    public Camera3D camera3D;
 
     [Header("Net")]
     public string id;
+
     private void Awake()
     {
         CombatEntity = GetComponent<CombatEntity>();
