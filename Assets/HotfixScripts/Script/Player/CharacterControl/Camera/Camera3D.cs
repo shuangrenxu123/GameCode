@@ -54,58 +54,11 @@ namespace CharacterController.Camera
         public float yawSpeed = 180f;
 
         [SerializeField]
-        [LabelText("锁定检测距离")]
-        float lockDistance = 20f;
-        [SerializeField]
-        [LabelText("最大锁定敌人距离")]
-        float lockEnemyMaxDistance = 30f;
-        [SerializeField]
-        [LabelText("锁定相机移动速度")]
-        float lockEnemyCameraMoveSpeed = 10f;
-        [SerializeField]
-        [LabelText("锁定敌人标签")]
-        string lockEnemyTag = "Enemy";
-
-        [SerializeField]
         [LabelText("初始俯仰角度")]
         float initialPitch = 45f;
 
         [LabelText("Pitch旋转速度")]
         public float pitchSpeed = 180f;
-
-        [LabelText("最大俯仰角度")]
-        public float maxPitchAngle = 80f;
-
-        [LabelText("最小俯仰角度")]
-        public float minPitchAngle = 80f;
-
-        [Min(0f)]
-        [SerializeField]
-        [LabelText("目标距离")]
-        float distanceToTarget = 5f;
-
-        [Min(0f)]
-        [LabelText("缩放输入输出速度")]
-        public float zoomInOutSpeed = 40f;
-
-        [Min(0f)]
-        [LabelText("缩放插值速度")]
-        public float zoomInOutLerpSpeed = 5f;
-
-        [Min(0f)]
-        [LabelText("最小缩放距离")]
-        public float minZoom = 2f;
-
-        [Min(0.001f)]
-        [LabelText("最大缩放距离")]
-        public float maxZoom = 12f;
-
-        [LabelText("碰撞影响缩放")]
-        public bool collisionAffectsZoom = true; // 启用碰撞影响缩放
-        [LabelText("碰撞检测半径")]
-        public float detectionRadius = 0.3f; // 与CameraCollisionEffect保持一致
-        [LabelText("碰撞检测层级遮罩")]
-        public LayerMask layerMask = -1; // 检测所有层级
 
         CharacterActor characterActor = null;
         UnityEngine.Camera camera;
@@ -148,47 +101,14 @@ namespace CharacterController.Camera
                 return;
             }
 
-            var followEffect = new CameraFollowEffect();
-            followEffect.Priority = 25f;
-            // 激活并设置参数
-            followEffect.Activate();
-            followEffect.SetParameters(heightLerpSpeed, characterActor, offsetFromHead);
-            effectManager.AddEffect(followEffect);
-
-            // 配置旋转效果 (高优先级，控制最终朝向和位置)
-
-            var rotationEffect = new CameraRotationEffect();
-            rotationEffect.Priority = 100f; // 提高优先级
-            effectManager.AddEffect(rotationEffect);
-            // 激活并设置参数
-            rotationEffect.Activate();
-            rotationEffect.SetParameters(characterActor, yawSpeed, pitchSpeed, maxPitchAngle, minPitchAngle);
-
-            var zoomEffect = new CameraZoomEffect();
-
-            zoomEffect.Priority = 60f;
-            effectManager.AddEffect(zoomEffect);
-            zoomEffect.Activate();
-            zoomEffect.SetParameters(zoomInOutSpeed, zoomInOutLerpSpeed, minZoom, maxZoom, distanceToTarget);
-
-            var collisionEffect = new CameraCollisionEffect();
-            collisionEffect.Priority = 30f;
-            effectManager.AddEffect(collisionEffect);
-            collisionEffect.Activate();
-            collisionEffect.SetParameters(detectionRadius, layerMask, collisionAffectsZoom);
-
-            // 设置碰撞检测与缩放效果的联动
-            if (collisionAffectsZoom)
+            var effects = GetComponents<ICameraEffect>();
+            foreach (var effect in effects)
             {
-                var collisionEffectRef = effectManager.GetEffect<CameraCollisionEffect>();
-                var zoomEffectRef = effectManager.GetEffect<CameraZoomEffect>();
-                if (collisionEffectRef != null && zoomEffectRef != null)
-                {
-                    collisionEffectRef.SetZoomEffect(zoomEffectRef);
-                }
+                effectManager.AddEffect(effect);
+                effect.Activate();
             }
-
         }
+
 
         public bool Initialize(Transform targetTransform)
         {
@@ -280,7 +200,8 @@ namespace CharacterController.Camera
                 deltaTime = dt,
                 currentPosition = transform.position,
                 currentRotation = transform.rotation,
-                currentFieldOfView = camera.fieldOfView
+                currentFieldOfView = camera.fieldOfView,
+                currentDistance = 5 // 设置初始距离
             };
 
             // 处理效果链（现在包含了所有Update逻辑）
@@ -312,6 +233,73 @@ namespace CharacterController.Camera
             {
                 effectManager.SetZoomInput(-inputHandlerSettings.InputHandler.GetFloat(zoomAxis));
             }
+
+
+            // 按键触发震动
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                StartShake(2f, .5f, 10);
+                Debug.Log($"启动相机震动: 持续时间={0.5f}s, 强度={.1f}, 频率={10}");
+            }
+
+            // 按键停止震动
+            if (Input.GetKeyDown(KeyCode.U))
+            {
+                StopShake();
+                Debug.Log("停止相机震动");
+            }
+
+            // 显示震动状态
+            if (IsShaking())
+            {
+                float remainingTime = GetRemainingShakeTime();
+                Debug.Log($"震动中... 剩余时间: {remainingTime:F2}秒");
+            }
+        }
+
+        /// <summary>
+        /// 启动相机震动效果
+        /// </summary>
+        /// <param name="duration">震动持续时间</param>
+        /// <param name="intensity">震动强度</param>
+        /// <param name="frequency">震动频率</param>
+        public void StartShake(float duration, float intensity, float frequency = 10f)
+        {
+            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
+            if (shakeEffect != null)
+            {
+                shakeEffect.StartShake(duration, intensity, frequency);
+            }
+        }
+
+        /// <summary>
+        /// 停止相机震动效果
+        /// </summary>
+        public void StopShake()
+        {
+            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
+            if (shakeEffect != null)
+            {
+                shakeEffect.StopShake();
+            }
+        }
+
+        /// <summary>
+        /// 获取震动效果状态
+        /// </summary>
+        public bool IsShaking()
+        {
+            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
+            return shakeEffect?.IsShaking() ?? false;
+        }
+
+        /// <summary>
+        /// 获取剩余震动时间
+        /// </summary>
+        public float GetRemainingShakeTime()
+        {
+            var shakeEffect = effectManager?.GetEffect<CameraShakeEffect>();
+            return shakeEffect?.GetRemainingShakeTime() ?? 0f;
         }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -6,15 +7,19 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机旋转效果，处理相机的Yaw和Pitch旋转
     /// </summary>
-    public class CameraRotationEffect : ICameraEffect
+    public class CameraRotationEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.Rotation;
-        public float Priority { get; set; } = 100f;
+        public float Priority { get; set; } = 70;
         public bool IsActive => isActive;
 
+        [SerializeField, LabelText("水平旋转速度")]
         private float yawSpeed = 180f;
+        [SerializeField, LabelText("垂直旋转速度")]
         private float pitchSpeed = 180f;
+        [SerializeField, LabelText("最大俯仰角度")]
         private float maxPitchAngle = 80f;
+        [SerializeField, LabelText("最小俯仰角度")]
         private float minPitchAngle = -80f;
 
         private float deltaYaw = 0f;
@@ -119,7 +124,8 @@ namespace CharacterController.Camera
                 deltaTime = context.deltaTime,
                 currentPosition = context.currentPosition,
                 currentRotation = targetRotation, // 直接设置当前处理的旋转
-                currentFieldOfView = context.currentFieldOfView
+                currentFieldOfView = context.currentFieldOfView,
+                currentDistance = context.currentDistance // 保持距离不变
             };
 
             return modifiedContext;

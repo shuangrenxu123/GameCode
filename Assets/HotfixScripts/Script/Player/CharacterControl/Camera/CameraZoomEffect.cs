@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -6,19 +7,30 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机缩放效果，处理相机距离调整
     /// </summary>
-    public class CameraZoomEffect : ICameraEffect
+    public class CameraZoomEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.Zoom;
-        public float Priority { get; set; } = 60f;
+        public float Priority { get; set; } = 50f;
         public bool IsActive => isActive;
 
+        [SerializeField, LabelText("缩放速度")]
         float zoomInOutSpeed = 40f;
+
+        [SerializeField, LabelText("插值速度")]
         float zoomInOutLerpSpeed = 5f;
+
+        [SerializeField, LabelText("最小缩放")]
         float minZoom = 2f;
+
+        [SerializeField, LabelText("最大缩放")]
         float maxZoom = 12f;
+
         float currentDistanceToTarget;
+
         float smoothedDistanceToTarget;
+
         float deltaZoom = 0f;
+
         bool isActive = false;
 
         /// <summary>
@@ -76,12 +88,7 @@ namespace CharacterController.Camera
             // 平滑过渡到目标距离
             smoothedDistanceToTarget = Mathf.Lerp(smoothedDistanceToTarget, currentDistanceToTarget, zoomInOutLerpSpeed * context.deltaTime);
 
-            // 计算缩放后的相机位置
-            Vector3 forwardDirection = context.baseRotation * Vector3.forward;
-            Vector3 zoomOffset = -forwardDirection * smoothedDistanceToTarget;
-            Vector3 newPosition = context.basePosition + zoomOffset;
-
-            // 创建修改后的上下文，直接设置当前处理的位置
+            // 创建修改后的上下文，设置当前距离（不修改位置，让FollowEffect处理位置计算）
             var modifiedContext = new CameraEffectContext
             {
                 targetCamera = context.targetCamera,
@@ -90,9 +97,10 @@ namespace CharacterController.Camera
                 baseRotation = context.baseRotation,
                 baseFieldOfView = context.baseFieldOfView,
                 deltaTime = context.deltaTime,
-                currentPosition = newPosition, // 直接设置当前处理的位置
+                currentPosition = context.currentPosition, // 保持原位置，不在此处修改
                 currentRotation = context.currentRotation,
-                currentFieldOfView = context.currentFieldOfView
+                currentFieldOfView = context.currentFieldOfView,
+                currentDistance = smoothedDistanceToTarget // 设置当前距离
             };
 
             return modifiedContext;

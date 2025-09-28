@@ -172,7 +172,7 @@ namespace CharacterController.Camera
             CameraEffectContext currentContext = initialContext;
 
             // 按优先级排序处理效果（高优先级先处理）
-            foreach (var effect in m_ActiveEffects.OrderByDescending(e => e.Priority))
+            foreach (var effect in m_ActiveEffects.OrderBy(e => e.Priority))
             {
                 if (!effect.IsActive) continue;
 

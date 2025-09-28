@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -6,12 +7,12 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机跟随效果，处理相机跟随目标移动和位置计算
     /// </summary>
-    public class CameraFollowEffect : ICameraEffect
+    public class CameraFollowEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.Follow;
-        public float Priority { get; set; } = 25f;
+        public float Priority { get; set; } = 100f;
         public bool IsActive => isActive;
-
+        [SerializeField, LabelText("高度插值速度")]
         private float heightLerpSpeed = 10f;
         private Vector3 offsetFromHead = Vector3.zero;
         private CharacterActor characterActor;
@@ -67,15 +68,16 @@ namespace CharacterController.Camera
             lerpedHeight = Mathf.Lerp(lerpedHeight, targetHeight, heightLerpSpeed * context.deltaTime);
             UpdateCharacterUp(context.deltaTime);
 
-            // 获取缩放效果的当前距离
-            float distance = GetCurrentDistance(context);
+            // 使用上下文中的当前距离（由ZoomEffect提供）
+            float distance = context.currentDistance;
 
             // 只计算目标位置，不涉及朝向
             Vector3 targetPosition = characterPosition + characterActor.Up * lerpedHeight +
                                    characterActor.transform.TransformDirection(offsetFromHead);
 
             // 应用缩放距离：相机位置 = 目标位置 - 朝向方向 * 距离
-            Vector3 backDirection = context.baseRotation * Vector3.forward;
+            // 使用当前处理链中的旋转（context.currentRotation）而不是基础旋转，确保位置和旋转同步
+            Vector3 backDirection = context.currentRotation * Vector3.forward;
             Vector3 cameraPosition = targetPosition - backDirection * distance;
 
             // 创建修改后的上下文，直接设置当前处理的位置
@@ -89,7 +91,8 @@ namespace CharacterController.Camera
                 deltaTime = context.deltaTime,
                 currentPosition = cameraPosition, // 直接设置当前处理的位置
                 currentRotation = context.currentRotation,
-                currentFieldOfView = context.currentFieldOfView
+                currentFieldOfView = context.currentFieldOfView,
+                currentDistance = context.currentDistance // 保持距离不变
             };
 
             return modifiedContext;
@@ -103,13 +106,6 @@ namespace CharacterController.Camera
             lerpedCharacterUp = characterActor.Up;
             Quaternion deltaRotation = Quaternion.FromToRotation(previousLerpedCharacterUp, lerpedCharacterUp);
             previousLerpedCharacterUp = lerpedCharacterUp;
-        }
-
-        private float GetCurrentDistance(CameraEffectContext context)
-        {
-            // 从缩放效果的当前距离获取（需要通过效果管理器获取）
-            // 这里暂时返回默认距离，实际实现需要在CameraFollowEffect中添加对缩放效果的引用
-            return 5f;
         }
     }
 }

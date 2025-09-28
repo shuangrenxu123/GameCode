@@ -139,6 +139,11 @@ namespace CharacterController.Camera
         /// 当前视野角度（处理过程中的中间结果）
         /// </summary>
         public float currentFieldOfView;
+
+        /// <summary>
+        /// 当前距离（处理过程中的中间结果）
+        /// </summary>
+        public float currentDistance;
     }
 
     /// <summary>

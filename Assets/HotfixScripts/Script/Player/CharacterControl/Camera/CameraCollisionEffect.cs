@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace CharacterController.Camera
@@ -6,16 +7,17 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机碰撞检测效果，避免相机穿透障碍物
     /// </summary>
-    public class CameraCollisionEffect : ICameraEffect
+    public class CameraCollisionEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.Collision;
         public float Priority { get; set; } = 25f;
         public bool IsActive => isActive;
 
+        [SerializeField, LabelText("检测半径")]
         private float detectionRadius = 0.3f; // 优化检测半径，对于相机碰撞检测更合适
+        [SerializeField, LabelText("检测层级")]
         private LayerMask layerMask = -1; // 默认检测所有层级
-        private bool considerKinematicRigidbodies = true;
-        private bool considerDynamicRigidbodies = true;
+        [SerializeField, LabelText("影响缩放")]
         private bool collisionAffectsZoom = false;
         private CameraZoomEffect zoomEffect;
         private RaycastHit[] hitsBuffer = new RaycastHit[10];
@@ -66,7 +68,7 @@ namespace CharacterController.Camera
             }
 
             targetPosition = context.targetTransform.position;
-            cameraPosition = context.basePosition;
+            cameraPosition = context.currentPosition; // 使用当前处理的位置而不是基础位置
 
             // 计算从目标位置到相机位置的方向和距离
             Vector3 displacement = cameraPosition - targetPosition;
@@ -83,7 +85,7 @@ namespace CharacterController.Camera
             if (hit)
             {
                 // 返回调整后的位置
-                Vector3 adjustedPosition = targetPosition + displacement;
+                Vector3 adjustedPosition = displacement;
 
                 // 创建修改后的上下文，直接设置当前处理的位置
                 var modifiedContext = new CameraEffectContext
@@ -96,7 +98,8 @@ namespace CharacterController.Camera
                     deltaTime = context.deltaTime,
                     currentPosition = adjustedPosition, // 直接设置当前处理的位置
                     currentRotation = context.currentRotation,
-                    currentFieldOfView = context.currentFieldOfView
+                    currentFieldOfView = context.currentFieldOfView,
+                    currentDistance = context.currentDistance // 传递距离信息
                 };
 
                 return modifiedContext;
@@ -105,16 +108,17 @@ namespace CharacterController.Camera
             return context;
         }
 
-        private bool DetectCollisions(ref Vector3 displacement, Vector3 lookAtPosition)
+        private bool DetectCollisions(ref Vector3 displacement, Vector3 targetPosition)
         {
-            // 从相机位置向目标位置发射射线检测碰撞
-            Vector3 cameraPosition = lookAtPosition + displacement;
+            // 从目标位置向相机位置发射射线检测碰撞
+            Vector3 cameraPosition = targetPosition + displacement;
             Vector3 direction = Vector3.Normalize(displacement);
 
+            // 使用SphereCast检测从目标位置到相机位置路径上的碰撞
             int hits = Physics.SphereCastNonAlloc(
-                cameraPosition,    // 从相机位置开始
+                targetPosition,    // 从目标位置开始
                 detectionRadius,
-                direction,         // 向目标位置方向发射
+                direction,         // 向相机方向发射
                 hitsBuffer,
                 displacement.magnitude,
                 layerMask,
@@ -138,16 +142,18 @@ namespace CharacterController.Camera
                 return false;
 
             // 找到最近的碰撞点
-            float distance = Mathf.Infinity;
+            float nearestDistance = Mathf.Infinity;
             for (int i = 0; i < validHitsNumber; i++)
             {
                 RaycastHit hitBuffer = validHits[i];
-                if (hitBuffer.distance < distance)
-                    distance = hitBuffer.distance;
+                if (hitBuffer.distance < nearestDistance)
+                    nearestDistance = hitBuffer.distance;
             }
 
-            // 调整位移向量长度到碰撞点
-            displacement = Vector3.Normalize(displacement) * distance;
+            // 调整位移向量长度到碰撞点前一点，避免穿透
+            float safeDistance = nearestDistance - detectionRadius;
+            if (safeDistance < 0) safeDistance = 0;
+            displacement = Vector3.Normalize(displacement) * safeDistance;
             return true;
         }
     }
