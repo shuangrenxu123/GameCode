@@ -31,18 +31,6 @@ namespace CharacterController.Camera
         private bool isActive = false;
 
         /// <summary>
-        /// 设置旋转参数
-        /// </summary>
-        public void SetParameters(CharacterActor character, float yawSpeed = 180f, float pitchSpeed = 180f, float maxPitchAngle = 80f, float minPitchAngle = 80f)
-        {
-            this.yawSpeed = yawSpeed;
-            this.pitchSpeed = pitchSpeed;
-            this.maxPitchAngle = maxPitchAngle;
-            this.minPitchAngle = minPitchAngle;
-            this.characterActor = character;
-        }
-
-        /// <summary>
         /// 设置输入增量（通常由输入系统调用）
         /// </summary>
         public void SetInputDelta(float deltaYaw, float deltaPitch)
@@ -53,6 +41,7 @@ namespace CharacterController.Camera
 
         public void Activate(CameraEffectContext context)
         {
+            characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
             isActive = true;
 
             previousLerpedCharacterUp = context.targetTransform.up;
@@ -111,7 +100,7 @@ namespace CharacterController.Camera
             Quaternion baseRotation = Quaternion.LookRotation(direction);
 
             // 应用用户输入旋转（基于当前旋转）
-            Quaternion targetRotation = CalculateTargetRotation(baseRotation, context.baseRotation);
+            Quaternion targetRotation = CalculateTargetRotation(baseRotation, context.currentRotation);
 
             // 修改上下文中的旋转，直接设置当前处理的旋转
             var modifiedContext = new CameraEffectContext

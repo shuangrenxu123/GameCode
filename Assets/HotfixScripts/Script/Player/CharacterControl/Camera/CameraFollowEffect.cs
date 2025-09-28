@@ -22,15 +22,6 @@ namespace CharacterController.Camera
         private Vector3 characterPosition;
         private bool isActive = false;
 
-        /// <summary>
-        /// 设置跟随参数
-        /// </summary>
-        public void SetParameters(float heightLerpSpeed, CharacterActor actor, Vector3 offsetFromHead = default)
-        {
-            this.heightLerpSpeed = heightLerpSpeed;
-            this.offsetFromHead = offsetFromHead;
-            this.characterActor = actor;
-        }
 
         public void Activate(CameraEffectContext context)
         {
