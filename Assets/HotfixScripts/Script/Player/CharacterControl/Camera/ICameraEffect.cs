@@ -53,7 +53,12 @@ namespace CharacterController.Camera
         /// <summary>
         /// 动态构图效果 - 智能调整画面构图
         /// </summary>
-        DynamicComposition
+       DynamicComposition,
+
+       /// <summary>
+       /// 平滑移动效果 - 从一个点位平滑移动到另一个点位，支持自定义曲线
+       /// </summary>
+       SmoothMove
     }
 
 

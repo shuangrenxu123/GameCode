@@ -1,4 +1,6 @@
+using System.Threading.Tasks;
 using CharacterController.Camera;
+using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,8 +13,13 @@ namespace Camera.Test
         [SerializeField, LabelText("震动强度")]
         private float _shakeIntensity = 0.5f;
 
-        void OnTriggerEnter(Collider other)
+        [SerializeField, LabelText("延迟时间")]
+        float _delayTime = 0;
+
+        async void OnTriggerEnter(Collider other)
         {
+            await UniTask.WaitForSeconds(_delayTime);
+
             var Player = other.gameObject.GetComponent<Player>();
             var shake = Player.camera3D.effectManager.GetEffect<CameraShakeEffect>();
             shake.Activate();
