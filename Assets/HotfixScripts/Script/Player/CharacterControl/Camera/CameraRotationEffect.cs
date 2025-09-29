@@ -98,24 +98,47 @@ namespace CharacterController.Camera
 
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
-            if (!isActive || characterActor == null)
+            if (!isActive)
             {
-                characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
                 return context;
             }
 
-            // Update逻辑开始：更新角色Up向量
+            // 获取CharacterActor（修正获取逻辑）
+            if (characterActor == null)
+            {
+                characterActor = context.targetTransform.GetComponentInBranch<CharacterActor>();
+                return context;  // 如果找不到，返回原上下文
+            }
+
             UpdateCharacterUp();
 
-            // 计算朝向（看向玩家，使用角色位置）
-            float targetHeight = characterActor.BodySize.y * 0.5f;
-            Vector3 lookAtPoint = characterActor.transform.position + characterActor.Up * targetHeight;
-            Vector3 direction = (lookAtPoint - characterActor.transform.position).normalized;
+            Quaternion targetRotation;
 
-            Quaternion baseRotation = Quaternion.LookRotation(direction);
+            if (!enableInput)
+            {
+                // 自动朝向：从当前相机位置看向角色
+                float targetHeight = characterActor.BodySize.y * 0.5f;
+                Vector3 lookAtPoint = characterActor.transform.position + characterActor.Up * targetHeight;
+                Vector3 directionToPlayer = lookAtPoint - context.currentPosition;
 
-            // 应用用户输入旋转（基于当前旋转）
-            Quaternion targetRotation = CalculateTargetRotation(baseRotation, context.currentRotation);
+                // 调试绘制线条（从相机位置到看向点）
+                Debug.DrawLine(context.currentPosition, lookAtPoint, Color.green);
+                Debug.DrawLine(context.currentPosition, context.currentPosition + directionToPlayer.normalized * 2, Color.red);
+
+                targetRotation = Quaternion.LookRotation(directionToPlayer);
+            }
+            else
+            {
+                // 正常朝向：看向角色（传统方式）
+                float targetHeight = characterActor.BodySize.y * 0.5f;
+                Vector3 lookAtPoint = characterActor.transform.position + characterActor.Up * targetHeight;
+                Vector3 direction = (lookAtPoint - characterActor.transform.position).normalized;
+
+                Debug.DrawLine(lookAtPoint, lookAtPoint + direction * 2, Color.red);
+
+                Quaternion baseRotation = Quaternion.LookRotation(direction);
+                targetRotation = CalculateTargetRotation(baseRotation, context.currentRotation);
+            }
 
             // 修改上下文中的旋转，直接设置当前处理的旋转
             var modifiedContext = new CameraEffectContext
@@ -127,9 +150,9 @@ namespace CharacterController.Camera
                 baseFieldOfView = context.baseFieldOfView,
                 deltaTime = context.deltaTime,
                 currentPosition = context.currentPosition,
-                currentRotation = targetRotation, // 直接设置当前处理的旋转
+                currentRotation = targetRotation,
                 currentFieldOfView = context.currentFieldOfView,
-                currentDistance = context.currentDistance // 保持距离不变
+                currentDistance = context.currentDistance
             };
 
             return modifiedContext;

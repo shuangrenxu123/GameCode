@@ -15,6 +15,7 @@ namespace Camera.Test
         {
             var Player = other.gameObject.GetComponent<Player>();
             var shake = Player.camera3D.effectManager.GetEffect<CameraShakeEffect>();
+            shake.Activate();
             shake.StartShake(_shakeDuration, _shakeIntensity);
         }
 
