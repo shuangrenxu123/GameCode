@@ -7,10 +7,10 @@ namespace CharacterController.Camera
     /// <summary>
     /// 相机锁定效果，处理锁定目标敌人的相机行为
     /// </summary>
-    public class CameraLockOnEffect : ICameraEffect
+    public class CameraLockOnEffect : MonoBehaviour, ICameraEffect
     {
         public CameraEffectType EffectType => CameraEffectType.LockOn;
-        public float Priority { get; set; } = 200f;
+        public float Priority { get; set; } = 80f;
         public bool IsActive => isActive && currentLockTarget != null;
 
         public bool isDefaultActive => false;
@@ -21,6 +21,7 @@ namespace CharacterController.Camera
         private string lockEnemyTag = "Enemy";
         private float viewableAngle = 60f; // 可视角度范围
         private Vector3 lockOffsetPosition = Vector3.zero;
+        private float lookDownOffset = 1.5f;
         private LayerMask lockMask;
         private Transform currentLockTarget;
         private Transform characterTransform;
@@ -30,13 +31,14 @@ namespace CharacterController.Camera
         /// <summary>
         /// 设置锁定参数
         /// </summary>
-        public void SetParameters(float lockDistance = 20f, float lockEnemyMaxDistance = 30f, float lockCameraMoveSpeed = 10f, string lockEnemyTag = "Enemy", float viewableAngle = 60f)
+        public void SetParameters(float lockDistance = 20f, float lockEnemyMaxDistance = 30f, float lockCameraMoveSpeed = 10f, string lockEnemyTag = "Enemy", float viewableAngle = 60f, float lookDownOffset = 1.5f)
         {
             this.lockDistance = lockDistance;
             this.lockEnemyMaxDistance = lockEnemyMaxDistance;
             this.lockCameraMoveSpeed = lockCameraMoveSpeed;
             this.lockEnemyTag = lockEnemyTag;
             this.viewableAngle = viewableAngle;
+            this.lookDownOffset = lookDownOffset;
         }
 
         /// <summary>
@@ -49,11 +51,9 @@ namespace CharacterController.Camera
             angleRange = viewableAngle;
         }
 
-        public void Activate(CameraEffectContext context)
+        public void Activate()
         {
-            characterTransform = context.targetTransform;
             isActive = true;
-
             FindLockTarget();
         }
 
@@ -71,6 +71,12 @@ namespace CharacterController.Camera
                 return context;
             }
 
+            // 确保characterTransform已设置
+            if (characterTransform == null)
+            {
+                characterTransform = context.targetTransform;
+            }
+
             // Update逻辑开始：检查锁定目标距离
             Vector3 direction = currentLockTarget.position - characterTransform.position;
             if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
@@ -82,13 +88,17 @@ namespace CharacterController.Camera
             // 如果目标仍然有效，继续处理相机旋转
             if (currentLockTarget != null)
             {
-                Vector3 lookDirection = (currentLockTarget.position + lockOffsetPosition) - context.basePosition;
+                // 动态俯视：距离越远，俯视角度越大（远距离大俯视，近距离小俯视）
+                float distanceToEnemy = Vector3.Distance(context.currentPosition, currentLockTarget.position);
+                float dynamicOffset = -lookDownOffset * Mathf.Clamp(distanceToEnemy / lockEnemyMaxDistance, 0.5f, 2f);
+                Vector3 targetLookPosition = currentLockTarget.position + lockOffsetPosition + Vector3.up * dynamicOffset;
+                Vector3 lookDirection = targetLookPosition - context.currentPosition;
                 lookDirection.Normalize();
 
                 Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                Quaternion smoothedRotation = Quaternion.Slerp(context.baseRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
+                Quaternion smoothedRotation = Quaternion.Slerp(context.currentRotation, targetRotation, lockCameraMoveSpeed * Time.deltaTime);
 
-                // 创建修改后的上下文，直接设置当前处理的旋转
+                // 创建修改后的上下文，只修改旋转，不改变位置和距离
                 var modifiedContext = new CameraEffectContext
                 {
                     targetCamera = context.targetCamera,
@@ -97,9 +107,10 @@ namespace CharacterController.Camera
                     baseRotation = context.baseRotation,
                     baseFieldOfView = context.baseFieldOfView,
                     deltaTime = context.deltaTime,
-                    currentPosition = context.currentPosition,
-                    currentRotation = smoothedRotation, // 直接设置当前处理的旋转
-                    currentFieldOfView = context.currentFieldOfView
+                    currentPosition = context.currentPosition,     // 保持当前位置不变
+                    currentRotation = smoothedRotation,            // 只修改旋转，朝向敌人
+                    currentFieldOfView = context.currentFieldOfView,
+                    currentDistance = context.currentDistance      // 保持距离不变
                 };
 
                 return modifiedContext;
@@ -174,11 +185,6 @@ namespace CharacterController.Camera
         public Transform GetCurrentLockTarget()
         {
             return currentLockTarget;
-        }
-
-        public void Activate()
-        {
-
         }
     }
 }
