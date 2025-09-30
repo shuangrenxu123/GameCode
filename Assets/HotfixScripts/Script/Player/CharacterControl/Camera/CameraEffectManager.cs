@@ -9,9 +9,9 @@ namespace CharacterController.Camera
     /// </summary>
     public class CameraEffectManager
     {
-        private readonly List<ICameraEffect> m_ActiveEffects = new List<ICameraEffect>();
-        private readonly Dictionary<CameraEffectType, ICameraEffect> m_EffectLookup = new();
-        private bool m_IsEnabled = true;
+        readonly List<ICameraEffect> m_ActiveEffects = new List<ICameraEffect>();
+        readonly Dictionary<CameraEffectType, ICameraEffect> m_EffectLookup = new();
+        bool m_IsEnabled = true;
 
         /// <summary>
         /// 激活效果的数量
@@ -22,7 +22,6 @@ namespace CharacterController.Camera
         /// 所有激活效果的只读列表
         /// </summary>
         public IReadOnlyList<ICameraEffect> ActiveEffects => m_ActiveEffects;
-
 
         /// <summary>
         /// 添加效果到管理器
@@ -48,34 +47,6 @@ namespace CharacterController.Camera
             }
 
             SortEffects();
-        }
-
-        /// <summary>
-        /// 移除指定的效果
-        /// </summary>
-        public void RemoveEffect(ICameraEffect effect)
-        {
-            if (effect == null || !m_ActiveEffects.Contains(effect)) return;
-
-            effect.Deactivate();
-            m_ActiveEffects.Remove(effect);
-
-            // 更新查找表
-            if (m_EffectLookup.ContainsKey(effect.EffectType))
-            {
-                m_EffectLookup.Remove(effect.EffectType);
-            }
-        }
-
-        /// <summary>
-        /// 根据类型移除效果
-        /// </summary>
-        public void RemoveEffect(CameraEffectType effectType)
-        {
-            if (m_EffectLookup.TryGetValue(effectType, out ICameraEffect effect))
-            {
-                RemoveEffect(effect);
-            }
         }
 
         /// <summary>
@@ -120,139 +91,12 @@ namespace CharacterController.Camera
         }
 
         /// <summary>
-        /// 禁用指定类型的效果
-        /// </summary>
-        public void DisableEffect(CameraEffectType effectType)
-        {
-            RemoveEffect(effectType);
-        }
-
-        /// <summary>
-        /// 设置效果的优先级
-        /// </summary>
-        public void SetEffectPriority(CameraEffectType effectType, float priority)
-        {
-            if (m_EffectLookup.TryGetValue(effectType, out ICameraEffect effect))
-            {
-                effect.Priority = priority;
-                SortEffects();
-            }
-        }
-
-        /// <summary>
-        /// 获取效果的信息字符串（用于调试）
-        /// </summary>
-        public string GetDebugInfo()
-        {
-            System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendLine($"CameraEffectManager - Active Effects: {ActiveEffectCount}");
-            sb.AppendLine($"Enabled: {m_IsEnabled}");
-
-            foreach (var effect in m_ActiveEffects.OrderByDescending(e => e.Priority))
-            {
-                sb.AppendLine($"- {effect.EffectType}: Priority={effect.Priority}, Active={effect.IsActive}");
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
         /// 按优先级排序效果
         /// </summary>
         private void SortEffects()
         {
             m_ActiveEffects.Sort((a, b) => b.Priority.CompareTo(a.Priority));
         }
-
-        /// <summary>
-        /// 验证效果优先级是否正确
-        /// </summary>
-        public bool ValidateEffectPriority()
-        {
-            for (int i = 0; i < m_ActiveEffects.Count - 1; i++)
-            {
-                if (m_ActiveEffects[i].Priority < m_ActiveEffects[i + 1].Priority)
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// 获取所有效果类型的列表
-        /// </summary>
-        public List<CameraEffectType> GetActiveEffectTypes()
-        {
-            return m_ActiveEffects.Select(e => e.EffectType).ToList();
-        }
-
-        /// <summary>
-        /// 批量启用效果
-        /// </summary>
-        public void EnableEffects(params CameraEffectType[] effectTypes)
-        {
-            foreach (var effectType in effectTypes)
-            {
-            }
-        }
-
-        /// <summary>
-        /// 批量禁用效果
-        /// </summary>
-        public void DisableEffects(params CameraEffectType[] effectTypes)
-        {
-            foreach (var effectType in effectTypes)
-            {
-                DisableEffect(effectType);
-            }
-        }
-
-        /// <summary>
-        /// 启用锁定效果
-        /// </summary>
-        public void EnableLockOnEffect(Dictionary<string, object> parameters = null)
-        {
-            var lockOnEffect = new CameraLockOnEffect();
-            // AddEffect(lockOnEffect, parameters);
-        }
-
-        /// <summary>
-        /// 设置瞄准范围参数
-        /// </summary>
-        public void SetLockOnRange(float detectionRadius, float maxLockDistance, float angleRange = 60f)
-        {
-            var lockOnEffect = GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.SetParameters(detectionRadius, maxLockDistance, 10f, "Enemy", angleRange);
-            }
-        }
-
-        /// <summary>
-        /// 获取瞄准范围信息
-        /// </summary>
-        public void GetLockOnRangeInfo(out float detectionRadius, out float maxLockDistance, out float angleRange)
-        {
-            detectionRadius = 20f;
-            maxLockDistance = 30f;
-            angleRange = 60f;
-
-            var lockOnEffect = GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.GetLockOnInfo(out detectionRadius, out maxLockDistance, out angleRange);
-            }
-        }
-
-        /// <summary>
-        /// 禁用锁定效果
-        /// </summary>
-        public void DisableLockOnEffect()
-        {
-            DisableEffect(CameraEffectType.LockOn);
-        }
-
 
         /// <summary>
         /// 设置旋转输入（用于输入系统集成）
@@ -278,37 +122,5 @@ namespace CharacterController.Camera
             }
         }
 
-        /// <summary>
-        /// 设置锁定目标（用于外部锁定系统）
-        /// </summary>
-        public void SetLockTarget(Transform target)
-        {
-            var lockOnEffect = GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.SetLockTarget(target);
-            }
-        }
-
-        /// <summary>
-        /// 清除锁定目标
-        /// </summary>
-        public void ClearLockTarget()
-        {
-            var lockOnEffect = GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.ClearLockTarget();
-            }
-        }
-
-        /// <summary>
-        /// 获取当前锁定目标
-        /// </summary>
-        public Transform GetCurrentLockTarget()
-        {
-            var lockOnEffect = GetEffect<CameraLockOnEffect>();
-            return lockOnEffect?.GetCurrentLockTarget();
-        }
     }
 }

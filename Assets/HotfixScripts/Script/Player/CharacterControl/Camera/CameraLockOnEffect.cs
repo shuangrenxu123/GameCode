@@ -18,10 +18,11 @@ namespace CharacterController.Camera
         private float lockDistance = 20f;
         private float lockEnemyMaxDistance = 30f;
         private float lockCameraMoveSpeed = 10f;
-        private string lockEnemyTag = "Enemy";
+
         private float viewableAngle = 60f; // 可视角度范围
         private Vector3 lockOffsetPosition = Vector3.zero;
         private float lookDownOffset = 1.5f;
+
         private LayerMask lockMask;
         private Transform currentLockTarget;
         private Transform characterTransform;
@@ -31,12 +32,12 @@ namespace CharacterController.Camera
         /// <summary>
         /// 设置锁定参数
         /// </summary>
-        public void SetParameters(float lockDistance = 20f, float lockEnemyMaxDistance = 30f, float lockCameraMoveSpeed = 10f, string lockEnemyTag = "Enemy", float viewableAngle = 60f, float lookDownOffset = 1.5f)
+        public void SetParameters(float lockDistance = 20f, float lockEnemyMaxDistance = 30f, float lockCameraMoveSpeed = 10f, float viewableAngle = 60f, float lookDownOffset = 1.5f)
         {
             this.lockDistance = lockDistance;
             this.lockEnemyMaxDistance = lockEnemyMaxDistance;
             this.lockCameraMoveSpeed = lockCameraMoveSpeed;
-            this.lockEnemyTag = lockEnemyTag;
+
             this.viewableAngle = viewableAngle;
             this.lookDownOffset = lookDownOffset;
         }
@@ -54,7 +55,6 @@ namespace CharacterController.Camera
         public void Activate()
         {
             isActive = true;
-            FindLockTarget();
         }
 
         public void Deactivate()
@@ -82,13 +82,13 @@ namespace CharacterController.Camera
             if (direction.sqrMagnitude >= lockEnemyMaxDistance * lockEnemyMaxDistance)
             {
                 currentLockTarget = null;
-                if (stateManager != null) stateManager.HandleLock();
+                Deactivate();
             }
 
             // 如果目标仍然有效，继续处理相机旋转
             if (currentLockTarget != null)
             {
-                // 动态俯视：距离越远，俯视角度越大（远距离大俯视，近距离小俯视）
+                // 动态俯视：距离越远，俯视角度越大（远距离小俯视，近距离大俯视）
                 float distanceToEnemy = Vector3.Distance(context.currentPosition, currentLockTarget.position);
                 float dynamicOffset = -lookDownOffset * Mathf.Clamp(distanceToEnemy / lockEnemyMaxDistance, 0.5f, 2f);
                 Vector3 targetLookPosition = currentLockTarget.position + lockOffsetPosition + Vector3.up * dynamicOffset;
@@ -117,50 +117,6 @@ namespace CharacterController.Camera
             }
 
             return context;
-        }
-
-        private void FindLockTarget()
-        {
-            List<Enemy> availableTargets = new List<Enemy>();
-            float shortestTargetDistance = Mathf.Infinity;
-
-            Collider[] colliders = Physics.OverlapSphere(characterTransform.position, lockDistance, lockMask);
-            for (int i = 0; i < colliders.Length; i++)
-            {
-                Enemy character = colliders[i].GetComponent<Enemy>();
-                if (character != null)
-                {
-                    Vector3 lockTargetDirection = Vector3.ProjectOnPlane(
-                        (character.transform.position - characterTransform.position),
-                        characterTransform.up
-                    );
-                    float distanceFromTargetSqr = lockTargetDirection.sqrMagnitude;
-                    lockTargetDirection.Normalize();
-
-                    // 检查是否在可视角度范围内
-                    float angle = Vector3.Angle(lockTargetDirection, characterTransform.forward);
-                    if (character.transform.root != characterTransform.transform.root &&
-                        angle >= -viewableAngle && angle <= viewableAngle &&
-                        distanceFromTargetSqr <= lockDistance * lockDistance)
-                    {
-                        availableTargets.Add(character);
-                    }
-                }
-            }
-
-            // 找到最近的目标
-            for (int i = 0; i < availableTargets.Count; i++)
-            {
-                if (availableTargets[i].tag != lockEnemyTag)
-                    continue;
-
-                float distance = Vector3.Distance(characterTransform.position, availableTargets[i].transform.position);
-                if (distance < shortestTargetDistance)
-                {
-                    shortestTargetDistance = distance;
-                    currentLockTarget = availableTargets[i].transform;
-                }
-            }
         }
 
         /// <summary>

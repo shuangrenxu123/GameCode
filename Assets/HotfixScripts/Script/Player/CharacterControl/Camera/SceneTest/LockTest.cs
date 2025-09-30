@@ -58,8 +58,6 @@ namespace Camera.Test
         /// </summary>
         private void StartLockTest(Player player)
         {
-            // 简单的延迟实现，不使用异步
-
             // 获取锁定效果
             var lockOnEffect = player.camera3D.effectManager.GetEffect<CameraLockOnEffect>();
             if (lockOnEffect != null)
@@ -69,7 +67,6 @@ namespace Camera.Test
                     lockDistance: _lockDistance,
                     lockEnemyMaxDistance: _maxLockDistance,
                     lockCameraMoveSpeed: _cameraMoveSpeed,
-                    lockEnemyTag: _enemyTag,
                     viewableAngle: _viewableAngle
                 );
 
