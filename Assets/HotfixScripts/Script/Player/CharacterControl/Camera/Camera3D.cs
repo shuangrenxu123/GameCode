@@ -17,11 +17,11 @@ namespace CharacterController.Camera
         [SerializeField]
         InputHandlerSettings inputHandlerSettings => characterBrain.CameraInputHandlerSettings;
 
-        [SerializeField]
+        [SerializeField, ReadOnly]
         [LabelText("相机输入轴")]
         string axes = "Camera";
 
-        [SerializeField]
+        [SerializeField, ReadOnly]
         [LabelText("缩放输入轴")]
         string zoomAxis = "Camera Zoom";
 
@@ -34,26 +34,8 @@ namespace CharacterController.Camera
         Transform targetTransform = null;
 
         [SerializeField]
-        [LabelText("状态管理器")]
-        StateManger stateManager;
-
-        [SerializeField]
-        [LabelText("头部偏移")]
-        Vector3 offsetFromHead = Vector3.zero;
-
-        [SerializeField]
-        [LabelText("高度插值速度")]
-        float heightLerpSpeed = 10f;
-
-        [LabelText("Yaw旋转速度")]
-        public float yawSpeed = 180f;
-
-        [SerializeField]
         [LabelText("初始俯仰角度")]
         float initialPitch = 45f;
-
-        [LabelText("Pitch旋转速度")]
-        public float pitchSpeed = 180f;
 
         CharacterActor characterActor = null;
         UnityEngine.Camera camera;
