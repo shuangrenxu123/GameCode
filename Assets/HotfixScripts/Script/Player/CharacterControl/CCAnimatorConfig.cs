@@ -12,8 +12,8 @@ public class CCAnimatorConfig : ScriptableObject
 
     [SerializedDictionary("ClipName", "Clip")]
     public SerializedDictionary<string, ClipTransition> climbAnimators;
-    [SerializeReference]
-    public ITransition LockMovement;
+
+    public MixerTransition2D LockMovement;
 
     public SerializedDictionary<WeaponType, WeaponAttackAnimation> weaponAnimators;
 }

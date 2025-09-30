@@ -1,5 +1,6 @@
 using Character.Controller.State;
 using UnityEngine;
+
 namespace Character.Controller.MoveState
 {
     public class CharacterNormalMovementState : CharacterMovementStateBase
@@ -27,6 +28,16 @@ namespace Character.Controller.MoveState
                     parentMachine.ChangeState(ECharacterMoveState.Climb);
                 }
             }
+            else if (characterActions.@lock.Started)
+            {
+                Enemy nearestEnemy = FindNearestEnemy();
+                if (nearestEnemy != null)
+                {
+                    database.SetData(CharacterLockOnMovementState.targetKey, nearestEnemy.transform);
+
+                    parentMachine.ChangeState(ECharacterMoveState.LockOnMove);
+                }
+            }
         }
 
         protected override Vector3 ProcessPlanarMovement(float dt)
@@ -41,7 +52,6 @@ namespace Character.Controller.MoveState
                     * materialControl.CurrentVolume.speedMultiplier;
 
             float finalSpeedMultiplier = characterSpeedMultiplier * groundSpeedMultiplier;
-            //Ŀ���ٶ�
             Vector3 targetPlanarVelocity = default;
 
             switch (characterActor.CurrentState)
@@ -72,6 +82,34 @@ namespace Character.Controller.MoveState
                     break;
             }
             return targetPlanarVelocity;
+        }
+
+        //todo : 更新检测方式
+        private Enemy FindNearestEnemy()
+        {
+            Enemy[] enemies = UnityEngine.Object.FindObjectsOfType<Enemy>();
+            Enemy nearest = null;
+            float nearestDistance = float.MaxValue;
+
+            foreach (Enemy enemy in enemies)
+            {
+                if (enemy.isDead) continue;
+
+                float distance = Vector3.Distance(characterActor.Position, enemy.transform.position);
+                if (distance < 25f && distance < nearestDistance)
+                {
+                    Vector3 directionToEnemy = enemy.transform.position - characterActor.Position;
+                    float angle = Vector3.Angle(characterActor.Forward, directionToEnemy);
+
+                    if (angle < 120f)
+                    {
+                        nearest = enemy;
+                        nearestDistance = distance;
+                    }
+                }
+            }
+
+            return nearest;
         }
     }
 }

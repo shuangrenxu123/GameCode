@@ -39,7 +39,9 @@ namespace Character.Controller.MoveState
             base.Enter();
             Animancer.Play(currentAnimator);
         }
+
         protected float currentPlanarSpeedLimit = 0f;
+
         public bool UseGravity
         {
             get => verticalMovementParameters.useGravity;

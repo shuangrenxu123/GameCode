@@ -358,44 +358,53 @@ MonoBehaviour:
         _Speed: 1
         _NormalizedStartTime: 0
   LockMovement:
-    rid: 3528261379365797958
+    _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Speed: 1
+    _Animations:
+    - {fileID: -517782688235292392, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -6833178373325573696, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 6657471127650802555, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -943800857461652088, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 6423147695630285900, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4095878515519292984, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 1175238861931870556, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -2160857492978203510, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -712974671133617074, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4724083092791779380, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 2095533768186945066, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 3548331453627554004, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 7863725731847563027, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4320031838087732905, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 1679894509423602493, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -1456540951179041611, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+    _Speeds: []
+    _SynchronizeChildren: 
+    _Thresholds:
+    - {x: 0, y: -4.8}
+    - {x: 0, y: 4.8}
+    - {x: 3, y: 3}
+    - {x: 3, y: -3}
+    - {x: -3, y: 3}
+    - {x: 3, y: 3}
+    - {x: -4.8, y: 0}
+    - {x: 4.8, y: 0}
+    - {x: 0, y: -3}
+    - {x: -1.5, y: -1.5}
+    - {x: 1.5, y: -1.5}
+    - {x: 0, y: 3}
+    - {x: -1.5, y: 1.5}
+    - {x: 1.5, y: 1.5}
+    - {x: -3, y: 0}
+    - {x: 3, y: 0}
+    - {x: 0, y: 0}
+    _DefaultParameter: {x: 0, y: 0}
+    _Type: 0
   weaponAnimators:
     _serializedList:
     - Key: 0
       Value: {fileID: 11400000, guid: 54cab1c226f333a42ba4fbe28a1fd1ad, type: 2}
-  references:
-    version: 2
-    RefIds:
-    - rid: 3528261379365797958
-      type: {class: MixerTransition2D, ns: Animancer, asm: Animancer}
-      data:
-        _FadeDuration: 0.25
-        _Events:
-          _NormalizedTimes: []
-          _Callbacks: []
-          _Names: []
-        _Speed: 1
-        _Animations:
-        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
-        - {fileID: -6833178373325573696, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: -517782688235292392, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: 1175238861931870556, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: -2160857492978203510, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: 6423147695630285900, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: 4095878515519292984, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: 6657471127650802555, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        - {fileID: -943800857461652088, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
-        _Speeds: []
-        _SynchronizeChildren: 
-        _Thresholds:
-        - {x: 0, y: 0}
-        - {x: 1, y: 0}
-        - {x: -1, y: 0}
-        - {x: 0, y: -1}
-        - {x: 0, y: 1}
-        - {x: 0.5, y: -0.5}
-        - {x: 0.5, y: 0.5}
-        - {x: -0.5, y: -0.5}
-        - {x: -0.5, y: 0.5}
-        _DefaultParameter: {x: 0, y: 0}
-        _Type: 0

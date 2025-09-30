@@ -38,13 +38,13 @@ namespace CharacterController.Camera
         float initialPitch = 45f;
 
         CharacterActor characterActor = null;
-        UnityEngine.Camera camera;
+        UnityEngine.Camera _camera;
 
 
         void Awake()
         {
             Initialize(targetTransform);
-            camera = GetComponent<UnityEngine.Camera>();
+            _camera = GetComponent<UnityEngine.Camera>();
             InitializeCameraEffectManager();
         }
 
@@ -64,7 +64,7 @@ namespace CharacterController.Camera
         /// <summary>
         /// 设置默认效果
         /// </summary>
-        private void SetupDefaultEffects()
+        void SetupDefaultEffects()
         {
             if (effectManager == null)
             {
@@ -111,29 +111,6 @@ namespace CharacterController.Camera
             characterActor.OnTeleport -= OnTeleport;
         }
 
-        void Start()
-        {
-            // 设置初始旋转，确保相机看向玩家
-            if (effectManager != null)
-            {
-                // 使用CameraEffect系统设置初始旋转
-                var rotationEffect = effectManager.GetEffect<CameraRotationEffect>();
-                if (rotationEffect != null)
-                {
-                    // 设置初始朝向
-                    Vector3 initialLookAtPoint = targetTransform.position + targetTransform.up * characterActor.BodySize.y * 0.5f;
-                    Vector3 initialDirection = initialLookAtPoint - transform.position;
-                    if (initialDirection.magnitude > 0.1f)
-                    {
-                        Quaternion initialRotation = Quaternion.LookRotation(initialDirection);
-                        // 应用初始俯仰角
-                        initialRotation = initialRotation * Quaternion.Euler(initialPitch, 0f, 0f);
-                        transform.rotation = initialRotation;
-                    }
-                }
-            }
-        }
-
         void Update()
         {
             if (targetTransform == null)
@@ -161,15 +138,15 @@ namespace CharacterController.Camera
             // 创建初始上下文
             CameraEffectContext initialContext = new CameraEffectContext
             {
-                targetCamera = camera,
+                targetCamera = _camera,
                 targetTransform = targetTransform,
                 basePosition = targetTransform.position,
                 baseRotation = transform.rotation,
-                baseFieldOfView = camera.fieldOfView,
+                baseFieldOfView = _camera.fieldOfView,
                 deltaTime = dt,
                 currentPosition = transform.position,
                 currentRotation = transform.rotation,
-                currentFieldOfView = camera.fieldOfView,
+                currentFieldOfView = _camera.fieldOfView,
                 currentDistance = 5 // 设置初始距离
             };
 

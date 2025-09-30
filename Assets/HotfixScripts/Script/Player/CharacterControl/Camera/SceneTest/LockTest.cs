@@ -1,3 +1,5 @@
+using Character.Controller.MoveState;
+using Character.Controller.State;
 using CharacterController.Camera;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -50,6 +52,7 @@ namespace Camera.Test
                 {
                     lockOnEffect.Deactivate();
                 }
+                Player.StateManager.moveStateMachine.ChangeState(ECharacterMoveState.NormalMove);
             }
         }
 
@@ -79,6 +82,12 @@ namespace Camera.Test
                 // 激活锁定效果
                 lockOnEffect.Activate();
 
+                player.StateManager.moveStateMachine
+                    .database.SetData(CharacterLockOnMovementState.targetKey, _testEnemyTarget);
+
+                player.StateManager.moveStateMachine
+                    .ChangeState(ECharacterMoveState.LockOnMove);
+
                 Debug.Log($"相机锁定效果已激活，锁定目标: {_testEnemyTarget?.name ?? "自动寻找敌人"}");
             }
             else
@@ -87,30 +96,6 @@ namespace Camera.Test
             }
         }
 
-        /// <summary>
-        /// 停止锁定效果（用于测试）
-        /// </summary>
-        public void StopLockEffect(Player player)
-        {
-            var lockOnEffect = player.camera3D.effectManager.GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.Deactivate();
-                Debug.Log("相机锁定效果已停用");
-            }
-        }
 
-        /// <summary>
-        /// 清除锁定目标（用于测试）
-        /// </summary>
-        public void ClearLockTarget(Player player)
-        {
-            var lockOnEffect = player.camera3D.effectManager.GetEffect<CameraLockOnEffect>();
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.ClearLockTarget();
-                Debug.Log("锁定目标已清除");
-            }
-        }
     }
 }

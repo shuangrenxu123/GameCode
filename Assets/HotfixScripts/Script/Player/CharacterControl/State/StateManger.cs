@@ -76,6 +76,11 @@ namespace CharacterControllerStateMachine
             moveStateMachine.animancer = AnimancerHelper;
             moveStateMachine.stateManger = this;
 
+            var lockOnMoveState = new CharacterLockOnMovementState
+            {
+                movementAnimation = animatorConfig.LockMovement,
+            };
+
             var movementState = new CharacterNormalMovementState
             {
                 currentAnimator = animatorConfig.linearMixerAnimators["NormalMove"]
@@ -107,6 +112,7 @@ namespace CharacterControllerStateMachine
             moveStateMachine.AddState(crouchMovementState);
             moveStateMachine.AddState(jumpMovement);
             moveStateMachine.AddState(climbMovementState);
+            moveStateMachine.AddState(lockOnMoveState);
 
 
         }
