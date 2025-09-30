@@ -26,6 +26,9 @@ namespace CharacterController.Camera.SceneTest
                 var smoothMoveEffect = player.camera3D.effectManager.GetEffect<CameraSmoothMoveEffect>();
                 smoothMoveEffect.Activate();
                 smoothMoveEffect.StartSmoothMove(_startPosition.position, _endPosition.position, _moveDuration);
+
+                var rotationEffect = player.camera3D.effectManager.GetEffect<CameraRotationEffect>();
+                rotationEffect.SetInputEnabled(false);
             }
         }
         void OnTriggerExit(Collider other)
@@ -35,6 +38,9 @@ namespace CharacterController.Camera.SceneTest
             {
                 var smoothMoveEffect = player.camera3D.effectManager.GetEffect<CameraSmoothMoveEffect>();
                 smoothMoveEffect.Deactivate();
+
+                var rotationEffect = player.camera3D.effectManager.GetEffect<CameraRotationEffect>();
+                rotationEffect.SetInputEnabled(true);
             }
         }
     }

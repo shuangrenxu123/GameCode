@@ -37,6 +37,9 @@ namespace CharacterController.Camera
         private bool isPaused = false;
         private float pausedTime = 0f;
 
+        // 锁定位置相关变量
+        private bool isLockedAtFinalPosition = false;
+
         /// <summary>
         /// 激活效果
         /// </summary>
@@ -52,6 +55,7 @@ namespace CharacterController.Camera
         {
             isActive = false;
             StopMoving();
+            UnlockFromFinalPosition();
         }
 
         /// <summary>
@@ -85,6 +89,7 @@ namespace CharacterController.Camera
             isRelativeMove = false;
             relativeMoveOffset = Vector3.zero;
             currentMoveCurve = null;
+            isLockedAtFinalPosition = false;
         }
 
         /// <summary>
@@ -123,7 +128,16 @@ namespace CharacterController.Camera
                 moveProgress = 1f;
                 isPaused = false;
                 pausedTime = 0f;
+                isLockedAtFinalPosition = true;
             }
+        }
+
+        /// <summary>
+        /// 解除位置锁定
+        /// </summary>
+        public void UnlockFromFinalPosition()
+        {
+            isLockedAtFinalPosition = false;
         }
 
         // 私有方法和变量
@@ -133,7 +147,7 @@ namespace CharacterController.Camera
             moveProgress = 0f;
             isPaused = false;
             pausedTime = 0f;
-            moveStartTime = Time.time;
+            moveStartTime = 0;
         }
 
         private float moveStartTime = 0f;
@@ -190,6 +204,14 @@ namespace CharacterController.Camera
             return isPaused && isMoving;
         }
 
+        /// <summary>
+        /// 检查是否锁定在最终位置
+        /// </summary>
+        public bool IsLockedAtFinalPosition()
+        {
+            return isLockedAtFinalPosition && isActive;
+        }
+
         public CameraEffectContext ProcessEffect(CameraEffectContext context)
         {
             if (!isActive)
@@ -208,7 +230,7 @@ namespace CharacterController.Camera
             }
 
             // 第一次调用时记录开始时间
-            if (moveProgress == 0f)
+            if (moveStartTime == 0f)
             {
                 moveStartTime = Time.time;
             }
@@ -226,17 +248,23 @@ namespace CharacterController.Camera
                 // 检查是否完成移动
                 if (moveProgress >= 1f)
                 {
-                    // 移动完成
+                    // 移动完成，锁定在最终位置
                     isMoving = false;
                     isPaused = false;
+                    isLockedAtFinalPosition = true;
                     modifiedContext.currentPosition = targetPosition;
                 }
                 else
                 {
                     // 使用曲线进行平滑插值
                     modifiedContext.currentPosition = Vector3.Lerp(startPosition, targetPosition, curveProgress);
-                    Debug.LogError(curveProgress + " : " + moveProgress);
                 }
+            }
+            // 处理锁定位置逻辑
+            else if (isLockedAtFinalPosition && isActive)
+            {
+                // 保持在最终位置
+                modifiedContext.currentPosition = targetPosition;
             }
 
             // 不修改旋转和视野角度
