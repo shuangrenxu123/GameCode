@@ -347,7 +347,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2088268563}
-  - component: {fileID: 2088268562}
+  - component: {fileID: 2088268564}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -355,18 +355,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2088268562
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2088268561}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94315bee54b417d4f868576015cfe8e8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::HTN.FarmerHTNDemo
 --- !u!4 &2088268563
 Transform:
   m_ObjectHideFlags: 0
@@ -382,6 +370,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2088268564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2088268561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94d3287a7b520b649bba1a864bb115d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HTN.FarmerDemoUnityObject
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
