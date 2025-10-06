@@ -93,8 +93,6 @@ namespace Character.Controller.MoveState
 
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.isDead) continue;
-
                 float distance = Vector3.Distance(characterActor.Position, enemy.transform.position);
                 if (distance < 25f && distance < nearestDistance)
                 {
