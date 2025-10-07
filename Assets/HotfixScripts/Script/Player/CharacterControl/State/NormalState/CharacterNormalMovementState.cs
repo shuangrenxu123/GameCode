@@ -1,4 +1,5 @@
 using Character.Controller.State;
+using Fight;
 using UnityEngine;
 
 namespace Character.Controller.MoveState
@@ -30,7 +31,7 @@ namespace Character.Controller.MoveState
             }
             else if (characterActions.@lock.Started)
             {
-                Enemy nearestEnemy = FindNearestEnemy();
+                var nearestEnemy = FindNearestEnemy();
                 if (nearestEnemy != null)
                 {
                     database.SetData(CharacterLockOnMovementState.targetKey, nearestEnemy.transform);
@@ -85,29 +86,29 @@ namespace Character.Controller.MoveState
         }
 
         //todo : 更新检测方式
-        private Enemy FindNearestEnemy()
+        private CombatEntity FindNearestEnemy()
         {
-            Enemy[] enemies = UnityEngine.Object.FindObjectsOfType<Enemy>();
-            Enemy nearest = null;
-            float nearestDistance = float.MaxValue;
+            // Enemy[] enemies = UnityEngine.Object.FindObjectsOfType<Enemy>();
+            // Enemy nearest = null;
+            // float nearestDistance = float.MaxValue;
 
-            foreach (Enemy enemy in enemies)
-            {
-                float distance = Vector3.Distance(characterActor.Position, enemy.transform.position);
-                if (distance < 25f && distance < nearestDistance)
-                {
-                    Vector3 directionToEnemy = enemy.transform.position - characterActor.Position;
-                    float angle = Vector3.Angle(characterActor.Forward, directionToEnemy);
+            // foreach (Enemy enemy in enemies)
+            // {
+            //     float distance = Vector3.Distance(characterActor.Position, enemy.transform.position);
+            //     if (distance < 25f && distance < nearestDistance)
+            //     {
+            //         Vector3 directionToEnemy = enemy.transform.position - characterActor.Position;
+            //         float angle = Vector3.Angle(characterActor.Forward, directionToEnemy);
 
-                    if (angle < 120f)
-                    {
-                        nearest = enemy;
-                        nearestDistance = distance;
-                    }
-                }
-            }
+            //         if (angle < 120f)
+            //         {
+            //             nearest = enemy;
+            //             nearestDistance = distance;
+            //         }
+            //     }
+            // }
 
-            return nearest;
+            return null;
         }
     }
 }
