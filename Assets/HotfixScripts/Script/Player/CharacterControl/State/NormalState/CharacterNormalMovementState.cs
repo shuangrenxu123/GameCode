@@ -1,4 +1,5 @@
 using Character.Controller.State;
+using CharacterController;
 using Fight;
 using UnityEngine;
 
@@ -43,8 +44,8 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float characterSpeedMultiplier = parentMachine.stateManger.player
-                .CombatEntity.properties
+            float characterSpeedMultiplier = parentMachine.stateManger
+                .combatEntity.properties
                 .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.SpeedMultiplier) / 100f;
 
             float groundSpeedMultiplier = materialControl == null ?

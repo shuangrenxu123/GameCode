@@ -1,8 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// ���ฺ��������͹�����ɫ������
-/// </summary>
 public class CharacterBrain : MonoBehaviour
 {
     public UpdateModeType UpdateMode = UpdateModeType.FixedUpdate;

@@ -1,3 +1,4 @@
+using CharacterController;
 using CharacterControllerStateMachine;
 using TMPro;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class CharacterInfo : MonoBehaviour
         rigiboydSpeed.text = actor.Velocity.ToString();
         localSpeed.text = actor.LocalVelocity.ToString();
         PlanerSpeed.text = actor.PlanarVelocity.ToString();
-        state.text = stateManger.controller.currentState.currentType.ToString();
+        // state.text = stateManger.controller.currentState.currentType.ToString();
     }
 
 }

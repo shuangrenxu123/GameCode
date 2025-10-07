@@ -4,7 +4,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// ¸ÃÀàÊÇ¶Ô½ÇÉ«ÎïÀíµÄÒ»¸ö·â×°¡£°üÀ¨ÉäÏßµÈ
+/// ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶Ô½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½×°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ßµï¿½
 /// </summary>
 public abstract class PhysicsComponent : MonoBehaviour
 {
@@ -17,13 +17,13 @@ public abstract class PhysicsComponent : MonoBehaviour
     public abstract void IgnoreCollision(in HitInfo hitInfo, bool ignore);
 
     /// <summary>
-    /// ºöÂÔ´Ë¶ÔÏóÓëÆäËûÅö×²ÌåÖ®¼äµÄÅö×²¡£
+    /// ï¿½ï¿½ï¿½Ô´Ë¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½
     /// </summary>
     /// <param name="otherTransform"></param>
     /// <param name="ignore"></param>
     public abstract void IgnoreCollision(Transform otherTransform, bool ignore);
     /// <summary>
-    /// ºöÂÔÄ³¸öÍ¼²ãÖ®¼äµÄÅö×²
+    /// ï¿½ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Í¼ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½×²
     /// </summary>
     /// <param name="targetLayer"></param>
     /// <param name="ignore"></param>
@@ -46,7 +46,7 @@ public abstract class PhysicsComponent : MonoBehaviour
     protected abstract int InternalOverlapBox(Vector3 center, Vector3 size, Quaternion orientation, int layerMask, bool ignoreTriggers);
 
     /// <summary>
-    /// Èç¹û´ËÅö×²ÌåÓëÄ¿±êÓÎÏ·¶ÔÏóÖ®¼äµÄÅö×²ÔÚÎïÀíÄ£Äâ¼¶±ðÓÐÐ§£¬Ôò·µ»Ø true¡£
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä£ï¿½â¼¶ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ò·µ»ï¿½ trueï¿½ï¿½
     /// </summary>
     /// <param name="gameObject"></param>
     /// <returns></returns>
@@ -231,7 +231,7 @@ public abstract class PhysicsComponent : MonoBehaviour
     #region Overlaps
 
     /// <summary>
-    /// Ö´ÐÐ OverlapSphere£¬Èç¹ûÈÎºÎ½á¹ûÓÐÐ§£¬Ôò·µ»Ø true¡£
+    /// Ö´ï¿½ï¿½ OverlapSphereï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎºÎ½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ò·µ»ï¿½ trueï¿½ï¿½
     /// </summary>
     public bool OverlapSphere(Vector3 center, float radius, in HitInfoFilter filter, HitFilterDelegate hitFilter = null)
     {
@@ -247,7 +247,7 @@ public abstract class PhysicsComponent : MonoBehaviour
     }
 
     /// <summary>
-    /// Ö´ÐÐ OverlapCapsule£¬Èç¹ûÈÎºÎ½á¹ûÓÐÐ§£¬Ôò·µ»Ø true¡£
+    /// Ö´ï¿½ï¿½ OverlapCapsuleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎºÎ½ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½ï¿½ò·µ»ï¿½ trueï¿½ï¿½
     /// </summary>
     public bool OverlapCapsule(Vector3 bottom, Vector3 top, float radius, in HitInfoFilter filter, HitFilterDelegate hitFilter = null)
     {
@@ -302,13 +302,9 @@ public abstract class PhysicsComponent : MonoBehaviour
 
     public static PhysicsComponent CreateInstance(GameObject gameObject)
     {
-        Rigidbody2D rigidbody2D = gameObject.GetComponent<Rigidbody2D>();
         Rigidbody rigidbody3D = gameObject.GetComponent<Rigidbody>();
 
-        if (rigidbody2D != null)
-        { }
-        // return gameObject.GetOrAddComponent<PhysicsComponent2D>();
-        else if (rigidbody3D != null)
+        if (rigidbody3D != null)
             return gameObject.GetOrAddComponent<PhysicsComponent3D>();
 
         return null;

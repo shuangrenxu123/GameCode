@@ -1,106 +1,109 @@
 using System;
 using UnityEngine;
 
-public class MaterialControl : MonoBehaviour
+namespace CharacterController
 {
-    CharacterActor characterActor;
-    [SerializeField]
-    MaterialsProperties MaterialsProperties;
-
-    #region Event
-    public event Action<Volume> OnVolumeEnter;
-    public event Action<Volume> OnVolumeExit;
-    public event Action<Surface> OnSurfaceEnter;
-    public event Action<Surface> OnSurfaceExit;
-    #endregion
-
-    public Volume CurrentVolume { get; private set; }
-    public Surface CurrentSurface { get; private set; }
-
-    private void Awake()
+    public class MaterialControl : MonoBehaviour
     {
-        characterActor = GetComponentInParent<CharacterActor>();
-        if (characterActor == null)
+        CharacterActor characterActor;
+        [SerializeField]
+        MaterialsProperties MaterialsProperties;
+
+        #region Event
+        public event Action<Volume> OnVolumeEnter;
+        public event Action<Volume> OnVolumeExit;
+        public event Action<Surface> OnSurfaceEnter;
+        public event Action<Surface> OnSurfaceExit;
+        #endregion
+
+        public Volume CurrentVolume { get; private set; }
+        public Surface CurrentSurface { get; private set; }
+
+        private void Awake()
         {
-            Debug.LogError("Character is Null");
-            return;
-        }
-        GetSurfaceData();
-    }
-    private void FixedUpdate()
-    {
-        GetSurfaceData();
-        GetVolumeData();
-    }
-    void GetSurfaceData()
-    {
-        if (!characterActor.IsGrounded)
-        {
-            SetCurrentSurfaceData(MaterialsProperties.DefaultSurface);
-        }
-        else
-        {
-            var ground = characterActor.GroundObject;
-            if (ground != null)
+            characterActor = GetComponentInParent<CharacterActor>();
+            if (characterActor == null)
             {
-                bool validSurface = MaterialsProperties.GetSurface(ground, out Surface surface);
-                if (validSurface)
+                Debug.LogError("Character is Null");
+                return;
+            }
+            GetSurfaceData();
+        }
+        private void FixedUpdate()
+        {
+            GetSurfaceData();
+            GetVolumeData();
+        }
+        void GetSurfaceData()
+        {
+            if (!characterActor.IsGrounded)
+            {
+                SetCurrentSurfaceData(MaterialsProperties.DefaultSurface);
+            }
+            else
+            {
+                var ground = characterActor.GroundObject;
+                if (ground != null)
                 {
-                    SetCurrentSurfaceData(surface);
-                }
-                else
-                {
-                    if (ground.CompareTag("Untagged"))
+                    bool validSurface = MaterialsProperties.GetSurface(ground, out Surface surface);
+                    if (validSurface)
                     {
-                        SetCurrentSurfaceData(MaterialsProperties.DefaultSurface);
+                        SetCurrentSurfaceData(surface);
+                    }
+                    else
+                    {
+                        if (ground.CompareTag("Untagged"))
+                        {
+                            SetCurrentSurfaceData(MaterialsProperties.DefaultSurface);
+                        }
                     }
                 }
             }
         }
-    }
-    void SetCurrentSurfaceData(Surface surface)
-    {
-        if (surface != CurrentSurface)
+        void SetCurrentSurfaceData(Surface surface)
         {
-            OnSurfaceExit?.Invoke(CurrentSurface);
-            CurrentSurface = surface;
-            OnSurfaceEnter?.Invoke(CurrentSurface);
-        }
-    }
-    void GetVolumeData()
-    {
-
-        if (!characterActor.IsGrounded)
-        {
-            SetCurrentVolumeDate(MaterialsProperties.DefaultVolume);
-        }
-        else
-        {
-            var ground = characterActor.GroundObject;
-            if (ground != null)
+            if (surface != CurrentSurface)
             {
-                bool validSurface = MaterialsProperties.GetVolume(ground, out Volume volume);
-                if (validSurface)
+                OnSurfaceExit?.Invoke(CurrentSurface);
+                CurrentSurface = surface;
+                OnSurfaceEnter?.Invoke(CurrentSurface);
+            }
+        }
+        void GetVolumeData()
+        {
+
+            if (!characterActor.IsGrounded)
+            {
+                SetCurrentVolumeDate(MaterialsProperties.DefaultVolume);
+            }
+            else
+            {
+                var ground = characterActor.GroundObject;
+                if (ground != null)
                 {
-                    SetCurrentVolumeDate(volume);
-                }
-                else
-                {
-                    if (ground.CompareTag("Untagged"))
+                    bool validSurface = MaterialsProperties.GetVolume(ground, out Volume volume);
+                    if (validSurface)
                     {
-                        SetCurrentVolumeDate(MaterialsProperties.DefaultVolume);
+                        SetCurrentVolumeDate(volume);
+                    }
+                    else
+                    {
+                        if (ground.CompareTag("Untagged"))
+                        {
+                            SetCurrentVolumeDate(MaterialsProperties.DefaultVolume);
+                        }
                     }
                 }
             }
         }
-    }
-    void SetCurrentVolumeDate(Volume volume)
-    {
-        if (volume != CurrentVolume)
+        void SetCurrentVolumeDate(Volume volume)
         {
-            OnVolumeExit?.Invoke(volume);
-            CurrentVolume = volume;
-            OnVolumeEnter?.Invoke(volume);
+            if (volume != CurrentVolume)
+            {
+                OnVolumeExit?.Invoke(volume);
+                CurrentVolume = volume;
+                OnVolumeEnter?.Invoke(volume);
+            }
         }
     }
 }

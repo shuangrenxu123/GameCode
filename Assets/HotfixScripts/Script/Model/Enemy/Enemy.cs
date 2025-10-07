@@ -1,5 +1,6 @@
 using System;
 using Animancer;
+using CharacterController;
 using Fight;
 using UnityEngine;
 using UnityEngine.Events;
@@ -33,9 +34,6 @@ namespace Enemy
         public AnimancerComponent animancer;      // 动画控制器
         public AnimatorHelper animancerHelper;   // 动画助手（复用玩家动画助手）
         public CCAnimatorConfig animatorConfig;  // 使用现有的动画配置
-
-        [Header("动画控制")]
-        [SerializeField] private EnemyAnimationController _animationController; // 动画控制器实例
 
         IEnemyBrain enemyBrain;
 
@@ -89,14 +87,6 @@ namespace Enemy
         {
             // 初始化动画助手
             animancerHelper = new AnimatorHelper(animancer);
-
-            // 初始化动画控制器
-            if (_animationController == null)
-            {
-                _animationController = new EnemyAnimationController();
-                _animationController.Initialize(this, animancer, characterActor, animatorConfig);
-
-            }
         }
 
 

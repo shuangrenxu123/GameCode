@@ -1,4 +1,5 @@
 using BT;
+using CharacterController;
 using UnityEngine;
 
 public class BTRandomTargetPosition<TKey, TValue> : BTAction<TKey, TValue>

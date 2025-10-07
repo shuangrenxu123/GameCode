@@ -1,3 +1,4 @@
+using CharacterController;
 using UnityEngine;
 public abstract class CharacterCollisions : MonoBehaviour
 {
@@ -29,7 +30,7 @@ public abstract class CharacterCollisions : MonoBehaviour
     }
 
     /// <summary>
-    /// 使用投射球体垂直检查地面。
+    /// 使锟斤拷投锟斤拷锟斤拷锟藉垂直锟斤拷锟斤拷锟芥。
     /// </summary>
     /// <param name="position"></param>
     /// <param name="stepOffset"></param>
@@ -60,7 +61,7 @@ public abstract class CharacterCollisions : MonoBehaviour
         return _collisionInfo;
     }
     /// <summary>
-    /// 施放当前体型获得最接近的命中。
+    /// 施锟脚碉拷前锟斤拷锟酵伙拷锟斤拷锟接斤拷锟斤拷锟斤拷锟叫★拷
     /// </summary>
     /// <param name="position"></param>
     /// <param name="displacement"></param>
@@ -175,7 +176,7 @@ public abstract class CharacterCollisions : MonoBehaviour
         CharacterActor = GetComponent<CharacterActor>();
         if (CharacterActor == null)
         {
-            Debug.LogError("没有获取到Character");
+            Debug.LogError("没锟叫伙拷取锟斤拷Character");
         }
     }
 }

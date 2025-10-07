@@ -1,8 +1,9 @@
 using Animancer;
 using Character.Controller.State;
+using CharacterController;
 using HFSM;
 using UnityEngine;
-using static PlanarMovementParameters;
+using static CharacterController.PlanarMovementParameters;
 
 namespace Character.Controller.MoveState
 {
@@ -245,8 +246,8 @@ namespace Character.Controller.MoveState
             Quaternion targetDeltaRotation = Quaternion.FromToRotation(characterActor.Forward,
                 targetLookingDirection);
 
-            var rotationMultiplier = parentMachine.stateManger.player
-                .CombatEntity.properties
+            var rotationMultiplier = parentMachine.stateManger
+                .combatEntity.properties
                 .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.RotationMultiplier) / 100f;
 
             Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity,

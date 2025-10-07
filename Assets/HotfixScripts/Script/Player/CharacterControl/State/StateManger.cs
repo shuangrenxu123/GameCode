@@ -3,6 +3,7 @@ using Audio;
 using Character.Controller.LoginState;
 using Character.Controller.MoveState;
 using Character.Controller.State;
+using CharacterController;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using Fight;
@@ -21,7 +22,7 @@ namespace CharacterControllerStateMachine
 
         public CharacterMovementStateMachine moveStateMachine;
         public CharacterLoginStateMachine loginMachine;
-        public Player player;
+        public CombatEntity combatEntity;
         public new Camera3D camera;
         public CharacterBrain characterBrain;
         public AnimancerComponent Animancer;
@@ -48,11 +49,10 @@ namespace CharacterControllerStateMachine
         }
         private void Start()
         {
-            player = GetComponentInParent<Player>();
 
             InitState();
 
-            SetStateMachineData("CombatEntity", player.CombatEntity);
+            SetStateMachineData("CombatEntity", combatEntity);
 
 
             moveStateMachine.Start();

@@ -1,3 +1,4 @@
+using CharacterController;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using Fight;
