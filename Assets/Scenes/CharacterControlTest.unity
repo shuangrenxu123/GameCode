@@ -2227,6 +2227,35 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1164412500}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &520081915 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8739503939570498630, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1164412500}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &520081918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 520081915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d8c8802012990c488508c200e9f8041, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterController.CharacterBrain
+  brainType: 1
+  UpdateMode: 0
+  inputHandlerSettings:
+    humanInputType: 0
+    inputhandler: {fileID: 0}
+  UIinputHandlerSettings:
+    humanInputType: 0
+    inputhandler: {fileID: 0}
+  CameraInputHandlerSettings:
+    humanInputType: 0
+    inputhandler: {fileID: 0}
 --- !u!1001 &543409458
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4556,7 +4585,11 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 1238533962}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8739503939570498630, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 520081918}
   m_SourcePrefab: {fileID: 100100000, guid: 180bcd5afa8ce45408e1c0d5818e2a9d, type: 3}
 --- !u!1 &1170527659
 GameObject:
