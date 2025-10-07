@@ -4,14 +4,14 @@ using Utility;
 
 public class BTStrafing<TKey, TValue> : BTAction<TKey, TValue>
 {
-    private Enemy enemy;
+    private Enemy.Enemy enemy;
     private float verticalMovementValue = 0;
     private float horizontalMovementValue = 0;
     private float housingDistanceSql = 400;
     private float insideDistanceSql = 100;
     private float timer;
     private float time = 2f;
-    public BTStrafing(Enemy enemy)
+    public BTStrafing(Enemy.Enemy enemy)
     {
         this.enemy = enemy;
     }

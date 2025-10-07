@@ -7,10 +7,8 @@ public class BTMoveAction<TKey, TValue> : BTAction<TKey, TValue>
     private float speed;
     private float distanceSqr = 10;
     private CharacterActor actor;
-    private EnemyAIControl control;
-    private CCAnimatorConfig config => control.config;
 
-    public BTMoveAction(string name, float speed) 
+    public BTMoveAction(string name, float speed)
     {
         this.speed = speed;
     }
@@ -19,19 +17,15 @@ public class BTMoveAction<TKey, TValue> : BTAction<TKey, TValue>
         base.Activate(database);
 
         actor = database.GetData<CharacterActor>((dynamic)"actor");
-        control = database.GetData<EnemyAIControl>((dynamic)"control");
-
-
     }
     protected override void Enter()
     {
         base.Enter();
         targetTransform = database.GetData<Transform>((dynamic)"target");
-        var moveAnim = config.linearMixerAnimators["move"];
-        control.anim.Play(moveAnim);
-        moveAnim.State.Parameter = speed;
+
         //获得下一个目标点
     }
+
     protected override BTResult Execute()
     {
         Vector3 pos = actor.Position;
