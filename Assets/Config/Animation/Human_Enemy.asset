@@ -1,0 +1,410 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f3fe476fdf9b794da66c768188d0b5b, type: 3}
+  m_Name: Human_Enemy
+  m_EditorClassIdentifier: 
+  linearMixerAnimators:
+    _serializedList:
+    - Key: NormalMove
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+        - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
+        - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - 0
+        - 3
+        - 6
+        _DefaultParameter: 0
+        _ExtrapolateSpeed: 0
+    - Key: CrouchMove
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Speed: 1
+        _Animations:
+        - {fileID: 7400000, guid: ecfb6959ea35077469d921cde7022de1, type: 2}
+        - {fileID: 1827226128182048838, guid: 6eca74693f92bd047ad96c9e0232e204, type: 3}
+        _Speeds: []
+        _SynchronizeChildren: 
+        _Thresholds:
+        - 0
+        - 2
+        _DefaultParameter: 0
+        _ExtrapolateSpeed: 0
+  clipAnimators:
+    _serializedList:
+    - Key: Chest
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8024166766231005104, guid: c5f5f86bafa384c4784bd54a54c0019b,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Jump
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: d291a98131443b74fb62361d9d6ab34b, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: JumpFall
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 860228f57ffe2d649a5a025b57b464e8, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: JumpEnd
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 7a41ab7a37086fa408ef02bd3dddd51c, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Lever
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8237482108326870749, guid: ca9a547d114f2be4d8c25167452e8ebb,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Door_Outward
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -869818814183701303, guid: da9f82a65d548d84c925328a29420f8c,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Door_DoubleDoors
+      Value:
+        _FadeDuration: 0.68750006
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6456316685503285685, guid: 86884e72f81ed064780f8cc063769cf8,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Door_Up
+      Value:
+        _FadeDuration: 0.36666667
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -484074203470291469, guid: a34922bca7029114d8a8561acf444fc9,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Item
+      Value:
+        _FadeDuration: 0.3
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 271aca446fcaa8e4bb801e95d3140db5, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Drink
+      Value:
+        _FadeDuration: 0.33333334
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: b70f6bbb675d057428723414073a32a7, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: DrinkFailed
+      Value:
+        _FadeDuration: 0.27083334
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 3a9e9efcc7707104884f460bf9366498, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Roll
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 7400000, guid: 66b9a73903ab32143bf4fc644b79635a, type: 2}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Death
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6675343724984935337, guid: 10f56734873d7864fa1f56282cce6fa6,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Backstab_Death
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 1827226128182048838, guid: 6b81a224b33940f44836dc660bc9aa7f,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Back_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 996606033263881515, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Forward_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 6165068137202532354, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Left_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -1272651102350564749, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: Damage_Right_01
+      Value:
+        _FadeDuration: 0.25
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -3118386427450552708, guid: 6e2f485a5cf07ed4ca20959e516193ce,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+  climbAnimators:
+    _serializedList:
+    - Key: dr
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 3596252827176471958, guid: dc174de1e20fb2f43a7f9b014c170b41,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: dl
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8806790166266289869, guid: 1aa73de7b2b22064896ad23b24586245,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: ur
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -2570993991745343830, guid: cc83ec216e083da49bc8cfa92e6ed67a,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: ul
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -8247352270570450891, guid: d904471fafbedf74d96cbc1d28f1d0d5,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: us
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 8190479467669792386, guid: d04d4f2c581385c4aac24de1af50023d,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: ure
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 2762790156367993098, guid: acff1b4f179a87e43975303545ff5255,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: ule
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 4124090957624336442, guid: 35f72c06b914e8c4591dfeca29831972,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: dre
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -6179826685161695752, guid: 420ddc5a0e319904ca414be9337f58ef,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: dle
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: 4186798927156171835, guid: b9e1ba77275f21b44b0f008b3b3f511d,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+    - Key: ds
+      Value:
+        _FadeDuration: 0
+        _Events:
+          _NormalizedTimes: []
+          _Callbacks: []
+          _Names: []
+        _Clip: {fileID: -5983100680966325345, guid: f1a96a4d277e5224bbf72d4eca6a23c4,
+          type: 3}
+        _Speed: 1
+        _NormalizedStartTime: 0
+  LockMovement:
+    _FadeDuration: 0.25
+    _Events:
+      _NormalizedTimes: []
+      _Callbacks: []
+      _Names: []
+    _Speed: 1
+    _Animations:
+    - {fileID: -517782688235292392, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -6833178373325573696, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 6657471127650802555, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -943800857461652088, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 6423147695630285900, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4095878515519292984, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 1175238861931870556, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -2160857492978203510, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -712974671133617074, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4724083092791779380, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 2095533768186945066, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 3548331453627554004, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 7863725731847563027, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 4320031838087732905, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 1679894509423602493, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: -1456540951179041611, guid: 10bf55ddc5b1f20408e7fa0a8e93ae40, type: 3}
+    - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+    _Speeds: []
+    _SynchronizeChildren: 
+    _Thresholds:
+    - {x: 0, y: -4.8}
+    - {x: 0, y: 4.8}
+    - {x: -3, y: -3}
+    - {x: 3, y: -3}
+    - {x: -3, y: 3}
+    - {x: 3, y: 3}
+    - {x: -4.8, y: 0}
+    - {x: 4.8, y: 0}
+    - {x: 0, y: -3}
+    - {x: -1.5, y: -1.5}
+    - {x: 1.5, y: -1.5}
+    - {x: 0, y: 3}
+    - {x: -1.5, y: 1.5}
+    - {x: 1.5, y: 1.5}
+    - {x: -3, y: 0}
+    - {x: 3, y: 0}
+    - {x: 0, y: 0}
+    _DefaultParameter: {x: 0, y: 0}
+    _Type: 0
+  weaponAnimators:
+    _serializedList:
+    - Key: 0
+      Value: {fileID: 11400000, guid: 54cab1c226f333a42ba4fbe28a1fd1ad, type: 2}
