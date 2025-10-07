@@ -2,6 +2,67 @@ using BT;
 using UnityEngine;
 
 /// <summary>
+/// 敌人AI数据库键值枚举：定义行为树数据库中使用的键值
+/// </summary>
+public enum EnemyAIDatabaseKey
+{
+    /// <summary>
+    /// 角色角色控制器
+    /// </summary>
+    CharacterActor,
+
+    /// <summary>
+    /// 战斗实体
+    /// </summary>
+    CombatEntity,
+
+    /// <summary>
+    /// 变换组件
+    /// </summary>
+    Transform,
+
+    /// <summary>
+    /// 巡逻半径
+    /// </summary>
+    PatrolRadius,
+
+    /// <summary>
+    /// 检测范围
+    /// </summary>
+    DetectionRange,
+
+    /// <summary>
+    /// 攻击范围
+    /// </summary>
+    AttackRange,
+
+    /// <summary>
+    /// 移动速度
+    /// </summary>
+    MoveSpeed,
+
+    /// <summary>
+    /// 目标位置
+    /// </summary>
+    Target,
+
+    /// <summary>
+    /// 目标是否在范围内
+    /// </summary>
+    TargetInRange,
+
+    /// <summary>
+    /// 是否可以攻击
+    /// </summary>
+    CanAttack,
+
+    /// <summary>
+    /// 敌人身体引用
+    /// </summary>
+    EnemyBody
+}
+
+/// <summary>
 /// 敌人AI行为树大脑：使用行为树实现基本的巡逻和追击行为
 /// </summary>
 public class EnemyBT<TKey, TValue> : BTTree<TKey, TValue>
@@ -49,8 +110,8 @@ public class BTSetRandomPatrolPoint<TKey, TValue> : BTAction<TKey, TValue>
 {
     protected override BTResult Execute()
     {
-        var transform = database.GetData<Transform>((TKey)(object)"transform");
-        var patrolRadius = database.GetData<float>((TKey)(object)"patrolRadius");
+        var transform = database.GetData<Transform>((TKey)(object)EnemyAIDatabaseKey.Transform);
+        var patrolRadius = database.GetData<float>((TKey)(object)EnemyAIDatabaseKey.PatrolRadius);
 
         if (transform == null)
             return BTResult.Failed;
@@ -59,7 +120,7 @@ public class BTSetRandomPatrolPoint<TKey, TValue> : BTAction<TKey, TValue>
         Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * patrolRadius;
         Vector3 randomPoint = transform.position + new Vector3(randomCircle.x, 0f, randomCircle.y);
 
-        database.SetData((TKey)(object)"target", randomPoint);
+        database.SetData((TKey)(object)EnemyAIDatabaseKey.Target, randomPoint);
         return BTResult.Success;
     }
 }
@@ -71,15 +132,15 @@ public class BTCheckTargetInRange<TKey, TValue> : BTAction<TKey, TValue>
 {
     protected override BTResult Execute()
     {
-        var characterActor = database.GetData<CharacterActor>((TKey)(object)"characterActor");
-        var target = database.GetData<Vector3>((TKey)(object)"target");
-        var detectionRange = database.GetData<float>((TKey)(object)"detectionRange");
+        var characterActor = database.GetData<CharacterActor>((TKey)(object)EnemyAIDatabaseKey.CharacterActor);
+        var target = database.GetData<Vector3>((TKey)(object)EnemyAIDatabaseKey.Target);
+        var detectionRange = database.GetData<float>((TKey)(object)EnemyAIDatabaseKey.DetectionRange);
 
         if (characterActor == null)
             return BTResult.Failed;
 
         float distance = Vector3.Distance(characterActor.Position, target);
-        database.SetData((TKey)(object)"targetInRange", distance <= detectionRange);
+        database.SetData((TKey)(object)EnemyAIDatabaseKey.TargetInRange, distance <= detectionRange);
 
         return distance <= detectionRange ? BTResult.Success : BTResult.Failed;
     }
@@ -92,9 +153,9 @@ public class BTMoveToTarget<TKey, TValue> : BTAction<TKey, TValue>
 {
     protected override BTResult Execute()
     {
-        var characterActor = database.GetData<CharacterActor>((TKey)(object)"characterActor");
-        var target = database.GetData<Vector3>((TKey)(object)"target");
-        var moveSpeed = database.GetData<float>((TKey)(object)"moveSpeed");
+        var characterActor = database.GetData<CharacterActor>((TKey)(object)EnemyAIDatabaseKey.CharacterActor);
+        var target = database.GetData<Vector3>((TKey)(object)EnemyAIDatabaseKey.Target);
+        var moveSpeed = database.GetData<float>((TKey)(object)EnemyAIDatabaseKey.MoveSpeed);
 
         if (characterActor == null)
             return BTResult.Failed;
@@ -119,15 +180,15 @@ public class BTCheckCanAttack<TKey, TValue> : BTAction<TKey, TValue>
 {
     protected override BTResult Execute()
     {
-        var characterActor = database.GetData<CharacterActor>((TKey)(object)"characterActor");
-        var target = database.GetData<Vector3>((TKey)(object)"target");
-        var attackRange = database.GetData<float>((TKey)(object)"attackRange");
+        var characterActor = database.GetData<CharacterActor>((TKey)(object)EnemyAIDatabaseKey.CharacterActor);
+        var target = database.GetData<Vector3>((TKey)(object)EnemyAIDatabaseKey.Target);
+        var attackRange = database.GetData<float>((TKey)(object)EnemyAIDatabaseKey.AttackRange);
 
         if (characterActor == null)
             return BTResult.Failed;
 
         float distance = Vector3.Distance(characterActor.Position, target);
-        database.SetData((TKey)(object)"canAttack", distance <= attackRange);
+        database.SetData((TKey)(object)EnemyAIDatabaseKey.CanAttack, distance <= attackRange);
 
         return distance <= attackRange ? BTResult.Success : BTResult.Failed;
     }
@@ -140,7 +201,7 @@ public class BTAttack<TKey, TValue> : BTAction<TKey, TValue>
 {
     protected override BTResult Execute()
     {
-        var canAttack = database.GetData<bool>((TKey)(object)"canAttack");
+        var canAttack = database.GetData<bool>((TKey)(object)EnemyAIDatabaseKey.CanAttack);
 
         if (!canAttack)
             return BTResult.Failed;

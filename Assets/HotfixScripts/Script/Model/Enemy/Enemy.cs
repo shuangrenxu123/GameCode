@@ -1,107 +1,112 @@
 using System;
+using Animancer;
 using Fight;
 using UnityEngine;
 using UnityEngine.Events;
 using static Fight.Number.CombatNumberBox;
 
-public class Enemy : MonoBehaviour
+namespace Enemy
 {
-    [Header("身体组件")]
-    public CharacterActor characterActor;    // 移动器官
-    public CombatEntity combatEntity;        // 战斗器官
-
-    [Header("AI系统")]
-    [SerializeField] private string aiType = "Simple"; // AI类型标识
-    // 暂时移除大脑引用，先实现基本功能
-
-    [Header("巡逻设置")]
-    [SerializeField] private Vector3 patrolCenter;      // 巡逻中心点
-    [SerializeField] private float patrolRadius = 10f;  // 巡逻半径
-
-    private void Awake()
-    {
-        // 初始化身体组件
-        characterActor = GetComponent<CharacterActor>();
-        combatEntity = GetComponent<CombatEntity>();
-    }
-
-    private void Start()
-    {
-        // 初始化战斗属性
-        combatEntity.hp.SetMaxValue(100);
-        combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
-        combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
-        combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 10);
-
-        // 初始化完成
-    }
-
     /// <summary>
-    /// 设置巡逻中心点（从当前位置开始巡逻）
+    /// Enemy动画类型枚举
     /// </summary>
-    public void SetPatrolCenter(Vector3 center)
+    public enum EnemyAnimationType
     {
-        patrolCenter = center;
+        None,
+        Idle,
+        Move,
+        Attack,
+        Hurt,
+        Dead
     }
 
-    /// <summary>
-    /// 设置巡逻半径
-    /// </summary>
-    public void SetPatrolRadius(float radius)
+    public class Enemy : MonoBehaviour
     {
-        patrolRadius = radius;
-    }
+        [Header("身体组件")]
+        public CharacterActor characterActor;    // 移动器官
+        public CombatEntity combatEntity;        // 战斗器官
 
-    private void Update()
-    {
-        // 简单的AI逻辑：暂时只做基础移动
-        SimpleAIThink();
-    }
+        [Header("AI系统")]
+        [SerializeField] private GameObject brainGo; // 敌人AI大脑引用
 
-    /// <summary>
-    /// 简单的AI思考逻辑（临时实现）
-    /// </summary>
-    private void SimpleAIThink()
-    {
-        // 这里暂时实现简单的AI逻辑
-        // 以后可以用更复杂的行为树替换
-        if (characterActor != null && characterActor.IsGrounded)
+        [Header("动画系统")]
+        public AnimancerComponent animancer;      // 动画控制器
+        public AnimatorHelper animancerHelper;   // 动画助手（复用玩家动画助手）
+        public CCAnimatorConfig animatorConfig;  // 使用现有的动画配置
+
+        [Header("动画控制")]
+        [SerializeField] private EnemyAnimationController _animationController; // 动画控制器实例
+
+        IEnemyBrain enemyBrain;
+
+        private void Awake()
         {
-            // 简单的随机移动
-            Vector3 randomDirection = new Vector3(
-                Mathf.Sin(Time.time) * 0.5f,
-                0f,
-                Mathf.Cos(Time.time) * 0.5f
-            );
-            characterActor.Velocity = randomDirection;
+            enemyBrain = brainGo.GetComponent<IEnemyBrain>();
+
+            // 初始化动画系统
+            InitializeAnimationSystem();
+
+            // 初始化大脑系统
+            InitializeBrain();
         }
-    }
 
-    /// <summary>
-    /// 更换AI类型（预留接口）
-    /// </summary>
-    /// <param name="newAIType">新的AI类型</param>
-    public void ChangeBrain(string newAIType)
-    {
-        aiType = newAIType;
-        // 以后实现大脑切换逻辑
-    }
+        private void Start()
+        {
+            // 初始化战斗属性
+            combatEntity.hp.SetMaxValue(100);
+            combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
+            combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
+            combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 10);
 
-    /// <summary>
-    /// 获取当前AI类型
-    /// </summary>
-    public string CurrentAIType => aiType;
+            // 初始化完成
+        }
 
-    /// <summary>
-    /// 身体状态查询接口
-    /// </summary>
-    public Vector3 Position => characterActor != null ? characterActor.Position : transform.position;
-    public bool IsGrounded => characterActor != null && characterActor.IsGrounded;
-    public float Health => combatEntity != null ? combatEntity.hp.Value : 0;
-    public bool IsDead => Health <= 0;
+        private void Update()
+        {
+            // 使用大脑进行思考
+            if (enemyBrain != null)
+            {
+                enemyBrain.Think();
+            }
+        }
 
-    private void OnDestroy()
-    {
-        // 清理AI资源
+        /// <summary>
+        /// 初始化大脑系统
+        /// </summary>
+        private void InitializeBrain()
+        {
+            // 初始化大脑
+            if (enemyBrain != null)
+            {
+                enemyBrain.Initialize(this);
+            }
+        }
+
+        /// <summary>
+        /// 初始化动画系统
+        /// </summary>
+        private void InitializeAnimationSystem()
+        {
+            // 初始化动画助手
+            animancerHelper = new AnimatorHelper(animancer);
+
+            // 初始化动画控制器
+            if (_animationController == null)
+            {
+                _animationController = new EnemyAnimationController();
+                _animationController.Initialize(this, animancer, characterActor, animatorConfig);
+
+            }
+        }
+
+
+        private void OnDestroy()
+        {
+            // 清理AI资源
+            if (enemyBrain != null)
+            {
+                enemyBrain.Shutdown();
+            }
+        }
     }
 }

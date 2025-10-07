@@ -10,10 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6440568898356080685}
   - component: {fileID: 3688043665866223796}
-  - component: {fileID: 6835432150691358397}
-  - component: {fileID: 852993313255829880}
-  - component: {fileID: 1454398705206151196}
-  - component: {fileID: 1256729185164677550}
+  - component: {fileID: 2433429549978861517}
+  - component: {fileID: 5502639372177766544}
+  - component: {fileID: 6543478368927045035}
   m_Layer: 0
   m_Name: NPC
   m_TagString: Enemy
@@ -35,6 +34,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 619862076613072858}
+  - {fileID: 6125933517032538901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3688043665866223796
@@ -49,10 +49,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4b657d02e819624f95f46a553c6cba0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  combatEntity: {fileID: 0}
-  isHit: 0
-  isDead: 0
---- !u!114 &6835432150691358397
+  characterActor: {fileID: 5502639372177766544}
+  combatEntity: {fileID: 6543478368927045035}
+  brainGo: {fileID: 8739503939570498630}
+  animancer: {fileID: 6206834037400088687}
+  animatorConfig: {fileID: 11400000, guid: 2652dab0d6d942d458b01b46d7a5b894, type: 2}
+--- !u!114 &2433429549978861517
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -61,41 +63,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 577690182922541599}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6b65080d4bcabe44d9e5eec768f45cdd, type: 3}
+  m_Script: {fileID: 11500000, guid: fa9481656a0ed6148b3524ea3e076ec6, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  hit: {fileID: 1454398705206151196}
-  bloodFx: {fileID: 1407402442211574, guid: 5d31a5b9b348544439d8079453188ecc, type: 3}
-  animator: {fileID: 6206834037400088687}
-  animationConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
---- !u!54 &852993313255829880
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 577690182922541599}
-  serializedVersion: 4
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 1
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 122
-  m_CollisionDetection: 0
---- !u!114 &1454398705206151196
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterBody
+  bodySize: {x: 1, y: 2}
+  mass: 50
+--- !u!114 &5502639372177766544
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -104,34 +77,75 @@ MonoBehaviour:
   m_GameObject: {fileID: 577690182922541599}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c8edb3e8c61f4447b94803bcfd61666, type: 3}
+  m_Script: {fileID: 11500000, guid: cffbe50272c369f4d9a4eeccf736bae5, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: 
-  clipGroups:
-  - {fileID: 11400000, guid: e833b0d81c9e303419a49b870780043a, type: 2}
-  looping: 0
-  layer: 0
---- !u!65 &1256729185164677550
-BoxCollider:
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterActor
+  interpolateActor: 1
+  useContinuousCollisionDetection: 1
+  UseRootMotion: 0
+  UpdateRootPosition: 1
+  UpdateRootRotation: 1
+  rootMotionVelocityType: 0
+  rootMotionRotationType: 0
+  oneWayPlatformsLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  oneWayPlayformsValidArc: 175
+  slopeLimit: 55
+  stableLayerMask:
+    serializedVersion: 2
+    m_Bits: 16119
+  allowCharactersAsStableSurfaces: 1
+  preventtUnstableClimbing: 1
+  preventBadSteps: 1
+  stepUpDistance: 0.5
+  stepDownDistance: 0.5
+  alwaysNotGrounded: 0
+  forceGroundedAtStart: 1
+  useGroundTrigger: 1
+  edgeCompensation: 0
+  useStableEdgeWhenLanding: 1
+  detectGroundWhileAscending: 0
+  supportDynamicGround: 1
+  dynamicGroundLayerMask:
+    serializedVersion: 2
+    m_Bits: 16119
+  rotateForwardDirection: 1
+  maxGroundVelocityChange: 30
+  inheritedGroundPlannarlVelocityThreshold: 2
+  inheritedGroundPlanarVelocityMultiplier: 1
+  inheritedGroundVerticalVelocityThreshold: 2
+  inheritedGroundVerticalVelocityMultiplier: 1
+  slideOnWalls: 1
+  resetVelocityOnTeleport: 1
+  stablePostSimulationVelocity: 2
+  unstablePostSimulationVelocity: 2
+  constraintRotation: 1
+  upDirectionReference: {fileID: 0}
+  constraintUpDirection: {x: 0, y: 1, z: 0}
+  upDirectionReferenceMode: 1
+  CanPushDynamicRigidbodies: 0
+  pushableRigidbodyLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
+  applyWeightToGround: 1
+  applyWeightLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  weightGravity: 9.8
+--- !u!114 &6543478368927045035
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 577690182922541599}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.6, y: 1.8, z: 0.6}
-  m_Center: {x: 0, y: 0.91, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd6d65b2eb1701348a8789bdcd033226, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fight.CombatEntity
+  entityType: 1
 --- !u!1 &8694019345369113256
 GameObject:
   m_ObjectHideFlags: 0
@@ -164,6 +178,50 @@ Transform:
   - {fileID: 6703382326468828271}
   m_Father: {fileID: 6440568898356080685}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8739503939570498630
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6125933517032538901}
+  - component: {fileID: 9128932037985792782}
+  m_Layer: 0
+  m_Name: Brain
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6125933517032538901
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8739503939570498630}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6440568898356080685}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9128932037985792782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8739503939570498630}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ebde1a4397aaba46ab111f663ec8c31, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DefaultEnemyAI
 --- !u!1001 &6703382326468443277
 PrefabInstance:
   m_ObjectHideFlags: 0

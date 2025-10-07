@@ -23,7 +23,7 @@ public class RayCastDamageCollider : MonoBehaviour
 
     //runtime
     RaycastHit[] raycastHits = new RaycastHit[6];
-    List<Enemy> characterDamagedDuringThisCalculation = new();
+    List<Enemy.Enemy> characterDamagedDuringThisCalculation = new();
     [SerializeField]
     bool attacking = false;
     Vector3 lastTransformPos;
@@ -83,7 +83,7 @@ public class RayCastDamageCollider : MonoBehaviour
             for (int j = 0; j < count; j++)
             {
                 var target = raycastHits[j].collider.GetComponentInParent<CombatEntity>();
-                Enemy enemy = target.gameObject.GetComponentInParent<Enemy>();
+                var enemy = target.gameObject.GetComponentInParent<Enemy.Enemy>();
                 if (!characterDamagedDuringThisCalculation.Contains(enemy))
                 {
                     characterDamagedDuringThisCalculation.Add(enemy);

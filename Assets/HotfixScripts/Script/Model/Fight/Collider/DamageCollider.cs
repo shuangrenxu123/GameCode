@@ -9,7 +9,7 @@ public class DamageCollider : MonoBehaviour
     [SerializeField]
     CombatEntity entity;
     WeaponItemData weaponItem;
-    List<Enemy> characterDamagedDuringThisCalculation;
+    List<Enemy.Enemy> characterDamagedDuringThisCalculation;
     private string currentDamageAnimation;
     LayerMask Enemylayer;
     public string EnemyTag;
@@ -19,7 +19,7 @@ public class DamageCollider : MonoBehaviour
         //damageCollider = GetComponent<Collider>();
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
-        characterDamagedDuringThisCalculation = new List<Enemy>();
+        characterDamagedDuringThisCalculation = new List<Enemy.Enemy>();
         //todo ����ȡ��Ӳ�����д�������������������ж�
         Enemylayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
@@ -39,7 +39,7 @@ public class DamageCollider : MonoBehaviour
     {
         if (other.gameObject.layer == Enemylayer)
         {
-            Enemy enemy = other.gameObject.GetComponentInParent<Enemy>();
+            var enemy = other.gameObject.GetComponentInParent<Enemy.Enemy>();
             if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
             {
                 return;

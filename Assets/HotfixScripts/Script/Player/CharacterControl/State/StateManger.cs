@@ -29,6 +29,7 @@ namespace CharacterControllerStateMachine
         public MaterialControl materialControl;
         public AudioData moveData;
 
+        [SerializeField]
         private CharacterActor CharacterActor;
         public CCAnimatorConfig animatorConfig;
         [Header("攻击相关")]
@@ -47,8 +48,6 @@ namespace CharacterControllerStateMachine
         }
         private void Start()
         {
-            CharacterActor = GetComponentInParent<CharacterActor>();
-
             player = GetComponentInParent<Player>();
 
             InitState();
@@ -161,12 +160,6 @@ namespace CharacterControllerStateMachine
         public void SetStateMachineData(string key, object value)
         {
             moveStateMachine.database.SetData(key, value);
-        }
-        private void OnDrawGizmos()
-        {
-            Gizmos.color = Color.red;
-            if (CharacterActor != null)
-                Gizmos.DrawLine(transform.position, transform.position + this.CharacterActor.PlanarVelocity.normalized);
         }
     }
 }
