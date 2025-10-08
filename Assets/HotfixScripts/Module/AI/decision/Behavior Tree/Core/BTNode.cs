@@ -3,18 +3,18 @@ namespace BT
     /// <summary>
     /// 所有节点的父节点
     /// </summary>
-    public class BTNode<TKey, TValue>
+    public class BTNode
     {
         public bool isRunning { get; set; }
 
 
-        public DataBase<TKey, TValue> database;
+        public DataBase<string, object> database;
 
         /// <summary>
         /// 激活节点,可以视作是节点添加完成后调用,此时已经获得数据库
         /// </summary>
         /// <param name="database"></param>
-        public virtual void Activate(DataBase<TKey, TValue> database)
+        public virtual void Activate(DataBase<string, object> database)
         {
             this.database = database;
 

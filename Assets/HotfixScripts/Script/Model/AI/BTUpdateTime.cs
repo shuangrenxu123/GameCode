@@ -1,15 +1,15 @@
-using BT;
 using System.Collections.Generic;
+using BT;
 using UnityEngine;
 
-public class BTUpdateTime<TKey, TValue> : BTAction<TKey, TValue>
+public class BTUpdateTime : BTAction
 {
-    public List<TKey> timers;
+    public List<string> timers;
     public BTUpdateTime()
     {
-        timers = new List<TKey>();
+        timers = new List<string>();
     }
-    public BTNode<TKey, TValue> AddTimer(TKey name)
+    public BTNode AddTimer(string name)
     {
         timers.Add(name);
         return this;
@@ -20,11 +20,11 @@ public class BTUpdateTime<TKey, TValue> : BTAction<TKey, TValue>
         {
             if (database.CheckDataNull(name))
             {
-                database.SetData(name, (dynamic)0f);
+                database.SetData(name, 0f);
             }
             var value = database.GetData<float>(name);
             value += Time.deltaTime;
-            database.SetData(name, (dynamic)value);
+            database.SetData(name, value);
         }
         return BTResult.Success;
     }

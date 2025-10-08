@@ -1,58 +1,45 @@
 using BT;
 using CharacterController;
+using Enemy;
 using UnityEngine;
 
-public class BTMoveAction<TKey, TValue> : BTAction<TKey, TValue>
+namespace BT.Action
 {
-    private Transform targetTransform;
-    private float speed;
-    private float distanceSqr = 10;
-    private CharacterActor actor;
-
-    public BTMoveAction(string name, float speed)
+    public class BTMoveAction : BTAction
     {
-        this.speed = speed;
-    }
-    public override void Activate(DataBase<TKey, TValue> database)
-    {
-        base.Activate(database);
+        private Transform targetTransform;
+        private IEnemyBrain entityBrain;
 
-        actor = database.GetData<CharacterActor>((dynamic)"actor");
-    }
-    protected override void Enter()
-    {
-        base.Enter();
-        targetTransform = database.GetData<Transform>((dynamic)"target");
-
-        //获得下一个目标点
-    }
-
-    protected override BTResult Execute()
-    {
-        Vector3 pos = actor.Position;
-        Vector3 targetpos = targetTransform.position;
-        if ((pos - targetpos).sqrMagnitude > 10000)
+        public override void Activate(DataBase<string, object> database)
         {
-            return BTResult.Failed;
+            base.Activate(database);
+
+            entityBrain = database.GetData<IEnemyBrain>("entityBrain");
         }
-        if ((pos - targetpos).sqrMagnitude > distanceSqr)
+        protected override void Enter()
         {
-            Vector3 dir = targetpos - pos;
-            dir.Normalize();
-            Quaternion quaternion = Quaternion.LookRotation(dir);
-            //pos += dir * speed * Time.deltaTime;
-            actor.Velocity = dir * speed;
-            actor.Rotation = quaternion;
+            base.Enter();
         }
-        else
+
+        protected override BTResult Execute()
         {
-            return BTResult.Success;
+            var direction = Vector2.one;
+
+            Vector3 inputXZ = Vector3.ProjectOnPlane(direction, Vector3.up);
+            inputXZ.Normalize();
+            inputXZ.y = inputXZ.z;
+            inputXZ.z = 0f;
+            var actions = entityBrain.characterActions;
+
+            actions.movement.value = inputXZ;
+
+            entityBrain.characterActions = actions;
+
+            return BTResult.Running;
         }
-        return BTResult.Running;
-    }
-    protected override void Exit()
-    {
-        actor.Velocity = Vector3.zero;
-        base.Exit();
+        protected override void Exit()
+        {
+            base.Exit();
+        }
     }
 }

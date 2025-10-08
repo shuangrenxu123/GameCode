@@ -3,7 +3,7 @@ using BT;
 using UnityEngine;
 namespace Fight
 {
-    public class AttackNode : BTAction<string, object>
+    public class AttackNode : BTAction
     {
         protected override BTResult Execute()
         {

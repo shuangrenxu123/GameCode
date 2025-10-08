@@ -1,7 +1,7 @@
 using BT;
 using UnityEngine;
 
-public class DebugAction : BTAction<string, object>
+public class DebugAction : BTAction
 {
     public enum DebugActionType
     {

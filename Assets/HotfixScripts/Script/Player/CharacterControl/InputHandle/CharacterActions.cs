@@ -57,7 +57,7 @@ public struct CharacterActions
 
         movement = new Vector2Action();
     }
-    public void Setvalue(CharacterActions characterActions)
+    public void SetValue(CharacterActions characterActions)
     {
         @jump.value = characterActions.jump.value;
         @run.value = characterActions.run.value;
@@ -88,7 +88,7 @@ public struct CharacterActions
         OpenConsoleUI.value = inputHandler.GetBool("OpenConsole");
     }
     /// <summary>
-    /// ÓÃÓÚ¼ÇÂ¼°´ÏÂÊ±¼äµÈ
+    /// ï¿½ï¿½ï¿½Ú¼ï¿½Â¼ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½
     /// </summary>
     /// <param name="dt"></param>
     public void Update(float dt)

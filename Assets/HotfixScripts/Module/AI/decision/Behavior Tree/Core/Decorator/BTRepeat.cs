@@ -3,9 +3,9 @@ namespace BT
     /// <summary>
     /// ���Խڵ�
     /// </summary>
-    public class BTRepeat<TKey, TValue> : BTDecorator<TKey, TValue>
+    public class BTRepeat<TKey, TValue> : BTDecorator
     {
-        public BTRepeat(BTNode<TKey, TValue> child) : base(child)
+        public BTRepeat(BTNode child) : base(child)
         {
 
         }

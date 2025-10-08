@@ -10,7 +10,7 @@ namespace BT
     /// 当为And时候，需要等待所有的子节点都运行完毕，
     /// 当为Or时 只要有一个节点返回成功或失败他就会返回
     /// </summary>
-    public class BTParallel<TKey, TValue> : BTComposite<TKey, TValue>
+    public class BTParallel : BTComposite
     {
         private ParallelType ParallelType;
         private List<BTResult> _results;
@@ -81,7 +81,7 @@ namespace BT
                 }
             }
         }
-        public override BTComposite<TKey, TValue> AddChild(BTNode<TKey, TValue> node)
+        public override BTComposite AddChild(BTNode node)
         {
             base.AddChild(node);
             _results.Add(BTResult.Running);

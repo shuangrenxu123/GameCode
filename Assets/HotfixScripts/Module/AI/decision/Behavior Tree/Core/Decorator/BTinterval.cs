@@ -1,15 +1,15 @@
 namespace BT
 {
-    public class BTinterval<TKey, TValue> : BTDecorator<TKey, TValue>
+    public class BTinterval<TKey, TValue> : BTDecorator
     {
         public float interval;
-        private TKey dataBaseName;
-        public BTinterval(TKey databaseName, float time, BTNode<TKey, TValue> child) : base(child)
+        private string dataBaseName;
+        public BTinterval(string databaseName, float time, BTNode child) : base(child)
         {
             dataBaseName = databaseName;
             interval = time;
         }
-        public override void Activate(DataBase<TKey, TValue> database)
+        public override void Activate(DataBase<string, object> database)
         {
             base.Activate(database);
             database.SetData(dataBaseName, 0f);

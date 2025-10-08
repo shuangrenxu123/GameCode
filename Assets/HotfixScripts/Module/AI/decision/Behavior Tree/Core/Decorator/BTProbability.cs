@@ -3,14 +3,12 @@ using Utility;
 
 namespace BT
 {
-    /// <summary>
-    /// ����ִ��������
-    /// </summary>
-    public class BTProbability<TKey, TValue> : BTDecorator<TKey, TValue>
+
+    public class BTProbability: BTDecorator
     {
         int probability;
         BTActionStatus state = BTActionStatus.Ready;
-        public BTProbability(int Probability, BTNode<TKey, TValue> child) : base(child)
+        public BTProbability(int Probability, BTNode child) : base(child)
         {
             this.probability = Probability;
         }

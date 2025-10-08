@@ -3,7 +3,7 @@ namespace BT
     /// <summary>
     /// 顺序节点，从左往右执行子节点，知道所有的都成功或者有一个返回失败
     /// </summary>
-    public class BTSequence<TKey, TValue> : BTComposite<TKey, TValue>
+    public class BTSequence : BTComposite
     {
         /// <summary>
         /// 激活节点的序号

@@ -2,11 +2,11 @@ using BT;
 using CharacterController;
 using UnityEngine;
 
-public class BTRandomTargetPosition<TKey, TValue> : BTAction<TKey, TValue>
+public class BTRandomTargetPosition : BTAction
 {
     private CharacterActor actor;
     private Transform target;
-    public TKey setDataName;
+    public string setDataName;
 
     public Vector2 Range;
     public BTRandomTargetPosition()
@@ -14,7 +14,7 @@ public class BTRandomTargetPosition<TKey, TValue> : BTAction<TKey, TValue>
         target = new GameObject("target").transform;
 
     }
-    public override void Activate(DataBase<TKey, TValue> database)
+    public override void Activate(DataBase<string, object> database)
     {
         base.Activate(database);
         actor = database.GetData<CharacterActor>((dynamic)"actor");

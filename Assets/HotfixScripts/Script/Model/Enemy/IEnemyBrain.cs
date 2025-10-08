@@ -1,12 +1,17 @@
+using CharacterController;
 using UnityEngine;
 
 namespace Enemy
 {
-    /// <summary>
-    /// 敌人AI大脑接口：定义与身体的通信协议（保持向后兼容）
-    /// </summary>
     public interface IEnemyBrain
     {
+        /// <summary>
+        /// 用于控制输入
+        /// </summary>
+        CharacterBrain characterBrain { get; }
+
+        CharacterActions characterActions { get; set; }
+
         /// <summary>
         /// 初始化大脑，注入身体引用
         /// </summary>

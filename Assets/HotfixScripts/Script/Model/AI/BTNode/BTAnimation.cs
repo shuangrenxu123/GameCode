@@ -1,9 +1,9 @@
-using Animancer;
 using System;
+using Animancer;
 using UnityEngine;
 namespace BT.Nodes
 {
-    public class BTAnimation<TKey, TValue> : BTAction<TKey, TValue>
+    public class BTAnimation<TKey, TValue> : BTAction
     {
         AnimancerComponent animancer;
         CCAnimatorConfig config;

@@ -1,4 +1,5 @@
 using BT;
+using CharacterController;
 using UnityEngine;
 
 namespace Enemy.AI
@@ -6,7 +7,13 @@ namespace Enemy.AI
     public class DefaultEnemyAI : MonoBehaviour, IEnemyBrain
     {
         private Enemy body;
-        private EnemyBT<EnemyAIDatabaseKey, object> behaviorTree;
+        private EnemyBT behaviorTree;
+        [SerializeField]
+        CharacterBrain _characterBrain;
+        public CharacterBrain characterBrain => _characterBrain;
+
+        public CharacterActions characterActions { get; set; } = new();
+
 
         /// <summary>
         /// 初始化大脑，注入身体引用
@@ -17,43 +24,16 @@ namespace Enemy.AI
             body = enemyBody;
 
             // 初始化行为树数据库
-            var database = new DataBase<EnemyAIDatabaseKey, object>();
-            database.SetData(EnemyAIDatabaseKey.CharacterActor, body.characterActor);
-            database.SetData(EnemyAIDatabaseKey.CombatEntity, body.combatEntity);
-            database.SetData(EnemyAIDatabaseKey.Transform, body.transform);
-            database.SetData(EnemyAIDatabaseKey.EnemyBody, body);
+            var database = new DataBase<string, object>();
+            database.SetData(EnemyAIDatabaseKey.CharacterActor.ToString(), body.characterActor);
+            database.SetData(EnemyAIDatabaseKey.CombatEntity.ToString(), body.combatEntity);
+            database.SetData(EnemyAIDatabaseKey.Transform.ToString(), body.transform);
+            database.SetData(EnemyAIDatabaseKey.EnemyBody.ToString(), body);
+            database.SetData("entityBrain", this);
 
             // 创建行为树大脑
-            behaviorTree = new EnemyBT<EnemyAIDatabaseKey, object>();
+            behaviorTree = new EnemyBT();
             behaviorTree.Init(database);
-        }
-
-
-        public void PlayAnimation(string animationName)
-        {
-            if (body != null && body.animancerHelper != null && body.animatorConfig != null)
-            {
-                // 尝试从剪辑动画字典中获取动画
-                if (body.animatorConfig.clipAnimators.TryGetValue(animationName, out var clip))
-                {
-                    body.animancerHelper.Play(clip);
-                }
-                // 尝试从线性混合动画字典中获取动画
-                else if (body.animatorConfig.linearMixerAnimators.TryGetValue(animationName, out var mixer))
-                {
-                    body.animancerHelper.Play(mixer);
-                }
-                else
-                {
-                    Debug.LogWarning($"未找到动画: {animationName}");
-                }
-            }
-        }
-
-
-        public void PlayMovementAnimation()
-        {
-            PlayAnimation("NormalMove");
         }
 
         /// <summary>
@@ -61,14 +41,8 @@ namespace Enemy.AI
         /// </summary>
         public void Think()
         {
-            // 更新动画（基于移动状态）
-            if (body != null && body.characterActor != null)
-            {
-                PlayMovementAnimation();
-            }
-
             // 执行行为树逻辑
-            // behaviorTree.Update();
+            behaviorTree.Update();
         }
 
         /// <summary>

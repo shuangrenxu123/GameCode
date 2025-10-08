@@ -4,16 +4,16 @@ using Utility;
 
 namespace BT
 {
-    public class BTRandom<TKey, TValue> : BTComposite<TKey, TValue>
+    public class BTRandom : BTComposite
     {
         private List<int> probability = new();
-        BTNode<TKey, TValue> currentNode;
-        public BTComposite<TKey, TValue> AddChild(int prob,BTNode<TKey, TValue> node)
+        BTNode currentNode;
+        public BTComposite AddChild(int prob, BTNode node)
         {
             probability.Add(prob);
             return base.AddChild(node);
         }
-        public override void RemoveChild(BTNode<TKey, TValue> node)
+        public override void RemoveChild(BTNode node)
         {
             var index = children.IndexOf(node);
             probability.RemoveAt(index);
@@ -32,9 +32,9 @@ namespace BT
             {
                 currentNode = null;
             }
-  
+
             return result;
-            
+
         }
     }
 }

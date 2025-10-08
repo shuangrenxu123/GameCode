@@ -1,3 +1,4 @@
+using Enemy;
 using Sirenix.OdinInspector;
 using UnityEngine;
 namespace CharacterController
@@ -26,8 +27,10 @@ namespace CharacterController
 
         public InputHandlerSettings CameraInputHandlerSettings = new InputHandlerSettings();
 
+        [SerializeField, ShowIf("isAI")]
+        GameObject entityBraidGo;
 
-        // CharacterAIBehaviour aiBehaviour = null;
+        IEnemyBrain aiBehaviour = null;
 
         CharacterActions characterActions = new CharacterActions();
         CharacterUIActions characterUIActions = new CharacterUIActions();
@@ -44,15 +47,13 @@ namespace CharacterController
         public void SetAction(CharacterActions characterActions) => this.characterActions = characterActions;
 
 
-        // public void SetAIBehaviour(CharacterAIBehaviour )
-
         public void UpdateBrainValues(float dt)
         {
             if (Time.timeScale == 0)
                 return;
             if (IsAI)
             {
-                //todo UpdateAIBrainValues(dt);
+                characterActions.SetValue(aiBehaviour.characterActions);
             }
             else
             {
@@ -99,6 +100,10 @@ namespace CharacterController
             characterActions.InitializeActions();
             characterUIActions.InitializeActions();
 
+            if (isAI)
+            {
+                aiBehaviour = entityBraidGo.GetComponent<IEnemyBrain>();
+            }
         }
         protected virtual void OnEnable()
         {

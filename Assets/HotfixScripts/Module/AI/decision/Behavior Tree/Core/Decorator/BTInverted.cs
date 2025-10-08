@@ -3,9 +3,9 @@ namespace BT
     /// <summary>
     /// ȡ�����νڵ�
     /// </summary>
-    public class BTInverted<TKey, TValue> : BTDecorator<TKey, TValue>
+    public class BTInverted<TKey, TValue> : BTDecorator
     {
-        public BTInverted(BTNode<TKey, TValue> child) : base(child)
+        public BTInverted(BTNode child) : base(child)
         {
 
         }
