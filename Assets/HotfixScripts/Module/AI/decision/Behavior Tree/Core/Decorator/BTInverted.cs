@@ -3,7 +3,7 @@ namespace BT
     /// <summary>
     /// ȡ�����νڵ�
     /// </summary>
-    public class BTInverted<TKey, TValue> : BTDecorator
+    public class BTInverted : BTDecorator
     {
         public BTInverted(BTNode child) : base(child)
         {

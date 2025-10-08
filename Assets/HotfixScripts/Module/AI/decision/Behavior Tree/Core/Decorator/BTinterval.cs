@@ -1,6 +1,6 @@
 namespace BT
 {
-    public class BTinterval<TKey, TValue> : BTDecorator
+    public class BTinterval : BTDecorator
     {
         public float interval;
         private string dataBaseName;
