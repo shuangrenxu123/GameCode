@@ -1624,6 +1624,18 @@ CapsuleCollider:
   m_Height: 0.2
   m_Direction: 0
   m_Center: {x: 0.06, y: 0, z: 0}
+--- !u!114 &335861205 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6206834037400088687, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1164412500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ad50f81b1d25c441943c37a89ba23f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &372776699
 GameObject:
   m_ObjectHideFlags: 0
@@ -4930,6 +4942,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1238533962}
+  - component: {fileID: 1238533963}
   m_Layer: 0
   m_Name: State
   m_TagString: Untagged
@@ -4952,6 +4965,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 518484737}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1238533963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238533961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5c2808ec1e05564684d86182660478f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character.Controller.NPCStateMgr
+  loginState: 0
+  moveState: 0
+  combatEntity: {fileID: 2051783273}
+  characterBrain: {fileID: 520081918}
+  Animancer: {fileID: 335861205}
+  CharacterActor: {fileID: 2051783274}
+  animatorConfig: {fileID: 11400000, guid: 2652dab0d6d942d458b01b46d7a5b894, type: 2}
+  attackAnimator: {fileID: 0}
+  actionChangeGraph: {fileID: 0}
+  skillRunner: {fileID: 0}
 --- !u!1 &1278379388
 GameObject:
   m_ObjectHideFlags: 0
@@ -7294,6 +7329,30 @@ Transform:
   - {fileID: 472757549}
   m_Father: {fileID: 72591697}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2051783273 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6543478368927045035, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1164412500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bd6d65b2eb1701348a8789bdcd033226, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Fight.CombatEntity
+--- !u!114 &2051783274 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5502639372177766544, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1164412500}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cffbe50272c369f4d9a4eeccf736bae5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterActor
 --- !u!1 &2058692642
 GameObject:
   m_ObjectHideFlags: 0

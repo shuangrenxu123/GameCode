@@ -39,7 +39,8 @@ namespace CharacterController.Camera
 
         CharacterActor characterActor = null;
         UnityEngine.Camera _camera;
-
+        CameraRotationEffect cameraRotationEffect;
+        CameraZoomEffect cameraZoomEffect;
 
         void Awake()
         {
@@ -59,6 +60,9 @@ namespace CharacterController.Camera
             }
 
             SetupDefaultEffects();
+
+            cameraRotationEffect = effectManager.GetEffect<CameraRotationEffect>();
+            cameraZoomEffect = effectManager.GetEffect<CameraZoomEffect>();
         }
 
         /// <summary>
@@ -170,12 +174,12 @@ namespace CharacterController.Camera
         {
             Vector2 cameraAxes = inputHandlerSettings.InputHandler.GetVector2(axes);
 
-            if (effectManager?.GetEffect<CameraRotationEffect>() != null)
+            if (cameraRotationEffect != null)
             {
                 effectManager.SetRotationInput(cameraAxes.x, -cameraAxes.y);
             }
 
-            if (effectManager?.GetEffect<CameraZoomEffect>() != null)
+            if (cameraZoomEffect != null)
             {
                 effectManager.SetZoomInput(-inputHandlerSettings.InputHandler.GetFloat(zoomAxis));
             }

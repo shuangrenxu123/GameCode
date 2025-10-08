@@ -9,7 +9,7 @@ namespace CharacterController.Camera
     /// </summary>
     public class CameraEffectManager
     {
-        readonly List<ICameraEffect> m_ActiveEffects = new List<ICameraEffect>();
+        List<ICameraEffect> m_ActiveEffects = new List<ICameraEffect>();
         readonly Dictionary<CameraEffectType, ICameraEffect> m_EffectLookup = new();
         bool m_IsEnabled = true;
 
@@ -79,7 +79,7 @@ namespace CharacterController.Camera
             CameraEffectContext currentContext = initialContext;
 
             // 按优先级排序处理效果（高优先级先处理）
-            foreach (var effect in m_ActiveEffects.OrderBy(e => e.Priority))
+            foreach (var effect in m_ActiveEffects)
             {
                 if (!effect.IsActive) continue;
 
@@ -95,7 +95,7 @@ namespace CharacterController.Camera
         /// </summary>
         private void SortEffects()
         {
-            m_ActiveEffects.Sort((a, b) => b.Priority.CompareTo(a.Priority));
+            m_ActiveEffects = m_ActiveEffects.OrderBy(e => e.Priority).ToList();
         }
 
         /// <summary>
@@ -103,7 +103,8 @@ namespace CharacterController.Camera
         /// </summary>
         public void SetRotationInput(float deltaYaw, float deltaPitch)
         {
-            var rotationEffect = GetEffect<CameraRotationEffect>();
+            var rotationEffect = m_EffectLookup[CameraEffectType.Rotation] as CameraRotationEffect;
+
             if (rotationEffect != null)
             {
                 rotationEffect.SetInputDelta(deltaYaw, deltaPitch);
@@ -115,7 +116,7 @@ namespace CharacterController.Camera
         /// </summary>
         public void SetZoomInput(float deltaZoom)
         {
-            var zoomEffect = GetEffect<CameraZoomEffect>();
+            var zoomEffect = m_EffectLookup[CameraEffectType.Zoom] as CameraZoomEffect;
             if (zoomEffect != null)
             {
                 zoomEffect.SetZoomInput(deltaZoom);
