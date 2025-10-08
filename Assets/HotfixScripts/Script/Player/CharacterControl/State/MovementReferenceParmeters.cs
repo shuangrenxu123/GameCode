@@ -2,7 +2,6 @@ using UnityEngine;
 
 namespace CharacterController
 {
-    [System.Serializable]
     public class MovementReferenceParameters
     {
         public MovementReferenceMode movementReferenceMode = MovementReferenceMode.External;
@@ -61,7 +60,7 @@ namespace CharacterController
                     }
                     else
                     {
-                        Debug.LogWarning("û��ָ��ǰ������");
+                        Debug.LogError("坐标轴参考点为空");
                     }
                     break;
                 case MovementReferenceMode.Character:

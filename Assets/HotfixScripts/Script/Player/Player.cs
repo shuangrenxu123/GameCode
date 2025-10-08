@@ -33,12 +33,6 @@ public class Player : MonoSingleton<Player>
         CombatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
 
     }
-
-    public void SetStateMachineData(string key, object value)
-    {
-        StateManager.SetStateMachineData(key, value);
-    }
-
 }
 public struct MotionState
 {

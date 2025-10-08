@@ -10,24 +10,27 @@ using Fight;
 using HFSM;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using static CharacterController.MovementReferenceParameters;
 
-namespace CharacterControllerStateMachine
+namespace Character.Controller
 {
-    public class StateManger : MonoBehaviour
+    public class NPCStateMgr : MonoBehaviour
     {
         [SerializeField, ReadOnly]
         ECharacterLoginState loginState;
         [SerializeField, ReadOnly]
         ECharacterMoveState moveState;
 
-        public CharacterMovementStateMachine moveStateMachine;
-        public CharacterLoginStateMachine loginMachine;
-        public CombatEntity combatEntity;
-        public new Camera3D camera;
-        public CharacterBrain characterBrain;
-        public AnimancerComponent Animancer;
-        public AnimatorHelper AnimancerHelper;
-        public MaterialControl materialControl;
+        [SerializeField]
+        CombatEntity combatEntity;
+
+        [SerializeField]
+        CharacterBrain characterBrain;
+
+        [SerializeField]
+        AnimancerComponent Animancer;
+
+        AnimatorHelper AnimancerHelper;
 
         [SerializeField]
         private CharacterActor CharacterActor;
@@ -41,6 +44,9 @@ namespace CharacterControllerStateMachine
 
         [SerializeField]
         private SkillRunner skillRunner;
+
+        public CharacterMovementStateMachine moveStateMachine;
+        public CharacterLoginStateMachine loginMachine;
         DataBase<string, object> dataBase;
 
         private void Awake()
@@ -51,10 +57,9 @@ namespace CharacterControllerStateMachine
         private void Start()
         {
             SetStateMachineData("combatEntity", combatEntity);
-            SetStateMachineData("Camera3D", camera);
 
             InitState();
-
+            moveStateMachine.movementReferenceParameters.movementReferenceMode = MovementReferenceMode.World;
             moveStateMachine.Start();
             loginMachine.Start();
         }
@@ -63,7 +68,7 @@ namespace CharacterControllerStateMachine
         {
             InitMovementState();
             InitLoginState();
-            SetStateParameter();
+            // controller.SetDefaultState(ECharacterMoveState.Climb);
         }
 
         void InitMovementState()
@@ -73,11 +78,6 @@ namespace CharacterControllerStateMachine
             moveStateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
             moveStateMachine.database = dataBase;
             moveStateMachine.animancer = AnimancerHelper;
-
-            var lockOnMoveState = new CharacterLockOnMovementState
-            {
-                movementAnimation = animatorConfig.LockMovement,
-            };
 
             var movementState = new CharacterNormalMovementState
             {
@@ -110,7 +110,6 @@ namespace CharacterControllerStateMachine
             moveStateMachine.AddState(crouchMovementState);
             moveStateMachine.AddState(jumpMovement);
             moveStateMachine.AddState(climbMovementState);
-            moveStateMachine.AddState(lockOnMoveState);
 
         }
         void InitLoginState()
@@ -134,12 +133,6 @@ namespace CharacterControllerStateMachine
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
             loginMachine.SetDefaultState(ECharacterLoginState.Empty);
-        }
-
-        void SetStateParameter()
-        {
-            if (camera)
-                moveStateMachine.ExternalReference = camera.transform;
         }
 
         private void Update()

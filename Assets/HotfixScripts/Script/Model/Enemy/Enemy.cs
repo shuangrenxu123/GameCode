@@ -55,6 +55,7 @@ namespace Enemy
             combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
             combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
             combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 10);
+            combatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
 
             // 初始化完成
         }

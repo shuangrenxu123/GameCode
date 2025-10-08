@@ -20,8 +20,12 @@ namespace Character.Controller.MoveState
         public override void Init()
         {
             base.Init();
-            camera3D = parentMachine.stateManger.camera;
-            lockOnEffect = camera3D.effectManager.GetEffect<CameraLockOnEffect>();
+            camera3D = database.GetData<Camera3D>("Camera3D");
+
+            if (camera3D)
+            {
+                lockOnEffect = camera3D.effectManager.GetEffect<CameraLockOnEffect>();
+            }
         }
 
         public override void Enter()
@@ -76,8 +80,7 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float characterSpeedMultiplier = parentMachine.stateManger
-                .combatEntity.properties
+            float characterSpeedMultiplier = combatEntity.properties
                 .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.SpeedMultiplier) / 100f;
 
             float finalSpeedMultiplier = characterSpeedMultiplier * lockOnMoveSpeed;

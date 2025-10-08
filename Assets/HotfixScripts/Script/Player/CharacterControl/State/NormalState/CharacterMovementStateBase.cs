@@ -1,6 +1,7 @@
 using Animancer;
 using Character.Controller.State;
 using CharacterController;
+using Fight;
 using HFSM;
 using UnityEngine;
 using static CharacterController.PlanarMovementParameters;
@@ -18,6 +19,8 @@ namespace Character.Controller.MoveState
         protected CharacterBrain characterBrain { get; private set; }
 
         public LinearMixerTransition currentAnimator;
+        protected CombatEntity combatEntity;
+
         public CharacterActions characterActions
         {
             get
@@ -56,6 +59,7 @@ namespace Character.Controller.MoveState
             database = parentMachine.database;
             Animancer = parentMachine.animancer;
             materialControl = parentMachine.materialControl;
+            combatEntity = database.GetData<CombatEntity>("combatEntity");
         }
         public virtual void UpdateIK(int layerIndex)
         {
@@ -246,8 +250,7 @@ namespace Character.Controller.MoveState
             Quaternion targetDeltaRotation = Quaternion.FromToRotation(characterActor.Forward,
                 targetLookingDirection);
 
-            var rotationMultiplier = parentMachine.stateManger
-                .combatEntity.properties
+            var rotationMultiplier = combatEntity.properties
                 .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.RotationMultiplier) / 100f;
 
             Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity,

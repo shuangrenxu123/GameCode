@@ -44,8 +44,7 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float characterSpeedMultiplier = parentMachine.stateManger
-                .combatEntity.properties
+            float characterSpeedMultiplier = combatEntity.properties
                 .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.SpeedMultiplier) / 100f;
 
             float groundSpeedMultiplier = materialControl == null ?

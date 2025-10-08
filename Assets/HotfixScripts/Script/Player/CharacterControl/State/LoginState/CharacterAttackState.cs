@@ -24,6 +24,7 @@ namespace Character.Controller.LoginState
         public override void Enter()
         {
             base.Enter();
+
             if (characterActions.attack.Started)
             {
                 if (currentActionName == string.Empty)

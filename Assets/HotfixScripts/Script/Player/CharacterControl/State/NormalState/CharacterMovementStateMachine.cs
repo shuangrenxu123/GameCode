@@ -8,7 +8,6 @@ namespace Character.Controller.State
     public class CharacterMovementStateMachine
         : StateMachine<ECharacterControllerState, ECharacterMoveState>
     {
-        public StateManger stateManger;
         public bool positionInput { get; private set; } = true;
         public bool rotationInput { get; private set; } = true;
         #region parameters

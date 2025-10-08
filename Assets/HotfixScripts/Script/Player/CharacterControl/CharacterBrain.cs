@@ -25,7 +25,9 @@ namespace CharacterController
         [ShowIf("@isAI==false")]
 
         public InputHandlerSettings CameraInputHandlerSettings = new InputHandlerSettings();
-        //CharacterAIBehaviour aiBehaviour = null;
+
+
+        // CharacterAIBehaviour aiBehaviour = null;
 
         CharacterActions characterActions = new CharacterActions();
         CharacterUIActions characterUIActions = new CharacterUIActions();

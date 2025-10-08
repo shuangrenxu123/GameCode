@@ -10,7 +10,7 @@ public class DataBase<TKey, TValue>
     {
         if (!data.ContainsKey(dataName))
         {
-            Debug.LogError("没有在黑板中找到相关数据");
+            Debug.LogError($"没有在黑板中找到相关数据 {dataName} ");
             return default;
         }
         return (T)(object)data[dataName];
