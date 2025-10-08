@@ -26,6 +26,21 @@ public struct CharacterActions
         OpenUI.Reset();
         @OpenConsoleUI.Reset();
     }
+    public void ForceReset()
+    {
+        jump.ForceReset();
+        run.ForceReset();
+        interact.ForceReset();
+        roll.ForceReset();
+        movement.ForceReset();
+        @lock.ForceReset();
+        attack.ForceReset();
+        crouch.ForceReset();
+        OpenUI.ForceReset();
+        @OpenConsoleUI.ForceReset();
+    }
+
+
     public void InitializeActions()
     {
         @jump = new BoolAction();
@@ -141,6 +156,18 @@ public struct BoolAction
     {
         Started = false;
         Canceled = false;
+    }
+    public void ForceReset()
+    {
+        Started = false;
+        value = false;
+        Canceled = false;
+        previousStarted = false;
+        previousCanceled = false;
+        previousValue = false;
+        StartedElapsedTime = 0f;
+        CanceledElapsedTime = 0f;
+        ActiveTime = 0f;
     }
     public void Update(float dt)
     {
@@ -278,5 +305,8 @@ public struct Vector2Action
             return value.y < 0;
         }
     }
-
+    public void ForceReset()
+    {
+        value = Vector2.zero;
+    }
 }

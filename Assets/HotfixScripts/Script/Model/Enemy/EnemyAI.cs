@@ -1,6 +1,7 @@
 using BT;
 using BT.Action;
 using CharacterController;
+using Fight;
 using UnityEngine;
 
 /// <summary>
@@ -75,9 +76,12 @@ public class EnemyBT : BTTree
     public override void SetNode()
     {
         var rootNode = new BTSequence();
-        var moveAction = new BTMoveAction();
+        // var moveAction = new BTMoveAction();
 
-        rootNode.AddChild(moveAction);
+        var attackAction = new BTAttackNode();
+        var timerNode = new BTTimer(5f, attackAction);
+
+        rootNode.AddChild(timerNode);
 
         root = rootNode;
     }

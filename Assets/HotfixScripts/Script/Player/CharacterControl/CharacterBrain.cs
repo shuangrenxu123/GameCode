@@ -51,9 +51,13 @@ namespace CharacterController
         {
             if (Time.timeScale == 0)
                 return;
+
             if (IsAI)
             {
+                // 对于AI而言他会清空输入，这样就不需要我们手动去处理输入值了
+                characterActions.ForceReset();
                 characterActions.SetValue(aiBehaviour.characterActions);
+                UpdateHumanBrainValues(dt);
             }
             else
             {
@@ -123,7 +127,7 @@ namespace CharacterController
             firstUpdateFlag = true;
             if (UpdateMode == UpdateModeType.FixedUpdate)
             {
-                UpdateBrainValues(0f);
+                UpdateBrainValues(Time.deltaTime);
             }
         }
         protected virtual void Update()
