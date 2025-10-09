@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public struct CharacterActions
+public class CharacterActions
 {
     public BoolAction @jump;
     public BoolAction @run;
@@ -72,7 +72,7 @@ public struct CharacterActions
 
         movement = new Vector2Action();
     }
-    public void SetValue(CharacterActions characterActions)
+    public void SetValues(CharacterActions characterActions)
     {
         @jump.value = characterActions.jump.value;
         @run.value = characterActions.run.value;
@@ -122,7 +122,18 @@ public struct CharacterActions
 [SerializeField]
 public struct BoolAction
 {
-    public bool value;
+    public bool value
+    {
+        get
+        {
+            return _v;
+        }
+        set
+        {
+            _v = value;
+        }
+    }
+    public bool _v;
     public bool Started { get; private set; }
 
     public bool Canceled { get; private set; }
@@ -159,15 +170,7 @@ public struct BoolAction
     }
     public void ForceReset()
     {
-        Started = false;
         value = false;
-        Canceled = false;
-        previousStarted = false;
-        previousCanceled = false;
-        previousValue = false;
-        StartedElapsedTime = 0f;
-        CanceledElapsedTime = 0f;
-        ActiveTime = 0f;
     }
     public void Update(float dt)
     {

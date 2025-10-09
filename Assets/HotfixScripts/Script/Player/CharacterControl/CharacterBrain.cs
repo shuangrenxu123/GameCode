@@ -52,18 +52,9 @@ namespace CharacterController
             if (Time.timeScale == 0)
                 return;
 
-            if (IsAI)
-            {
-                // 对于AI而言他会清空输入，这样就不需要我们手动去处理输入值了
-                characterActions.ForceReset();
-                characterActions.SetValue(aiBehaviour.characterActions);
-                UpdateHumanBrainValues(dt);
-            }
-            else
-            {
-                UpdateHumanBrainValues(dt);
-            }
+            UpdateHumanBrainValues(dt);
         }
+
         void UpdateHumanBrainValues(float dt)
         {
             if (IsUIInput)
@@ -73,7 +64,15 @@ namespace CharacterController
             }
             else
             {
-                characterActions.SetValues(inputHandlerSettings.InputHandler);
+                if (isAI)
+                {
+                    characterActions.SetValues(aiBehaviour.characterActions);
+                }
+                else
+                {
+                    characterActions.SetValues(inputHandlerSettings.InputHandler);
+                }
+
                 characterActions.Update(dt);
             }
 
@@ -122,12 +121,17 @@ namespace CharacterController
             characterUIActions.Reset();
         }
 
-        protected virtual void FixUpdate()
+        protected virtual void FixedUpdate()
         {
             firstUpdateFlag = true;
             if (UpdateMode == UpdateModeType.FixedUpdate)
             {
-                UpdateBrainValues(Time.deltaTime);
+                UpdateBrainValues(0f);
+            }
+            if (isAI)
+            {
+                // 对于AI而言他会清空输入，这样就不需要我们手动去处理输入值了
+                aiBehaviour.characterActions.ForceReset();
             }
         }
         protected virtual void Update()
@@ -149,6 +153,7 @@ namespace CharacterController
             }
 
             UpdateBrainValues(dt);
+
         }
         public enum UpdateModeType { FixedUpdate, Update }
     }
