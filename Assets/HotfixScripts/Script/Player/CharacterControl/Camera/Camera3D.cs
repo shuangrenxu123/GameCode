@@ -1,7 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Character.Controller.MoveState;
+using Character.Controller.State;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
+using HFSM;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -10,6 +14,9 @@ namespace CharacterController.Camera
     [DefaultExecutionOrder(110)]
     public class Camera3D : MonoBehaviour
     {
+        [SerializeField]
+        Player player;
+
         [SerializeField]
         [LabelText("角色大脑组件")]
         CharacterBrain characterBrain;
@@ -30,10 +37,6 @@ namespace CharacterController.Camera
         public CameraEffectManager effectManager;
 
         [SerializeField]
-        [LabelText("目标变换")]
-        Transform targetTransform = null;
-
-        [SerializeField]
         [LabelText("初始俯仰角度")]
         float initialPitch = 45f;
 
@@ -44,7 +47,7 @@ namespace CharacterController.Camera
 
         void Awake()
         {
-            Initialize(targetTransform);
+            Initialize();
             _camera = GetComponent<UnityEngine.Camera>();
             InitializeCameraEffectManager();
         }
@@ -82,13 +85,15 @@ namespace CharacterController.Camera
             }
         }
 
-
-        public bool Initialize(Transform targetTransform)
+        public bool Initialize()
         {
-            if (targetTransform == null)
+            if (player == null)
+            {
+                Debug.LogError("player is null");
                 return false;
+            }
 
-            characterActor = targetTransform.GetComponentInBranch<CharacterActor>();
+            characterActor = player.Actor;
 
             if (characterActor == null || !characterActor.isActiveAndEnabled)
             {
@@ -105,7 +110,12 @@ namespace CharacterController.Camera
                 return;
 
             characterActor.OnTeleport += OnTeleport;
+
+            player.StateManager.moveStateMachine.OnChangeState += OnPlayerMovementStateChange;
+
         }
+
+
 
         void OnDisable()
         {
@@ -113,11 +123,12 @@ namespace CharacterController.Camera
                 return;
 
             characterActor.OnTeleport -= OnTeleport;
+            player.StateManager.moveStateMachine.OnChangeState -= OnPlayerMovementStateChange;
         }
 
         void Update()
         {
-            if (targetTransform == null)
+            if (player == null)
             {
                 this.enabled = false;
                 return;
@@ -143,8 +154,8 @@ namespace CharacterController.Camera
             CameraEffectContext initialContext = new CameraEffectContext
             {
                 targetCamera = _camera,
-                targetTransform = targetTransform,
-                basePosition = targetTransform.position,
+                targetTransform = player.transform,
+                basePosition = player.transform.position,
                 baseRotation = transform.rotation,
                 baseFieldOfView = _camera.fieldOfView,
                 deltaTime = dt,
@@ -162,10 +173,6 @@ namespace CharacterController.Camera
             transform.rotation = finalContext.currentRotation;
         }
 
-        void OnTeleport(Vector3 position, Quaternion rotation)
-        {
-            transform.rotation = rotation;
-        }
 
         /// <summary>
         /// 更新输入值
@@ -184,5 +191,34 @@ namespace CharacterController.Camera
                 effectManager.SetZoomInput(-inputHandlerSettings.InputHandler.GetFloat(zoomAxis));
             }
         }
+
+        #region  Event
+
+        void OnTeleport(Vector3 position, Quaternion rotation)
+        {
+            transform.rotation = rotation;
+        }
+
+        private void OnPlayerMovementStateChange
+            (StateBase<ECharacterMoveState> lastState, StateBase<ECharacterMoveState> currentState)
+        {
+            if (currentState.currentType == ECharacterMoveState.LockOnMove)
+            {
+                var lockEffect = effectManager.GetEffect<CameraLockOnEffect>();
+                lockEffect.Activate();
+                var lockState = currentState as CharacterLockOnMovementState;
+
+                lockEffect.SetLockTarget(lockState.lockTarget);
+
+            }
+            if (lastState.currentType == ECharacterMoveState.LockOnMove)
+            {
+                var lockEffect = effectManager.GetEffect<CameraLockOnEffect>();
+                lockEffect.Deactivate();
+            }
+        }
+
+        #endregion
+
     }
 }

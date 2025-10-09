@@ -10,9 +10,7 @@ namespace Character.Controller.MoveState
         public const string targetKey = "LockOnTarget";
         public override ECharacterMoveState currentType => ECharacterMoveState.LockOnMove;
         public MixerTransition2D movementAnimation;
-        private Transform lockTarget;
-        private CameraLockOnEffect lockOnEffect;
-        private Camera3D camera3D;
+        public Transform lockTarget { get; private set; }
 
         [SerializeField] private float lockOnMoveSpeed = 0.8f;
         [SerializeField] private float maxLockDistance = 30f;
@@ -20,22 +18,11 @@ namespace Character.Controller.MoveState
         public override void Init()
         {
             base.Init();
-            camera3D = database.GetData<Camera3D>("Camera3D");
-
-            if (camera3D)
-            {
-                lockOnEffect = camera3D.effectManager.GetEffect<CameraLockOnEffect>();
-            }
         }
 
         public override void Enter()
         {
             Animancer.Play(movementAnimation);
-
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.Activate();
-            }
 
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
 
@@ -50,11 +37,6 @@ namespace Character.Controller.MoveState
         public override void Exit()
         {
             base.Exit();
-
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.Deactivate();
-            }
 
             ClearLockTarget();
 
@@ -113,19 +95,11 @@ namespace Character.Controller.MoveState
         void SetLockTarget(Transform target)
         {
             lockTarget = target;
-            if (lockOnEffect != null && target != null)
-            {
-                lockOnEffect.SetLockTarget(target);
-            }
         }
 
         void ClearLockTarget()
         {
             lockTarget = null;
-            if (lockOnEffect != null)
-            {
-                lockOnEffect.ClearLockTarget();
-            }
         }
 
         private bool ShouldExitLockOnDueToDistance()
@@ -135,10 +109,13 @@ namespace Character.Controller.MoveState
             float distance = Vector3.Distance(characterActor.Position, lockTarget.position);
             return distance > maxLockDistance;
         }
+
         public override void PostCharacterSimulation()
         {
-            movementAnimation.State.Parameter = new Vector2(characterActor.LocalVelocity.x, characterActor.LocalVelocity.z);
+            movementAnimation.State.Parameter = new Vector2
+                (characterActor.LocalVelocity.x, characterActor.LocalVelocity.z);
         }
+
         public override void RefreshAnimator()
         {
             Animancer.Play(movementAnimation);

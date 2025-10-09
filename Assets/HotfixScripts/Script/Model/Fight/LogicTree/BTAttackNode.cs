@@ -16,9 +16,7 @@ namespace BT.Action
         }
         protected override BTResult Execute()
         {
-            var action = entityBrain.characterActions;
-            action.attack.value = true;
-            entityBrain.characterActions = action;
+            entityBrain.characterActions.attack.value = true;
 
             return BTResult.Success;
         }

@@ -10,11 +10,16 @@ namespace BT.Action
         private Transform targetTransform;
         private IEnemyBrain entityBrain;
 
+        public string entityBrainKey = "entityBrain";
+        public string targetTransformKey = "targetTransform";
+        public float minCheckDistance = 1f;
+
         public override void Activate(DataBase<string, object> database)
         {
             base.Activate(database);
 
-            entityBrain = database.GetData<IEnemyBrain>("entityBrain");
+            entityBrain = database.GetData<IEnemyBrain>(entityBrainKey);
+            targetTransform = database.GetData<Transform>(targetTransformKey);
         }
         protected override void Enter()
         {
@@ -23,17 +28,20 @@ namespace BT.Action
 
         protected override BTResult Execute()
         {
-            var direction = Vector2.one;
+            var direction = targetTransform.position -
+                 entityBrain.characterBrain.transform.position;
 
-            Vector3 inputXZ = Vector3.ProjectOnPlane(direction, Vector3.up);
-            inputXZ.Normalize();
-            inputXZ.y = inputXZ.z;
-            inputXZ.z = 0f;
-            var actions = entityBrain.characterActions;
+            Vector3 inputXZ = Vector3.zero;
+            if (direction.sqrMagnitude > minCheckDistance * minCheckDistance)
+            {
+                inputXZ = Vector3.ProjectOnPlane(direction, Vector3.up);
 
-            actions.movement.value = inputXZ;
+                inputXZ.Normalize();
+                inputXZ.y = inputXZ.z;
+                inputXZ.z = 0f;
+            }
 
-            entityBrain.characterActions = actions;
+            entityBrain.characterActions.movement.value = inputXZ;
 
             return BTResult.Running;
         }

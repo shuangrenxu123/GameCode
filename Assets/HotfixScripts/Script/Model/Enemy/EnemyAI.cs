@@ -76,12 +76,13 @@ public class EnemyBT : BTTree
     public override void SetNode()
     {
         var rootNode = new BTSequence();
-        // var moveAction = new BTMoveAction();
 
-        var attackAction = new BTAttackNode();
-        var timerNode = new BTTimer(5f, attackAction);
+        var moveAction = new BTMoveAction();
 
-        rootNode.AddChild(timerNode);
+        // var attackAction = new BTAttackNode();
+        // var timerNode = new BTTimer(5f, attackAction);
+
+        rootNode.AddChild(moveAction);
 
         root = rootNode;
     }

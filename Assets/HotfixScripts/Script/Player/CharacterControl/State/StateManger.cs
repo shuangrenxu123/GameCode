@@ -47,14 +47,13 @@ namespace CharacterControllerStateMachine
         {
             AnimancerHelper = new AnimatorHelper(Animancer);
             dataBase = new DataBase<string, object>();
-        }
-        private void Start()
-        {
+
             SetStateMachineData("combatEntity", combatEntity);
-            SetStateMachineData("Camera3D", camera);
-
             InitState();
+        }
 
+        void Start()
+        {
             moveStateMachine.Start();
             loginMachine.Start();
         }

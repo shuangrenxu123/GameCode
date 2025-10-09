@@ -51,6 +51,9 @@ namespace HFSM
 
         private bool isRunning = false;
 
+        public event Action<StateBase<C>, StateBase<C>> OnChangeState;
+        public event Action OnMachineStart;
+
         /// <summary>
         /// 运行有限状态机，不然不会调用Init与Enter函数
         /// </summary>
@@ -63,6 +66,9 @@ namespace HFSM
 
             Init();
             isRunning = true;
+
+            OnMachineStart?.Invoke();
+
             Enter();
         }
 
@@ -120,6 +126,7 @@ namespace HFSM
         {
             currentState?.Exit();
 
+            var lastType = lastStateType;
             lastStateType = CurrentStateType;
 
             currentState = FindState(stateName);
@@ -127,6 +134,8 @@ namespace HFSM
             activeTransitions = currentState.transitions ?? noTransitions;
             CurrentStateType = stateName;
             currentState.Enter();
+
+            OnChangeState?.Invoke(FindState(lastType), currentState);
         }
         /// <summary>
         /// 修改当前状态机的默认状态

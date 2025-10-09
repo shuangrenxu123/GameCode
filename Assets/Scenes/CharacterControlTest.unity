@@ -4521,6 +4521,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: NPC
       objectReference: {fileID: 0}
+    - target: {fileID: 577690182922541599, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2433429549978861517, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: bodySize.x
@@ -4591,6 +4596,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 9128932037985792782, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1669859749}
     - target: {fileID: 9128932037985792782, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: _characterBrain
@@ -5247,9 +5257,9 @@ Light:
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
-    m_Bias: 0.05
-    m_NormalBias: 0.4
-    m_NearPlane: 0.2
+    m_Bias: 0
+    m_NormalBias: 0
+    m_NearPlane: 0.1
     m_CullingMatrixOverride:
       e00: 1
       e01: 0
@@ -5323,7 +5333,7 @@ MonoBehaviour:
   m_CustomShadowLayers: 0
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
-  m_SoftShadowQuality: 0
+  m_SoftShadowQuality: 3
   m_RenderingLayersMask:
     serializedVersion: 0
     m_Bits: 1
@@ -6315,6 +6325,18 @@ MonoBehaviour:
   fixPosition: {fileID: 66785260}
   isSmooth: 1
   smoothTime: 0.5
+--- !u!114 &1669859749 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6232021738972680007, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6812912623971925480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 80ecc506c14b60043a2171c78a6c4750, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1708196336
 GameObject:
   m_ObjectHideFlags: 0
@@ -8155,6 +8177,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
+        type: 3}
+      propertyPath: player
+      value: 
+      objectReference: {fileID: 1669859749}
     - target: {fileID: 7407746385137681769, guid: b1adfd9082fc7ff46a30e50f4fac305e,
         type: 3}
       propertyPath: stateManager

@@ -9,6 +9,9 @@ namespace Enemy.AI
         private Enemy body;
         private EnemyBT behaviorTree;
         [SerializeField]
+        Player player;
+
+        [SerializeField]
         CharacterBrain _characterBrain;
         public CharacterBrain characterBrain => _characterBrain;
 
@@ -29,7 +32,9 @@ namespace Enemy.AI
             database.SetData(EnemyAIDatabaseKey.CombatEntity.ToString(), body.combatEntity);
             database.SetData(EnemyAIDatabaseKey.Transform.ToString(), body.transform);
             database.SetData(EnemyAIDatabaseKey.EnemyBody.ToString(), body);
+
             database.SetData("entityBrain", this);
+            database.SetData("targetTransform", player.transform);
 
             // 创建行为树大脑
             behaviorTree = new EnemyBT();
