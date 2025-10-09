@@ -30,7 +30,7 @@ namespace HFSM
         /// <summary>
         /// 上一个状态
         /// </summary>
-        public C lastStateType { get; set; } =
+        public C lastStateType { get; set; }
 
         /// <summary>
         /// 默认状态（即进入该状态机以后进入的子状态，默认为第一个添加的状态）

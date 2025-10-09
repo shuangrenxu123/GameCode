@@ -10,12 +10,12 @@ namespace Character.Controller.State
     }
     public enum ECharacterMoveState
     {
-        NormalMove = 1,
-        CrouchMove = 2,
-        Jump = 3,
-        Climb = 4,
-        LockOnMove = 5,
-        CrouchLockOnMove = 6
+        NormalMove = 0,
+        CrouchMove = 1,
+        Jump = 2,
+        Climb = 3,
+        LockOnMove = 4,
+        CrouchLockOnMove = 5
     }
     public enum ECharacterLoginState
     {
