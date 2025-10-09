@@ -55,13 +55,22 @@ namespace Character.Controller.MoveState
             {
                 isEnd = true;
                 characterActor.PlanarVelocity = Vector3.zero;
-                Animancer.Play(jumpEndAnim).Events.OnEnd = () =>
-                {
-                    parentMachine.ChangeState(ECharacterMoveState.NormalMove);
-                    characterActor.ForceGrounded();
-                    UseGravity = true;
-                };
+                Animancer.Play(jumpEndAnim).Events.OnEnd = EnterNextState;
             }
+        }
+
+        void EnterNextState()
+        {
+            if (parentMachine.lastStateType == ECharacterMoveState.LockOnMove)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.LockOnMove);
+            }
+            else
+            {
+                parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+            }
+            characterActor.ForceGrounded();
+            UseGravity = true;
         }
 
         public override void PostCharacterSimulation()

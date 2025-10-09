@@ -58,6 +58,12 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 return;
             }
+
+            else if (characterActions.jump.Started ||
+                (!characterActor.IsGrounded && characterActor.IsFalling))
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+            }
         }
 
         protected override Vector3 ProcessPlanarMovement(float dt)

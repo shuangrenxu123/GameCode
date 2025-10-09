@@ -12,7 +12,7 @@ namespace BT.Action
 
         public string entityBrainKey = "entityBrain";
         public string targetTransformKey = "targetTransform";
-        public float minCheckDistance = 1f;
+        public float minCheckDistance = 5f;
 
         public override void Activate(DataBase<string, object> database)
         {

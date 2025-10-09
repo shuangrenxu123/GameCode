@@ -115,8 +115,6 @@ namespace CharacterController.Camera
 
         }
 
-
-
         void OnDisable()
         {
             if (characterActor == null)
@@ -211,7 +209,9 @@ namespace CharacterController.Camera
                 lockEffect.SetLockTarget(lockState.lockTarget);
 
             }
-            if (lastState.currentType == ECharacterMoveState.LockOnMove)
+
+            if (lastState.currentType == ECharacterMoveState.LockOnMove
+                && currentState.currentType != ECharacterMoveState.Jump)
             {
                 var lockEffect = effectManager.GetEffect<CameraLockOnEffect>();
                 lockEffect.Deactivate();
