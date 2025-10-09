@@ -22,7 +22,7 @@ public class RegenerationAction : CombatAction
     {
         foreach (var target in Target)
         {
-            target.ActionPointManager.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
+            target.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
         }
     }
 
@@ -30,7 +30,7 @@ public class RegenerationAction : CombatAction
     {
         foreach (var target in Target)
         {
-            target.ActionPointManager.TriggerActionPoint(ActionPointType.PreRestoreHP, this);
+            target.TriggerActionPoint(ActionPointType.PreRestoreHP, this);
         }
     }
 }

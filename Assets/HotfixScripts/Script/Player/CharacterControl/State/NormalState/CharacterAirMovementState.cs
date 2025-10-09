@@ -1,5 +1,6 @@
 using Animancer;
 using Character.Controller.State;
+using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
 {
@@ -21,7 +22,7 @@ namespace Character.Controller.MoveState
         {
             return characterActor.PlanarVelocity;
         }
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             // characterActor.alwaysNotGrounded = true;
             characterActor.ForceNotGrounded(10);

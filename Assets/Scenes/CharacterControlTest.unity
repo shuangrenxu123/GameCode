@@ -822,6 +822,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.42, y: 1.42, z: 1.42}
   m_Center: {x: 0.00999999, y: 0, z: 0}
+--- !u!114 &166683917 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2834879295633570910, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6812912623971925480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb172259653d7a24abe96554c03c2d24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &181896997
 GameObject:
   m_ObjectHideFlags: 0
@@ -2165,7 +2177,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 520081915}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0d8c8802012990c488508c200e9f8041, type: 3}
   m_Name: 
@@ -3466,6 +3478,18 @@ MonoBehaviour:
   topReference: {fileID: 1407172580}
   bottomReference: {fileID: 812890949}
   climbCount: 9
+--- !u!114 &953991834 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7706913243582513698, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+    type: 3}
+  m_PrefabInstance: {fileID: 6812912623971925480}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb172259653d7a24abe96554c03c2d24, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &965195934
 GameObject:
   m_ObjectHideFlags: 0
@@ -4326,7 +4350,7 @@ PrefabInstance:
     - target: {fileID: 2433429549978861517, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: bodySize.x
-      value: 0.43
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 2433429549978861517, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4398,6 +4422,11 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1669859749}
+    - target: {fileID: 9128932037985792782, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 9128932037985792782, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: _characterBrain
@@ -4801,7 +4830,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageColliders:
-    _serializedList: []
+    keyData:
+    - Hand_L
+    - Hand_R
+    valueData:
+    - {fileID: 166683917}
+    - {fileID: 953991834}
   actor: {fileID: 311498924}
   anim: {fileID: 1942769772}
   animatorConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
@@ -7098,7 +7132,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   damageColliders:
-    _serializedList: []
+    keyData: []
+    valueData: []
   actor: {fileID: 2051783274}
   anim: {fileID: 335861205}
   animatorConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
@@ -7820,6 +7855,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1291577414195322409, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: bodySize.x
+      value: 0.76
+      objectReference: {fileID: 0}
+    - target: {fileID: 1428581074421031295, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3721988805285894471, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
       propertyPath: m_Enabled
@@ -7829,6 +7874,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: ModularCharacters1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4508008179082352353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6062702125372506353, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
         type: 3}
@@ -7920,8 +7970,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
+    - target: {fileID: 8436115739910628257, guid: 8f20aaf7766e5b946b15aa68a0f975e8,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4912857725051053528, guid: 8f20aaf7766e5b946b15aa68a0f975e8, type: 3}
+    - {fileID: 1428581074421031295, guid: 8f20aaf7766e5b946b15aa68a0f975e8, type: 3}
+    - {fileID: 2620529324467322031, guid: 8f20aaf7766e5b946b15aa68a0f975e8, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

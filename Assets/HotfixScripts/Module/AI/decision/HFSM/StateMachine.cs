@@ -30,7 +30,7 @@ namespace HFSM
         /// <summary>
         /// 上一个状态
         /// </summary>
-        public C lastStateType { get; set; }
+        public C lastStateType { get; set; } =
 
         /// <summary>
         /// 默认状态（即进入该状态机以后进入的子状态，默认为第一个添加的状态）
@@ -122,7 +122,7 @@ namespace HFSM
         /// 切换状态
         /// </summary>
         /// <param name="StateName"></param>
-        public void ChangeState(C stateName)
+        public void ChangeState(C stateName, StateBaseInput input = null)
         {
             currentState?.Exit();
 
@@ -133,7 +133,7 @@ namespace HFSM
 
             activeTransitions = currentState.transitions ?? noTransitions;
             CurrentStateType = stateName;
-            currentState.Enter();
+            currentState.Enter(input);
 
             OnChangeState?.Invoke(FindState(lastType), currentState);
         }
@@ -173,7 +173,7 @@ namespace HFSM
 
 
         }
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
 
@@ -182,7 +182,7 @@ namespace HFSM
                 return;
             }
 
-            ChangeState(defaultState);
+            ChangeState(defaultState, input);
         }
         public override void Exit()
         {

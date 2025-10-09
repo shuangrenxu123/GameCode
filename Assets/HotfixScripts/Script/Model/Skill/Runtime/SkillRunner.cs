@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Animancer;
 using AYellowpaper.SerializedCollections;
@@ -7,12 +8,17 @@ using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Timeline;
+using Utilities;
 namespace Fight
 {
+    [Serializable]
+    public class KeyCodeGameObjectListDictionary : UnitySerializedDictionary<string, DamageCollider> { }
+
     public class SkillRunner : MonoBehaviour
     {
         [SerializeField]
-        SerializedDictionary<string, DamageCollider> damageColliders;
+        KeyCodeGameObjectListDictionary damageColliders = new();
+        // public Dictionary<string, DamageCollider> damageColliders = new();
         [SerializeField]
         public CharacterActor actor;
         public bool isFinish { get; private set; } = false;
@@ -93,7 +99,7 @@ namespace Fight
                     }
                     else if (track is ColliderTrack)
                     {
-                        //clip = new ColliderEventClip(OnClipUpdate, damageColliders[e.displayName]);
+                        clip = new ColliderEventClip(this, damageColliders[e.displayName]);
                     }
                     else if (track is RootMotionTrack)
                     {

@@ -1,5 +1,6 @@
 using Character.Controller.State;
 using GameLogin.Interact;
+using HFSM;
 using UnityEngine;
 namespace Character.Controller.LoginState
 {
@@ -7,7 +8,7 @@ namespace Character.Controller.LoginState
     {
         public override ECharacterLoginState currentType => ECharacterLoginState.Empty;
 
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
         }

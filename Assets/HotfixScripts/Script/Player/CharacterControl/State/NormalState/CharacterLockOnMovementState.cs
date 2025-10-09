@@ -2,6 +2,7 @@ using Animancer;
 using Character.Controller.State;
 using CharacterController;
 using CharacterController.Camera;
+using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
 {
@@ -20,7 +21,7 @@ namespace Character.Controller.MoveState
             base.Init();
         }
 
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             Animancer.Play(movementAnimation);
 

@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d8c8802012990c488508c200e9f8041, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  brainType: 0
   UpdateMode: 1
   inputHandlerSettings:
     humanInputType: 0
@@ -57,6 +58,7 @@ MonoBehaviour:
   CameraInputHandlerSettings:
     humanInputType: 0
     inputhandler: {fileID: 4230061150790931083}
+  entityBraidGo: {fileID: 0}
 --- !u!114 &5186590039231488761
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,6 +125,7 @@ GameObject:
   - component: {fileID: 8704870520539165556}
   - component: {fileID: 5197409468269940466}
   - component: {fileID: 2777567574195831973}
+  - component: {fileID: 6197629275581993294}
   m_Layer: 0
   m_Name: Other
   m_TagString: Untagged
@@ -188,6 +191,31 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ce27586e53bbebe48b62d4802bbbe643, type: 2}
   looping: 1
   layer: 3
+--- !u!114 &6197629275581993294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5807485127056915131}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ed44a2a50e8497449aedfd9d13ba7c89, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  damageColliders:
+    keyData:
+    - Hand_L
+    - Hand_R
+    valueData:
+    - {fileID: 2834879295633570910}
+    - {fileID: 7706913243582513698}
+  actor: {fileID: 6062702125372506353}
+  anim: {fileID: 6281213226642218611}
+  animatorConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
+  onFinish:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1 &5877329984462569581
 GameObject:
   m_ObjectHideFlags: 0
@@ -198,7 +226,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1651558250834043602}
   - component: {fileID: 7132416175786917889}
-  - component: {fileID: 4912857725051053528}
   m_Layer: 0
   m_Name: State
   m_TagString: Untagged
@@ -234,36 +261,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   loginState: 0
-  player: {fileID: 6232021738972680007}
+  moveState: 0
+  combatEntity: {fileID: 4649194192067659648}
   camera: {fileID: 0}
   characterBrain: {fileID: 3721988805285894471}
   Animancer: {fileID: 6281213226642218611}
   materialControl: {fileID: 8704870520539165556}
-  moveData: {fileID: 2777567574195831973}
+  CharacterActor: {fileID: 6062702125372506353}
   animatorConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
   attackAnimator: {fileID: 11400000, guid: 327297952d82c5a4dbfd089b1e926ea1, type: 2}
   actionChangeGraph: {fileID: 11400000, guid: 657373dafb147274796a08ad1865948c, type: 2}
-  skillRunner: {fileID: 4912857725051053528}
---- !u!114 &4912857725051053528
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5877329984462569581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed44a2a50e8497449aedfd9d13ba7c89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageColliders:
-    _serializedList: []
-  actor: {fileID: 6062702125372506353}
-  anim: {fileID: 6281213226642218611}
-  animatorConfig: {fileID: 11400000, guid: 34afafe943fa1ae48ba677f2b191b0f7, type: 2}
-  onFinish:
-    m_PersistentCalls:
-      m_Calls: []
+  skillRunner: {fileID: 6197629275581993294}
 --- !u!1 &6096365373123038829
 GameObject:
   m_ObjectHideFlags: 0
@@ -347,7 +355,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa9481656a0ed6148b3524ea3e076ec6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bodySize: {x: 0.43, y: 1.9}
+  bodySize: {x: 0.76, y: 1.9}
   mass: 50
 --- !u!114 &6062702125372506353
 MonoBehaviour:
@@ -405,10 +413,10 @@ MonoBehaviour:
   upDirectionReference: {fileID: 0}
   constraintUpDirection: {x: 0, y: 1, z: 0}
   upDirectionReferenceMode: 1
-  CanPushDynamicRigidbodies: 0
+  canPushDynamicRigidbodies: 1
   pushableRigidbodyLayerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 0
   applyWeightToGround: 1
   applyWeightLayerMask:
     serializedVersion: 2
@@ -426,6 +434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80ecc506c14b60043a2171c78a6c4750, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camera3D: {fileID: 0}
   id: qwe
 --- !u!114 &4649194192067659648
 MonoBehaviour:
@@ -594,7 +603,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 101634, guid: 98a56ff2c8ee98645a4d3f79fa1506c5, type: 3}
       propertyPath: m_Name
-      value: ModularCharacters
+      value: ModularCharacters1
       objectReference: {fileID: 0}
     - target: {fileID: 101644, guid: 98a56ff2c8ee98645a4d3f79fa1506c5, type: 3}
       propertyPath: m_Layer
@@ -1075,10 +1084,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 101556, guid: 98a56ff2c8ee98645a4d3f79fa1506c5,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2620529324467322031}
-    - targetCorrespondingSourceObject: {fileID: 101556, guid: 98a56ff2c8ee98645a4d3f79fa1506c5,
-        type: 3}
-      insertIndex: -1
       addedObject: {fileID: 5123200564122243076}
     - targetCorrespondingSourceObject: {fileID: 101556, guid: 98a56ff2c8ee98645a4d3f79fa1506c5,
         type: 3}
@@ -1096,10 +1101,6 @@ PrefabInstance:
         type: 3}
       insertIndex: -1
       addedObject: {fileID: 610949018963927454}
-    - targetCorrespondingSourceObject: {fileID: 101558, guid: 98a56ff2c8ee98645a4d3f79fa1506c5,
-        type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1428581074421031295}
     - targetCorrespondingSourceObject: {fileID: 101558, guid: 98a56ff2c8ee98645a4d3f79fa1506c5,
         type: 3}
       insertIndex: -1
@@ -1463,29 +1464,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4504293607105112843}
   m_PrefabAsset: {fileID: 0}
---- !u!136 &1428581074421031295
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4504293607105210301}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.08
-  m_Height: 0.2
-  m_Direction: 0
-  m_Center: {x: 0.06, y: 0, z: 0}
 --- !u!114 &5559623380404073257
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1520,7 +1498,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.2
   m_Center: {x: 0.1, y: 0, z: 0}
@@ -1545,29 +1523,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 4504293607105112843}
   m_PrefabAsset: {fileID: 0}
---- !u!136 &2620529324467322031
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4504293607105210303}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.08
-  m_Height: 0.22
-  m_Direction: 0
-  m_Center: {x: -0.06, y: 0, z: 0}
 --- !u!114 &5123200564122243076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1617,7 +1572,7 @@ SphereCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 1
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_Radius: 0.2
   m_Center: {x: -0.1, y: 0, z: 0}

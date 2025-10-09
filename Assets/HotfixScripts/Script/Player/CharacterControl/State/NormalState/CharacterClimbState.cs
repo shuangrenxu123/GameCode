@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Animancer;
 using Character.Controller.State;
+using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
 {
@@ -19,7 +20,7 @@ namespace Character.Controller.MoveState
         bool isLiftFoot;
         int currentStep = 1;
         int targetStep = 10;
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             UseGravity = false;
             characterActor.alwaysNotGrounded = true;
@@ -57,7 +58,7 @@ namespace Character.Controller.MoveState
         public override void FixUpdate()
         {
             base.FixUpdate();
-  
+
             YSpeed = characterBrain.CharacterActions.movement.value.y;
             if (YSpeed != 0 && !inMove)
             {

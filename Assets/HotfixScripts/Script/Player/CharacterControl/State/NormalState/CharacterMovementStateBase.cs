@@ -38,7 +38,7 @@ namespace Character.Controller.MoveState
         /// </summary>
         public MaterialControl materialControl;
 
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
             Animancer.Play(currentAnimator);

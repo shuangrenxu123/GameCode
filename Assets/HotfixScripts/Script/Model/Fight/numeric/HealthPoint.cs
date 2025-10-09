@@ -6,6 +6,8 @@ using UnityEngine;
 public class HealthPoint
 {
     public event Action<int, int> OnHPChange;
+    public event Action OnHit;
+
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
 
@@ -18,6 +20,7 @@ public class HealthPoint
         MaxValue = value;
         Reset();
     }
+
     /// <summary>
     /// 扣血
     /// </summary>
@@ -27,6 +30,7 @@ public class HealthPoint
         Value = Mathf.Max(0, Value - value);
         OnHPChange?.Invoke(Value, MaxValue);
     }
+
     /// <summary>
     /// 加血
     /// </summary>

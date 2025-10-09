@@ -1,32 +1,31 @@
 using System.Collections.Generic;
 using Fight;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 public class DamageCollider : MonoBehaviour
 {
     [SerializeField]
     Collider damageCollider;
-    [SerializeField]
+    [SerializeField, ReadOnly]
     CombatEntity entity;
-    WeaponItemData weaponItem;
     List<Enemy.Enemy> characterDamagedDuringThisCalculation;
-    private string currentDamageAnimation;
-    LayerMask Enemylayer;
+    LayerMask enemyLayer;
     public string EnemyTag;
     private void Awake()
     {
         entity = GetComponentInParent<CombatEntity>();
-        //damageCollider = GetComponent<Collider>();
+
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
         characterDamagedDuringThisCalculation = new List<Enemy.Enemy>();
-        //todo ����ȡ��Ӳ�����д�������������������ж�
-        Enemylayer = LayerMask.NameToLayer("Damageable Character");
+
+        enemyLayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
     }
     public void EnableDamageCollider()
     {
-        //entity = GetComponentInParent<CombatEntity>();
+        entity = GetComponentInParent<CombatEntity>();
         damageCollider.enabled = true;
 
     }
@@ -37,7 +36,7 @@ public class DamageCollider : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.layer == Enemylayer)
+        if (other.gameObject.layer == enemyLayer)
         {
             var enemy = other.gameObject.GetComponentInParent<Enemy.Enemy>();
             if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 namespace HFSM
 {
+
+
     public abstract class StateBase<T> : IState where T : Enum
     {
         public abstract T currentType { get; }
@@ -18,7 +20,7 @@ namespace HFSM
         /// <summary>
         /// 进入状态时调用
         /// </summary>
-        public virtual void Enter()
+        public virtual void Enter(StateBaseInput input = null)
         {
 
         }

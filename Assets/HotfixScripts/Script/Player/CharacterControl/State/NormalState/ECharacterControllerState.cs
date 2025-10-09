@@ -10,18 +10,20 @@ namespace Character.Controller.State
     }
     public enum ECharacterMoveState
     {
-
-        NormalMove,
-        CrouchMove,
-        Jump,
-        Climb,
-        LockOnMove
+        NormalMove = 1,
+        CrouchMove = 2,
+        Jump = 3,
+        Climb = 4,
+        LockOnMove = 5,
+        CrouchLockOnMove = 6
     }
     public enum ECharacterLoginState
     {
-        Empty,
-        Interaction,
-        Attack,
+        Empty = 0,
+        Interaction = 1,
+        Attack = 2,
+        UseProp = 3,
+        InjIry = 4,
 
     }
 }

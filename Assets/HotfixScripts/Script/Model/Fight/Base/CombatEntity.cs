@@ -16,9 +16,11 @@ namespace Fight
         [SerializeField]
         CombatEntityType entityType;
         public HealthPoint hp;
-        public ActionPointManager ActionPointManager;
         public CombatNumberBox properties;
-        public BuffManager buffManager;
+
+        ActionPointManager ActionPointManager;
+        BuffManager buffManager;
+
         public void Awake()
         {
             hp = new HealthPoint();

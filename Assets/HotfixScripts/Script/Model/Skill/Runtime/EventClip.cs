@@ -13,7 +13,6 @@ namespace SkillRuntimeClip
         public float StartTime;
         public float EndTime;
         protected SkillRunner runner;
-        protected Action<EventClipType, object> onUpdateAction;
         protected abstract EventClipType clipType { get; }
         public EventClip(SkillRunner skillRunner)
         {
@@ -184,11 +183,11 @@ namespace SkillRuntimeClip
     }
     class ColliderEventClip : EventClip
     {
-        private RayCastDamageCollider collider;
+        private DamageCollider collider;
 
         protected override EventClipType clipType => EventClipType.Collider;
 
-        public ColliderEventClip(SkillRunner skillRunner, RayCastDamageCollider collider)
+        public ColliderEventClip(SkillRunner skillRunner, DamageCollider collider)
             : base(skillRunner)
         {
             this.collider = collider;
@@ -205,7 +204,6 @@ namespace SkillRuntimeClip
 
         public override void OnUpdate()
         {
-            onUpdateAction(clipType, null);
         }
     }
 

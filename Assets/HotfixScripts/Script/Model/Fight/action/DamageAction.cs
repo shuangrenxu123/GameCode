@@ -33,7 +33,7 @@ namespace Fight
         protected override void PostProcess(CombatEntity c, CombatEntity t)
         {
             Debug.Log("-------------触发了后置行为(如吸血等)-----------");
-            Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
+            Creator.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
             PostCreatorAction?.Invoke(this);
 
             foreach (var action in PostTargetActions)
@@ -43,7 +43,7 @@ namespace Fight
 
             foreach (var target in Target)
             {
-                target.ActionPointManager.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
+                target.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
             }
         }
         /// <summary>
@@ -51,7 +51,7 @@ namespace Fight
         /// </summary>
         protected override void PreProcess(CombatEntity c, CombatEntity t)
         {
-            Creator.ActionPointManager.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
+            Creator.TriggerActionPoint(ActionPointType.PreCauseDamage, this);
             PreCreatorAction?.Invoke(this);
             foreach (var action in PreTargetActions)
             {
@@ -60,7 +60,7 @@ namespace Fight
 
             foreach (var target in Target)
             {
-                target.ActionPointManager.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
+                target.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
             }
             Debug.Log("------------触发了前置行为(如计算免伤等等)---------");
         }

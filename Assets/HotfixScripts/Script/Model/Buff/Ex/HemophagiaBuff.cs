@@ -10,7 +10,7 @@ public class HemophagiaBuff : BuffBase
     }
     public override void OnAdd()
     {
-        BuffManager.entity.ActionPointManager.AddListener(ActionPointType.PostCauseDamage, blood);
+        BuffManager.entity.AddListener(ActionPointType.PostCauseDamage, blood);
         Debug.Log("获得了吸血buff");
     }
 
@@ -25,6 +25,6 @@ public class HemophagiaBuff : BuffBase
     }
     public override void OnDestroy()
     {
-        BuffManager.entity.ActionPointManager.RemoveListener(ActionPointType.PostCauseDamage, blood);
+        BuffManager.entity.RemoveListener(ActionPointType.PostCauseDamage, blood);
     }
 }

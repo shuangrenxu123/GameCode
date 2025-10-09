@@ -1,6 +1,7 @@
 using System;
 using Character.Controller.State;
 using Fight;
+using HFSM;
 using UnityEngine;
 
 namespace Character.Controller.LoginState
@@ -21,7 +22,7 @@ namespace Character.Controller.LoginState
 
         float timer = 0;
         float nextActionInputTime = 0;
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
 

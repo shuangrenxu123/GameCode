@@ -1,5 +1,6 @@
 using Character.Controller.State;
 using CharacterController;
+using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
 {
@@ -8,7 +9,7 @@ namespace Character.Controller.MoveState
         public CrouchParameters crouchParameters = new CrouchParameters();
         public override ECharacterMoveState currentType
             => ECharacterMoveState.CrouchMove;
-        public override void Enter()
+        public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
             Crouch();
