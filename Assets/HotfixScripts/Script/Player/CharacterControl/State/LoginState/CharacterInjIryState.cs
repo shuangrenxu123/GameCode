@@ -22,6 +22,7 @@ namespace Character.Controller.LoginState
             characterActor.Velocity = Vector3.zero;
             var injIryInput = input as CharacterInjIryStateInput;
 
+            combatEntity.hp.OnHit += OnHit;
 
             //Test
             var state = Animancer.Play(injIryAnimations["0"]);
@@ -32,6 +33,11 @@ namespace Character.Controller.LoginState
                 state.Events.OnEnd = null;
             };
             parentMachine.movementStateMachine.EnableMachine(false, false);
+        }
+
+        void OnHit()
+        {
+
         }
 
         void ChangeNextState()
@@ -50,6 +56,9 @@ namespace Character.Controller.LoginState
             base.Exit();
             parentMachine.movementStateMachine.EnableMachine(true, true);
             parentMachine.movementStateMachine.RefreshAnimator();
+
+            combatEntity.hp.OnHit -= OnHit;
+
         }
     }
 }
