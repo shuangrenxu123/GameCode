@@ -100,7 +100,6 @@ namespace CharacterControllerStateMachine
 
             var climbMovementState = new CharacterClimbState
             {
-                database = dataBase,
                 Animancer = AnimancerHelper,
                 climbAnimations = animatorConfig.climbAnimators
             };
@@ -117,6 +116,7 @@ namespace CharacterControllerStateMachine
             loginMachine = new(CharacterActor, characterBrain);
             loginMachine.movementStateMachine = moveStateMachine;
             loginMachine.animancer = AnimancerHelper;
+            loginMachine.database = dataBase;
             var emptyState = new CharacterEmptyLoginState();
             var interactState = new CharacterInteractionState()
             {

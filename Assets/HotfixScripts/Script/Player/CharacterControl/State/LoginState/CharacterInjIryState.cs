@@ -11,7 +11,7 @@ namespace Character.Controller.LoginState
     {
         public override ECharacterLoginState currentType => ECharacterLoginState.InjIry;
 
-        public Dictionary<int, ClipTransition> injIryClip;
+        public Dictionary<string, ClipTransition> injIryAnimations;
 
         public override void Enter(StateBaseInput input)
         {
@@ -20,14 +20,20 @@ namespace Character.Controller.LoginState
             characterActor.Velocity = Vector3.zero;
             var injIryInput = input as CharacterInjIryStateInput;
 
-            var state = Animancer.Play(injIryClip[0]);
+            //Test
+            var state = Animancer.Play(injIryAnimations["0"]);
 
             state.Events.OnEnd = () =>
             {
                 parentMachine.ChangeState(ECharacterLoginState.Empty);
                 state.Events.OnEnd = null;
             };
-            
+
+        }
+        public override void Exit()
+        {
+            base.Exit();
+            parentMachine.movementStateMachine.RefreshAnimator();
         }
     }
 }

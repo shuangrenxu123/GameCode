@@ -1,5 +1,6 @@
 using Character.Controller.State;
 using CharacterController;
+using Fight;
 using GameLogin.Interact;
 using HFSM;
 using UnityEngine;
@@ -11,10 +12,9 @@ namespace Character.Controller.LoginState
         protected CharacterActor characterActor { get; private set; }
         protected CharacterBrain characterBrain { get; private set; }
 
+        protected CombatEntity combatEntity;
         protected new CharacterLoginStateMachine parentMachine
           => (CharacterLoginStateMachine)base.parentMachine;
-
-
 
         public override void Init()
         {
@@ -22,6 +22,7 @@ namespace Character.Controller.LoginState
             characterActor = parentMachine.characterActor;
             characterBrain = parentMachine.characterBrain;
             Animancer = parentMachine.animancer;
+            combatEntity = parentMachine.database.GetData<CombatEntity>("combatEntity");
         }
         public CharacterActions characterActions
         {

@@ -6,7 +6,20 @@ using UnityEngine;
 public class HealthPoint
 {
     public event Action<int, int> OnHPChange;
+    public event Action<int, int> OnHpAdd;
+    public event Action<int, int> OnHpMinus;
     public event Action OnHit;
+    public float Percent
+    {
+        get
+        {
+            if (MaxValue == 0)
+            {
+                return 1;
+            }
+            return (float)Value / MaxValue;
+        }
+    }
 
     public int Value { get; private set; }
     public int MaxValue { get; private set; }
@@ -24,11 +37,14 @@ public class HealthPoint
     /// <summary>
     /// 扣血
     /// </summary>
-    /// <param name="value"></param>
-    public void Minus(int value)
+    /// <param name="minusValue"></param>
+    public void Minus(int minusValue)
     {
-        Value = Mathf.Max(0, Value - value);
-        OnHPChange?.Invoke(Value, MaxValue);
+        var oldValue = Value;
+        Value = Mathf.Max(0, Value - minusValue);
+        OnHPChange?.Invoke(oldValue, Value);
+        OnHpMinus?.Invoke(oldValue, Value);
+        OnHit?.Invoke();
     }
 
     /// <summary>
@@ -37,15 +53,9 @@ public class HealthPoint
     /// <param name="value"></param>
     public void Add(int value)
     {
+        var oldValue = Value;
         Value = Mathf.Min(MaxValue, Value + value);
-        OnHPChange?.Invoke(Value, MaxValue);
-    }
-    /// <summary>
-    /// 返回当前生命百分比
-    /// </summary>
-    /// <returns></returns>
-    public float Percent()
-    {
-        return (float)Value / MaxValue;
+        OnHpAdd?.Invoke(oldValue, Value);
+        OnHPChange?.Invoke(oldValue, Value);
     }
 }

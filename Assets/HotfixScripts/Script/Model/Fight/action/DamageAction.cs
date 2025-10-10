@@ -32,7 +32,6 @@ namespace Fight
         /// </summary>
         protected override void PostProcess(CombatEntity c, CombatEntity t)
         {
-            Debug.Log("-------------触发了后置行为(如吸血等)-----------");
             Creator.TriggerActionPoint(ActionPointType.PostCauseDamage, this);
             PostCreatorAction?.Invoke(this);
 
@@ -62,7 +61,6 @@ namespace Fight
             {
                 target.TriggerActionPoint(ActionPointType.PreReceiveDamage, this);
             }
-            Debug.Log("------------触发了前置行为(如计算免伤等等)---------");
         }
     }
 }

@@ -8,14 +8,17 @@ public class BuffManager
 {
     public CombatEntity entity;
     private List<BuffBase> _buffs;
+
     /// <summary>
     /// 获得了某个buff的事件,我们或许有个护盾buff，当受到伤害的时候可以获得另一个回血buff
     /// </summary>
     public Action<BuffBase> OnAddBuff;
+
     /// <summary>
     /// 移除了某个buff的事件
     /// </summary>
     public Action<BuffBase> OnRemoveBuff;
+
     /// <summary>
     /// 当前所拥有的buff的Tag
     /// </summary>

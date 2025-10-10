@@ -46,18 +46,20 @@ namespace Enemy
 
             // 初始化大脑系统
             InitializeBrain();
+
+            InitCombatProperty();
         }
 
-        private void Start()
+        /// <summary>
+        /// 理论上应该可以直接写在CombatEntity里面的，目前先写着
+        /// </summary>
+        void InitCombatProperty()
         {
-            // 初始化战斗属性
             combatEntity.hp.SetMaxValue(100);
             combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
             combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
             combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 100);
             combatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
-
-            // 初始化完成
         }
 
         private void Update()

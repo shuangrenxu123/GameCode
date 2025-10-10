@@ -101,10 +101,10 @@ namespace Character.Controller
 
             var climbMovementState = new CharacterClimbState
             {
-                database = dataBase,
                 Animancer = AnimancerHelper,
                 climbAnimations = animatorConfig.climbAnimators
             };
+
 
             moveStateMachine.AddState(movementState);
             moveStateMachine.AddState(crouchMovementState);
@@ -117,6 +117,8 @@ namespace Character.Controller
             loginMachine = new(CharacterActor, characterBrain);
             loginMachine.movementStateMachine = moveStateMachine;
             loginMachine.animancer = AnimancerHelper;
+            loginMachine.database = dataBase;
+
             var emptyState = new CharacterEmptyLoginState();
             var interactState = new CharacterInteractionState()
             {
@@ -129,9 +131,17 @@ namespace Character.Controller
                 actionChangeGraph = actionChangeGraph,
                 timelineExecutor = skillRunner,
             };
+            var CharacterInjIryState = new CharacterInjIryState()
+            {
+                injIryAnimations = animatorConfig.injIryAnimators,
+            };
+
+
             loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
+            loginMachine.AddState(CharacterInjIryState);
+
             loginMachine.SetDefaultState(ECharacterLoginState.Empty);
         }
 

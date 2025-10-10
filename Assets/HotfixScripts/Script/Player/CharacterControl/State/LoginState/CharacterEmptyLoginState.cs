@@ -1,3 +1,4 @@
+using System;
 using Character.Controller.State;
 using GameLogin.Interact;
 using HFSM;
@@ -11,7 +12,20 @@ namespace Character.Controller.LoginState
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
+            combatEntity.hp.OnHit += TryChangeHitState;
         }
+
+        public override void Exit()
+        {
+            base.Exit();
+            combatEntity.hp.OnHit -= TryChangeHitState;
+        }
+
+        private void TryChangeHitState()
+        {
+            parentMachine.ChangeState(ECharacterLoginState.InjIry, new CharacterInjIryStateInput(0));
+        }
+
         public override void Update()
         {
             base.Update();
