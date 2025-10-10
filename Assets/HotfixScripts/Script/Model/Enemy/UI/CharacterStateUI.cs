@@ -9,11 +9,20 @@ namespace Character.UI
 {
     public class CharacterStateUI : MonoBehaviour
     {
-        [SerializeField]
+        [SerializeField, LabelText("血条")]
         Image hpBar;
 
-        [SerializeField]
+        [SerializeField, LabelText("血条缓冲")]
         Image hpBufferBar;
+
+        [SerializeField]
+        CanvasGroup canvasGroup;
+
+        [SerializeField, LabelText("存在时间")]
+        float existTime;
+
+        [SerializeField, LabelText("渐变时间")]
+        float fadeTime;
 
         [SerializeField, ReadOnly]
         CombatEntity combatEntity;
@@ -52,6 +61,7 @@ namespace Character.UI
 
             LMotion.Create(hpBufferBar.fillAmount, percent, hpLerpDuration)
                 .Bind(x => hpBufferBar.fillAmount = x);
+            // LMotion.Create(0,1,fadeTime).
         }
     }
 }

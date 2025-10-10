@@ -136,7 +136,13 @@ namespace Character.Controller
                 injIryAnimations = animatorConfig.injIryAnimators,
             };
 
+            var deathState = new CharacterDeathState()
+            {
+                deathAnimations = animatorConfig.DeathAnimators,
+                deathLoopAnimations = animatorConfig.DeathLoopAnimators
+            };
 
+            loginMachine.AddState(deathState);
             loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 /// <summary>
-/// ½ºÄÒÌåÅö×²Ìå·â×°
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×²ï¿½ï¿½ï¿½×°
 /// </summary>
 public class CapsuleColliderComponent3D : ColliderComponent3D
 {
@@ -22,6 +22,8 @@ public class CapsuleColliderComponent3D : ColliderComponent3D
     public override Vector3 BoundsSize => capsuleCollider.bounds.size;
 
     public override Vector3 Offset { get => capsuleCollider.center; set => capsuleCollider.center = value; }
+
+    public override Collider Collider => capsuleCollider;
 
     protected override int InternalOverlapBody(Vector3 position, Quaternion rotation, Collider[] unfilteredResults, List<Collider> filteredResults, OverlapFilterDelegate3D filter)
     {

@@ -21,7 +21,12 @@ public class CCAnimatorConfig : ScriptableObject
 
     public NormalAnimationClipDic injIryAnimators;
 
+    public NormalAnimationClipDic DeathAnimators;
+
+    public NormalAnimationClipDic DeathLoopAnimators;
+
     public MixerTransition2D LockMovement;
+
 
     public SerializedDictionary<WeaponType, WeaponAttackAnimation> weaponAnimators;
 }

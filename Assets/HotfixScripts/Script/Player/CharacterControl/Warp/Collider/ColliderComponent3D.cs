@@ -3,7 +3,6 @@ using UnityEngine;
 
 public abstract class ColliderComponent3D : ColliderComponent
 {
-
     protected Collider collider = null;
     public RaycastHit[] unfilteredHits { get; protected set; } = new RaycastHit[20];
     public List<RaycastHit> FilteredHits { get; protected set; } = new List<RaycastHit>(10);

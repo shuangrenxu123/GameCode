@@ -1,12 +1,12 @@
 using UnityEngine;
 
 /// <summary>
-/// ¸ÃÀàÊÇ¶ÔColliderµÄÒ»¸ö·â×°
+/// ï¿½ï¿½ï¿½ï¿½ï¿½Ç¶ï¿½Colliderï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½×°
 /// </summary>
 public abstract class ColliderComponent : MonoBehaviour
 {
     /// <summary>
-    /// collider µÄ´óÐ¡
+    /// collider ï¿½Ä´ï¿½Ð¡
     /// </summary>
     public abstract Vector3 Size { get; set; }
 
@@ -14,38 +14,16 @@ public abstract class ColliderComponent : MonoBehaviour
 
     public abstract Vector3 BoundsSize { get; }
 
+    public abstract Collider Collider { get; }
+
     public Vector3 Center => transform.position + transform.TransformVectorUnscaled(Offset);
+
 
     public static ColliderComponent CreateInstance(GameObject gameObject, bool includeChildren = true)
     {
         Collider collider3D = includeChildren ? gameObject.GetComponentInChildren<Collider>() : gameObject.GetComponent<Collider>();
         if (collider3D != null)
         {
-            // Box collider ------------------------------------------------------------
-            BoxCollider boxCollider3D = null;
-
-            try
-            {
-                boxCollider3D = (BoxCollider)collider3D;
-            }
-            catch (System.Exception) { }
-
-            if (boxCollider3D != null)
-                return gameObject.AddComponent<BoxColliderComponent3D>();
-
-
-            // Circle collider ------------------------------------------------------------
-            SphereCollider sphereCollider3D = null;
-
-            try
-            {
-                sphereCollider3D = (SphereCollider)collider3D;
-            }
-            catch (System.Exception) { }
-
-            if (sphereCollider3D != null)
-                return gameObject.AddComponent<SphereColliderComponent3D>();
-
             // Capsule collider ------------------------------------------------------------
             CapsuleCollider capsuleCollider3D = null;
 
@@ -67,8 +45,8 @@ public abstract class ColliderComponent : MonoBehaviour
         Transform otherCollidertransform, Vector3 pentrationDirection, float penetrationDistance);
 
     /// <summary>
-    ///¼ÆËãÕâ¸öÉíÌåºÍ¸½½üÁÚ¾ÓÖ®¼äµÄ´©Í¸Á¿¡£»òÕß£¬²Ù×÷£¨Î¯ÍÐ£©
-    ///¿ÉÒÔ´«Èë£¬Òò´Ë¿ÉÒÔ¸ù¾ÝÐèÒªÐÞ¸Ä½á¹ûµÄÎ»ÖÃ/Ðý×ª¡£
+    ///ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½Ú¾ï¿½Ö®ï¿½ï¿½Ä´ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î¯ï¿½Ð£ï¿½
+    ///ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ë£¬ï¿½ï¿½Ë¿ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½Þ¸Ä½ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½/ï¿½ï¿½×ªï¿½ï¿½
     /// </summary>
     /// <param name="position">The position reference.</param>
     /// <param name="rotation">The rotation reference.</param>

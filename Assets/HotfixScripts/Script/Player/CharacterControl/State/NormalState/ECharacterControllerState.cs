@@ -24,6 +24,6 @@ namespace Character.Controller.State
         Attack = 2,
         UseProp = 3,
         InjIry = 4,
-
+        Death = 5
     }
 }

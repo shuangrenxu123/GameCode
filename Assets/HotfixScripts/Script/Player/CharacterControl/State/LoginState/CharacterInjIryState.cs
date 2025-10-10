@@ -13,6 +13,8 @@ namespace Character.Controller.LoginState
 
         public Dictionary<string, ClipTransition> injIryAnimations;
 
+        ClipTransition targetAnimation;
+
         public override void Enter(StateBaseInput input)
         {
             base.Enter();
@@ -20,19 +22,33 @@ namespace Character.Controller.LoginState
             characterActor.Velocity = Vector3.zero;
             var injIryInput = input as CharacterInjIryStateInput;
 
+
             //Test
             var state = Animancer.Play(injIryAnimations["0"]);
 
             state.Events.OnEnd = () =>
             {
-                parentMachine.ChangeState(ECharacterLoginState.Empty);
+                ChangeNextState();
                 state.Events.OnEnd = null;
             };
+            parentMachine.movementStateMachine.EnableMachine(false, false);
+        }
 
+        void ChangeNextState()
+        {
+            if (combatEntity.hp.Value <= 0)
+            {
+                parentMachine.ChangeState(ECharacterLoginState.Death);
+            }
+            else
+            {
+                parentMachine.ChangeState(ECharacterLoginState.Empty);
+            }
         }
         public override void Exit()
         {
             base.Exit();
+            parentMachine.movementStateMachine.EnableMachine(true, true);
             parentMachine.movementStateMachine.RefreshAnimator();
         }
     }
