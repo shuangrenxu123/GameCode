@@ -1,87 +1,96 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
-namespace AI
+namespace Character.AI.Sensor
 {
+    public enum ShapeType
+    {
+
+        Rect,
+
+        Sector,
+
+        Circle
+    }
+
+    /// <summary>
+    /// 视觉感知器
+    /// </summary>
     public class SightSensor : Sensor
     {
-        [SerializeField]
-        float range = 1.0f;
-        [SerializeField]
-        float angle = 60;
-        [SerializeField]
-        LayerMask layers;
+        [SerializeField, LabelText("视野距离")]
+        float viewDistance = 5;
+
+        [SerializeField, Range(0, 360), LabelText("视野角度")]
+        float viewAngle = 60;
+
+        [SerializeField, LabelText("需要探测的目标所在的层")]
+        LayerMask TargetMask = 1;
+
+        [SerializeField, LabelText("会阻挡视线的障碍物所在的层")]
+        LayerMask ObstacleMask = 1;
+
         Collider[] triggers;
-        private float time = 1f;
-        private float timer = 0;
+
+        protected ShapeType shapeType;
+
+        public override SensorType sensorType => SensorType.Sight;
+
+        protected override bool activeExecution => true;
 
         private void Awake()
         {
             triggers = new Collider[20];
         }
-        public void Update()
-        {
-            if(timer > time)
-            {
-                timer = 0;
-                Check();
-            }
-            else
-            {
-                time += Time.deltaTime;
-            }
-        }
-        void Check()
-        {
-            GetAllObject();
-            switch (shapeType)
-            {
-                case ShapeType.Circle:
-                    for (int i = 0; i < triggers.Length; i++)
-                    {
-                        var go = triggers[i];
-                        Vector3 rayDirection = transform.position - go.transform.position;
-                        rayDirection.y = 0;
 
-                        if (Physics.Raycast(go.transform.position + new Vector3(0, 1, 0), rayDirection, out RaycastHit hit, range))
-                        {
-                            if (hit.collider.gameObject == this.gameObject)
-                            {
-                                //do something;
-                            }
-                        }
-                        
-                    }
-                    break;
-                case ShapeType.Rect:
-                    break;
-                case ShapeType.Sector:
-                    for (int i = 0; i < triggers.Length; i++)
+        protected override void Detect()
+        {
+            // 1. 使用物理引擎在视野距离内查找所有可能的目标
+            int count = Physics.OverlapSphereNonAlloc(transform.position, viewDistance, triggers, TargetMask);
+
+            for (int i = 0; i < count; i++)
+            {
+                var targetCollider = triggers[i];
+
+                Transform target = targetCollider.transform;
+                Vector3 dirToTarget = (target.position - transform.position).normalized;
+
+                var tempAngle = Vector3.Angle(transform.forward, dirToTarget);
+                // 2. 检查目标是否在视野角度内
+                if (tempAngle < viewAngle / 2)
+                {
+                    float distToTarget = Vector3.Distance(transform.position, target.position);
+
+                    if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, ObstacleMask))
                     {
-                        var go = triggers[i];
-                        Vector3 rayDirection = transform.position - go.transform.position;
-                        rayDirection.y = 0;
-                        if (Vector3.Angle(rayDirection, go.transform.forward) < angle)
-                        {
-                            if (Physics.Raycast(go.transform.position + new Vector3(0, 1, 0), rayDirection, out RaycastHit hit, range))
-                            {
-                                if (hit.collider.gameObject == this.gameObject)
-                                {
-                                    //do something;
-                                }
-                            }
-                        }
+                        // 4.成功看见目标！内部生成一个刺激源并上报
+                        sensorManager.OnStimulusSensed(new SensorData(
+                            sensorType,
+                            target.position,
+                            this
+                        ));
                     }
-                    break;
+                }
             }
         }
-        private void GetAllObject()
+
+        public override void Notify(SensorData trigger)
         {
-            Physics.OverlapSphereNonAlloc(transform.position,range, triggers, layers);
+            Debug.Log("看到了敌人");
         }
-        public override void Notify(Trigger trigger)
+
+        void OnDrawGizmos()
         {
-            Debug.Log("�����ˣ�"+trigger.name);
+            Gizmos.color = Color.green;
+            float halfAngle = viewAngle / 2;
+            for (float angle = -halfAngle; angle <= halfAngle; angle += 6)
+            {
+                Quaternion rotation = Quaternion.AngleAxis(angle, Vector3.up);
+                Vector3 direction = rotation * transform.forward;
+                Gizmos.DrawRay(transform.position, direction * viewDistance);
+            }
         }
     }
 }

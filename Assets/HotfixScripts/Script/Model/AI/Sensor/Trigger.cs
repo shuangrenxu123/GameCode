@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-namespace AI
+namespace Character.AI.Sensor
 {
-    public abstract class Trigger : MonoBehaviour
+    public interface ISensorTrigger
     {
+        protected abstract SensorType sensorType { get; }
 
+        public abstract void Notify();
     }
 }

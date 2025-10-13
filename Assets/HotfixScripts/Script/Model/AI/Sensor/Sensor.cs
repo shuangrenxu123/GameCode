@@ -1,40 +1,79 @@
 using System.Collections;
 using System.Collections.Generic;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace AI
+namespace Character.AI.Sensor
 {
-    public enum ShapeType
+    public enum SensorType
     {
-        /// <summary>
-        /// ����
-        /// </summary>
-        Rect,
-        /// <summary>
-        /// ����
-        /// </summary>
-        Sector,
-        /// <summary>
-        /// Բ
-        /// </summary>
-        Circle
+        Sight,
+        Sound
     }
-    /// <summary>
-    /// AI�ĸ�֪������
-    /// </summary>
+
+    public struct SensorData
+    {
+        public SensorType sensorType;
+
+        /// <summary>
+        /// 触发器坐标
+        /// </summary>
+        public Vector3 triggerPosition;
+
+        /// <summary>
+        /// 目标接受信息的感知器
+        /// </summary>
+        public Sensor targetSensor;
+        public SensorData(SensorType sensorType, Vector3 triggerPosition, Sensor targetSensor)
+        {
+            this.sensorType = sensorType;
+            this.triggerPosition = triggerPosition;
+            this.targetSensor = targetSensor;
+        }
+    }
+
     public abstract class Sensor : MonoBehaviour
     {
+        [SerializeField, LabelText("检测间隔时间")]
+        float checkInterval = 0.5f;
+
         protected DataBase<string, object> database;
-        protected ShapeType shapeType;
-        protected void Init(DataBase<string, object> database)
+
+        public abstract SensorType sensorType { get; }
+        protected abstract bool activeExecution { get; }
+        float timer = 0;
+
+        protected SensorManager sensorManager;
+
+        public void Init(SensorManager sensorManager, DataBase<string, object> database)
         {
+            this.sensorManager = sensorManager;
             this.database = database;
         }
 
+
+        public void UpdateSensor()
+        {
+            if (!activeExecution)
+                return;
+            timer += Time.deltaTime;
+            if (timer > checkInterval)
+            {
+                Detect();
+                timer = 0;
+            }
+        }
+
         /// <summary>
-        /// �ú������ṩ����磬������Ĵ�����������֪ͨ
+        /// 当真正的检测到了信息
         /// </summary>
         /// <param name="trigger"></param>
-        public abstract void Notify(Trigger trigger);
+        public abstract void Notify(SensorData trigger);
+
+        /// <summary>
+        /// 每帧检测
+        /// </summary>
+        protected abstract void Detect();
+
     }
 }
