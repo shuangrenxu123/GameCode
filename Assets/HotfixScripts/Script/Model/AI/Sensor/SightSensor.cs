@@ -67,7 +67,6 @@ namespace Character.AI.Sensor
                     {
                         // 4.成功看见目标！内部生成一个刺激源并上报
                         sensorManager.OnStimulusSensed(new SensorData(
-                            sensorType,
                             target.position,
                             this
                         ));

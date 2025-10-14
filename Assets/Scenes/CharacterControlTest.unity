@@ -2904,6 +2904,7 @@ GameObject:
   m_Component:
   - component: {fileID: 750469282}
   - component: {fileID: 750469283}
+  - component: {fileID: 750469284}
   m_Layer: 7
   m_Name: Sensor
   m_TagString: Untagged
@@ -2943,10 +2944,23 @@ MonoBehaviour:
   viewAngle: 160
   TargetMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 0
   ObstacleMask:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &750469284
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 750469281}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08dbc300f767b324c821629029292437, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character.AI.Sensor.SoundSensor
+  checkInterval: 0.5
 --- !u!1 &776202853
 GameObject:
   m_ObjectHideFlags: 0
@@ -4497,12 +4511,12 @@ PrefabInstance:
     - target: {fileID: 6703382326468538425, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538427, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538429, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4557,12 +4571,12 @@ PrefabInstance:
     - target: {fileID: 6703382326468538449, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538451, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538453, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4692,12 +4706,12 @@ PrefabInstance:
     - target: {fileID: 6703382326468538613, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538615, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538617, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4722,12 +4736,12 @@ PrefabInstance:
     - target: {fileID: 6703382326468538753, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538755, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538757, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4792,7 +4806,7 @@ PrefabInstance:
     - target: {fileID: 6703382326468538781, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538783, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4802,17 +4816,17 @@ PrefabInstance:
     - target: {fileID: 6703382326468538789, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538793, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538795, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468538797, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -4822,7 +4836,7 @@ PrefabInstance:
     - target: {fileID: 6703382326468538799, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
-      value: 7
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 6703382326468539409, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
@@ -6054,6 +6068,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 7
       objectReference: {fileID: 0}
+    - target: {fileID: 8694019345369113256, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
+        type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
     - target: {fileID: 8739503939570498630, guid: 180bcd5afa8ce45408e1c0d5818e2a9d,
         type: 3}
       propertyPath: m_Layer
@@ -6505,6 +6524,59 @@ Transform:
   m_Children: []
   m_Father: {fileID: 181896998}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1391120571
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1391120572}
+  - component: {fileID: 1391120573}
+  m_Layer: 0
+  m_Name: SoundTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1391120572
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391120571}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14.23, y: 0.551, z: -7.12}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1391120573
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391120571}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf9a504dff7f0734e946b33df578a9b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Character.AI.Sensor.SoundTrigger
+  notifyInterval: 2
+  notifyRadius: 7
+  TargetMask:
+    serializedVersion: 2
+    m_Bits: 128
+  canPenetrateObstacle: 0
+  ObstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
 --- !u!1 &1391310883
 GameObject:
   m_ObjectHideFlags: 0
@@ -12443,3 +12515,4 @@ SceneRoots:
   - {fileID: 1604172675}
   - {fileID: 1278379389}
   - {fileID: 1164412500}
+  - {fileID: 1391120572}

@@ -13,7 +13,6 @@ namespace Character.AI.Sensor
 
     public struct SensorData
     {
-        public SensorType sensorType;
 
         /// <summary>
         /// 触发器坐标
@@ -24,9 +23,8 @@ namespace Character.AI.Sensor
         /// 目标接受信息的感知器
         /// </summary>
         public Sensor targetSensor;
-        public SensorData(SensorType sensorType, Vector3 triggerPosition, Sensor targetSensor)
+        public SensorData(Vector3 triggerPosition, Sensor targetSensor)
         {
-            this.sensorType = sensorType;
             this.triggerPosition = triggerPosition;
             this.targetSensor = targetSensor;
         }
@@ -34,12 +32,16 @@ namespace Character.AI.Sensor
 
     public abstract class Sensor : MonoBehaviour
     {
-        [SerializeField, LabelText("检测间隔时间")]
+        [SerializeField, LabelText("检测间隔时间"), ShowIf("activeExecution")]
         float checkInterval = 0.5f;
 
         protected DataBase<string, object> database;
 
         public abstract SensorType sensorType { get; }
+
+        /// <summary>
+        /// 是否主动观测
+        /// </summary>
         protected abstract bool activeExecution { get; }
         float timer = 0;
 
@@ -73,7 +75,7 @@ namespace Character.AI.Sensor
         /// <summary>
         /// 每帧检测
         /// </summary>
-        protected abstract void Detect();
+        protected virtual void Detect() { }
 
     }
 }

@@ -5,7 +5,6 @@ namespace Character.AI.Sensor
 {
     public class SoundTrigger : MonoBehaviour, ISensorTrigger
     {
-        SensorType ISensorTrigger.sensorType => SensorType.Sound;
 
         [SerializeField, LabelText("通知间隔")]
         float notifyInterval = 0.5f;
@@ -15,6 +14,13 @@ namespace Character.AI.Sensor
 
         [SerializeField, LabelText("需要探测的目标所在的层")]
         LayerMask TargetMask = 1;
+
+        [SerializeField, LabelText("是否可以穿透障碍物")]
+        bool canPenetrateObstacle = false;
+
+        [SerializeField, LabelText("障碍物所在的层"), ShowIf("canPenetrateObstacle")]
+        LayerMask ObstacleMask = 1;
+
         Collider[] colliders;
 
         float timer = 0f;
@@ -40,23 +46,32 @@ namespace Character.AI.Sensor
 
             for (int i = 0; i < count; i++)
             {
-                // var targetCollider = triggers[i];
+                var targetCollider = colliders[i];
 
-                // Transform target = targetCollider.transform;
-                // Vector3 dirToTarget = (target.position - transform.position).normalized;
-                // float distToTarget = Vector3.Distance(transform.position, target.position);
+                Transform target = targetCollider.transform;
+                Vector3 dirToTarget = (target.position - transform.position).normalized;
+                float distToTarget = Vector3.Distance(transform.position, target.position);
 
-                // if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, ObstacleMask))
-                // {
-                //     // 4.成功看见目标！内部生成一个刺激源并上报
-                //     sensorManager.OnStimulusSensed(new SensorData(
-                //         sensorType,
-                //         target.position,
-                //         this
-                //     ));
-                // }
+                var sensor = targetCollider.GetComponentInChildren<SoundSensor>();
+
+                var sensorManager = targetCollider.GetComponentInChildren<SensorManager>();
+
+                if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, ObstacleMask)
+                    || canPenetrateObstacle)
+                {
+                    // 4.成功看见目标！内部生成一个刺激源并上报
+                    sensorManager.OnStimulusSensed(new SensorData(
+                        transform.position,
+                        sensor
+                    ));
+                }
 
             }
+        }
+        void OnDrawGizmos()
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(transform.position, notifyRadius);
         }
 
     }
