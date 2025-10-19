@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -22,12 +23,14 @@ namespace Character.AI.Sensor
         LayerMask ObstacleMask = 1;
 
         Collider[] colliders;
+        Dictionary<GameObject, bool> notifiedTargets;
 
         float timer = 0f;
 
         void Awake()
         {
             colliders = new Collider[10];
+            notifiedTargets = new Dictionary<GameObject, bool>(10);
         }
 
         void Update()
@@ -43,6 +46,7 @@ namespace Character.AI.Sensor
         public void Notify()
         {
             int count = Physics.OverlapSphereNonAlloc(transform.position, notifyRadius, colliders, TargetMask);
+            notifiedTargets.Clear();
 
             for (int i = 0; i < count; i++)
             {
@@ -56,6 +60,11 @@ namespace Character.AI.Sensor
 
                 var sensorManager = targetCollider.GetComponentInChildren<SensorManager>();
 
+                if (notifiedTargets.ContainsKey(target.gameObject))
+                {
+                    continue;
+                }
+
                 if (!Physics.Raycast(transform.position, dirToTarget, distToTarget, ObstacleMask)
                     || canPenetrateObstacle)
                 {
@@ -64,8 +73,8 @@ namespace Character.AI.Sensor
                         transform.position,
                         sensor
                     ));
+                    notifiedTargets.Add(target.gameObject, true);
                 }
-
             }
         }
         void OnDrawGizmos()

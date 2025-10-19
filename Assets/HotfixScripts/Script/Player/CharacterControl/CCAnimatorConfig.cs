@@ -7,12 +7,14 @@ using Utilities;
 
 [Serializable]
 public class NormalAnimationClipDic : UnitySerializedDictionary<string, ClipTransition> { }
+[Serializable]
+public class LinearAnimationClipDic : UnitySerializedDictionary<string, LinearMixerTransition> { }
 
 [CreateAssetMenu(fileName = "animations", menuName = "Animator")]
 public class CCAnimatorConfig : ScriptableObject
 {
     [SerializedDictionary("ClipName", "Clip")]
-    public SerializedDictionary<string, LinearMixerTransition> linearMixerAnimators;
+    public LinearAnimationClipDic linearMixerAnimators;
     [SerializedDictionary("ClipName", "Clip")]
     public SerializedDictionary<string, ClipTransition> clipAnimators;
 

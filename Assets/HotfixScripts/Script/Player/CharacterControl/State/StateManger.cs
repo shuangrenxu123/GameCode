@@ -104,11 +104,17 @@ namespace CharacterControllerStateMachine
                 climbAnimations = animatorConfig.climbAnimators
             };
 
+            var runMoveState = new CharacterRunMovementState
+            {
+                currentAnimator = animatorConfig.linearMixerAnimators["RunMove"]
+            };
+
             moveStateMachine.AddState(movementState);
             moveStateMachine.AddState(crouchMovementState);
             moveStateMachine.AddState(jumpMovement);
             moveStateMachine.AddState(climbMovementState);
             moveStateMachine.AddState(lockOnMoveState);
+            moveStateMachine.AddState(runMoveState);
 
         }
         void InitLoginState()

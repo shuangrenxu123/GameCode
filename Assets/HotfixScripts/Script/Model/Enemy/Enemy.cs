@@ -33,7 +33,6 @@ namespace Enemy
         [Header("动画系统")]
         public AnimancerComponent animancer;      // 动画控制器
         public AnimatorHelper animancerHelper;   // 动画助手（复用玩家动画助手）
-        public CCAnimatorConfig animatorConfig;  // 使用现有的动画配置
 
         IEnemyBrain enemyBrain;
 

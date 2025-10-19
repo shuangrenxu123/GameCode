@@ -153,10 +153,6 @@ namespace CharacterController
             }
         }
 
-        /// <summary>
-        /// �ɷ�ӵ���ƽ̨��������
-        /// </summary>
-        [Header("������ ���ڵ���ƽ̨")]
         public bool canJumpDown = true;
 
         [Space(10f)]
@@ -175,26 +171,16 @@ namespace CharacterController
 
     }
 
-    /// <summary>
-    /// ���µĲ����������
-    /// </summary>
     [System.Serializable]
     public class CrouchParameters
     {
-        /// <summary>
-        /// �Ƿ������¶׹���
-        /// </summary>
         public bool enableCrouch = true;
-        /// <summary>
-        /// �ڿ���Ҳ�����¶�
-        /// </summary>
+
         public bool notGroundedCrouch = false;
 
-        [Tooltip("�ó�����ʾ�����Ĭ�ϸ߶ȵĶ��±�����")]
         [Min(0f)]
         public float heightRatio = 0.75f;
 
-        [Tooltip("���¶������ƶ��ٶȵ�Ӱ���ж��")]
         [Min(0f)]
         public float speedMultiplier = 0.3f;
 
@@ -211,6 +197,15 @@ namespace CharacterController
         public float sizeLerpSpeed = 8f;
     }
 
+    [SerializeField]
+    public class RunMoveParameters
+    {
+        [Min(1f)]
+        public float runSpeedMultiplier = 1.5f;
+
+        public InputMode runInputMode = InputMode.Hold;
+    }
+
     [System.Serializable]
     public class LookingDirectionParameters
     {
@@ -220,8 +215,6 @@ namespace CharacterController
         [Header("Lerp properties")]
 
         public float speed = 10f;
-
-        [Header("����Ŀ��")]
 
         public LookingDirectionMode lookingDirectionMode = LookingDirectionMode.Movement;
         [Space(5f)]
@@ -238,29 +231,16 @@ namespace CharacterController
             ExternalReference
         }
 
-
         public enum LookingDirectionMovementSource
         {
             Velocity,
             Input
         }
 
-
-
     }
-
-    /// <summary>
-    /// ����ģʽ
-    /// </summary>
     public enum InputMode
     {
-        /// <summary>
-        /// ����
-        /// </summary>
         Toggle,
-        /// <summary>
-        /// ����
-        /// </summary>
         Hold
     }
 }

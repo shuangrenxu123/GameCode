@@ -13,45 +13,59 @@ MonoBehaviour:
   m_Name: Human
   m_EditorClassIdentifier: 
   linearMixerAnimators:
-    _serializedList:
-    - Key: NormalMove
-      Value:
-        _FadeDuration: 0.25
-        _Events:
-          _NormalizedTimes: []
-          _Callbacks: []
-          _Names: []
-        _Speed: 1
-        _Animations:
-        - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
-        - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
-        - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
-        _Speeds: []
-        _SynchronizeChildren: 
-        _Thresholds:
-        - 0
-        - 3
-        - 6
-        _DefaultParameter: 0
-        _ExtrapolateSpeed: 0
-    - Key: CrouchMove
-      Value:
-        _FadeDuration: 0.25
-        _Events:
-          _NormalizedTimes: []
-          _Callbacks: []
-          _Names: []
-        _Speed: 1
-        _Animations:
-        - {fileID: 7400000, guid: ecfb6959ea35077469d921cde7022de1, type: 2}
-        - {fileID: 1827226128182048838, guid: 6eca74693f92bd047ad96c9e0232e204, type: 3}
-        _Speeds: []
-        _SynchronizeChildren: 
-        _Thresholds:
-        - 0
-        - 2
-        _DefaultParameter: 0
-        _ExtrapolateSpeed: 0
+    keyData:
+    - CrouchMove
+    - NormalMove
+    - RunMove
+    valueData:
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Speed: 1
+      _Animations:
+      - {fileID: 7400000, guid: ecfb6959ea35077469d921cde7022de1, type: 2}
+      - {fileID: 1827226128182048838, guid: 6eca74693f92bd047ad96c9e0232e204, type: 3}
+      _Speeds: []
+      _SynchronizeChildren: 
+      _Thresholds:
+      - 0
+      - 2
+      _DefaultParameter: 0
+      _ExtrapolateSpeed: 1
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Speed: 1
+      _Animations:
+      - {fileID: 7400000, guid: 660ec7561f408b041859071f3366cfcf, type: 2}
+      - {fileID: 7400000, guid: 6e287045ce8ab43449f56faa0906fb9c, type: 2}
+      - {fileID: 7400000, guid: d9358b83af6321e498a001b7a3f487ef, type: 2}
+      _Speeds: []
+      _SynchronizeChildren: 
+      _Thresholds:
+      - 0
+      - 3
+      - 6
+      _DefaultParameter: 0
+      _ExtrapolateSpeed: 1
+    - _FadeDuration: 0.25
+      _Events:
+        _NormalizedTimes: []
+        _Callbacks: []
+        _Names: []
+      _Speed: 1
+      _Animations:
+      - {fileID: 7400000, guid: c9bf34135c7dce54da25128bd7cc9305, type: 3}
+      _Speeds: []
+      _SynchronizeChildren: 
+      _Thresholds:
+      - 9
+      _DefaultParameter: 0
+      _ExtrapolateSpeed: 1
   clipAnimators:
     _serializedList:
     - Key: Chest
@@ -370,6 +384,12 @@ MonoBehaviour:
         type: 3}
       _Speed: 1
       _NormalizedStartTime: NaN
+  DeathAnimators:
+    keyData: []
+    valueData: []
+  DeathLoopAnimators:
+    keyData: []
+    valueData: []
   LockMovement:
     _FadeDuration: 0.25
     _Events:
