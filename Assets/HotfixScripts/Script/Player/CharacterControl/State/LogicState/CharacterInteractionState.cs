@@ -6,7 +6,8 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.LogicState
 {
-    public void 
+    public record InteractionState(string animClipName, Vector3 position, Quaternion rotation) : StateBaseInput;
+
     public class CharacterInteractionState : CharacterLogicBaseState
     {
         public override ECharacterLogicState currentType => ECharacterLogicState.Interaction;
