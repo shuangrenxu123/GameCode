@@ -4,11 +4,12 @@ using Character.Controller.State;
 using GameLogin.Interact;
 using HFSM;
 using UnityEngine;
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
+    public void 
     public class CharacterInteractionState : CharacterLogicBaseState
     {
-        public override ECharacterLoginState currentType => ECharacterLoginState.Interaction;
+        public override ECharacterLogicState currentType => ECharacterLogicState.Interaction;
         public Dictionary<string, ClipTransition> interactAnimations;
         public override void Enter(StateBaseInput input = null)
         {
@@ -29,7 +30,7 @@ namespace Character.Controller.LoginState
             var animState = Animancer.Play(interactAnimations[interaction.intractableType.ToString()]);
             animState.Events.OnEnd = () =>
             {
-                parentMachine.ChangeState(ECharacterLoginState.Empty);
+                parentMachine.ChangeState(ECharacterLogicState.Empty);
                 animState.Events.OnEnd = null;
             };
 

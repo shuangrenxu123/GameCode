@@ -1,6 +1,6 @@
 using Animancer;
 using Audio;
-using Character.Controller.LoginState;
+using Character.Controller.LogicState;
 using Character.Controller.MoveState;
 using Character.Controller.State;
 using CharacterController;
@@ -15,13 +15,14 @@ namespace CharacterControllerStateMachine
 {
     public class StateManger : MonoBehaviour
     {
+
         [SerializeField, ReadOnly]
-        ECharacterLoginState loginState;
+        ECharacterLogicState loginState;
         [SerializeField, ReadOnly]
         ECharacterMoveState moveState;
 
         public CharacterMovementStateMachine moveStateMachine;
-        public CharacterLoginStateMachine loginMachine;
+        public CharacterLogicStateMachine loginMachine;
         public CombatEntity combatEntity;
         public new Camera3D camera;
         public CharacterBrain characterBrain;
@@ -138,7 +139,7 @@ namespace CharacterControllerStateMachine
             loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
-            loginMachine.SetDefaultState(ECharacterLoginState.Empty);
+            loginMachine.SetDefaultState(ECharacterLogicState.Empty);
         }
 
         void SetStateParameter()

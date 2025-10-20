@@ -18,7 +18,7 @@ namespace Character.Controller.State
         CrouchLockOnMove = 5,
         RunMove = 6,
     }
-    public enum ECharacterLoginState
+    public enum ECharacterLogicState
     {
         Empty = 0,
         Interaction = 1,

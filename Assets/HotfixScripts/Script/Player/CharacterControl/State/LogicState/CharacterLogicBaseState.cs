@@ -4,17 +4,17 @@ using Fight;
 using GameLogin.Interact;
 using HFSM;
 using UnityEngine;
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
-    public abstract class CharacterLogicBaseState : StateBase<ECharacterLoginState>
+    public abstract class CharacterLogicBaseState : StateBase<ECharacterLogicState>
     {
         public AnimatorHelper Animancer { get; set; }
         protected CharacterActor characterActor { get; private set; }
         protected CharacterBrain characterBrain { get; private set; }
 
         protected CombatEntity combatEntity;
-        protected new CharacterLoginStateMachine parentMachine
-          => (CharacterLoginStateMachine)base.parentMachine;
+        protected new CharacterLogicStateMachine parentMachine
+          => (CharacterLogicStateMachine)base.parentMachine;
 
         public override void Init()
         {

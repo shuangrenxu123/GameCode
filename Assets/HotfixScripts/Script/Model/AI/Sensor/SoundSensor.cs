@@ -10,7 +10,6 @@ namespace Character.AI.Sensor
 
         public override void Notify(SensorData trigger)
         {
-            Debug.Log("听到了声音");
         }
     }
 }

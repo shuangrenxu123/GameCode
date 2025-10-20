@@ -34,12 +34,16 @@ namespace Character.UI
             combatEntity = GetComponentInParent<CombatEntity>();
             combatEntity.hp.OnHpMinus += OnHpMinus;
             combatEntity.hp.OnHpAdd += OnHpAdd;
+
+            combatEntity.onEntityDead.AddListener(HideCanvas);
         }
 
         void OnDisable()
         {
             combatEntity.hp.OnHpMinus -= OnHpMinus;
             combatEntity.hp.OnHpAdd -= OnHpAdd;
+
+            combatEntity.onEntityDead.RemoveListener(HideCanvas);
         }
 
         private void OnHpAdd(int _, int __)
@@ -61,7 +65,12 @@ namespace Character.UI
 
             LMotion.Create(hpBufferBar.fillAmount, percent, hpLerpDuration)
                 .Bind(x => hpBufferBar.fillAmount = x);
-            // LMotion.Create(0,1,fadeTime).
+        }
+
+        void HideCanvas()
+        {
+            LMotion.Create(1, 0, fadeTime)
+                .Bind(x => canvasGroup.alpha = x);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using Fight.Number;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Fight
 {
@@ -14,11 +15,12 @@ namespace Fight
     {
         [SerializeField]
         CombatEntityType entityType;
+
         public HealthPoint hp;
         public CombatNumberBox properties;
-
         ActionPointManager ActionPointManager;
         BuffManager buffManager;
+        public UnityEvent onEntityDead = new UnityEvent();
 
         public void Awake()
         {
@@ -30,12 +32,17 @@ namespace Fight
             properties = new CombatNumberBox();
             buffManager = new BuffManager(this);
 
+            // hp.OnDead += OnEntityDead;
         }
         private void Update()
         {
             buffManager.OnUpdate();
         }
 
+        void OnEntityDead()
+        {
+            onEntityDead.Invoke();
+        }
         public void AddListener(ActionPointType actionPointType, Action<CombatAction> action)
         {
             ActionPointManager.AddListener(actionPointType, action);

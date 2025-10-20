@@ -4,11 +4,11 @@ using Character.Controller.State;
 using HFSM;
 using UnityEngine;
 
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
     public class CharacterDeathState : CharacterLogicBaseState
     {
-        public override ECharacterLoginState currentType => ECharacterLoginState.Death;
+        public override ECharacterLogicState currentType => ECharacterLogicState.Death;
 
         public Dictionary<string, ClipTransition> deathAnimations;
         public Dictionary<string, ClipTransition> deathLoopAnimations;
@@ -23,8 +23,8 @@ namespace Character.Controller.LoginState
 
             characterActor.ColliderComponent.Collider.enabled = false;
 
-            deathLoopAnimation = deathLoopAnimations["0"];
-            var state = Animancer.Play(deathAnimations["0"]);
+            deathLoopAnimation = deathLoopAnimations["normalDead"];
+            var state = Animancer.Play(deathAnimations["normalDead"]);
             state.Events.OnEnd = () =>
             {
                 Animancer.Play(deathLoopAnimation);

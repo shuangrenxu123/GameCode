@@ -53,7 +53,11 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 return;
             }
-
+            if (characterActions.run.Started)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.RunMove);
+                return;
+            }
             if (ShouldExitLockOnDueToDistance())
             {
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);

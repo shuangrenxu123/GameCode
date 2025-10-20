@@ -1,6 +1,6 @@
 using Animancer;
 using Audio;
-using Character.Controller.LoginState;
+using Character.Controller.LogicState;
 using Character.Controller.MoveState;
 using Character.Controller.State;
 using CharacterController;
@@ -17,7 +17,7 @@ namespace Character.Controller
     public class NPCStateMgr : MonoBehaviour
     {
         [SerializeField, ReadOnly]
-        ECharacterLoginState loginState;
+        ECharacterLogicState loginState;
         [SerializeField, ReadOnly]
         ECharacterMoveState moveState;
 
@@ -46,7 +46,7 @@ namespace Character.Controller
         private SkillRunner skillRunner;
 
         public CharacterMovementStateMachine moveStateMachine;
-        public CharacterLoginStateMachine loginMachine;
+        public CharacterLogicStateMachine loginMachine;
         DataBase<string, object> dataBase;
 
         private void Awake()
@@ -148,7 +148,7 @@ namespace Character.Controller
             loginMachine.AddState(interactState);
             loginMachine.AddState(CharacterInjIryState);
 
-            loginMachine.SetDefaultState(ECharacterLoginState.Empty);
+            loginMachine.SetDefaultState(ECharacterLogicState.Empty);
         }
 
         private void Update()

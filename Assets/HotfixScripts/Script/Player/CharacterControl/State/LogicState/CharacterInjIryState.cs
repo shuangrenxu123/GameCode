@@ -3,13 +3,13 @@ using Animancer;
 using Character.Controller.State;
 using HFSM;
 using UnityEngine;
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
     public record CharacterInjIryStateInput(int hitAngle) : StateBaseInput;
 
     public class CharacterInjIryState : CharacterLogicBaseState
     {
-        public override ECharacterLoginState currentType => ECharacterLoginState.InjIry;
+        public override ECharacterLogicState currentType => ECharacterLogicState.InjIry;
 
         public Dictionary<string, ClipTransition> injIryAnimations;
 
@@ -44,11 +44,11 @@ namespace Character.Controller.LoginState
         {
             if (combatEntity.hp.Value <= 0)
             {
-                parentMachine.ChangeState(ECharacterLoginState.Death);
+                parentMachine.ChangeState(ECharacterLogicState.Death);
             }
             else
             {
-                parentMachine.ChangeState(ECharacterLoginState.Empty);
+                parentMachine.ChangeState(ECharacterLogicState.Empty);
             }
         }
         public override void Exit()

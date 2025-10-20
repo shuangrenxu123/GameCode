@@ -4,11 +4,11 @@ using Fight;
 using HFSM;
 using UnityEngine;
 
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
     public class CharacterAttackState : CharacterLogicBaseState
     {
-        public override ECharacterLoginState currentType => ECharacterLoginState.Attack;
+        public override ECharacterLogicState currentType => ECharacterLogicState.Attack;
         public SkillRunner timelineExecutor;
 
         public CharacterWeaponAnimator attackAnimator;
@@ -43,7 +43,7 @@ namespace Character.Controller.LoginState
                 }
                 if (currentActionName == null)
                 {
-                    parentMachine.ChangeState(ECharacterLoginState.Empty);
+                    parentMachine.ChangeState(ECharacterLogicState.Empty);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace Character.Controller.LoginState
 
             if (timelineExecutor.isFinish)
             {
-                parentMachine.ChangeState(ECharacterLoginState.Empty);
+                parentMachine.ChangeState(ECharacterLogicState.Empty);
             }
         }
 

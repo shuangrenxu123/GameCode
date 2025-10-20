@@ -6,23 +6,23 @@ using UnityEngine;
 
 namespace ConsoleLog
 {
-    public class LogFileMoudle
+    public class LogFileModule
     {
         private const string TimeFormat = "hh:mm:ss";
         private const string Timeformat2 = "yyyyMMdd";
         /// <summary>
-        /// ¶àÉÙÌõºó»áÐ´ÈëÎÄ¼þ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ä¼ï¿½
         /// </summary>
         private const int logWriteCount = 10;
         /// <summary>
-        /// ¶àÉÙÃëºó»áÐ´ÈëÎÄ¼þ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ä¼ï¿½
         /// </summary>
-        private const int logWriteTime = 10; //Î´ÊµÏÖ
+        private const int logWriteTime = 10; //Î´Êµï¿½ï¿½
         private FileStream fileStream;
         private StreamWriter streamWriter;
         private string path = Application.streamingAssetsPath;
         /// <summary>
-        /// ´æÔÚµÄ×î´óÈÕÆÚ
+        /// ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private int maxDay;
         private StringBuilder stringBuilder;
@@ -30,7 +30,7 @@ namespace ConsoleLog
 
         private int logCount = 0;
 
-        public LogFileMoudle()
+        public LogFileModule()
         {
 #if !UNITY_EDITOR
             CreateLogFile();
@@ -45,7 +45,7 @@ namespace ConsoleLog
             }
 
 #if !UNITY_EDITOR
-            //·Ç±àÒëÆ÷Çé¿öÏÂ½øÐÐÈÕÖ¾¹ýÆÚÉ¾³ýÂß¼­
+            //ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½ï¿½ï¿½ï¿½É¾ï¿½ï¿½ï¿½ß¼ï¿½
             DeleteOldLogFiles();
 #endif
             fileStream = new FileStream(filePath, FileMode.OpenOrCreate, FileAccess.ReadWrite);
@@ -53,7 +53,7 @@ namespace ConsoleLog
             stringBuilder = new StringBuilder();
         }
         /// <summary>
-        /// É¾³ý¹ýÆÚÈÕÖ¾ÎÄ¼þ
+        /// É¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾ï¿½Ä¼ï¿½
         /// </summary>
         private void DeleteOldLogFiles()
         {
@@ -76,7 +76,7 @@ namespace ConsoleLog
         public void LogMessageReceived(string logstring, string stackTrace, LogType type)
         {
             stringBuilder.Clear();
-            //¼ÇÂ¼¿ªÊ¼Ïà¹ØÐÅÏ¢ ÀàÐÍ+Ê±¼ä+log
+            //ï¿½ï¿½Â¼ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢ ï¿½ï¿½ï¿½ï¿½+Ê±ï¿½ï¿½+log
             stringBuilder.Append($"[{type}]  [{DateTime.Now.ToString(TimeFormat)}] {logstring}");
             logCount++;
             StackTrace stack = new StackTrace(true);
@@ -108,7 +108,7 @@ namespace ConsoleLog
 
         }
         /// <summary>
-        /// ½«»º³åÇøµÄÐ´ÈëÎÄ¼þÖÐ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
         /// </summary>
         public void WriteFile()
         {

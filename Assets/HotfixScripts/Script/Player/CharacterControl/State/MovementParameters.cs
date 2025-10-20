@@ -201,7 +201,7 @@ namespace CharacterController
     public class RunMoveParameters
     {
         [Min(1f)]
-        public float runSpeedMultiplier = 1.5f;
+        public float runSpeedMultiplier = 2f;
 
         public InputMode runInputMode = InputMode.Hold;
     }

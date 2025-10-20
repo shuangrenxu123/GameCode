@@ -3,10 +3,10 @@ using CharacterController;
 using HFSM;
 using UnityEngine;
 
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
-    public class CharacterLoginStateMachine
-        : StateMachine<ECharacterControllerState, ECharacterLoginState>
+    public class CharacterLogicStateMachine
+        : StateMachine<ECharacterControllerState, ECharacterLogicState>
     {
         public override ECharacterControllerState currentType
             => ECharacterControllerState.Login;
@@ -14,7 +14,7 @@ namespace Character.Controller.LoginState
         public CharacterMovementStateMachine movementStateMachine;
         public AnimatorHelper animancer;
 
-        public CharacterLoginStateMachine
+        public CharacterLogicStateMachine
             (CharacterActor actor, CharacterBrain characterBrain)
         {
             this.characterBrain = characterBrain;

@@ -3,11 +3,11 @@ using Character.Controller.State;
 using GameLogin.Interact;
 using HFSM;
 using UnityEngine;
-namespace Character.Controller.LoginState
+namespace Character.Controller.LogicState
 {
-    public class CharacterEmptyLoginState : CharacterLogicBaseState
+    public class CharacterEmptyLogicState : CharacterLogicBaseState
     {
-        public override ECharacterLoginState currentType => ECharacterLoginState.Empty;
+        public override ECharacterLogicState currentType => ECharacterLogicState.Empty;
 
         public override void Enter(StateBaseInput input = null)
         {
@@ -23,7 +23,7 @@ namespace Character.Controller.LoginState
 
         private void TryChangeHitState()
         {
-            parentMachine.ChangeState(ECharacterLoginState.InjIry, new CharacterInjIryStateInput(0));
+            parentMachine.ChangeState(ECharacterLogicState.InjIry, new CharacterInjIryStateInput(0));
         }
 
         public override void Update()
@@ -35,14 +35,14 @@ namespace Character.Controller.LoginState
                 var Interaction = trigger.gameObject.GetComponent<Intractable>();
                 if (Interaction && characterActions.interact.Started)
                 {
-                    parentMachine.ChangeState(ECharacterLoginState.Interaction);
+                    parentMachine.ChangeState(ECharacterLogicState.Interaction);
                     return;
                 }
             }
 
             if (characterActions.attack.Started)
             {
-                parentMachine.ChangeState(ECharacterLoginState.Attack);
+                parentMachine.ChangeState(ECharacterLogicState.Attack);
 
                 return;
             }
