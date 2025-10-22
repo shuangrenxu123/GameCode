@@ -5,6 +5,11 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.LogicState
 {
+    enum AnimClipName
+    {
+        Roll,
+
+    }
     public class CharacterEmptyLogicState : CharacterLogicBaseState
     {
         public override ECharacterLogicState currentType => ECharacterLogicState.Empty;
@@ -29,15 +34,38 @@ namespace Character.Controller.LogicState
         public override void Update()
         {
             base.Update();
+
+            //进入与物体交互
             if (characterActor.Triggers.Count != 0)
             {
                 var trigger = characterActor.Triggers[0];
                 var Interaction = trigger.gameObject.GetComponent<Intractable>();
                 if (Interaction && characterActions.interact.Started)
                 {
-                    parentMachine.ChangeState(ECharacterLogicState.Interaction);
+                    var animClipName = GetInteractionAnimClipName(Interaction);
+
+                    parentMachine.ChangeState(ECharacterLogicState.Interaction,
+                        new InteractionState(animClipName,
+                            true,
+                            true,
+                            Interaction.reference.position,
+                            Interaction.reference.rotation,
+                            Interaction.Interactive, null));
+
                     return;
                 }
+            }
+            //进入翻滚
+            if (characterActions.roll.Started &&
+                movementMachine.CurrentStateType is ECharacterMoveState.NormalMove or ECharacterMoveState.RunMove)
+            {
+                parentMachine.ChangeState(ECharacterLogicState.Interaction,
+                       new InteractionState(AnimClipName.Roll.ToString(),
+                           false,
+                           true,
+                           default,
+                           default,
+                           null, null));
             }
 
             if (characterActions.attack.Started)
@@ -46,6 +74,11 @@ namespace Character.Controller.LogicState
 
                 return;
             }
+        }
+
+        string GetInteractionAnimClipName(Intractable intractable)
+        {
+            return intractable.intractableType.ToString();
         }
     }
 }

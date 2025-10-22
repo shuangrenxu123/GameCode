@@ -119,7 +119,7 @@ namespace Character.Controller
             loginMachine.animancer = AnimancerHelper;
             loginMachine.database = dataBase;
 
-            var emptyState = new CharacterEmptyLoginState();
+            var emptyState = new CharacterEmptyLogicState();
             var interactState = new CharacterInteractionState()
             {
                 interactAnimations = animatorConfig.clipAnimators

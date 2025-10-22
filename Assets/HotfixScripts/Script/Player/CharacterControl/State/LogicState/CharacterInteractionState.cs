@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Animancer;
 using Character.Controller.State;
@@ -6,42 +7,54 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.LogicState
 {
-    public record InteractionState(string animClipName, Vector3 position, Quaternion rotation) : StateBaseInput;
+    public record InteractionState(string animClipName,
+        bool needSetPosition,
+        bool useRootMotion,
+        Vector3 position,
+        Quaternion rotation,
+        Action onEnter,
+        Action onExit) : StateBaseInput;
 
     public class CharacterInteractionState : CharacterLogicBaseState
     {
         public override ECharacterLogicState currentType => ECharacterLogicState.Interaction;
         public Dictionary<string, ClipTransition> interactAnimations;
+        InteractionState inputData;
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
-            var trigger = characterActor.Triggers[0];
-            var interaction = trigger.gameObject.GetComponent<Intractable>();
 
+            inputData = input as InteractionState;
             // //确定坐标
             characterActor.Velocity = Vector3.zero;
+
+            if (inputData.needSetPosition)
+            {
+                characterActor.Teleport(inputData.position, inputData.rotation);
+            }
             parentMachine.movementStateMachine.EnableMachine(false, false);
-            characterActor.Teleport(interaction.reference.position, interaction.reference.rotation);
 
             //RootMotion
-            if (interaction.UseRootMotion)
+            if (inputData.useRootMotion)
             {
                 characterActor.SetUpRootMotion(true, true);
             }
-            var animState = Animancer.Play(interactAnimations[interaction.intractableType.ToString()]);
+            var animState = Animancer.Play(interactAnimations[inputData.animClipName]);
             animState.Events.OnEnd = () =>
             {
                 parentMachine.ChangeState(ECharacterLogicState.Empty);
                 animState.Events.OnEnd = null;
             };
 
-
-            interaction.Interactive();
+            inputData.onEnter?.Invoke();
         }
 
         public override void Exit()
         {
             base.Exit();
+
+            inputData.onExit?.Invoke();
+
             parentMachine.movementStateMachine.EnableMachine(true, true);
             parentMachine.movementStateMachine.RefreshAnimator();
             characterActor.UseRootMotion = false;
