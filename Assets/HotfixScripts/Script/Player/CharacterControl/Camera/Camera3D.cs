@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Character.Controller.MoveState;
 using Character.Controller.State;
+using Character.Player;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using HFSM;

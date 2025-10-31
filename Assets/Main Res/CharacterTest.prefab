@@ -319,7 +319,7 @@ GameObject:
   - component: {fileID: 4649194192067659648}
   m_Layer: 0
   m_Name: CharacterTest
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -449,6 +449,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityType: 0
+  onEntityDead:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!1001 &4504293607105112843
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -575,11 +578,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 101556, guid: 98a56ff2c8ee98645a4d3f79fa1506c5, type: 3}
       propertyPath: m_Layer
-      value: 13
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 101558, guid: 98a56ff2c8ee98645a4d3f79fa1506c5, type: 3}
       propertyPath: m_Layer
-      value: 13
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 101560, guid: 98a56ff2c8ee98645a4d3f79fa1506c5, type: 3}
       propertyPath: m_Layer

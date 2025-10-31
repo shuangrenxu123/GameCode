@@ -24,8 +24,8 @@ namespace UIWindow
             var window = GetWindow(name);
             if (window != null)
             {
-                var topwindow = GetTopWindow();
-                if (topwindow != window)
+                var topWindow = GetTopWindow();
+                if (topWindow != window)
                 {
                     Pop(window);
                     window.OnFocus();

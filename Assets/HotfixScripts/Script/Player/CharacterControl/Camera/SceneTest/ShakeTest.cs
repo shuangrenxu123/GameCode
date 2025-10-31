@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Character.Player;
 using CharacterController.Camera;
 using Cysharp.Threading.Tasks;
 using Sirenix.OdinInspector;
@@ -20,8 +21,8 @@ namespace Camera.Test
         {
             await UniTask.WaitForSeconds(_delayTime);
 
-            var Player = other.gameObject.GetComponent<Player>();
-            var shake = Player.camera3D.effectManager.GetEffect<CameraShakeEffect>();
+            var player = other.gameObject.GetComponent<Player>();
+            var shake = player.camera3D.effectManager.GetEffect<CameraShakeEffect>();
             shake.Activate();
             shake.StartShake(_shakeDuration, _shakeIntensity);
         }

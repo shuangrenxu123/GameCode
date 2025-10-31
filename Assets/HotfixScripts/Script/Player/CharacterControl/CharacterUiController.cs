@@ -1,7 +1,9 @@
 using Assets;
 using CharacterController;
+using UIPanel.Console;
 using UIWindow;
 using UnityEngine;
+
 [DefaultExecutionOrder(100)]
 public class CharacterUiController : MonoBehaviour
 {
@@ -29,8 +31,8 @@ public class CharacterUiController : MonoBehaviour
         {
             CharacterBrain.EnableUIInput();
             //var ui = Resources.Load<GameObject>("ConsoleUI");
-
-            var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "ConsoleUI.prefab");
+            var ui = Resources.Load<GameObject>("UI/ConsolePanel/ConsoleUI");
+            // var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "ConsoleUI.prefab");
             UIManager.Instance.OpenUI<CommandUI>(ui.GetComponent<CommandUI>());
 
         }

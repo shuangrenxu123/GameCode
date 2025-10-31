@@ -1,3 +1,4 @@
+using Character.Player;
 using TMPro;
 using UIWindow;
 using UnityEngine;
@@ -18,9 +19,9 @@ public class BagSelectPanel : UIWindowBase
         var panel = UIManager.Instance.GetUIWindow<BagPanel>();
         currentItem = panel.currentSelectSlot.ItemData;
 
-        GetUIEvnetListener("Equipment").PointerClick += EquipmentClick;
-        GetUIEvnetListener("Use").PointerClick += UseClick;
-        GetUIEvnetListener("Drop").PointerClick += DropClick;
+        GetUIEventListener("Equipment").PointerClick += EquipmentClick;
+        GetUIEventListener("Use").PointerClick += UseClick;
+        GetUIEventListener("Drop").PointerClick += DropClick;
 
         switch (currentItem.Type)
         {

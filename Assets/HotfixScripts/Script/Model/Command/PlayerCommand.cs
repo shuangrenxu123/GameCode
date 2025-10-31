@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Character.Player;
 using ConsoleLog;
+using UI;
 using UnityEngine;
 
 public class PlayerCommand : MonoBehaviour
@@ -17,6 +19,11 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole("Help=========", ColorUtility.ToHtmlStringRGB(Color.green));
     }
 
+    [Command("TestDialogue")]
+    static void TestDialog()
+    {
+        DialogueCommon.ShowChat("测试用户", "对你说了一句悄悄话", Color.green);
+    }
     [Command("Test")]
     static void Test()
     {

@@ -32,7 +32,7 @@ namespace Character.Controller.LogicState
                     new CharacterActions() : characterBrain.CharacterActions;
             }
         }
-        public CharacterMovementStateMachine movementMachine;
+        public CharacterMovementStateMachine movementMachine => parentMachine.movementStateMachine;
 
         protected ECharacterMoveState GetMovementState()
         {

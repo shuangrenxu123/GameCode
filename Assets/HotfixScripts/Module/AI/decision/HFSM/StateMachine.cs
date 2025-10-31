@@ -124,6 +124,12 @@ namespace HFSM
         /// <param name="StateName"></param>
         public void ChangeState(C stateName, StateBaseInput input = null)
         {
+            if (stateName.Equals(CurrentStateType))
+            {
+                Debug.LogError("不允许从自己的状态切换到自己");
+                return;
+            }
+
             currentState?.Exit();
 
             var lastType = lastStateType;
@@ -131,8 +137,8 @@ namespace HFSM
 
             currentState = FindState(stateName);
 
-            activeTransitions = currentState.transitions ?? noTransitions;
             CurrentStateType = stateName;
+            activeTransitions = currentState.transitions ?? noTransitions;
             currentState.Enter(input);
 
             OnChangeState?.Invoke(FindState(lastType), currentState);
@@ -177,12 +183,20 @@ namespace HFSM
         {
             base.Enter();
 
-            if (defaultState == null)
+            if (!lastStateType.Equals(defaultState))
             {
-                return;
+                ChangeState(defaultState, input);
             }
+            else
+            {
+                currentState = FindState(defaultState);
 
-            ChangeState(defaultState, input);
+                CurrentStateType = defaultState;
+
+                activeTransitions = currentState.transitions ?? noTransitions;
+
+                currentState.Enter(input);
+            }
         }
         public override void Exit()
         {

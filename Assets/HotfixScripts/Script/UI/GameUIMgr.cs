@@ -8,7 +8,7 @@ public class GameUIMgr : UIWindowBase
     [SerializeField]
     public AudioData audios;
     #region AudioName
-    [Header("UIÒôÐ§")]
+    [Header("UIï¿½ï¿½Ð§")]
     [SerializeField]
     private string click;
     #endregion
@@ -41,9 +41,9 @@ public class GameUIMgr : UIWindowBase
     }
     public override void OnCreate()
     {
-        GetUIEvnetListener("Bag").PointerClick += OpenBagPanel;
-        GetUIEvnetListener("Network").PointerClick += OpenNetworkPanel;
-        GetUIEvnetListener("Equipment").PointerClick += OpenEquipmentUI;
+        GetUIEventListener("Bag").PointerClick += OpenBagPanel;
+        GetUIEventListener("Network").PointerClick += OpenNetworkPanel;
+        GetUIEventListener("Equipment").PointerClick += OpenEquipmentUI;
     }
     public override void OnUpdate()
     {
@@ -60,8 +60,8 @@ public class GameUIMgr : UIWindowBase
     public override void OnDelete()
     {
         CloseOtherPanel();
-        GetUIEvnetListener("Bag").PointerClick -= OpenBagPanel;
-        GetUIEvnetListener("Network").PointerClick -= OpenNetworkPanel;
-        GetUIEvnetListener("Equipment").PointerClick -= OpenEquipmentUI;
+        GetUIEventListener("Bag").PointerClick -= OpenBagPanel;
+        GetUIEventListener("Network").PointerClick -= OpenNetworkPanel;
+        GetUIEventListener("Equipment").PointerClick -= OpenEquipmentUI;
     }
 }

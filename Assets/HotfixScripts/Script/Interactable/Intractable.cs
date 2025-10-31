@@ -11,7 +11,7 @@ namespace GameLogin.Interact
         Door_Outward = 3,
         Chest = 4,
         Lever = 5,
-        Item = 6
+        PickUpItem = 6
     }
 
     public class Intractable : MonoBehaviour

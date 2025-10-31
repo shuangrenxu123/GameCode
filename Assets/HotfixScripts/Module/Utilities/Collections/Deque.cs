@@ -4,6 +4,10 @@ using System.Collections.Generic;
 
 namespace Utilities.Collections
 {
+    /// <summary>
+    /// 双端队列
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Deque<T> : IEnumerable<T>
     {
         private static readonly T[] emptyBuffer = new T[0];

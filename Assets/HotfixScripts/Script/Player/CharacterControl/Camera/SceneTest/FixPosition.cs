@@ -1,3 +1,4 @@
+using Character.Player;
 using CharacterController.Camera;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -17,13 +18,13 @@ namespace Camera.Test
 
         void OnTriggerEnter(Collider other)
         {
-            var Player = other.gameObject.GetComponent<Player>();
-            var effect = Player.camera3D.effectManager.GetEffect<CameraFixPositionEffect>();
+            var player = other.gameObject.GetComponent<Player>();
+            var effect = player.camera3D.effectManager.GetEffect<CameraFixPositionEffect>();
 
             effect.ActivateWithSmoothMove(fixPosition.position, isSmooth ? smoothTime : 0);
             effect.Activate();
 
-            var rotationEffect = Player.camera3D.effectManager.GetEffect<CameraRotationEffect>();
+            var rotationEffect = player.camera3D.effectManager.GetEffect<CameraRotationEffect>();
             rotationEffect.SetInputEnabled(false);
         }
         void OnTriggerExit(Collider other)

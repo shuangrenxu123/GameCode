@@ -27,7 +27,7 @@ namespace UIWindow
             raycaster = GetComponent<CanvasGroup>();
             CharacterBrain = FindFirstObjectByType<CharacterBrain>();
         }
-        public UIEventListener GetUIEvnetListener(string name)
+        public UIEventListener GetUIEventListener(string name)
         {
             if (!listeners.ContainsKey(name))
             {
