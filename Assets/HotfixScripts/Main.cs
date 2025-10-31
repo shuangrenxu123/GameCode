@@ -2,6 +2,7 @@
 using Audio;
 using Config;
 using ConsoleLog;
+using Framework.Module.Resources.Downloader.Version;
 using GameSave;
 using Network;
 using ObjectPool;
