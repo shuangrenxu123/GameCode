@@ -9,9 +9,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Framework.Module.Resources.Downloader.Version;
 using Ionic.Zip;
-using LitJson;
 using UnityEngine;
 using UnityEngine.Networking;
+using Utf8Json;
 
 namespace Downloader
 {
@@ -255,7 +255,7 @@ namespace Downloader
                     actionNothongUpdate.Invoke();
                     return null;
                 }
-                return JsonMapper.ToObject<List<UpdateInfo>>(uwr.downloadHandler.text);
+                return JsonSerializer.Deserialize<List<UpdateInfo>>(uwr.downloadHandler.text);
             }
             catch (Exception ex)
             {

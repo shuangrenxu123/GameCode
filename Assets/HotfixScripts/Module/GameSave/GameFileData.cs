@@ -1,5 +1,5 @@
-using LitJson;
 using UnityEngine;
+using Utf8Json;
 
 namespace GameSave
 {
@@ -20,13 +20,13 @@ namespace GameSave
         }
         public void LoadData(string json)
         {
-            var data = JsonMapper.ToObject<Data>(json);
+            var data = JsonSerializer.Deserialize<Data>(json);
             Debug.Log(data.currentTime);
         }
 
         public string SaveData()
         {
-            return JsonMapper.ToJson(new Data());
+            return JsonSerializer.ToJsonString(new Data());
         }
     }
 }

@@ -2,8 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using LitJson;
 using UnityEngine;
+using Utf8Json;
 namespace GameSave
 {
 
@@ -41,7 +41,7 @@ namespace GameSave
                 saveData.Add(save.Key.ToString(), temp);
             }
 
-            var json = JsonMapper.ToJson(saveData);
+            var json = JsonSerializer.ToJsonString(saveData);
             File.WriteAllText(Path.Combine(savePath, $"{fileName}.saveData"), json);
             Debug.Log("Save Success");
         }
@@ -57,7 +57,7 @@ namespace GameSave
             }
 
             var data = File.ReadAllText(path);
-            var json = JsonMapper.ToObject<Dictionary<string, string>>(data);
+            var json = JsonSerializer.Deserialize<Dictionary<string, string>>(data);
 
             foreach (var JObject in json)
             {

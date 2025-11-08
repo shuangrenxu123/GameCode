@@ -1,5 +1,5 @@
 using System.IO;
-using LitJson;
+using Utf8Json;
 
 namespace Framework.Module.Resources.Downloader.Version
 {
@@ -31,7 +31,7 @@ namespace Framework.Module.Resources.Downloader.Version
             //获得版本号
             string version = ReadCacheResVersion();
             //json中包含了版本号和资源版本号
-            var jsonData = JsonMapper.ToObject(version);
+            var jsonData = JsonSerializer.Deserialize<dynamic>(version);
             appVersion = jsonData["version"].ToString();
         }
         ///<summary>
@@ -68,7 +68,7 @@ namespace Framework.Module.Resources.Downloader.Version
         /// <param name="newVersion"></param>
         public void UpdateAppVersion(string newVersion)
         {
-            var versionData = JsonMapper.ToObject(ReadCacheResVersion());
+            var versionData = JsonSerializer.Deserialize<dynamic>(ReadCacheResVersion());
             versionData["version"] = newVersion;
             appVersion = newVersion;
             //有可能我们没有update文件夹。所以需要创建一个
@@ -77,7 +77,7 @@ namespace Framework.Module.Resources.Downloader.Version
             if (!Directory.Exists(dir))
                 Directory.CreateDirectory(dir);
             using FileStream fs = new FileStream(cacheResVersionFile, FileMode.Create, FileAccess.Write, FileShare.None);
-            fs.Write(System.Text.Encoding.UTF8.GetBytes(JsonMapper.ToJson(versionData)));
+            fs.Write(System.Text.Encoding.UTF8.GetBytes(JsonSerializer.ToJsonString(versionData)));
         }
         /// <summary>
         /// 删除缓存版本号文件

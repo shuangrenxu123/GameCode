@@ -18,7 +18,7 @@ namespace CharacterController.Camera
         [SerializeField, LabelText("检测半径")]
         private float detectionRadius = 0.3f; // 优化检测半径，对于相机碰撞检测更合适
         [SerializeField, LabelText("检测层级")]
-        private LayerMask layerMask = -1; // 默认检测所有层级
+        private LayerMask layerMask = Physics.DefaultRaycastLayers; // 使用默认射线层级
         [SerializeField, LabelText("影响缩放")]
         private bool collisionAffectsZoom = false;
         private CameraZoomEffect zoomEffect;
@@ -86,8 +86,8 @@ namespace CharacterController.Camera
 
             if (hit)
             {
-                // 返回调整后的位置
-                Vector3 adjustedPosition = displacement;
+                // 返回调整后的位置（加上目标位置的基础偏移）
+                Vector3 adjustedPosition = targetPosition + displacement;
 
                 // 创建修改后的上下文，直接设置当前处理的位置
                 var modifiedContext = new CameraEffectContext
@@ -98,7 +98,7 @@ namespace CharacterController.Camera
                     baseRotation = context.baseRotation,
                     baseFieldOfView = context.baseFieldOfView,
                     deltaTime = context.deltaTime,
-                    currentPosition = adjustedPosition, // 直接设置当前处理的位置
+                    currentPosition = adjustedPosition, // 正确计算的位置
                     currentRotation = context.currentRotation,
                     currentFieldOfView = context.currentFieldOfView,
                     currentDistance = context.currentDistance // 传递距离信息
@@ -112,17 +112,26 @@ namespace CharacterController.Camera
 
         private bool DetectCollisions(ref Vector3 displacement, Vector3 targetPosition)
         {
-            // 从目标位置向相机位置发射射线检测碰撞
-            Vector3 cameraPosition = targetPosition + displacement;
-            Vector3 direction = Vector3.Normalize(displacement);
+            // 使用非归一化的方向向量保持精度
+            Vector3 direction = displacement;
+            float distance = direction.magnitude;
+            
+            // 如果距离非常小，不需要检测
+            if (distance < 0.001f)
+                return false;
+                
+            direction.Normalize();
+
+            // 从目标位置稍微偏移一点开始检测，避免自己碰撞自己
+            Vector3 startPosition = targetPosition + direction * 0.1f;
 
             // 使用SphereCast检测从目标位置到相机位置路径上的碰撞
             int hits = Physics.SphereCastNonAlloc(
-                targetPosition,    // 从目标位置开始
+                startPosition,      // 从稍微偏移的位置开始
                 detectionRadius,
-                direction,         // 向相机方向发射
+                direction,          // 向相机方向发射
                 hitsBuffer,
-                displacement.magnitude,
+                distance - 0.1f,    // 减去起始偏移
                 layerMask,
                 QueryTriggerInteraction.Ignore
             );
@@ -132,8 +141,13 @@ namespace CharacterController.Camera
             for (int i = 0; i < hits; i++)
             {
                 RaycastHit hitBuffer = hitsBuffer[i];
-                // 过滤结果
-                if (hitBuffer.distance == 0)
+                
+                // 过滤结果：检查距离是否有效且不是自身碰撞
+                if (hitBuffer.distance <= 0.01f || hitBuffer.collider == null)
+                    continue;
+
+                // 避免检测到相机自己的碰撞体
+                if (hitBuffer.collider.gameObject == gameObject)
                     continue;
 
                 validHits[validHitsNumber] = hitBuffer;
@@ -155,7 +169,9 @@ namespace CharacterController.Camera
             // 调整位移向量长度到碰撞点前一点，避免穿透
             float safeDistance = nearestDistance - detectionRadius;
             if (safeDistance < 0) safeDistance = 0;
-            displacement = Vector3.Normalize(displacement) * safeDistance;
+            
+            // 重新计算位移向量
+            displacement = direction * safeDistance;
             return true;
         }
     }

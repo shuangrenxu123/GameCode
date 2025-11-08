@@ -1,15 +1,13 @@
-using LitJson;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using Utf8Json;
 namespace Config
 {
-
-
     public class ConfigManager : ModuleSingleton<ConfigManager>, IModule
     {
         /// <summary>
-        /// ¶ÔÓ¦µÄÅäÖÃÎÄ¼þ ºÍÆä¶ÔÏó
+        /// ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         private Dictionary<string, AssetConfig> assetConfigs = new Dictionary<string, AssetConfig>();
         private string path = Application.streamingAssetsPath + "/config/";
@@ -29,11 +27,11 @@ namespace Config
             else
             {
                 using StreamReader sr = new StreamReader(path);
-                var json = JsonMapper.ToObject(sr.ReadToEnd());
-                foreach (JsonData data in json["members"])
+                var json = JsonSerializer.Deserialize<dynamic>(sr.ReadToEnd());
+                foreach (var data in json["members"])
                 {
                     //Debug.Log(data["name"]);
-                    assetConfigs[name].AddData((int)data["id"], JsonMapper.ToObject<T>(data.ToJson()));
+                    assetConfigs[name].AddData((int)data["id"], JsonSerializer.Deserialize<T>(data.ToJson()));
 
                 }
             }
