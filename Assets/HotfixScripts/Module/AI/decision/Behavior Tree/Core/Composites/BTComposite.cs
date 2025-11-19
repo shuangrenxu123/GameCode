@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AIBlackboard;
 
 namespace BT
 {
@@ -19,7 +20,7 @@ namespace BT
                 return _children;
             }
         }
-        public override void Activate(DataBase<string, object> database)
+        public override void Activate(Blackboard database)
         {
             base.Activate(database);
 

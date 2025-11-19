@@ -27,7 +27,7 @@ namespace Character.Controller.MoveState
 
             lookingDirectionParameters.lookingDirectionMode = LookingDirectionParameters.LookingDirectionMode.Target;
 
-            var targetTransform = database.GetData<Transform>(targetKey);
+            var targetTransform = database.GetValue<Transform>(targetKey);
             if (targetTransform)
             {
                 SetLockTarget(targetTransform);

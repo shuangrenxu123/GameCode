@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using AIBlackboard;
 using UnityEngine;
 namespace HTN
 {
@@ -80,7 +81,7 @@ namespace HTN
 
     public class WorldState
     {
-        private DataBase<WSProperties, object> db = new();
+        private Blackboard db = new();
 
         public WorldState()
         {
@@ -109,46 +110,46 @@ namespace HTN
         #region Add:添加世界状态属性
         public void Add(WSProperties p, Enum v)
         {
-            db.SetData(p, v);
+            db.SetValue(p, v);
         }
         public void Add(WSProperties p, int v)
         {
-            db.SetData(p, v);
+            db.SetValue(p, v);
         }
         public void Add(WSProperties p, float v)
         {
-            db.SetData(p, v);
+            db.SetValue(p, v);
         }
         public void Add(WSProperties p, bool v)
         {
-            db.SetData(p, v);
+            db.SetValue(p, v);
         }
         public void Add(WSProperties p, object v)
         {
-            db.SetData(p, v);
+            db.SetValue(p, v);
         }
         #endregion
 
         #region Get:获取世界状态属性
         public Enum GetEnum(WSProperties p)
         {
-            return (Enum)db.GetData<object>(p);
+            return (Enum)db.GetValue<WSProperties, Enum>(p);
         }
         public int GetInt(WSProperties p)
         {
-            return (int)db.GetData<object>(p);
+            return (int)db.GetValue<WSProperties, int>(p);
         }
         public bool GetBool(WSProperties p)
         {
-            return (bool)db.GetData<object>(p);
+            return (bool)db.GetValue<WSProperties, bool>(p);
         }
         public float GetFloat(WSProperties p)
         {
-            return (float)db.GetData<object>(p);
+            return db.GetValue<WSProperties, float>(p);
         }
         public object GetObj(WSProperties p)
         {
-            return db.GetData<object>(p);
+            return db.GetValue<WSProperties, object>(p);
         }
         #endregion
 
@@ -161,9 +162,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, Enum value)
         {
-            if (db.ContainsData(propType))
+            if (db.ContainsData<WSProperties, Enum>(propType))
             {
-                db.SetData(propType, value);
+                db.SetValue(propType, value);
                 return true;
             }
             return false;
@@ -176,9 +177,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, int value)
         {
-            if (db.ContainsData(propType))
+            if (db.ContainsData<WSProperties, int>(propType))
             {
-                db.SetData(propType, value);
+                db.SetValue(propType, value);
                 return true;
             }
             return false;
@@ -191,9 +192,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, bool value)
         {
-            if (db.ContainsData(propType))
+            if (db.ContainsData<WSProperties, bool>(propType))
             {
-                db.SetData(propType, value);
+                db.SetValue(propType, value);
                 return true;
             }
             return false;
@@ -206,9 +207,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, float value)
         {
-            if (db.ContainsData(propType))
+            if (db.ContainsData<WSProperties, float>(propType))
             {
-                db.SetData(propType, value);
+                db.SetValue(propType, value);
                 return true;
             }
             return false;
@@ -221,9 +222,9 @@ namespace HTN
         /// <returns></returns>
         public bool Set(WSProperties propType, object value)
         {
-            if (db.ContainsData(propType))
+            if (db.ContainsData<WSProperties, object>(propType))
             {
-                db.SetData(propType, value);
+                db.SetValue(propType, value);
                 return true;
             }
             return false;
@@ -238,7 +239,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, Enum> cond)
         {
-            if (!db.ContainsData(cond.Key) || (Enum)db.GetData<object>(cond.Key) != cond.Value)
+            if (!db.ContainsData<WSProperties, Enum>(cond.Key) || db.GetValue<object, Enum>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -251,7 +252,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, int> cond)
         {
-            if (!db.ContainsData(cond.Key) || (int)db.GetData<object>(cond.Key) != cond.Value)
+            if (!db.ContainsData<WSProperties, int>(cond.Key) || (int)db.GetValue<WSProperties, int>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -264,7 +265,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, bool> cond)
         {
-            if (!db.ContainsData(cond.Key) || (bool)db.GetData<object>(cond.Key) != cond.Value)
+            if (!db.ContainsData<WSProperties, bool>(cond.Key) || (bool)db.GetValue<WSProperties, bool>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -277,7 +278,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, float> cond)
         {
-            if (!db.ContainsData(cond.Key) || (float)db.GetData<object>(cond.Key) != cond.Value)
+            if (!db.ContainsData<WSProperties, float>(cond.Key) || (float)db.GetValue<WSProperties, float>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -290,7 +291,7 @@ namespace HTN
         /// <returns></returns>
         public bool Contains(KeyValuePair<WSProperties, object> cond)
         {
-            if (!db.ContainsData(cond.Key) || db.GetData<object>(cond.Key) != cond.Value)
+            if (!db.ContainsData<WSProperties, object>(cond.Key) || db.GetValue<WSProperties, object>(cond.Key) != cond.Value)
             {
                 return false;
             }
@@ -307,7 +308,7 @@ namespace HTN
         {
             foreach (WSProperties prop in Enum.GetValues(typeof(WSProperties)))
             {
-                if (ws.db.ContainsData(prop))
+                if (ws.db.ContainsData<WSProperties, Enum>(prop))
                 {
                     Add(prop, ws.GetObj(prop));
                 }

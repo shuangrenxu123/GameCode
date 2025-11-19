@@ -1,3 +1,5 @@
+using AIBlackboard;
+
 namespace BT
 {
     /// <summary>
@@ -10,7 +12,7 @@ namespace BT
         {
             this.child = child;
         }
-        public override void Activate(DataBase<string, object> database)
+        public override void Activate(Blackboard database)
         {
             base.Activate(database);
             child.Activate(database);

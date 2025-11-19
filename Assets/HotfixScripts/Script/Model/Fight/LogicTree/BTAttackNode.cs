@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using AIBlackboard;
 using BT;
 using Enemy;
 using UnityEngine;
@@ -8,11 +9,11 @@ namespace BT.Action
     {
 
         private IEnemyBrain entityBrain;
-        public override void Activate(DataBase<string, object> database)
+        public override void Activate(Blackboard database)
         {
             base.Activate(database);
 
-            entityBrain = database.GetData<IEnemyBrain>("entityBrain");
+            entityBrain = database.GetValue<IEnemyBrain>("entityBrain");
         }
         protected override BTResult Execute()
         {

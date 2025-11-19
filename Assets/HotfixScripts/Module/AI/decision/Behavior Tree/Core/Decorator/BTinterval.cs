@@ -1,3 +1,5 @@
+using AIBlackboard;
+
 namespace BT
 {
     public class BTinterval : BTDecorator
@@ -9,14 +11,14 @@ namespace BT
             dataBaseName = databaseName;
             interval = time;
         }
-        public override void Activate(DataBase<string, object> database)
+        public override void Activate(Blackboard database)
         {
             base.Activate(database);
-            database.SetData(dataBaseName, 0f);
+            database.SetValue(dataBaseName, 0f);
         }
         public override BTResult Tick()
         {
-            var time = database.GetData<float>(dataBaseName);
+            var time = database.GetValue<float>(dataBaseName);
             if (time <= interval)
             {
                 return BTResult.Failed;
@@ -26,7 +28,7 @@ namespace BT
                 var result = child.Tick();
                 if (result != BTResult.Running)
                 {
-                    database.SetData(dataBaseName, 0f);
+                    database.SetValue(dataBaseName, 0f);
                     return result;
                 }
                 else

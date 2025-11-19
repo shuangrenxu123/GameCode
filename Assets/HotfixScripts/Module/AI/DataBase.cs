@@ -1,35 +1,195 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using HTN;
 using UnityEngine;
-/// <summary>
-/// 单个AI的数据存储。
-/// </summary>
-public class DataBase<TKey, TValue>
+
+namespace AIBlackboard
 {
-    Dictionary<TKey, TValue> data = new();
-    public T GetData<T>(TKey dataName)
+    public readonly struct BlackboardKey<T> : IEquatable<BlackboardKey<T>>
     {
-        if (!data.ContainsKey(dataName))
+        public readonly int Id;
+
+        // --- 构造函数 ---
+
+        // 针对 String 的构造
+        public BlackboardKey(string name)
         {
-            Debug.LogError($"没有在黑板中找到相关数据 {dataName} ");
-            return default;
+            unchecked { Id = (name.GetHashCode() * 397) ^ typeof(T).GetHashCode(); }
         }
-        return (T)(object)data[dataName];
+
+        // 针对 Int 的构造
+        public BlackboardKey(int id)
+        {
+            unchecked { Id = (id * 397) ^ typeof(T).GetHashCode(); }
+        }
+
+        // 针对 任意泛型Key (Enum, Struct) 的构造
+        public BlackboardKey(int rawKeyHash, Type keyType)
+        {
+            unchecked
+            {
+                int h1 = rawKeyHash;
+                int h2 = keyType.GetHashCode();
+                // 混合 KeyHash, KeyTypeHash, ValueTypeHash(T)
+                Id = (h1 * 397) ^ (h2 * 17) ^ typeof(T).GetHashCode();
+            }
+        }
+
+        // --- ✨ 魔法核心：隐式类型转换 ---
+        // 这允许你直接把 string 或 int 当作 BlackboardKey<T> 传参
+
+        public static implicit operator BlackboardKey<T>(string name) => new BlackboardKey<T>(name);
+        public static implicit operator BlackboardKey<T>(int id) => new BlackboardKey<T>(id);
+        // --- 标准接口实现 ---
+        public bool Equals(BlackboardKey<T> other) => Id == other.Id;
+        public override bool Equals(object obj) => obj is BlackboardKey<T> other && Equals(other);
+        public override int GetHashCode() => Id;
+        public static bool operator ==(BlackboardKey<T> lhs, BlackboardKey<T> rhs) => lhs.Id == rhs.Id;
+        public static bool operator !=(BlackboardKey<T> lhs, BlackboardKey<T> rhs) => lhs.Id != rhs.Id;
+
     }
-    public void SetData<T>(TKey dataName, T data)
+    internal abstract class BlackboardEntry
     {
-        this.data[dataName] = (TValue)(object)data;
-    }
-    public bool CheckDataNull(TKey dataName)
-    {
-        return !data.ContainsKey(dataName) || data[dataName] == null || data[dataName].Equals(null);
-    }
-    public bool ContainsData(TKey dataName)
-    {
-        return data.ContainsKey(dataName);
+        public abstract Type ValueType { get; }
     }
 
-    public void Reset()
+    internal sealed class BlackboardEntry<T> : BlackboardEntry
     {
-        data.Clear();
+        private T _value;
+        private static readonly EqualityComparer<T> Comparer = EqualityComparer<T>.Default;
+        public event Action<T> OnValueChanged;
+
+        public override Type ValueType => typeof(T);
+
+        public T Value
+        {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            get => _value;
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            set
+            {
+                if (!Comparer.Equals(_value, value))
+                {
+                    _value = value;
+                    OnValueChanged?.Invoke(_value);
+                }
+            }
+        }
+
+        public BlackboardEntry(T initialValue) => _value = initialValue;
+    }
+
+    /// <summary>
+    /// 单个AI的数据存储。
+    /// </summary>
+    public class Blackboard
+    {
+        //这里的T用int 是为了泛型约束
+        Dictionary<int, BlackboardEntry> data = new();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue<T>(BlackboardKey<T> key, T value)
+        {
+            SetInternal(key, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetValue<T>(BlackboardKey<T> key, T defaultValue = default)
+        {
+            return GetInternal(key, defaultValue);
+        }
+
+        public bool TryGetValue<T>(BlackboardKey<T> key, out T value)
+        {
+            return TryGetInternal(key, out value);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SetValue<TKey, TVal>(TKey rawKey, TVal value)
+        {
+            // 帮你 New 一个 Key，利用 EqualityComparer 避免装箱
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            var key = new BlackboardKey<TVal>(hash, typeof(TKey));
+            SetInternal(key, value);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public TVal GetValue<TKey, TVal>(TKey rawKey, TVal defaultValue = default)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            var key = new BlackboardKey<TVal>(hash, typeof(TKey));
+            return GetInternal(key, defaultValue);
+        }
+
+        public bool TryGetValue<TKey, TVal>(TKey rawKey, out TVal value)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            var key = new BlackboardKey<TVal>(hash, typeof(TKey));
+            return TryGetInternal(key, out value);
+        }
+        private void SetInternal<T>(BlackboardKey<T> key, T value)
+        {
+            if (data.TryGetValue(key.Id, out var entryBase))
+            {
+
+                ((BlackboardEntry<T>)entryBase).Value = value;
+
+            }
+            else
+            {
+                data[key.Id] = new BlackboardEntry<T>(value);
+            }
+        }
+
+        private T GetInternal<T>(BlackboardKey<T> key, T defaultValue)
+        {
+            if (data.TryGetValue(key.Id, out var entryBase))
+            {
+
+                return ((BlackboardEntry<T>)entryBase).Value;
+            }
+            return defaultValue;
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ContainsData<T>(BlackboardKey<T> key)
+        {
+            return data.ContainsKey(key.Id);
+        }
+
+
+
+        /// <summary>
+        /// 判断是否有TKey的类型，他的Value类型为TVal
+        /// </summary>
+        /// <typeparam name="TKey"></typeparam>
+        /// <typeparam name="TVal"></typeparam>
+        /// <param name="rawKey"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool ContainsData<TKey, TVal>(TKey rawKey)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            // 注意：这里必须手动构造一次 Key 来获取完整的混合 Hash
+            // 必须传入 typeof(TVal)，因为 Key 的 Hash 算法里包含了 Value 的类型
+            var key = new BlackboardKey<TVal>(hash, typeof(TKey));
+            return data.ContainsKey(key.Id);
+        }
+        private bool TryGetInternal<T>(BlackboardKey<T> key, out T value)
+        {
+            if (data.TryGetValue(key.Id, out var entryBase))
+            {
+                value = ((BlackboardEntry<T>)entryBase).Value;
+                return true;
+            }
+            value = default;
+            return false;
+        }
+        public void Reset()
+        {
+            data.Clear();
+        }
+
     }
 }
