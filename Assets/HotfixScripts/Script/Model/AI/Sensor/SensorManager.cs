@@ -1,3 +1,4 @@
+using AIBlackboard;
 using UnityEngine;
 
 namespace Character.AI.Sensor
@@ -5,7 +6,7 @@ namespace Character.AI.Sensor
     public class SensorManager : MonoBehaviour
     {
         Sensor[] sensors;
-        DataBase<string, object> dataBase;
+        Blackboard dataBase;
 
         void Awake()
         {

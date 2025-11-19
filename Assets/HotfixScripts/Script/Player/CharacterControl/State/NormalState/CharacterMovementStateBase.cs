@@ -59,7 +59,7 @@ namespace Character.Controller.MoveState
             database = parentMachine.database;
             Animancer = parentMachine.animancer;
             materialControl = parentMachine.materialControl;
-            combatEntity = database.GetData<CombatEntity>("combatEntity");
+            combatEntity = database.GetValue<CombatEntity>("combatEntity");
         }
         public virtual void UpdateIK(int layerIndex)
         {

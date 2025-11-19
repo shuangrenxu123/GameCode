@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using AIBlackboard;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace Character.AI.Sensor
         [SerializeField, LabelText("检测间隔时间"), ShowIf("activeExecution")]
         float checkInterval = 0.5f;
 
-        protected DataBase<string, object> database;
+        protected Blackboard database;
 
         public abstract SensorType sensorType { get; }
 
@@ -47,7 +48,7 @@ namespace Character.AI.Sensor
 
         protected SensorManager sensorManager;
 
-        public void Init(SensorManager sensorManager, DataBase<string, object> database)
+        public void Init(SensorManager sensorManager, Blackboard database)
         {
             this.sensorManager = sensorManager;
             this.database = database;

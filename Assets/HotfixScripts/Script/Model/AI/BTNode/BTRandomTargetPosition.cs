@@ -1,3 +1,4 @@
+using AIBlackboard;
 using BT;
 using CharacterController;
 using UnityEngine;
@@ -14,11 +15,11 @@ public class BTRandomTargetPosition : BTAction
         target = new GameObject("target").transform;
 
     }
-    public override void Activate(DataBase<string, object> database)
+    public override void Activate(Blackboard database)
     {
         base.Activate(database);
-        actor = database.GetData<CharacterActor>((dynamic)"actor");
-        database.SetData(setDataName, (dynamic)target);
+        actor = database.GetValue<CharacterActor>((dynamic)"actor");
+        database.SetValue(setDataName, (dynamic)target);
     }
     protected override BTResult Execute()
     {

@@ -1,3 +1,4 @@
+using AIBlackboard;
 using Animancer;
 using Audio;
 using Character.Controller.LogicState;
@@ -47,12 +48,12 @@ namespace Character.Controller
 
         public CharacterMovementStateMachine moveStateMachine;
         public CharacterLogicStateMachine loginMachine;
-        DataBase<string, object> dataBase;
+        Blackboard dataBase;
 
         private void Awake()
         {
             AnimancerHelper = new AnimatorHelper(Animancer);
-            dataBase = new DataBase<string, object>();
+            dataBase = new Blackboard();
         }
         private void Start()
         {
@@ -167,7 +168,7 @@ namespace Character.Controller
 
         public void SetStateMachineData(string key, object value)
         {
-            dataBase.SetData(key, value);
+            dataBase.SetValue(key, value);
         }
     }
 }

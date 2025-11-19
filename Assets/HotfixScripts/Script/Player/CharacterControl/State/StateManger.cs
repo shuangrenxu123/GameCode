@@ -1,3 +1,4 @@
+using AIBlackboard;
 using Animancer;
 using Audio;
 using Character.Controller.LogicState;
@@ -42,12 +43,12 @@ namespace CharacterControllerStateMachine
 
         [SerializeField]
         private SkillRunner skillRunner;
-        DataBase<string, object> dataBase;
+        Blackboard dataBase;
 
         private void Awake()
         {
             AnimancerHelper = new AnimatorHelper(Animancer);
-            dataBase = new DataBase<string, object>();
+            dataBase = new Blackboard();
 
             SetStateMachineData("combatEntity", combatEntity);
             InitState();
@@ -164,7 +165,7 @@ namespace CharacterControllerStateMachine
 
         public void SetStateMachineData(string key, object value)
         {
-            dataBase.SetData(key, value);
+            dataBase.SetValue(key, value);
         }
     }
 }

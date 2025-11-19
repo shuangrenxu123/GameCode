@@ -1,3 +1,4 @@
+using AIBlackboard;
 using BT;
 using Character.Player;
 using CharacterController;
@@ -28,14 +29,14 @@ namespace Enemy.AI
             body = enemyBody;
 
             // 初始化行为树数据库
-            var database = new DataBase<string, object>();
-            database.SetData(EnemyAIDatabaseKey.CharacterActor.ToString(), body.characterActor);
-            database.SetData(EnemyAIDatabaseKey.CombatEntity.ToString(), body.combatEntity);
-            database.SetData(EnemyAIDatabaseKey.Transform.ToString(), body.transform);
-            database.SetData(EnemyAIDatabaseKey.EnemyBody.ToString(), body);
+            var database = new Blackboard();
+            database.SetValue(EnemyAIDatabaseKey.CharacterActor.ToString(), body.characterActor);
+            database.SetValue(EnemyAIDatabaseKey.CombatEntity.ToString(), body.combatEntity);
+            database.SetValue(EnemyAIDatabaseKey.Transform.ToString(), body.transform);
+            database.SetValue(EnemyAIDatabaseKey.EnemyBody.ToString(), body);
 
-            database.SetData("entityBrain", this);
-            database.SetData("targetTransform", player.transform);
+            database.SetValue("entityBrain", this);
+            database.SetValue("targetTransform", player.transform);
 
             // 创建行为树大脑
             behaviorTree = new EnemyBT();

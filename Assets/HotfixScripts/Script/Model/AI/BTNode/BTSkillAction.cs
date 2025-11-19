@@ -19,7 +19,7 @@ public class BTSkillAction<TKey, TValue> : BTAction
     {
         base.Enter();
         runner.LoadTimeLineAsset(skill);
-        actor = database.GetData<CharacterActor>("actor");
+        actor = database.GetValue<CharacterActor>("actor");
         actor.SetUpRootMotion(true, RootMotionVelocityType.SetVelocity, false);
     }
 

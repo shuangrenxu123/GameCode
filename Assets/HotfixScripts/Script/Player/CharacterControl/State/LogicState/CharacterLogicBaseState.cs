@@ -22,7 +22,7 @@ namespace Character.Controller.LogicState
             characterActor = parentMachine.characterActor;
             characterBrain = parentMachine.characterBrain;
             Animancer = parentMachine.animancer;
-            combatEntity = parentMachine.database.GetData<CombatEntity>("combatEntity");
+            combatEntity = parentMachine.database.GetValue<CombatEntity>("combatEntity");
         }
         public CharacterActions characterActions
         {

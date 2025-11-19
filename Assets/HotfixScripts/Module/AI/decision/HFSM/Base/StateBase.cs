@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
+using AIBlackboard;
 namespace HFSM
 {
-
-
     public abstract class StateBase<T> : IState where T : Enum
     {
         public abstract T currentType { get; }
@@ -15,7 +14,7 @@ namespace HFSM
         public List<StateTransition<T>> transitions;
 
 
-        public DataBase<string, object> database;
+        public Blackboard database;
 
         /// <summary>
         /// 进入状态时调用

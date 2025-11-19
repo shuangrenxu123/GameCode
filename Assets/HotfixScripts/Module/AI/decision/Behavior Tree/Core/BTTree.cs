@@ -1,3 +1,4 @@
+using AIBlackboard;
 using UnityEngine;
 
 namespace BT
@@ -8,18 +9,18 @@ namespace BT
     public abstract class BTTree
     {
         protected BTNode root = null;
-        public DataBase<string, object> database;
+        public Blackboard database;
 
         public void Update()
         {
             root.Tick();
         }
         public abstract void SetNode();
-        public virtual void Init(DataBase<string, object> d = null)
+        public virtual void Init(Blackboard d = null)
         {
             if (d == null)
             {
-                database = new DataBase<string, object>();
+                database = new Blackboard();
             }
             else
             {

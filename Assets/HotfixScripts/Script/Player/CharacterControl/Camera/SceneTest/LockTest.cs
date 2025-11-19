@@ -84,7 +84,7 @@ namespace Camera.Test
                 lockOnEffect.Activate();
 
                 player.StateManager.moveStateMachine
-                    .database.SetData(CharacterLockOnMovementState.targetKey, _testEnemyTarget);
+                    .database.SetValue(CharacterLockOnMovementState.targetKey, _testEnemyTarget);
 
                 player.StateManager.moveStateMachine
                     .ChangeState(ECharacterMoveState.LockOnMove);

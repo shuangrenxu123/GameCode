@@ -40,7 +40,7 @@ namespace Character.Controller.MoveState
                 var nearestEnemy = FindNearestEnemy();
                 if (nearestEnemy != null)
                 {
-                    database.SetData(CharacterLockOnMovementState.targetKey, nearestEnemy.transform);
+                    database.SetValue(CharacterLockOnMovementState.targetKey, nearestEnemy.transform);
 
                     parentMachine.ChangeState(ECharacterMoveState.LockOnMove);
                 }

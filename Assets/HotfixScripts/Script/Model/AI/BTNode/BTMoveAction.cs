@@ -1,3 +1,4 @@
+using AIBlackboard;
 using BT;
 using CharacterController;
 using Enemy;
@@ -14,12 +15,12 @@ namespace BT.Action
         public string targetTransformKey = "targetTransform";
         public float minCheckDistance = 5f;
 
-        public override void Activate(DataBase<string, object> database)
+        public override void Activate(Blackboard database)
         {
             base.Activate(database);
 
-            entityBrain = database.GetData<IEnemyBrain>(entityBrainKey);
-            targetTransform = database.GetData<Transform>(targetTransformKey);
+            entityBrain = database.GetValue<IEnemyBrain>(entityBrainKey);
+            targetTransform = database.GetValue<Transform>(targetTransformKey);
         }
         protected override void Enter()
         {
