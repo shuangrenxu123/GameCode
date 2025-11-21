@@ -123,13 +123,13 @@ namespace Network
             {
                 state = ENetWorkState.Connected;
                 Debug.Log("连接服务器成功");
-                EventManager.Instance.SendMessage("ConnectServerSuccess", null);
+                // EventManager.Instance.SendMessage("ConnectServerSuccess", null);
             }
             else
             {
                 state = ENetWorkState.Disconnect;
                 Debug.LogError("连接服务器失败");
-                EventManager.Instance.SendMessage("ConnectServerFaild", null);
+                // EventManager.Instance.SendMessage("ConnectServerFaild", null);
             }
         }
         /// <summary>

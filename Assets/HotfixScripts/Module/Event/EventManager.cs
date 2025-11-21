@@ -2,58 +2,83 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventManager : ModuleSingleton<EventManager>, IModule
+
+public interface IEvent { }
+public interface IEventBinding<T>
 {
-    private Dictionary<string, Action<object>> Listener = new Dictionary<string, Action<object>>();
-    public void OnCreate(object createParam)
+    public Action<T> OnEvent { get; set; }
+    public Action OnEventNoArgs { get; set; }
+}
+
+public class EventBinding<T> : IEventBinding<T> where T : IEvent
+{
+    // 存储有参数的回调
+    private Action<T> _onEvent = _ => { };
+    // 存储无参数的回调
+    private Action _onEventNoArgs = () => { };
+
+    public Action<T> OnEvent
     {
+        get => _onEvent;
+        set => _onEvent = value;
     }
 
-    public void OnUpdate()
+    public Action OnEventNoArgs
     {
+        get => _onEventNoArgs;
+        set => _onEventNoArgs = value;
     }
+
     /// <summary>
-    /// 监听一个事件
+    /// 构造函数：绑定带参数的回调
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="listener"></param>
-    public void AddListener(string name, Action<object> listener)
-    {
-        if (Listener.ContainsKey(name))
-            Listener[name] += listener;
-        else
-            Listener.Add(name, listener);
-    }
+    public EventBinding(Action<T> onEvent) => _onEvent = onEvent;
+
     /// <summary>
-    /// 移除一个事件的监听
+    /// 构造函数：绑定无参数的回调
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="listener"></param>
-    public void RemoveListener(string name, Action<object> listener)
-    {
-        if (Listener.ContainsKey(name))
-            Listener[name] -= listener;
-        else
-            Debug.LogError("事件不存在");
-    }
+    public EventBinding(Action onEventNoArgs) => _onEventNoArgs = onEventNoArgs;
+
     /// <summary>
-    /// 触发一个事件。后面为他的参数列表
+    /// 注册：将当前绑定添加到总线
     /// </summary>
-    /// <param name="name"></param>
-    /// <param name="mess"></param>
-    public void SendMessage(string name, object mess)
+    public void Add(Action<T> onEvent) => _onEvent += onEvent;
+    public void Remove(Action<T> onEvent) => _onEvent -= onEvent;
+
+    public void Add(Action onEvent) => _onEventNoArgs += onEvent;
+    public void Remove(Action onEvent) => _onEventNoArgs -= onEvent;
+
+    public static class EventManager<T> where T : IEvent
     {
-        if (Listener.ContainsKey(name))
+        private static readonly HashSet<IEventBinding<T>> Bindings = new();
+
+        public static void Register(EventBinding<T> binding) => Bindings.Add(binding);
+        public static void Deregister(EventBinding<T> binding) => Bindings.Remove(binding);
+
+        /// <summary>
+        /// 触发事件
+        /// </summary>
+        /// <param name="eventItem">事件数据结构体</param>
+        public static void Raise(T eventItem)
         {
-            Listener[name].Invoke(mess);
+            // 注意：这里如果不考虑多线程安全，直接遍历是最快的。
+            // 如果在回调中修改了 Bindings 集合（比如在事件中注销自己），这里可能会报错。
+            // 简单的做法是复制一份（有GC），高性能做法是倒序遍历或拷贝到临时数组（需维护对象池）。
+            // 鉴于绝大多数 Unity 逻辑在主线程，且很少在事件回调中立即注销，直接遍历是性能最高的妥协。
+
+            foreach (var binding in Bindings)
+            {
+                binding.OnEvent.Invoke(eventItem);
+                binding.OnEventNoArgs.Invoke();
+            }
         }
-    }
-    public void ClearListener(string name)
-    {
-        Listener.Remove(name);
-    }
-    public int GetAllListener(string name)
-    {
-        return Listener[name].GetInvocationList().Length;
+
+        /// <summary>
+        /// 清理所有监听（通常在场景切换时调用，或者用于重置）
+        /// </summary>
+        public static void Clear()
+        {
+            Bindings.Clear();
+        }
     }
 }
