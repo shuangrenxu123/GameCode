@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using ConsoleLog;
 using UnityEngine;
-
-
 namespace Helper
 {
     public interface ICallable

@@ -18,7 +18,6 @@ public class Main : MonoBehaviour
         a.PackageBodyCoderType = typeof(ProtobufCoder);
 
         Engine.CreateModule<GameSaveManager>();
-        Engine.CreateModule<EventManager>();
         Engine.CreateModule<UIManager>();
         Engine.CreateModule<ResourcesManager>();
         Engine.CreateModule<PoolManager>();

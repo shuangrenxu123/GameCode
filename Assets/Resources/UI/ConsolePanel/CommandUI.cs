@@ -39,6 +39,8 @@ namespace UIPanel.Console
         private List<string> commandStack;//
         private int currentCommandIndex = 0;
         private List<string> tipsCommand;
+        private readonly List<TMP_Text> activeTipItems = new();
+        private const int MaxSuggestionCount = 6;
         #endregion
 
         Player player;
@@ -63,6 +65,11 @@ namespace UIPanel.Console
             {
                 CharacterBrain.DisableUIInput();
                 UIManager.Instance.CloseUI(GetType());
+            }
+
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                FillCommand();
             }
         }
 
@@ -108,6 +115,7 @@ namespace UIPanel.Console
             }
             input.text = string.Empty;
             input.gameObject.SetActive(false);
+            ClearTips();
             Player.Instance.brain.DisableUIInput();
         }
 
@@ -119,45 +127,64 @@ namespace UIPanel.Console
             }
 
         }
-        /// <summary>
-        /// ���������ʾ
-        /// </summary>
-        /// <param name="inputText"></param>
         private void GetCommandTips(string inputText)
         {
-            // tipsParent.RemoveAllChildren();
-            // //todo ���ϲ�������ʾ
-            // if (inputText == "")
-            //     return;
-            // bool isCommand = inputText[0] == '/';
-            // if (!isCommand)
-            //     return;
-            // //var names = ConsoleManager.Instance.CommandsNames;
-            // tipsCommand.Clear();
-            // var mainText = inputText.AsSpan().Slice(1, inputText.Length - 1).ToString();
-            // foreach (var c in names)
-            // {
-            //     if (c.Contains(mainText))
-            //     {
-            //         tipsCommand.Add(c);
-            //     }
-            // }
-            //
-            // foreach (var i in tipsCommand)
-            // {
-            //     var go = Instantiate(Text, tipsParent);
-            //     go.text = i;
-            // }
+            ClearTips();
+
+            if (string.IsNullOrEmpty(inputText) || inputText[0] != '/')
+            {
+                return;
+            }
+
+            string keyword = inputText.Length > 1 ? inputText.Substring(1) : string.Empty;
+            var matches = ConsoleManager.Instance.MatchCommands(keyword);
+            if (matches == null || matches.Count == 0)
+            {
+                return;
+            }
+
+            tipsCommand.Clear();
+            tipsCommand.AddRange(matches);
+
+            int count = Mathf.Min(matches.Count, MaxSuggestionCount);
+            for (int i = 0; i < count; i++)
+            {
+                var go = Instantiate(Text, tipsParent);
+                go.text = matches[i];
+                activeTipItems.Add(go);
+            }
         }
 
         private void FillCommand()
         {
+            if (tipsCommand == null || tipsCommand.Count == 0)
+                return;
 
+            input.text = $"/{tipsCommand[0]}";
+            input.MoveTextEnd(false);
+            ClearTips();
         }
 
         private void SwitchFillCommand()
         {
 
+        }
+
+        private void ClearTips()
+        {
+            if (activeTipItems.Count > 0)
+            {
+                for (int i = 0; i < activeTipItems.Count; i++)
+                {
+                    if (activeTipItems[i] != null)
+                    {
+                        Destroy(activeTipItems[i].gameObject);
+                    }
+                }
+                activeTipItems.Clear();
+            }
+
+            tipsCommand?.Clear();
         }
 
     }
