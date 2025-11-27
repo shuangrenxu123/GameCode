@@ -2,9 +2,12 @@ using System;
 
 public class CommandAttribute : Attribute
 {
-    public string Name;
-    public CommandAttribute(string name)
+    public string Name { get; }
+    public string Description { get; }
+
+    public CommandAttribute(string name, string description = null)
     {
-        this.Name = name;
+        Name = name;
+        Description = description;
     }
 }

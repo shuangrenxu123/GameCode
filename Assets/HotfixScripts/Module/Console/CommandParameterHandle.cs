@@ -25,8 +25,14 @@ namespace ConsoleLog
                 { typeof(uint), ParseUInt },
                 { typeof(ulong), ParseULong },
                 { typeof(decimal), ParseDecimal },
-                { typeof(sbyte), ParseSByte }
+                { typeof(sbyte), ParseSByte },
+                { typeof(object), ReturnSelf },
             };
+        }
+        public static bool ReturnSelf(string args, out object value)
+        {
+            value = args;
+            return true;
         }
         public static bool ContainsParser(Type type)
         {

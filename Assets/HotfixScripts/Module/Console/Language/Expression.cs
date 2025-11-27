@@ -16,6 +16,7 @@ namespace Helper
             public T VisitLogicalExpr(LogicalExpression expr);
             public T VisitVariableExpr(VariableExpression expr);
             public T VisitCallExpr(CallExpression expr);
+            public T VisitExternalVariableExpr(ExternalVariableExpression expr);
         }
 
         public abstract T Accept<T>(IVisitor<T> visitor);
@@ -40,10 +41,18 @@ namespace Helper
     public class AssignExpression : Expression
     {
         public Token name;
+        public ExternalVariableExpression externalTarget;
         public Expression right;
+        public bool IsExternal => externalTarget != null;
         public AssignExpression(Token name, Expression right)
         {
             this.name = name;
+            this.right = right;
+        }
+
+        public AssignExpression(ExternalVariableExpression externalTarget, Expression right)
+        {
+            this.externalTarget = externalTarget;
             this.right = right;
         }
 
@@ -121,6 +130,21 @@ namespace Helper
         public override T Accept<T>(IVisitor<T> visitor)
         {
             return visitor.VisitVariableExpr(this);
+        }
+    }
+    public class ExternalVariableExpression : Expression
+    {
+        public Token root;
+        public List<Token> accessChain;
+        public ExternalVariableExpression(Token root, List<Token> accessChain)
+        {
+            this.root = root;
+            this.accessChain = accessChain ?? new List<Token>();
+        }
+
+        public override T Accept<T>(IVisitor<T> visitor)
+        {
+            return visitor.VisitExternalVariableExpr(this);
         }
     }
     public class CallExpression : Expression

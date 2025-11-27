@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using ConsoleLog;
 using UnityEngine;
 
@@ -25,6 +26,21 @@ namespace Helper
             {
                 ConsoleManager.Instance.OutputToConsole(e.Message);
             }
+        }
+
+        public void RegisterVariable(string name, object instance, bool readOnly = false)
+        {
+            exprInterpreter.RegisterVariable(name, instance, readOnly);
+        }
+
+        public void RegisterVariable(string name, Func<object> getter, Action<object> setter = null, Type declaredType = null)
+        {
+            exprInterpreter.RegisterVariable(name, getter, setter, declaredType);
+        }
+
+        public List<string> MatchCommands(string keyword)
+        {
+            return exprInterpreter.MatchCommands(keyword);
         }
 
 

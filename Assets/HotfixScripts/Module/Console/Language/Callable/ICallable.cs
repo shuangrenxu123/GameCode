@@ -17,10 +17,12 @@ namespace Helper
         public string name;
         public MethodInfo method;
         public ParameterInfo[] parameters;
-        public MethodCallable(string name, MethodInfo method)
+        public string description;
+        public MethodCallable(string name, MethodInfo method, string description = null)
         {
             this.name = name;
             this.method = method;
+            this.description = description;
             parameters = method.GetParameters();
         }
         public void Execute(List<string> args)

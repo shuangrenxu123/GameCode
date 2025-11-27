@@ -40,6 +40,7 @@ namespace Helper
                 { ';', TokenType.Semicolon },
                 { '*', TokenType.Star },
                 { '!', TokenType.Bang },
+                { '@', TokenType.At },
             };
         }
 

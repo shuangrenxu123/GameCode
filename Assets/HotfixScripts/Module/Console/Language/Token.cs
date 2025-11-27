@@ -14,6 +14,7 @@ namespace Helper
         Minus,          // -
         Plus,           // +
         Semicolon,      // ;
+        At,             // @
         Slash,          // /
         Star,           // *
 

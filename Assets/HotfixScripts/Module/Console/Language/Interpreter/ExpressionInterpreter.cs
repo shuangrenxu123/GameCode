@@ -6,8 +6,23 @@ namespace Helper
 {
     public class ExpressionInterpreter : Expression.IVisitor<object>
     {
-        //public Environment globals = new Environment();
         private Environment environment = new();
+
+        public void RegisterVariable(string name, object instance, bool readOnly = false)
+        {
+            environment.RegisterVariable(name, instance, readOnly);
+        }
+
+        public void RegisterVariable(string name, Func<object> getter, Action<object> setter = null, Type declaredType = null)
+        {
+            environment.RegisterVariable(name, getter, setter, declaredType);
+        }
+
+        public List<string> MatchCommands(string keyword)
+        {
+            return environment.MatchCommands(keyword);
+        }
+
         public object Interpret(Expression expr)
         {
             try
@@ -176,7 +191,14 @@ namespace Helper
         public object VisitAssignExpr(AssignExpression expr)
         {
             object value = Evaluate(expr.right);
-            environment.Assign(expr.name, value);
+            if (expr.IsExternal)
+            {
+                environment.AssignExternal(expr.externalTarget, value);
+            }
+            else
+            {
+                environment.Assign(expr.name, value);
+            }
             //将最右侧的值传递过去
             return value;
         }
@@ -199,15 +221,35 @@ namespace Helper
 
         public object VisitCallExpr(CallExpression expr)
         {
-            var prams = new List<string>();
+            var evaluatedArgs = new List<object>();
             foreach (var arg in expr.args)
             {
-                prams.Add(Evaluate(arg).ToString());
+                evaluatedArgs.Add(Evaluate(arg));
             }
+
+            if (expr.callee is ExternalVariableExpression external)
+            {
+                return environment.InvokeExternalMethod(external, evaluatedArgs);
+            }
+
             var methodName = Evaluate(expr.callee) as string;
+            if (methodName == null)
+            {
+                throw new RuntimeException(new Token(), "该表达式不可调用");
+            }
             var method = environment.GetMethod(methodName);
+            var prams = new List<string>();
+            foreach (var arg in evaluatedArgs)
+            {
+                prams.Add(arg?.ToString() ?? string.Empty);
+            }
             method.Execute(prams);
             return null;
+        }
+
+        public object VisitExternalVariableExpr(ExternalVariableExpression expr)
+        {
+            return environment.GetExternalVariable(expr);
         }
     }
 }

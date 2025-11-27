@@ -9,7 +9,7 @@ namespace Helper
         /// 待解析token下标
         /// </summary>
         private int current = 0;
-        private bool isEnd => tokens[current].type == TokenType.EOF;
+        private bool isEnd => current >= tokens.Count || tokens[current].type == TokenType.EOF;
 
 
         public void Init(List<Token> tokens)
@@ -29,12 +29,17 @@ namespace Helper
                 //形成一个赋值的语法树
                 Expression value = Assignment();
 
-                if (left is VariableExpression)
+                if (left is VariableExpression variable)
                 {
-                    VariableExpression variable = left as VariableExpression;
                     Token name = variable.name;
                     return new AssignExpression(name, value);
                 }
+                if (left is ExternalVariableExpression externalVariable)
+                {
+                    return new AssignExpression(externalVariable, value);
+                }
+
+                throw new RuntimeException(Previous(), "无效的赋值目标");
             }
             return left;
         }
@@ -145,11 +150,16 @@ namespace Helper
                 if (Match(TokenType.Left_Paren))
                 {
                     expr = FinishCall(expr);
+                    continue;
                 }
-                else
+
+                if (IsBareCallCandidate(expr) && CanStartBareCallArguments())
                 {
-                    break;
+                    expr = FinishBareCall(expr);
+                    continue;
                 }
+
+                break;
             }
             return expr;
         }
@@ -174,6 +184,18 @@ namespace Helper
             Token paren = Consume(TokenType.Right_Paren, "函数调用需要右括号结尾");
             return new CallExpression(call, paren, args);
         }
+
+        Expression FinishBareCall(Expression call)
+        {
+            List<Expression> args = new List<Expression>();
+            while (!isEnd && IsExpressionStart(Peek().type))
+            {
+                args.Add(Expression());
+                Match(TokenType.Comma);
+            }
+
+            return new CallExpression(call, new Token(), args);
+        }
         /// <summary>
         /// 最终值
         /// </summary>
@@ -197,7 +219,18 @@ namespace Helper
                 {
                     return new LiteralExpression(token.sourceString);
                 }
+                if (IsNextTokenBareCallArgument())
+                {
+                    return new LiteralExpression(token.sourceString);
+                }
                 return new VariableExpression(token);
+            }
+
+            if (token.type == TokenType.At)
+            {
+                Token variableName = ConsumeIdentifier("@语法需要紧跟变量名");
+                List<Token> accessChain = ParseAccessChain();
+                return new ExternalVariableExpression(variableName, accessChain);
             }
 
             if (token.type == TokenType.Left_Paren)
@@ -217,6 +250,9 @@ namespace Helper
         }
 
         #region  Utilities
+        /// <summary>
+        /// 如果当前Token类型匹配则取出并推进
+        /// </summary>
         private bool Match(params TokenType[] tokens)
         {
             foreach (TokenType type in tokens)
@@ -277,6 +313,63 @@ namespace Helper
             if (isEnd)
                 return false;
             return type == Peek().type;
+        }
+
+        private List<Token> ParseAccessChain()
+        {
+            List<Token> chain = new();
+            while (Match(TokenType.Dot))
+            {
+                chain.Add(ConsumeIdentifier("点号后需要标识符"));
+            }
+            return chain;
+        }
+
+        private Token ConsumeIdentifier(string errMessage)
+        {
+            if (!CheckCurrentTokenType(TokenType.Identifier))
+            {
+                Token errorToken = isEnd ? Previous() : Peek();
+                throw new RuntimeException(errorToken, errMessage);
+            }
+            return Advance();
+        }
+
+        bool IsBareCallCandidate(Expression expr)
+        {
+            if (expr is LiteralExpression literal && literal.value is string)
+                return true;
+            if (expr is ExternalVariableExpression)
+                return true;
+            return false;
+        }
+
+        bool CanStartBareCallArguments()
+        {
+            if (isEnd)
+                return false;
+            return IsExpressionStart(Peek().type);
+        }
+
+        bool IsNextTokenBareCallArgument()
+        {
+            if (isEnd)
+                return false;
+            return IsExpressionStart(Peek().type);
+        }
+
+        bool IsExpressionStart(TokenType type)
+        {
+            return type == TokenType.Identifier
+                || type == TokenType.Number
+                || type == TokenType.Strings
+                || type == TokenType.Left_Paren
+                || type == TokenType.At
+                || type == TokenType.True
+                || type == TokenType.False
+                || type == TokenType.Nil
+                || type == TokenType.Minus
+                || type == TokenType.Bang;
         }
         #endregion
     }
