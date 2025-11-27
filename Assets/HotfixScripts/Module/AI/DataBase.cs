@@ -10,21 +10,17 @@ namespace AIBlackboard
     {
         public readonly int Id;
 
-        // --- 构造函数 ---
 
-        // 针对 String 的构造
         public BlackboardKey(string name)
         {
             unchecked { Id = (name.GetHashCode() * 397) ^ typeof(T).GetHashCode(); }
         }
 
-        // 针对 Int 的构造
         public BlackboardKey(int id)
         {
             unchecked { Id = (id * 397) ^ typeof(T).GetHashCode(); }
         }
 
-        // 针对 任意泛型Key (Enum, Struct) 的构造
         public BlackboardKey(int rawKeyHash, Type keyType)
         {
             unchecked
@@ -36,12 +32,10 @@ namespace AIBlackboard
             }
         }
 
-        // --- ✨ 魔法核心：隐式类型转换 ---
-        // 这允许你直接把 string 或 int 当作 BlackboardKey<T> 传参
-
+        //在需要的时候隐式转换
         public static implicit operator BlackboardKey<T>(string name) => new BlackboardKey<T>(name);
         public static implicit operator BlackboardKey<T>(int id) => new BlackboardKey<T>(id);
-        // --- 标准接口实现 ---
+
         public bool Equals(BlackboardKey<T> other) => Id == other.Id;
         public override bool Equals(object obj) => obj is BlackboardKey<T> other && Equals(other);
         public override int GetHashCode() => Id;
@@ -50,9 +44,7 @@ namespace AIBlackboard
 
     }
     internal abstract class BlackboardEntry
-    {
-        public abstract Type ValueType { get; }
-    }
+    { }
 
     internal sealed class BlackboardEntry<T> : BlackboardEntry
     {
@@ -60,7 +52,7 @@ namespace AIBlackboard
         private static readonly EqualityComparer<T> Comparer = EqualityComparer<T>.Default;
         public event Action<T> OnValueChanged;
 
-        public override Type ValueType => typeof(T);
+        public Type ValueType => typeof(T);
 
         public T Value
         {
@@ -152,12 +144,46 @@ namespace AIBlackboard
             }
             return defaultValue;
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool ContainsData<T>(BlackboardKey<T> key)
         {
             return data.ContainsKey(key.Id);
         }
 
+
+        public void Subscribe<T>(BlackboardKey<T> key, Action<T> callback)
+        {
+            if (!data.TryGetValue(key.Id, out var entryBase))
+            {
+                var newEntry = new BlackboardEntry<T>(default);
+                data[key.Id] = newEntry;
+                entryBase = newEntry;
+            }
+                   // 安全强转，这里可以用 Unsafe.As 但对于 Subscribe 频率不高，安全第一
+                   ((BlackboardEntry<T>)entryBase).OnValueChanged += callback;
+        }
+
+        public void Unsubscribe<T>(BlackboardKey<T> key, Action<T> callback)
+        {
+            if (data.TryGetValue(key.Id, out var entryBase))
+            {
+                ((BlackboardEntry<T>)entryBase).OnValueChanged -= callback;
+            }
+        }
+
+        // 泛型重载
+        public void Subscribe<TKey, TVal>(TKey rawKey, Action<TVal> callback)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            Subscribe(new BlackboardKey<TVal>(hash, typeof(TKey)), callback);
+        }
+
+        public void Unsubscribe<TKey, TVal>(TKey rawKey, Action<TVal> callback)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            Unsubscribe(new BlackboardKey<TVal>(hash, typeof(TKey)), callback);
+        }
 
 
         /// <summary>
@@ -186,6 +212,18 @@ namespace AIBlackboard
             value = default;
             return false;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Remove<T>(BlackboardKey<T> key) => data.Remove(key.Id);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool Remove<TKey, TVal>(TKey rawKey)
+        {
+            int hash = EqualityComparer<TKey>.Default.GetHashCode(rawKey);
+            var key = new BlackboardKey<TVal>(hash, typeof(TKey));
+            return data.Remove(key.Id);
+        }
+
         public void Reset()
         {
             data.Clear();
