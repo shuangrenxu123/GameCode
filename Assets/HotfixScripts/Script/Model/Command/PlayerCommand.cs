@@ -39,7 +39,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole(obj.ToString());
     }
 
-    [Command("Player.Info")]
+    [Command("PlayerInfo")]
     static void ShowPlayerInfo()
     {
         if (!TryResolvePlayer(out var target))
@@ -54,7 +54,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole(info, SuccessColor);
     }
 
-    [Command("Player.SetId")]
+    [Command("PlayerSetId")]
     static void SetPlayerId(string newId)
     {
         if (!TryResolvePlayer(out var target))
@@ -65,7 +65,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"player.id 从 {oldId} 修改为 {newId}", SuccessColor);
     }
 
-    [Command("Player.Heal")]
+    [Command("PlayerHeal")]
     static void HealPlayer(int amount = 10)
     {
         if (!TryResolvePlayer(out var target) || !TryResolveHealth(target, out var hp))
@@ -75,7 +75,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"执行 player.CombatEntity.hp.Add({amount})，当前HP {hp.Value}/{hp.MaxValue}", SuccessColor);
     }
 
-    [Command("Player.Damage")]
+    [Command("PlayerDamage")]
     static void DamagePlayer(int amount = 10)
     {
         if (!TryResolvePlayer(out var target) || !TryResolveHealth(target, out var hp))
@@ -85,7 +85,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"执行 player.CombatEntity.hp.Minus({amount})，当前HP {hp.Value}/{hp.MaxValue}", SuccessColor);
     }
 
-    [Command("Player.Teleport")]
+    [Command("PlayerTeleport")]
     static void TeleportPlayer(float x, float y, float z)
     {
         if (!TryResolvePlayer(out var target))

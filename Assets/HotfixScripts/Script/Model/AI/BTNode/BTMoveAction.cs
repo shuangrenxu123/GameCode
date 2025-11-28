@@ -19,8 +19,8 @@ namespace BT.Action
         {
             base.Activate(database);
 
-            entityBrain = database.GetValue<IEnemyBrain>(entityBrainKey);
-            targetTransform = database.GetValue<Transform>(targetTransformKey);
+            entityBrain = database.GetValue<string, IEnemyBrain>(entityBrainKey);
+            targetTransform = database.GetValue<string, Transform>(targetTransformKey);
         }
         protected override void Enter()
         {

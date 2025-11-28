@@ -80,17 +80,25 @@ namespace CharacterController
 
         public void EnableUIInput()
         {
+            if (IsUIInput)
+            {
+                return;
+            }
+
             IsUIInput = true;
             characterActions.Reset();
             characterUIActions.Reset();
             inputHandlerSettings.InputHandler.Disable();
             UIinputHandlerSettings.InputHandler.Enable();
             CameraInputHandlerSettings.InputHandler.Disable();
-
-
         }
         public void DisableUIInput()
         {
+            if (!IsUIInput)
+            {
+                return;
+            }
+
             characterActions.Reset();
             characterUIActions.Reset();
             inputHandlerSettings.InputHandler.Enable();

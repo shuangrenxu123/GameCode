@@ -28,6 +28,12 @@ namespace UIPanel.Console
         [SerializeField, LabelText("透明度")]
         CanvasGroup canvasGroup;
 
+        [SerializeField]
+        Color tipNormalColor = Color.white;
+
+        [SerializeField]
+        Color tipHighlightColor = Color.yellow;
+
         #region Message
         private Stack<TMP_Text> logStack;
         private const int MAXCOUNT = 20;
@@ -41,9 +47,12 @@ namespace UIPanel.Console
         private List<string> tipsCommand;
         private readonly List<TMP_Text> activeTipItems = new();
         private const int MaxSuggestionCount = 6;
+        private int selectedTipIndex = -1;
+        private bool suppressTipRefresh;
         #endregion
 
         Player player;
+        bool inputActive;
         private void Start()
         {
             logStack = new Stack<TMP_Text>();
@@ -54,22 +63,37 @@ namespace UIPanel.Console
 
             ConsoleManager.Instance.OnOutput += OutputPanel;
 
-            input.gameObject.SetActive(true);
-            input.ActivateInputField();
-            player = FindFirstObjectByType<Player>();
+            player = Player.Instance != null ? Player.Instance : FindFirstObjectByType<Player>();
 
         }
         public override void OnUpdate()
         {
             if (UIInput.cancel.Started)
             {
-                CharacterBrain.DisableUIInput();
+                HideInputPanel();
                 UIManager.Instance.CloseUI(GetType());
             }
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
                 FillCommand();
+            }
+
+            if (tipsCommand != null && tipsCommand.Count > 0)
+            {
+                if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.Keypad8))
+                {
+                    MoveTipSelection(-1);
+                }
+                if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.Keypad2))
+                {
+                    MoveTipSelection(1);
+                }
+            }
+
+            if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && IsSelectingSuggestion())
+            {
+                ApplySelectedSuggestion();
             }
         }
 
@@ -93,12 +117,20 @@ namespace UIPanel.Console
         public override void OnDelete()
         {
             ConsoleManager.Instance.OnOutput -= OutputPanel;
+            HideInputPanel();
         }
 
         private void SubmitCommand(string text)
         {
+            if (IsSelectingSuggestion())
+            {
+                ApplySelectedSuggestion();
+                return;
+            }
+
             if (text == "" || text == string.Empty)
             {
+                HideInputPanel();
                 return;
             }
             var mainText = text.AsSpan();
@@ -114,9 +146,8 @@ namespace UIPanel.Console
                 SendPlayerMessage(tempText);
             }
             input.text = string.Empty;
-            input.gameObject.SetActive(false);
             ClearTips();
-            Player.Instance.brain.DisableUIInput();
+            HideInputPanel();
         }
 
         private void SendPlayerMessage(string mess)
@@ -129,9 +160,20 @@ namespace UIPanel.Console
         }
         private void GetCommandTips(string inputText)
         {
+            if (suppressTipRefresh)
+            {
+                suppressTipRefresh = false;
+                return;
+            }
+
             ClearTips();
 
             if (string.IsNullOrEmpty(inputText) || inputText[0] != '/')
+            {
+                return;
+            }
+
+            if (inputText.Length <= 1)
             {
                 return;
             }
@@ -151,18 +193,27 @@ namespace UIPanel.Console
             {
                 var go = Instantiate(Text, tipsParent);
                 go.text = matches[i];
+                go.color = tipNormalColor;
                 activeTipItems.Add(go);
             }
+
+            selectedTipIndex = count > 0 ? 0 : -1;
+            UpdateTipHighlight();
         }
 
         private void FillCommand()
         {
             if (tipsCommand == null || tipsCommand.Count == 0)
+            {
                 return;
+            }
 
-            input.text = $"/{tipsCommand[0]}";
-            input.MoveTextEnd(false);
-            ClearTips();
+            if (!IsSelectingSuggestion())
+            {
+                selectedTipIndex = 0;
+            }
+
+            ApplySelectedSuggestion();
         }
 
         private void SwitchFillCommand()
@@ -185,6 +236,78 @@ namespace UIPanel.Console
             }
 
             tipsCommand?.Clear();
+            selectedTipIndex = -1;
+        }
+
+        public void ShowInputPanel()
+        {
+            if (inputActive)
+            {
+                input.ActivateInputField();
+                return;
+            }
+
+            inputActive = true;
+            input.gameObject.SetActive(true);
+            input.text = string.Empty;
+            input.ActivateInputField();
+            CharacterBrain.EnableUIInput();
+        }
+
+        public void HideInputPanel()
+        {
+            if (!inputActive)
+            {
+                return;
+            }
+
+            inputActive = false;
+            input.DeactivateInputField();
+            input.gameObject.SetActive(false);
+            CharacterBrain.DisableUIInput();
+        }
+
+        private void MoveTipSelection(int direction)
+        {
+            if (tipsCommand == null || tipsCommand.Count == 0)
+            {
+                return;
+            }
+
+            selectedTipIndex = Mathf.Clamp(selectedTipIndex + direction, 0, tipsCommand.Count - 1);
+            UpdateTipHighlight();
+        }
+
+        private void UpdateTipHighlight()
+        {
+            for (int i = 0; i < activeTipItems.Count; i++)
+            {
+                if (activeTipItems[i] == null)
+                {
+                    continue;
+                }
+
+                activeTipItems[i].color = i == selectedTipIndex ? tipHighlightColor : tipNormalColor;
+            }
+        }
+
+        private bool IsSelectingSuggestion()
+        {
+            return tipsCommand != null && tipsCommand.Count > 0 && selectedTipIndex >= 0 && selectedTipIndex < tipsCommand.Count;
+        }
+
+        private void ApplySelectedSuggestion()
+        {
+            if (!IsSelectingSuggestion())
+            {
+                return;
+            }
+
+            suppressTipRefresh = true;
+            var suggestion = tipsCommand[selectedTipIndex];
+            ClearTips();
+            input.text = $"/{suggestion}";
+            input.MoveTextEnd(false);
         }
 
     }

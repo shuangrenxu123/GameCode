@@ -29,12 +29,26 @@ public class CharacterUiController : MonoBehaviour
         }
         if (InputActions.OpenConsoleUI.Started)
         {
-            CharacterBrain.EnableUIInput();
-            //var ui = Resources.Load<GameObject>("ConsoleUI");
-            var ui = Resources.Load<GameObject>("UI/ConsolePanel/ConsoleUI");
-            // var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "ConsoleUI.prefab");
-            UIManager.Instance.OpenUI<CommandUI>(ui.GetComponent<CommandUI>());
-
+            var console = GetOrOpenCommandWindow();
+            console?.ShowInputPanel();
         }
+    }
+
+    private CommandUI GetOrOpenCommandWindow()
+    {
+        var existing = UIManager.Instance.GetUIWindow<CommandUI>();
+        if (existing != null)
+        {
+            return existing;
+        }
+
+        var ui = Resources.Load<GameObject>("UI/ConsolePanel/ConsoleUI");
+        if (ui == null)
+        {
+            Debug.LogWarning("ConsoleUI prefab not found in Resources/UI/ConsolePanel");
+            return null;
+        }
+
+        return UIManager.Instance.OpenUI<CommandUI>(ui.GetComponent<CommandUI>());
     }
 }

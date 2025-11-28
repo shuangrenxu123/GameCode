@@ -166,7 +166,7 @@ namespace Character.Controller
             loginMachine.FixUpdate();
         }
 
-        public void SetStateMachineData(string key, object value)
+        public void SetStateMachineData<T>(string key, T value)
         {
             dataBase.SetValue(key, value);
         }
