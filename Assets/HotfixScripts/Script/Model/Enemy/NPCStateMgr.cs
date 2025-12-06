@@ -50,13 +50,11 @@ namespace Character.Controller
         public CharacterLogicStateMachine loginMachine;
         Blackboard dataBase;
 
-        private void Awake()
+        public void Init()
         {
+
             AnimancerHelper = new AnimatorHelper(Animancer);
             dataBase = new Blackboard();
-        }
-        private void Start()
-        {
             SetStateMachineData("combatEntity", combatEntity);
 
             InitState();
@@ -64,7 +62,6 @@ namespace Character.Controller
             moveStateMachine.Start();
             loginMachine.Start();
         }
-
         private void InitState()
         {
             InitMovementState();

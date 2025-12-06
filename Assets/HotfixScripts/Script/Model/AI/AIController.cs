@@ -82,14 +82,14 @@ namespace Character.AI
         private void SetupOptions()
         {
             // ========== 空闲/待机 ==========
-            var idleOption = new Option("Idle", new LambdaAction("Idle"))
+            var idleOption = new Option("Idle")
             {
                 baseWeight = 0.1f
             };
             idleOption.AddConsideration(new ConstantConsideration("Default", 1f));
 
             // ========== 巡逻 ==========
-            var patrolOption = new Option("Patrol", CreatePatrolAction())
+            var patrolOption = new Option("Patrol")
             {
                 baseWeight = 0.3f
             };
@@ -99,7 +99,7 @@ namespace Character.AI
                     bb => 1f - bb.GetValue(AlertLevelKey, 0f)));
 
             // ========== 调查 ==========
-            var investigateOption = new Option("Investigate", CreateInvestigateAction())
+            var investigateOption = new Option("Investigate")
             {
                 baseWeight = 0.5f
             };
@@ -110,7 +110,7 @@ namespace Character.AI
                 .AddConsideration(new ExistsConsideration<Vector3>("HasLastKnownPos", LastKnownEnemyPosKey));
 
             // ========== 追击 ==========
-            var chaseOption = new Option("Chase", CreateChaseAction())
+            var chaseOption = new Option("Chase")
             {
                 baseWeight = 0.7f
             };
@@ -130,7 +130,7 @@ namespace Character.AI
                     ResponseCurve.Linear())); // 血量影响追击意愿
 
             // ========== 攻击 ==========
-            var attackOption = new Option("Attack", CreateAttackAction())
+            var attackOption = new Option("Attack")
             {
                 baseWeight = 1.0f,
                 cooldown = 0.5f
@@ -146,7 +146,7 @@ namespace Character.AI
                 .AddConsideration(new BoolConsideration("CanSee", CanSeeEnemyKey, true));
 
             // ========== 防御/格挡 ==========
-            var defendOption = new Option("Defend", CreateDefendAction())
+            var defendOption = new Option("Defend")
             {
                 baseWeight = 0.8f
             };
@@ -158,7 +158,7 @@ namespace Character.AI
                     bb => bb.GetValue(DistanceToEnemyKey, 100f) < 5f ? 1f : 0.3f));
 
             // ========== 撤退 ==========
-            var retreatOption = new Option("Retreat", CreateRetreatAction())
+            var retreatOption = new Option("Retreat")
             {
                 baseWeight = 0.6f
             };

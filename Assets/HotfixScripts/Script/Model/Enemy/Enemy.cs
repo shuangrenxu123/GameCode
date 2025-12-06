@@ -1,5 +1,6 @@
 using System;
 using Animancer;
+using Character.Controller;
 using CharacterController;
 using Fight;
 using UnityEngine;
@@ -8,19 +9,6 @@ using static Fight.Number.CombatNumberBox;
 
 namespace Enemy
 {
-    /// <summary>
-    /// Enemy动画类型枚举
-    /// </summary>
-    public enum EnemyAnimationType
-    {
-        None,
-        Idle,
-        Move,
-        Attack,
-        Hurt,
-        Dead
-    }
-
     public class Enemy : MonoBehaviour
     {
         [Header("身体组件")]
@@ -34,12 +22,14 @@ namespace Enemy
         public AnimancerComponent animancer;      // 动画控制器
         public AnimatorHelper animancerHelper;   // 动画助手（复用玩家动画助手）
 
+        [SerializeField]
+        private NPCStateMgr NPCStateMgr;
         IEnemyBrain enemyBrain;
 
         private void Awake()
         {
             enemyBrain = brainGo.GetComponent<IEnemyBrain>();
-
+            InitStateMachine();
             // 初始化动画系统
             InitializeAnimationSystem();
 
@@ -89,6 +79,12 @@ namespace Enemy
         {
             // 初始化动画助手
             animancerHelper = new AnimatorHelper(animancer);
+        }
+
+        private void InitStateMachine()
+        {
+            // 初始化状态机
+            NPCStateMgr.Init();
         }
 
 

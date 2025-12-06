@@ -27,7 +27,7 @@ namespace UtilityAI
         public Blackboard Blackboard { get; private set; }
 
         /// <summary>
-        /// 当前执行的选项
+        /// 当前选中的选项
         /// </summary>
         public Option CurrentOption { get; private set; }
 
@@ -53,11 +53,6 @@ namespace UtilityAI
         /// 当选项变化时触发
         /// </summary>
         public event Action<Option, Option> OnOptionChanged;
-
-        /// <summary>
-        /// 当动作完成时触发
-        /// </summary>
-        public event Action<Option, ActionState> OnActionCompleted;
 
         public UtilityBrain(Blackboard blackboard = null, IOptionSelector selector = null)
         {
@@ -107,6 +102,8 @@ namespace UtilityAI
         {
             isRunning = true;
             lastDecisionTime = Time.time;
+            // 启动时立即做一次决策
+            MakeDecision();
         }
 
         /// <summary>
@@ -115,11 +112,9 @@ namespace UtilityAI
         public void Stop()
         {
             isRunning = false;
-            if (CurrentOption != null)
-            {
-                CurrentOption.action?.Abort(Blackboard);
-                CurrentOption = null;
-            }
+            CurrentOption = null;
+            // 清除黑板上的决策
+            Blackboard.SetValue(EnemyAIDatabaseKey.UtilityDecision, UtilityDecision.Invalid);
         }
 
         /// <summary>
@@ -138,15 +133,16 @@ namespace UtilityAI
             }
             else if (Time.time - lastDecisionTime >= DecisionInterval)
             {
-                // 当前动作已完成
-                if (CurrentOption.action.State != ActionState.Running)
-                {
-                    shouldDecide = true;
-                }
                 // 允许中断且检查是否有更好的选项
-                else if (AllowInterrupt)
+                if (AllowInterrupt)
                 {
                     shouldDecide = CheckForBetterOption();
+                }
+                else
+                {
+                    // 如果不允许中断，我们仍然需要定期评估当前选项的分数，或者重新评估所有选项
+                    // 这里简化为定期重新决策
+                    shouldDecide = true;
                 }
             }
 
@@ -154,9 +150,6 @@ namespace UtilityAI
             {
                 MakeDecision();
             }
-
-            // 执行当前动作
-            ExecuteCurrentAction();
         }
 
         /// <summary>
@@ -173,32 +166,50 @@ namespace UtilityAI
 
             var newOption = selector.Select(options, Blackboard);
 
-            if (newOption == null) return;
-
-            // 如果选择了不同的选项
+            // 如果没有有效选项，或者选项发生变化
             if (newOption != CurrentOption)
             {
                 var oldOption = CurrentOption;
+                CurrentOption = newOption;
 
-                // 中断旧动作
-                if (CurrentOption != null && CurrentOption.action.State == ActionState.Running)
+                if (CurrentOption != null)
                 {
-                    CurrentOption.action.Abort(Blackboard);
+                    CurrentOption.MarkExecuted();
                 }
 
-                CurrentOption = newOption;
-                CurrentOption.MarkExecuted();
-                CurrentOption.action.Enter(Blackboard);
+                // 更新黑板上的决策数据
+                UpdateDecisionOnBlackboard();
 
                 OnOptionChanged?.Invoke(oldOption, newOption);
             }
+            else if (CurrentOption != null)
+            {
+                // 选项没变，但分数可能变了，更新黑板
+                UpdateDecisionOnBlackboard();
+            }
+        }
+
+        private void UpdateDecisionOnBlackboard()
+        {
+            var decision = UtilityDecision.Invalid;
+            if (CurrentOption != null)
+            {
+                decision = new UtilityDecision
+                {
+                    OptionName = CurrentOption.name,
+                    Score = CurrentOption.LastScore,
+                    Timestamp = Time.time
+                };
+            }
+            Blackboard.SetValue(EnemyAIDatabaseKey.UtilityDecision, decision);
         }
 
         private bool CheckForBetterOption()
         {
             if (CurrentOption == null) return true;
 
-            float currentScore = CurrentOption.LastScore;
+            // 重新评估当前选项的分数
+            float currentScore = CurrentOption.Evaluate(Blackboard);
 
             foreach (var option in options)
             {
@@ -214,37 +225,5 @@ namespace UtilityAI
             return false;
         }
 
-        private void ExecuteCurrentAction()
-        {
-            if (CurrentOption?.action == null) return;
-
-            var state = CurrentOption.action.Execute(Blackboard);
-
-            if (state != ActionState.Running)
-            {
-                CurrentOption.action.Exit(Blackboard);
-                OnActionCompleted?.Invoke(CurrentOption, state);
-
-                // 动作完成后清空当前选项，下次Update会选择新选项
-                CurrentOption = null;
-            }
-        }
-
-        /// <summary>
-        /// 获取所有选项的调试信息
-        /// </summary>
-        public List<(string name, float score, bool isCurrent)> GetDebugInfo()
-        {
-            var info = new List<(string, float, bool)>();
-
-            foreach (var option in options)
-            {
-                option.Evaluate(Blackboard);
-                info.Add((option.name, option.LastScore, option == CurrentOption));
-            }
-
-            info.Sort((a, b) => b.score.CompareTo(a.score));
-            return info;
-        }
     }
 }

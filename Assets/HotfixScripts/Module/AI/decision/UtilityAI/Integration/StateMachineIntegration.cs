@@ -1,95 +1,10 @@
 using System;
+using System.Collections.Generic;
 using AIBlackboard;
 using HFSM;
 
 namespace UtilityAI.Integration
 {
-    /// <summary>
-    /// 状态机动作包装器 - 将状态机状态切换作为效用AI的动作
-    /// 实现效用AI与HFSM的无缝集成
-    /// </summary>
-    /// <typeparam name="T">状态枚举类型</typeparam>
-    public class StateMachineAction<T> : IAction where T : Enum
-    {
-        public string Name { get; }
-        public ActionState State { get; private set; } = ActionState.Ready;
-
-        private readonly StateMachine<T> stateMachine;
-        private readonly T targetState;
-        private readonly Func<Blackboard, bool> completionCondition;
-        private readonly bool waitForStateChange;
-
-        /// <summary>
-        /// 创建状态机动作
-        /// </summary>
-        /// <param name="name">动作名称</param>
-        /// <param name="stateMachine">目标状态机</param>
-        /// <param name="targetState">要切换到的状态</param>
-        /// <param name="completionCondition">动作完成条件（可选）</param>
-        /// <param name="waitForStateChange">是否等待状态切换完成</param>
-        public StateMachineAction(
-            string name,
-            StateMachine<T> stateMachine,
-            T targetState,
-            Func<Blackboard, bool> completionCondition = null,
-            bool waitForStateChange = false)
-        {
-            Name = name;
-            this.stateMachine = stateMachine;
-            this.targetState = targetState;
-            this.completionCondition = completionCondition;
-            this.waitForStateChange = waitForStateChange;
-        }
-
-        public void Enter(Blackboard blackboard)
-        {
-            State = ActionState.Running;
-
-            // 触发状态切换
-            if (!stateMachine.CurrentStateType.Equals(targetState))
-            {
-                stateMachine.ChangeState(targetState);
-            }
-        }
-
-        public ActionState Execute(Blackboard blackboard)
-        {
-            // 如果有完成条件，检查条件
-            if (completionCondition != null)
-            {
-                if (completionCondition(blackboard))
-                {
-                    State = ActionState.Success;
-                }
-                return State;
-            }
-
-            // 如果需要等待状态切换
-            if (waitForStateChange)
-            {
-                if (stateMachine.CurrentStateType.Equals(targetState))
-                {
-                    State = ActionState.Success;
-                }
-                return State;
-            }
-
-            // 默认立即完成
-            State = ActionState.Success;
-            return State;
-        }
-
-        public void Exit(Blackboard blackboard)
-        {
-            State = ActionState.Ready;
-        }
-
-        public void Abort(Blackboard blackboard)
-        {
-            State = ActionState.Ready;
-        }
-    }
-
     /// <summary>
     /// 效用AI驱动的状态 - 在HFSM状态内部运行效用AI
     /// </summary>
@@ -97,6 +12,7 @@ namespace UtilityAI.Integration
     public abstract class UtilityAIState<T> : StateBase<T> where T : Enum
     {
         protected UtilityBrain brain;
+        protected Dictionary<string, T> optionToStateMap = new Dictionary<string, T>();
 
         public override void Init()
         {
@@ -110,6 +26,14 @@ namespace UtilityAI.Integration
         /// </summary>
         protected abstract void SetupOptions();
 
+        /// <summary>
+        /// 映射选项名称到目标状态
+        /// </summary>
+        protected void MapOptionToState(string optionName, T state)
+        {
+            optionToStateMap[optionName] = state;
+        }
+
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter(input);
@@ -120,6 +44,29 @@ namespace UtilityAI.Integration
         {
             base.Update();
             brain.Update();
+
+            CheckDecision();
+        }
+
+        private void CheckDecision()
+        {
+            var decision = database.GetValue<EnemyAIDatabaseKey, UtilityDecision>(EnemyAIDatabaseKey.UtilityDecision);
+            if (decision.IsValid && optionToStateMap.TryGetValue(decision.OptionName, out T targetState))
+            {
+                // 如果目标状态不是当前状态（虽然我们在UtilityAIState内部，但这里指的是外部状态机的状态切换）
+                // 注意：这里假设UtilityAIState是状态机的一个状态，它负责根据决策切换到其他状态
+                // 如果其他状态也是UtilityAIState，那么可能会形成循环，需要小心配置
+
+                // 这里我们直接请求状态机切换
+                // 只有当目标状态与当前状态不同时才切换？
+                // 但UtilityAIState本身就是当前状态。所以如果决策指向其他状态，就切换。
+                // 如果决策指向自己（或者没有映射），则保持。
+
+                // if (!stateMachine.CurrentStateType.Equals(targetState))
+                // {
+                //     stateMachine.ChangeState(targetState);
+                // }
+            }
         }
 
         public override void Exit()

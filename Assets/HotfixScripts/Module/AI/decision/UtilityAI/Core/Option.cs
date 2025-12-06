@@ -60,11 +60,6 @@ namespace UtilityAI
         private List<ConsiderationEntry> considerations = new();
 
         /// <summary>
-        /// 执行的动作
-        /// </summary>
-        public IAction action;
-
-        /// <summary>
         /// 最后一次计算的分数（用于调试）
         /// </summary>
         public float LastScore { get; private set; }
@@ -81,10 +76,9 @@ namespace UtilityAI
 
         private float lastExecuteTime = float.MinValue;
 
-        public Option(string name, IAction action)
+        public Option(string name)
         {
             this.name = name;
-            this.action = action;
         }
 
         /// <summary>

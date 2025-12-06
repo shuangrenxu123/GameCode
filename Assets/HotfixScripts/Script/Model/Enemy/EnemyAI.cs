@@ -62,7 +62,47 @@ public enum EnemyAIDatabaseKey
     /// <summary>
     /// 敌人身体引用
     /// </summary>
-    EnemyBody
+    EnemyBody,
+
+    /// <summary>
+    /// 效用AI大脑引用
+    /// </summary>
+    UtilityBrain,
+
+    /// <summary>
+    /// 巡逻起点
+    /// </summary>
+    PatrolOrigin,
+
+    /// <summary>
+    /// 逃跑的安全距离
+    /// </summary>
+    FleeSafeDistance,
+
+    /// <summary>
+    /// 低血量阈值
+    /// </summary>
+    LowHealthThreshold,
+
+    /// <summary>
+    /// 当前与目标距离
+    /// </summary>
+    PlayerDistance,
+
+    /// <summary>
+    /// 目标是否在感知范围内
+    /// </summary>
+    PlayerVisible,
+
+    /// <summary>
+    /// 巡逻目的地
+    /// </summary>
+    PatrolDestination,
+
+    /// <summary>
+    /// 效用AI决策结果
+    /// </summary>
+    UtilityDecision
 }
 
 /// <summary>
@@ -77,12 +117,37 @@ public class EnemyBT : BTTree
     {
         var rootNode = new BTSequence();
 
-        var moveAction = new BTMoveAction();
+        // 1. Update Utility Brain
+        var utilityNode = new BTUtilityUpdateNode();
+        rootNode.AddChild(utilityNode);
 
-        // var attackAction = new BTAttackNode();
-        // var timerNode = new BTTimer(5f, attackAction);
+        // 2. Selector to choose behavior based on decision
+        var selector = new BTSelector();
+        rootNode.AddChild(selector);
 
-        rootNode.AddChild(moveAction);
+        // 2.1 Patrol Branch
+        var patrolSequence = new BTSequence();
+        patrolSequence.AddChild(new BTCheckUtilityDecisionNode("Patrol"));
+        patrolSequence.AddChild(new BTPatrolNode());
+        selector.AddChild(patrolSequence);
+
+        // 2.2 Flee Branch
+        var fleeSequence = new BTSequence();
+        fleeSequence.AddChild(new BTCheckUtilityDecisionNode("Flee"));
+        fleeSequence.AddChild(new BTFleeNode());
+        selector.AddChild(fleeSequence);
+
+        // 2.3 Chase Branch
+        var chaseSequence = new BTSequence();
+        chaseSequence.AddChild(new BTCheckUtilityDecisionNode("Chase"));
+        chaseSequence.AddChild(new BTChaseNode());
+        selector.AddChild(chaseSequence);
+
+        // 2.4 Attack Branch
+        var attackSequence = new BTSequence();
+        attackSequence.AddChild(new BTCheckUtilityDecisionNode("Attack"));
+        attackSequence.AddChild(new BTAttackNode());
+        selector.AddChild(attackSequence);
 
         root = rootNode;
     }

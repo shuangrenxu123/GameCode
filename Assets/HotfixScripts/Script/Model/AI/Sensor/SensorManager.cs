@@ -19,10 +19,26 @@ namespace Character.AI.Sensor
                 dataBase = new();
             }
 
+            InitializeSensors();
+        }
+
+        void InitializeSensors()
+        {
+            if (sensors == null || sensors.Length == 0)
+            {
+                sensors = GetComponentsInChildren<Sensor>();
+            }
+
             foreach (var sensor in sensors)
             {
                 sensor.Init(this, dataBase);
             }
+        }
+
+        public void BindBlackboard(Blackboard blackboard)
+        {
+            dataBase = blackboard;
+            InitializeSensors();
         }
         void Update()
         {

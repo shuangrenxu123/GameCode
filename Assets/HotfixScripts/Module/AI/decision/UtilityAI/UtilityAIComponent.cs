@@ -76,7 +76,6 @@ namespace UtilityAI
             Brain.InterruptThreshold = interruptThreshold;
 
             Brain.OnOptionChanged += OnOptionChanged;
-            Brain.OnActionCompleted += OnActionCompleted;
 
             SetupOptions();
         }
@@ -96,7 +95,6 @@ namespace UtilityAI
         protected virtual void Update()
         {
             Brain?.Update();
-            UpdateDebugInfo();
         }
 
         protected virtual void OnDestroy()
@@ -104,7 +102,6 @@ namespace UtilityAI
             if (Brain != null)
             {
                 Brain.OnOptionChanged -= OnOptionChanged;
-                Brain.OnActionCompleted -= OnActionCompleted;
             }
         }
 
@@ -140,72 +137,11 @@ namespace UtilityAI
             OnOptionChangedCallback(oldOption, newOption);
         }
 
-        private void OnActionCompleted(Option option, ActionState state)
-        {
-            OnActionCompletedCallback(option, state);
-        }
-
         /// <summary>
         /// 选项变化回调 - 子类可重写
         /// </summary>
         protected virtual void OnOptionChangedCallback(Option oldOption, Option newOption)
         {
         }
-
-        /// <summary>
-        /// 动作完成回调 - 子类可重写
-        /// </summary>
-        protected virtual void OnActionCompletedCallback(Option option, ActionState state)
-        {
-        }
-
-        private void UpdateDebugInfo()
-        {
-            if (!showDebugInfo || Brain == null) return;
-
-            var info = Brain.GetDebugInfo();
-            debugOptions.Clear();
-
-            foreach (var item in info)
-            {
-                debugOptions.Add(new DebugOptionInfo
-                {
-                    name = item.name,
-                    score = item.score,
-                    isCurrent = item.isCurrent
-                });
-            }
-        }
-
-#if UNITY_EDITOR
-        private void OnGUI()
-        {
-            if (!showDebugInfo || Brain == null) return;
-
-            var info = Brain.GetDebugInfo();
-
-            GUILayout.BeginArea(new Rect(10, 10, 300, 400));
-            GUILayout.BeginVertical("box");
-
-            GUILayout.Label($"Utility AI: {gameObject.name}");
-            GUILayout.Label($"Current: {currentOptionName} ({currentOptionScore:F2})");
-            GUILayout.Space(10);
-
-            foreach (var item in info)
-            {
-                var style = new GUIStyle(GUI.skin.label);
-                if (item.isCurrent)
-                {
-                    style.fontStyle = FontStyle.Bold;
-                    style.normal.textColor = Color.green;
-                }
-
-                GUILayout.Label($"{item.name}: {item.score:F3}", style);
-            }
-
-            GUILayout.EndVertical();
-            GUILayout.EndArea();
-        }
-#endif
     }
 }
