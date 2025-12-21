@@ -1,7 +1,5 @@
-using ObjectPool;
-using System;
 using System.Collections;
-using System.Drawing.Drawing2D;
+using ObjectPool;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -9,31 +7,33 @@ namespace Audio
 {
     public class AudioAgent : PoolObject
     {
+        private const string PoolName = "audio";
         private AudioSource audioSource;
         private Coroutine Coroutine;
         private Transform target;
 
         public UnityAction OnPlay;
         /// <summary>
-        /// ²¥·ÅÍê±ÏÊÂ¼þ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
         /// </summary>
         public UnityAction OnEnd;
         public UnityAction OnPause;
         /// <summary>
-        /// ÊÖ¶¯Í£Ö¹ÊÂ¼þ
+        /// ï¿½Ö¶ï¿½Í£Ö¹ï¿½Â¼ï¿½
         /// </summary>
         public UnityAction OnStop;
         public override void Init()
         {
             audioSource = gameObject.AddComponent<AudioSource>();
-
-            OnPlay = null;
-            OnStop = null;
-            OnPause = null;
-            OnEnd = null;
+            ResetCallbacks();
         }
         public void PlayAudio(AudioClip clip, bool hasLoop)
         {
+            if (Coroutine != null)
+            {
+                StopCoroutine(Coroutine);
+                Coroutine = null;
+            }
             audioSource.clip = clip;
             audioSource.loop = hasLoop;
             audioSource.time = 0f;
@@ -52,7 +52,7 @@ namespace Audio
             this.target = target;
         }
         /// <summary>
-        /// »ñµÃÕýÔÚ²¥·ÅµÄÒôÆµ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú²ï¿½ï¿½Åµï¿½ï¿½ï¿½Æµ
         /// </summary>
         /// <returns></returns>
         public AudioClip GetClip()
@@ -60,42 +60,51 @@ namespace Audio
             return audioSource.clip;
         }
         /// <summary>
-        /// ¼ÌÐø²¥·ÅÒôÆµ
+        /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµ
         /// </summary>
         public void Continue()
         {
             audioSource.Play();
         }
         /// <summary>
-        /// ÔÝÍ£²¥·Å
+        /// ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void Pause()
         {
             audioSource.Pause();
         }
         /// <summary>
-        /// Í£Ö¹²¥·Å
+        /// Í£Ö¹ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         public void Stop()
         {
             audioSource.Stop();
             OnStop?.Invoke();
             if (Coroutine != null)
+            {
                 StopCoroutine(Coroutine);
-            PoolManager.Instance.ReturnObjectToPool("audio", this);
+                Coroutine = null;
+            }
+            ResetCallbacks();
+            PoolManager.Instance.ReturnObjectToPool(PoolName, this);
         }
         IEnumerator FinishedPlaying(float clipLength)
         {
             yield return new WaitForSeconds(clipLength);
-            //Íê³ÉÒÔºó×Ô¼º»ØÊÕ
+            //ï¿½ï¿½ï¿½ï¿½Ôºï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½ï¿½
             OnEnd?.Invoke();
-            PoolManager.Instance.ReturnObjectToPool("audio", this);
+            ResetCallbacks();
+            Coroutine = null;
+            PoolManager.Instance.ReturnObjectToPool(PoolName, this);
         }
         public override void Pull()
         {
             base.Pull();
             audioSource.volume = 1f;
+            audioSource.mute = false;
             target = null;
+            Coroutine = null;
+            ResetCallbacks();
         }
         public bool IsLoop()
         {
@@ -107,11 +116,22 @@ namespace Audio
         }
         public void SetVolume(float v)
         {
-            audioSource.volume = v * audioSource.volume;
+            audioSource.volume = Mathf.Clamp01(v);
         }
         public void SetMute(bool v)
         {
             audioSource.mute = v;
+        }
+        public float GetVolume()
+        {
+            return audioSource.volume;
+        }
+        private void ResetCallbacks()
+        {
+            OnPlay = null;
+            OnStop = null;
+            OnPause = null;
+            OnEnd = null;
         }
     }
 }

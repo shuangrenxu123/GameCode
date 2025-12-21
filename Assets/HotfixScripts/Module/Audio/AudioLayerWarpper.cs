@@ -1,56 +1,99 @@
 using System.Collections.Generic;
-
+using UnityEngine;
 
 namespace Audio
 {
-
-
     /// <summary>
-    /// ÒôÆµ²¥·ÅµÄÄ³¸ö¹ìµÀµÄ·â×°
+    /// ï¿½ï¿½Æµï¿½ï¿½ï¿½Åµï¿½Ä³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½×°
     /// </summary>
     public class AudioLayerWarpper
     {
-        private AudioLayer audioLayer;
-        private List<AudioAgent> audioAgents;
+        private readonly List<AudioAgent> audioAgents;
+        private float currentVolume = 1f;
+        private bool isMuted;
 
         public AudioLayerWarpper(AudioLayer layer)
         {
-            audioAgents = new List<AudioAgent>();
-            audioLayer = layer;
+            audioAgents = new List<AudioAgent>(8);
         }
 
         /// <summary>
-        /// Ìí¼Ó²¥·ÅÆ÷
+        /// ï¿½ï¿½ï¿½Ó²ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
-        public void AddAgent(AudioAgent[] agent)
+        public void AddAgent(AudioAgent[] agents)
         {
-            audioAgents.AddRange(agent);
+            if (agents == null || agents.Length == 0)
+                return;
+
+            foreach (var agent in agents)
+            {
+                AddAgent(agent);
+            }
         }
+
         public void AddAgent(AudioAgent agent)
         {
+            if (agent == null)
+                return;
+
             audioAgents.Add(agent);
+            ApplyCurrentSettings(agent);
+            CleanupNullAgents();
         }
+
+        public void RemoveAgent(AudioAgent agent)
+        {
+            if (agent == null)
+                return;
+
+            audioAgents.Remove(agent);
+        }
+
         /// <summary>
-        /// ÉèÖÃÆµµÀµÄÒôÁ¿´óÐ¡
+        /// ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¡
         /// </summary>
         /// <param name="volume"></param>
         public void SetVolume(float volume)
         {
-            foreach (AudioAgent agent in audioAgents)
+            currentVolume = Mathf.Clamp01(volume);
+            foreach (var agent in audioAgents)
             {
-                agent.SetVolume(volume);
+                if (agent != null)
+                {
+                    agent.SetVolume(currentVolume);
+                }
             }
+            CleanupNullAgents();
         }
         /// <summary>
-        /// ½«¸ÃÆµµÀµÄÒôÀÖÈ«¶¼¸ø¾²Òô
+        /// ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         /// </summary>
         /// <param name="mute"></param>
         public void SetMute(bool mute)
         {
-            foreach (AudioAgent agent in audioAgents)
+            isMuted = mute;
+            foreach (var agent in audioAgents)
             {
-                agent.SetMute(mute);
+                if (agent != null)
+                {
+                    agent.SetMute(isMuted);
+                }
             }
+            CleanupNullAgents();
+        }
+
+        public void ApplyCurrentSettings(AudioAgent agent)
+        {
+            if (agent == null)
+                return;
+
+            agent.SetVolume(currentVolume);
+            agent.SetMute(isMuted);
+        }
+
+        private void CleanupNullAgents()
+        {
+            audioAgents.RemoveAll(a => a == null);
         }
     }
 }
