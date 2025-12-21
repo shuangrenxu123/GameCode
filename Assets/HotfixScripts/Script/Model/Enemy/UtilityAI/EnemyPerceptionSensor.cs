@@ -52,8 +52,8 @@ namespace Enemy.AI.Utility
             float distance = Vector3.Distance(transform.position, trackedTarget.position);
             bool visible = distance <= viewDistance;
 
-            database.SetValue(EnemyAIDatabaseKey.PlayerDistance.ToString(), distance);
-            database.SetValue(EnemyAIDatabaseKey.PlayerVisible.ToString(), visible);
+            database.SetValue(EnemyAIDatabaseKey.PlayerDistance, distance);
+            database.SetValue(EnemyAIDatabaseKey.PlayerVisible, visible);
         }
     }
 }

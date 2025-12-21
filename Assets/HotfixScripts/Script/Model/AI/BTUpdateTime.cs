@@ -18,11 +18,11 @@ public class BTUpdateTime : BTAction
     {
         foreach (var name in timers)
         {
-            if (database.ContainsData<float>(name))
+            if (database.ContainsData<string, float>(name))
             {
                 database.SetValue(name, 0f);
             }
-            var value = database.GetValue<float>(name);
+            var value = database.GetValue<string, float>(name);
             value += Time.deltaTime;
             database.SetValue(name, value);
         }

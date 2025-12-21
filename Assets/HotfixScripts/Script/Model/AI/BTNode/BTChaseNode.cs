@@ -26,6 +26,15 @@ namespace BT.Action
                 return BTResult.Failed;
             }
 
+            bool playerVisible = database.GetValue(EnemyAIDatabaseKey.PlayerVisible, false);
+            if (!playerVisible)
+            {
+                StopMovement();
+                characterActions.attack.value = false;
+                Debug.Log("[追击] 目标超出感知范围，切回巡逻");
+                return BTResult.Failed;
+            }
+
             if (!database.TryGetValue("targetTransform", out Transform target) || target == null)
             {
                 StopMovement();
@@ -44,11 +53,11 @@ namespace BT.Action
             // Ensure attack is off
             characterActions.attack.value = false;
 
-            ApplyInput(direction, true);
+            ApplyInput(direction);
             return BTResult.Running;
         }
 
-        private void ApplyInput(Vector3 worldDirection, bool run)
+        private void ApplyInput(Vector3 worldDirection)
         {
             var planar = Vector3.ProjectOnPlane(worldDirection, Vector3.up);
             if (planar.sqrMagnitude > 1f)
@@ -56,9 +65,9 @@ namespace BT.Action
                 planar.Normalize();
             }
 
-            var input = new Vector2(planar.x, planar.z);
+            var input = new Vector2(planar.x, planar.z) * 0.65f; // 追击时保持行走速度
             characterActions.movement.value = input;
-            characterActions.run.value = run;
+            characterActions.run.value = false;
         }
 
         private void StopMovement()

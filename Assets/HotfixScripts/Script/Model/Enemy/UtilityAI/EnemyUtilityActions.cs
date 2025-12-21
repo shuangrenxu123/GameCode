@@ -8,25 +8,6 @@ using UtilityAI;
 namespace Enemy.AI.Utility
 {
     /// <summary>
-    /// 通用的敌人效用AI黑板键
-    /// </summary>
-    internal static class EnemyUtilityBlackboardKeys
-    {
-        internal static readonly BlackboardKey<Vector3> PatrolOrigin = new(EnemyAIDatabaseKey.PatrolOrigin.ToString());
-        internal static readonly BlackboardKey<Vector3> PatrolDestination = new(EnemyAIDatabaseKey.PatrolDestination.ToString());
-        internal static readonly BlackboardKey<float> PatrolRadius = new(EnemyAIDatabaseKey.PatrolRadius.ToString());
-        internal static readonly BlackboardKey<float> SafeDistance = new(EnemyAIDatabaseKey.FleeSafeDistance.ToString());
-        internal static readonly BlackboardKey<float> LowHealthThreshold = new(EnemyAIDatabaseKey.LowHealthThreshold.ToString());
-        internal static readonly BlackboardKey<float> PlayerDistance = new(EnemyAIDatabaseKey.PlayerDistance.ToString());
-        internal static readonly BlackboardKey<bool> PlayerVisible = new(EnemyAIDatabaseKey.PlayerVisible.ToString());
-        internal static readonly BlackboardKey<CombatEntity> CombatEntity = new(EnemyAIDatabaseKey.CombatEntity.ToString());
-        internal static readonly BlackboardKey<UtilityBrain> UtilityBrain = new(EnemyAIDatabaseKey.UtilityBrain.ToString());
-        internal static readonly BlackboardKey<CharacterBrain> CharacterBrain = new("characterBrain");
-        internal static readonly BlackboardKey<CharacterActions> CharacterActions = new("characterActions");
-        internal static readonly BlackboardKey<Transform> TargetTransform = new("targetTransform");
-    }
-
-    /// <summary>
     /// 敌人行动的公共基类，负责写入CharacterActions
     /// </summary>
     public abstract class EnemyMovementActionBase : ContinuousAction
@@ -109,7 +90,7 @@ namespace Enemy.AI.Utility
 
         Vector3 GetOrCreateDestination(Blackboard blackboard)
         {
-            if (!blackboard.TryGetValue(EnemyUtilityBlackboardKeys.PatrolDestination, out Vector3 destination))
+            if (!blackboard.TryGetValue<EnemyAIDatabaseKey, Vector3>(EnemyAIDatabaseKey.PatrolDestination, out Vector3 destination))
             {
                 destination = GenerateNewDestination(blackboard);
             }
@@ -118,11 +99,11 @@ namespace Enemy.AI.Utility
 
         Vector3 GenerateNewDestination(Blackboard blackboard)
         {
-            var origin = blackboard.GetValue(EnemyUtilityBlackboardKeys.PatrolOrigin, enemy.transform.position);
-            var radius = Mathf.Max(1f, blackboard.GetValue(EnemyUtilityBlackboardKeys.PatrolRadius, 5f));
+            var origin = blackboard.GetValue(EnemyAIDatabaseKey.PatrolOrigin, enemy.transform.position);
+            var radius = Mathf.Max(1f, blackboard.GetValue(EnemyAIDatabaseKey.PatrolRadius, 5f));
             var random = Random.insideUnitCircle * radius;
             var destination = origin + new Vector3(random.x, 0f, random.y);
-            blackboard.SetValue(EnemyUtilityBlackboardKeys.PatrolDestination, destination);
+            blackboard.SetValue(EnemyAIDatabaseKey.PatrolDestination, destination);
             return destination;
         }
     }
@@ -142,13 +123,13 @@ namespace Enemy.AI.Utility
 
         protected override ActionState OnUpdate(Blackboard blackboard)
         {
-            if (!blackboard.TryGetValue(EnemyUtilityBlackboardKeys.TargetTransform, out Transform target) || target == null)
+            if (!blackboard.TryGetValue("targetTransform", out Transform target) || target == null)
             {
                 StopMovement();
                 return ActionState.Failed;
             }
 
-            float safeDistance = Mathf.Max(minSafeDistance, blackboard.GetValue(EnemyUtilityBlackboardKeys.SafeDistance, minSafeDistance));
+            float safeDistance = Mathf.Max(minSafeDistance, blackboard.GetValue(EnemyAIDatabaseKey.FleeSafeDistance, minSafeDistance));
             Vector3 direction = enemy.characterActor.transform.position - target.position;
             float currentDistance = direction.magnitude;
 

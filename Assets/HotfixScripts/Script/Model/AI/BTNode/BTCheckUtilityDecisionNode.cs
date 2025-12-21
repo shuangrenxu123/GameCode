@@ -1,5 +1,6 @@
 using AIBlackboard;
 using BT;
+using UnityEngine;
 using UtilityAI;
 
 namespace BT.Action
@@ -26,8 +27,11 @@ namespace BT.Action
         {
             currentDecision = database.GetValue<EnemyAIDatabaseKey, UtilityDecision>(EnemyAIDatabaseKey.UtilityDecision);
 
+            Debug.Log($"[效用决策检查] 目标: {targetOptionName}, 当前: {currentDecision.OptionName}, 有效: {currentDecision.IsValid}");
+
             if (currentDecision.IsValid && currentDecision.OptionName == targetOptionName)
             {
+                Debug.Log($"[效用决策检查] 成功 - 执行 {targetOptionName}");
                 return BTResult.Success;
             }
 
