@@ -20,7 +20,6 @@ namespace Enemy
 
         [Header("动画系统")]
         public AnimancerComponent animancer;      // 动画控制器
-        public AnimatorHelper animancerHelper;   // 动画助手（复用玩家动画助手）
 
         [SerializeField]
         private NPCStateMgr NPCStateMgr;
@@ -29,14 +28,14 @@ namespace Enemy
         private void Awake()
         {
             enemyBrain = brainGo.GetComponent<IEnemyBrain>();
-            InitStateMachine();
-            // 初始化动画系统
-            InitializeAnimationSystem();
-
+        }
+        void Start()
+        {
             // 初始化大脑系统
             InitializeBrain();
 
             InitCombatProperty();
+
         }
 
         /// <summary>
@@ -51,15 +50,6 @@ namespace Enemy
             combatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
         }
 
-        private void Update()
-        {
-            // 使用大脑进行思考
-            if (enemyBrain != null)
-            {
-                enemyBrain.Think();
-            }
-        }
-
         /// <summary>
         /// 初始化大脑系统
         /// </summary>
@@ -70,21 +60,6 @@ namespace Enemy
             {
                 enemyBrain.Initialize(this);
             }
-        }
-
-        /// <summary>
-        /// 初始化动画系统
-        /// </summary>
-        private void InitializeAnimationSystem()
-        {
-            // 初始化动画助手
-            animancerHelper = new AnimatorHelper(animancer);
-        }
-
-        private void InitStateMachine()
-        {
-            // 初始化状态机
-            NPCStateMgr.Init();
         }
 
 

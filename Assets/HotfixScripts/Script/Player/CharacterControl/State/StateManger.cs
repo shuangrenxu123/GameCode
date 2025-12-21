@@ -137,10 +137,15 @@ namespace CharacterControllerStateMachine
                 actionChangeGraph = actionChangeGraph,
                 timelineExecutor = skillRunner,
             };
+            var CharacterInjIryState = new CharacterInjIryState()
+            {
+                injIryAnimations = animatorConfig.injIryAnimators,
+            };
             loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
             loginMachine.SetDefaultState(ECharacterLogicState.Empty);
+            loginMachine.AddState(CharacterInjIryState);
         }
 
         void SetStateParameter()

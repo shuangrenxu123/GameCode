@@ -50,18 +50,20 @@ namespace Character.Controller
         public CharacterLogicStateMachine loginMachine;
         Blackboard dataBase;
 
-        public void Init()
+        private void Awake()
         {
-
             AnimancerHelper = new AnimatorHelper(Animancer);
             dataBase = new Blackboard();
+        }
+        private void Start()
+        {
             SetStateMachineData("combatEntity", combatEntity);
-
             InitState();
             moveStateMachine.movementReferenceParameters.movementReferenceMode = MovementReferenceMode.World;
             moveStateMachine.Start();
             loginMachine.Start();
         }
+
         private void InitState()
         {
             InitMovementState();
@@ -103,11 +105,16 @@ namespace Character.Controller
                 climbAnimations = animatorConfig.climbAnimators
             };
 
+            var runMoveState = new CharacterRunMovementState
+            {
+                currentAnimator = animatorConfig.linearMixerAnimators["RunMove"]
+            };
 
             moveStateMachine.AddState(movementState);
             moveStateMachine.AddState(crouchMovementState);
             moveStateMachine.AddState(jumpMovement);
             moveStateMachine.AddState(climbMovementState);
+            moveStateMachine.AddState(runMoveState);
 
         }
         void InitLoginState()

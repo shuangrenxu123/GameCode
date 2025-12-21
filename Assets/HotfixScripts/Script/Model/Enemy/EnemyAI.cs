@@ -102,7 +102,27 @@ public enum EnemyAIDatabaseKey
     /// <summary>
     /// 效用AI决策结果
     /// </summary>
-    UtilityDecision
+    UtilityDecision,
+
+    /// <summary>
+    /// 巡逻速度倍率
+    /// </summary>
+    PatrolSpeedMultiplier,
+
+    /// <summary>
+    /// 受击翻滚概率
+    /// </summary>
+    RollChanceOnHit,
+
+    /// <summary>
+    /// 是否应该翻滚（受击判定后写入）
+    /// </summary>
+    ShouldRoll,
+
+    /// <summary>
+    /// 最后一次受到伤害的来源
+    /// </summary>
+    LastDamager
 }
 
 /// <summary>
