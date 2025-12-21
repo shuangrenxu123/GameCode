@@ -9,7 +9,7 @@ public class DamageCollider : MonoBehaviour
     Collider damageCollider;
     [SerializeField, ReadOnly]
     CombatEntity entity;
-    List<Enemy.Enemy> characterDamagedDuringThisCalculation;
+    List<CombatEntity> characterDamagedDuringThisCalculation;
     LayerMask enemyLayer;
     public string EnemyTag;
     private void Awake()
@@ -18,7 +18,7 @@ public class DamageCollider : MonoBehaviour
 
         damageCollider.isTrigger = true;
         damageCollider.enabled = false;
-        characterDamagedDuringThisCalculation = new List<Enemy.Enemy>();
+        characterDamagedDuringThisCalculation = new List<CombatEntity>();
 
         enemyLayer = LayerMask.NameToLayer("Damageable Character");
         //weaponItem = GetComponentInParent<PlayerInventory>().rightWeapon as WeaponItemData;
@@ -38,15 +38,14 @@ public class DamageCollider : MonoBehaviour
     {
         if (other.gameObject.layer == enemyLayer)
         {
-            var enemy = other.gameObject.GetComponentInParent<Enemy.Enemy>();
-            if (characterDamagedDuringThisCalculation.Contains(enemy) || !enemy.CompareTag(EnemyTag))
+            var target = other.gameObject.GetComponentInParent<CombatEntity>();
+            if (characterDamagedDuringThisCalculation.Contains(target) || !target.CompareTag(EnemyTag))
             {
                 return;
             }
-            characterDamagedDuringThisCalculation.Add(enemy);
-            var target = other.gameObject.GetComponentInParent<CombatEntity>();
+            characterDamagedDuringThisCalculation.Add(target);
             Vector3 contactPoint = other.gameObject.GetComponent<Collider>().ClosestPointOnBounds(transform.position);
-            float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, enemy.transform.forward, Vector3.up));
+            float directionHitFrom = (Vector3.SignedAngle(entity.transform.forward, target.transform.forward, Vector3.up));
 
             // new DamageAction(entity, new List<CombatEntity> { target }).Apply(10);
             CombatActionFactor

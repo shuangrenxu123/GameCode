@@ -22,7 +22,6 @@ namespace CharacterController.Camera
         [LabelText("角色大脑组件")]
         CharacterBrain characterBrain;
 
-        [SerializeField]
         InputHandlerSettings inputHandlerSettings => characterBrain.CameraInputHandlerSettings;
 
         [SerializeField, ReadOnly]

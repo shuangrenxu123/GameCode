@@ -13,7 +13,7 @@ namespace BT.Action
         {
             base.Activate(database);
 
-            entityBrain = database.GetValue<IEnemyBrain>("entityBrain");
+            entityBrain = database.GetValue<string, IEnemyBrain>("entityBrain");
         }
         protected override BTResult Execute()
         {

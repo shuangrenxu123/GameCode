@@ -8,6 +8,7 @@ public class CharacterActions
     public BoolAction roll;
     public BoolAction @lock;
     public BoolAction @attack;
+    public BoolAction heavyAttack;
     public BoolAction @crouch;
     public BoolAction @OpenUI;
     public BoolAction @OpenConsoleUI;
@@ -22,6 +23,7 @@ public class CharacterActions
         movement.Reset();
         @lock.Reset();
         attack.Reset();
+        heavyAttack.Reset();
         crouch.Reset();
         OpenUI.Reset();
         @OpenConsoleUI.Reset();
@@ -35,6 +37,7 @@ public class CharacterActions
         movement.ForceReset();
         @lock.ForceReset();
         attack.ForceReset();
+        heavyAttack.ForceReset();
         crouch.ForceReset();
         OpenUI.ForceReset();
         @OpenConsoleUI.ForceReset();
@@ -61,6 +64,9 @@ public class CharacterActions
         attack = new BoolAction();
         attack.Initialize();
 
+        heavyAttack = new BoolAction();
+        heavyAttack.Initialize();
+
         crouch = new BoolAction();
         crouch.Initialize();
 
@@ -81,6 +87,7 @@ public class CharacterActions
         @movement.value = characterActions.movement.value;
         @lock.value = characterActions.@lock.value;
         attack.value = characterActions.attack.value;
+        heavyAttack.value = characterActions.heavyAttack.value;
         crouch.value = characterActions.crouch.value;
         OpenUI.value = characterActions.OpenUI.value;
         OpenConsoleUI.value = characterActions.OpenConsoleUI.value;
@@ -98,6 +105,7 @@ public class CharacterActions
         @lock.value = inputHandler.GetBool("Lock");
         @movement.value = inputHandler.GetVector2("Movement");
         attack.value = inputHandler.GetBool("Attack");
+        heavyAttack.value = inputHandler.GetBool("HeaveAttack");
         crouch.value = inputHandler.GetBool("Crouch");
         OpenUI.value = inputHandler.GetBool("OpenUI");
         OpenConsoleUI.value = inputHandler.GetBool("OpenConsole");
@@ -114,12 +122,12 @@ public class CharacterActions
         roll.Update(dt);
         @lock.Update(dt);
         attack.Update(dt);
+        heavyAttack.Update(dt);
         crouch.Update(dt);
         OpenUI.Update(dt);
         OpenConsoleUI.Update(dt);
     }
 }
-[SerializeField]
 public struct BoolAction
 {
     public bool value
@@ -221,7 +229,6 @@ public struct BoolAction
     }
 
 }
-[SerializeField]
 public struct FloatAction
 {
     /// <summary>
@@ -237,7 +244,6 @@ public struct FloatAction
         value = 0f;
     }
 }
-[SerializeField]
 public struct Vector2Action
 {
     /// <summary>

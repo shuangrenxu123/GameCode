@@ -197,7 +197,6 @@ namespace CharacterController
         public float sizeLerpSpeed = 8f;
     }
 
-    [SerializeField]
     public class RunMoveParameters
     {
         [Min(1f)]
