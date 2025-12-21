@@ -26,7 +26,7 @@ namespace HFSM
         }
         public override bool Check()
         {
-            if (dataBase.GetValue<bool>(dataName) == condition)
+            if (dataBase.GetValue<string, bool>(dataName) == condition)
             {
                 return true;
             }
@@ -45,7 +45,7 @@ namespace HFSM
         }
         public override bool Check()
         {
-            float value = dataBase.GetValue<float>(dataName);
+            float value = dataBase.GetValue<string, float>(dataName);
             switch (opt)
             {
                 case FloatOpt.lt:

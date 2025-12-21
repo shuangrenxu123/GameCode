@@ -18,7 +18,7 @@ namespace BT
         }
         public override BTResult Tick()
         {
-            var time = database.GetValue<float>(dataBaseName);
+            var time = database.GetValue<string, float>(dataBaseName);
             if (time <= interval)
             {
                 return BTResult.Failed;

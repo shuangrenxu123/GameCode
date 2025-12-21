@@ -19,9 +19,9 @@ namespace BT
         {
             if (rhs == null)
             {
-                return database.ContainsData<object>(readDataName);
+                return database.ContainsData<string, object>(readDataName);
             }
-            return database.GetValue<object>(readDataName).Equals(rhs);
+            return database.GetValue<string, object>(readDataName).Equals(rhs);
         }
     }
 }

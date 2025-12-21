@@ -32,9 +32,7 @@ namespace AIBlackboard
             }
         }
 
-        //在需要的时候隐式转换
-        public static implicit operator BlackboardKey<T>(string name) => new BlackboardKey<T>(name);
-        public static implicit operator BlackboardKey<T>(int id) => new BlackboardKey<T>(id);
+
 
         public bool Equals(BlackboardKey<T> other) => Id == other.Id;
         public override bool Equals(object obj) => obj is BlackboardKey<T> other && Equals(other);
@@ -160,8 +158,8 @@ namespace AIBlackboard
                 data[key.Id] = newEntry;
                 entryBase = newEntry;
             }
-                   // 安全强转，这里可以用 Unsafe.As 但对于 Subscribe 频率不高，安全第一
-                   ((BlackboardEntry<T>)entryBase).OnValueChanged += callback;
+            // 安全强转，这里可以用 Unsafe.As 但对于 Subscribe 频率不高，安全第一
+            ((BlackboardEntry<T>)entryBase).OnValueChanged += callback;
         }
 
         public void Unsubscribe<T>(BlackboardKey<T> key, Action<T> callback)

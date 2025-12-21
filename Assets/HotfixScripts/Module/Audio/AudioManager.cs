@@ -239,7 +239,7 @@ namespace Audio
                 root = new GameObject("[AudioManager]");
             }
 
-            if (Object.FindObjectOfType<AudioListener>() == null && root.GetComponent<AudioListener>() == null)
+            if (Object.FindFirstObjectByType<AudioListener>() == null && root.GetComponent<AudioListener>() == null)
             {
                 root.AddComponent<AudioListener>();
             }
