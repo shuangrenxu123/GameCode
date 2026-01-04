@@ -55,7 +55,7 @@ public class BagSelectPanel : UIWindowBase
         UIManager.Instance.CloseUI<BagSelectPanel>();
         UIManager.Instance.CloseUI<BagPanel>();
         UIManager.Instance.CloseUI<GameUIMgr>();
-        CharacterBrain.DisableUIInput();
+        // CharacterBrain.DisableUIInput();
     }
 
     private void EquipmentClick(PointerEventData eventdata)
@@ -68,10 +68,10 @@ public class BagSelectPanel : UIWindowBase
     {
         if (UIManager.Instance.IsTopWindow<BagSelectPanel>())
         {
-            if (UIInput.cancel.Started)
-            {
-                UIManager.Instance.CloseUI(GetType());
-            }
+            // if (UIInput.cancel.Started)
+            // {
+            //     UIManager.Instance.CloseUI(GetType());
+            // }
         }
     }
 }

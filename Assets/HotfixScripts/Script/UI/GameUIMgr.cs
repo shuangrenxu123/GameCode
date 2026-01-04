@@ -49,11 +49,11 @@ public class GameUIMgr : UIWindowBase
     {
         if (UIManager.Instance.IsTopWindow<GameUIMgr>())
         {
-            if (UIInput.cancel.Started)
-            {
-                CharacterBrain.DisableUIInput();
-                UIManager.Instance.CloseUI(GetType());
-            }
+            // if (UIInput.cancel.Started)
+            // {
+            //     CharacterBrain.DisableUIInput();
+            //     UIManager.Instance.CloseUI(GetType());
+            // }
         }
     }
 

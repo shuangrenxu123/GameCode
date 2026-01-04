@@ -1,6 +1,6 @@
 using UnityEngine;
 
-interface IUIWindow
+public interface IUIWindow
 {
     public string WindowName { get; set; }
     public CanvasGroup raycaster { get; set; }

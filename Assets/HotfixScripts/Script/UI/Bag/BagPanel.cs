@@ -73,10 +73,10 @@ public class BagPanel : UIWindowBase, IUIWindow
     {
         if (UIManager.Instance.IsTopWindow<BagPanel>())
         {
-            if (UIInput.cancel.Started)
-            {
-                UIManager.Instance.CloseUI(GetType());
-            }
+            // if (UIInput.cancel.Started)
+            // {
+            //     UIManager.Instance.CloseUI(GetType());
+            // }
         }
     }
 

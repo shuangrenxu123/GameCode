@@ -49,10 +49,10 @@ public class NetPanel : UIWindowBase
     {
         if (UIManager.Instance.IsTopWindow<NetPanel>())
         {
-            if (UIInput.cancel.Started)
-            {
-                UIManager.Instance.CloseUI(GetType());
-            }
+            // if (UIInput.cancel.Started)
+            // {
+            //     UIManager.Instance.CloseUI(GetType());
+            // }
         }
     }
 }

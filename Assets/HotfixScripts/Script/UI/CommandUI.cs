@@ -68,11 +68,11 @@ namespace UIPanel.Console
         }
         public override void OnUpdate()
         {
-            if (UIInput.cancel.Started)
-            {
-                HideInputPanel();
-                UIManager.Instance.CloseUI(GetType());
-            }
+            // if (UIInput.cancel.Started)
+            // {
+            //     HideInputPanel();
+            //     UIManager.Instance.CloseUI(GetType());
+            // }
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
@@ -251,7 +251,6 @@ namespace UIPanel.Console
             input.gameObject.SetActive(true);
             input.text = string.Empty;
             input.ActivateInputField();
-            CharacterBrain.EnableUIInput();
         }
 
         public void HideInputPanel()
@@ -264,7 +263,6 @@ namespace UIPanel.Console
             inputActive = false;
             input.DeactivateInputField();
             input.gameObject.SetActive(false);
-            CharacterBrain.DisableUIInput();
         }
 
         private void MoveTipSelection(int direction)

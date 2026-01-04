@@ -113,8 +113,6 @@ namespace UtilityAI
         {
             isRunning = false;
             CurrentOption = null;
-            // 清除黑板上的决策
-            Blackboard.SetValue(EnemyAIDatabaseKey.UtilityDecision, UtilityDecision.Invalid);
         }
 
         /// <summary>
@@ -201,7 +199,6 @@ namespace UtilityAI
                     Timestamp = Time.time
                 };
             }
-            Blackboard.SetValue(EnemyAIDatabaseKey.UtilityDecision, decision);
         }
 
         private bool CheckForBetterOption()

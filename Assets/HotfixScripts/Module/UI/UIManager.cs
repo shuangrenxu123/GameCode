@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Character.Player;
-using CharacterController;
+
 using UnityEngine;
 namespace UIWindow
 {
@@ -76,7 +75,6 @@ namespace UIWindow
                 Pop(window);
 
                 GameObject.Destroy(window.gameObject);
-                TryRestoreCharacterInput();
             }
         }
         public bool HasUI<T>() where T : UIWindowBase => IsContains(typeof(T).FullName);
@@ -150,19 +148,9 @@ namespace UIWindow
             currentUIStack.Remove(window);
         }
 
-        private void TryRestoreCharacterInput()
-        {
-            if (currentUIStack.Count == 0)
-            {
-                var brain = GetCharacterBrain();
-                brain?.DisableUIInput();
-            }
-        }
 
-        private CharacterBrain GetCharacterBrain()
-        {
-            return Player.Instance != null ? Player.Instance.brain : null;
-        }
+
+
 
     }
 }

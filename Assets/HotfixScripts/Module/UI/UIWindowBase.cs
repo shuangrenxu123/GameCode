@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using CharacterController;
 using UnityEngine;
 
 namespace UIWindow
 {
     public abstract class UIWindowBase : MonoBehaviour, IUIWindow
     {
-        protected CharacterBrain CharacterBrain;
-        protected CharacterUIActions UIInput => CharacterBrain.CharacterUIActions;
-
         public Canvas canves { get; set; }
         public string WindowName { get => GetType().FullName; set { return; } }
         public CanvasGroup raycaster { get; set; }
@@ -25,20 +21,19 @@ namespace UIWindow
         {
             canves = GetComponent<Canvas>();
             raycaster = GetComponent<CanvasGroup>();
-            CharacterBrain = FindFirstObjectByType<CharacterBrain>();
         }
         public UIEventListener GetUIEventListener(string name)
         {
             if (!listeners.ContainsKey(name))
             {
-                Transform childTransform = transform.FindChildByName(name);
+                Transform childTransform = transform.Find(name);
                 listeners.Add(name, UIEventListener.GetListener(childTransform));
             }
             return listeners[name];
         }
         public GameObject GetUIGameObject(string name)
         {
-            return transform.FindChildByName(name).gameObject;
+            return transform.Find(name).gameObject;
         }
         public void RemoveUIEventListener(string name)
         {
