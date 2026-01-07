@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using LitMotion;
 using LitMotion.Extensions;
 using TMPro;
@@ -160,17 +161,37 @@ namespace Utilities.TextAnimation
             .AddTo(tMP_Text.gameObject);
         }
 
-        public static void SinLoop(this TMP_Text tMP_Text, float duration, float charDaley = 0.2f, float hight = 2)
+        public static void SinLoop(this TMP_Text tMP_Text, float duration, float charDaley = 0.2f, float endDelay = 0, float hight = 2)
         {
             tMP_Text.ForceMeshUpdate(true);
 
+            async void CharSinMove(int charIndex, float startDelay, float endDelay)
+            {
+                await UniTask.WaitForSeconds(startDelay * charIndex);
+                while (true)
+                {
+                    if (!tMP_Text)
+                    {
+                        return;
+                    }
+
+                    LSequence.Create()
+                       .Append(LMotion.Create(0, hight, duration)
+                           .BindToTMPCharPositionY(tMP_Text, charIndex))
+                       .Append(LMotion.Create(hight, 0, duration)
+                           .BindToTMPCharPositionY(tMP_Text, charIndex))
+                       .Run()
+                       .AddTo(tMP_Text)
+                       .ToUniTask()
+                       .Forget();
+
+                    await UniTask.WaitForSeconds(duration * 2 + endDelay);
+                }
+            }
+
             for (int i = 0; i < tMP_Text.textInfo.characterCount; i++)
             {
-                LMotion.Create(0f, hight, duration)
-                    .WithDelay(charDaley * i)
-                    .WithLoops(-1, LoopType.Yoyo)
-                    .BindToTMPCharPositionY(tMP_Text, i)
-                    .AddTo(tMP_Text);
+                CharSinMove(i, charDaley, endDelay);
             }
         }
 
