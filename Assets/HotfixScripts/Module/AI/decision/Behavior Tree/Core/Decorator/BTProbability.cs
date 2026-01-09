@@ -4,10 +4,12 @@ using Utility;
 namespace BT
 {
 
+    [BT.EditorIntegration.BTEditorNode("Decorator/Probability", BT.EditorIntegration.BTEditorNodeKind.Decorator)]
     public class BTProbability: BTDecorator
     {
         int probability;
         BTActionStatus state = BTActionStatus.Ready;
+        [BT.EditorIntegration.BTEditorConstructor]
         public BTProbability(int Probability, BTNode child) : base(child)
         {
             this.probability = Probability;

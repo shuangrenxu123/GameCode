@@ -2,10 +2,12 @@ using AIBlackboard;
 
 namespace BT
 {
+    [BT.EditorIntegration.BTEditorNode("Decorator/Interval", BT.EditorIntegration.BTEditorNodeKind.Decorator)]
     public class BTinterval : BTDecorator
     {
         public float interval;
         private string dataBaseName;
+        [BT.EditorIntegration.BTEditorConstructor]
         public BTinterval(string databaseName, float time, BTNode child) : base(child)
         {
             dataBaseName = databaseName;

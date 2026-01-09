@@ -10,11 +10,13 @@ namespace BT
     /// 当为And时候，需要等待所有的子节点都运行完毕，
     /// 当为Or时 只要有一个节点返回成功或失败他就会返回
     /// </summary>
+    [BT.EditorIntegration.BTEditorNode("Composite/Parallel", BT.EditorIntegration.BTEditorNodeKind.Composite)]
     public class BTParallel : BTComposite
     {
         private ParallelType ParallelType;
         private List<BTResult> _results;
         private int endingResultCount;
+        [BT.EditorIntegration.BTEditorConstructor]
         public BTParallel(ParallelType type)
         {
             ParallelType = type;

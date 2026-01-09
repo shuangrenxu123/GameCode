@@ -3,8 +3,10 @@ namespace BT
     /// <summary>
     /// ȡ�����νڵ�
     /// </summary>
+    [BT.EditorIntegration.BTEditorNode("Decorator/Inverted", BT.EditorIntegration.BTEditorNodeKind.Decorator)]
     public class BTInverted : BTDecorator
     {
+        [BT.EditorIntegration.BTEditorConstructor]
         public BTInverted(BTNode child) : base(child)
         {
 

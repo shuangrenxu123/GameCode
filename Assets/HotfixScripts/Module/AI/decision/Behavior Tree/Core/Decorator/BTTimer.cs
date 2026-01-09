@@ -5,10 +5,12 @@ namespace BT
     /// <summary>
     /// 延迟修饰器：会在 n 秒后才开始执行子节点，在此之前都会返回Running
     /// </summary>
+    [BT.EditorIntegration.BTEditorNode("Decorator/Timer", BT.EditorIntegration.BTEditorNodeKind.Decorator)]
     public class BTTimer : BTDecorator
     {
         private float timer = 0;
         public float interval;
+        [BT.EditorIntegration.BTEditorConstructor]
         public BTTimer(float timer, BTNode child) : base(child)
         {
             interval = timer;

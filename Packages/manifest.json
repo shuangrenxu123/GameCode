@@ -3,8 +3,8 @@
     "com.annulusgames.lit-motion": "https://github.com/annulusgames/LitMotion.git?path=src/LitMotion/Assets/LitMotion",
     "com.annulusgames.lit-motion.animation": "https://github.com/annulusgames/LitMotion.git?path=src/LitMotion/Assets/LitMotion.Animation",
     "com.code-philosophy.hybridclr": "https://gitee.com/focus-creative-games/hybridclr_unity.git",
-    "com.coplaydev.unity-mcp": "https://github.com/CoplayDev/unity-mcp.git?path=/MCPForUnity",
     "com.cysharp.unitask": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
+    "com.ivanmurzak.unity.mcp": "0.31.0",
     "com.unity.ai.navigation": "2.0.9",
     "com.unity.animation.rigging": "1.4.0",
     "com.unity.burst": "1.8.26",
@@ -17,6 +17,7 @@
     "com.unity.timeline": "1.8.9",
     "com.unity.ugui": "2.0.0",
     "com.unity.modules.accessibility": "1.0.0",
+    "com.unity.modules.adaptiveperformance": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -42,10 +43,25 @@
     "com.unity.modules.unitywebrequestaudio": "1.0.0",
     "com.unity.modules.unitywebrequesttexture": "1.0.0",
     "com.unity.modules.unitywebrequestwww": "1.0.0",
+    "com.unity.modules.vectorgraphics": "1.0.0",
     "com.unity.modules.vehicles": "1.0.0",
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "package.openupm.com",
+      "url": "https://package.openupm.com",
+      "scopes": [
+        "com.ivanmurzak",
+        "extensions.unity",
+        "org.nuget.com.ivanmurzak",
+        "org.nuget.microsoft",
+        "org.nuget.system",
+        "org.nuget.r3"
+      ]
+    }
+  ]
 }

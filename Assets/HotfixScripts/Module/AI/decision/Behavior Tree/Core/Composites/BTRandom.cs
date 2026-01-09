@@ -4,6 +4,7 @@ using Utility;
 
 namespace BT
 {
+    [BT.EditorIntegration.BTEditorNode("Composite/Random", BT.EditorIntegration.BTEditorNodeKind.Composite)]
     public class BTRandom : BTComposite
     {
         private List<int> probability = new();

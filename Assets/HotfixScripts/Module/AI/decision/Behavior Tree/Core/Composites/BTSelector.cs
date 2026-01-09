@@ -3,6 +3,7 @@ namespace BT
     /// <summary>
     /// 选择器会直到有一个返回了成功。
     /// </summary>
+    [BT.EditorIntegration.BTEditorNode("Composite/Selector", BT.EditorIntegration.BTEditorNodeKind.Composite)]
     public class BTSelector : BTComposite
     {
         private int _activeChildIndex = -1;

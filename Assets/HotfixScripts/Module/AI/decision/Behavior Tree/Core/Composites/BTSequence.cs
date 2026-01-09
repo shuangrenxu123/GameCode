@@ -3,6 +3,7 @@ namespace BT
     /// <summary>
     /// 顺序节点，从左往右执行子节点，知道所有的都成功或者有一个返回失败
     /// </summary>
+    [BT.EditorIntegration.BTEditorNode("Composite/Sequence", BT.EditorIntegration.BTEditorNodeKind.Composite)]
     public class BTSequence : BTComposite
     {
         /// <summary>
