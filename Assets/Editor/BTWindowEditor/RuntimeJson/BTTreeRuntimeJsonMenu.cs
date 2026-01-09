@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BT.RuntimeSerialization;
 using Unity.GraphToolkit.Editor;
 using UnityEditor;
@@ -113,6 +114,44 @@ namespace BT.Editor.RuntimeJson
             return null;
         }
 
+        struct ChildSortInfo
+        {
+            public string id;
+            public Vector2 position;
+            public int fallbackOrder;
+            public int fallbackIndex;
+        }
+
+        static bool TryGetNodePosition(IBTRuntimeJsonNode runtimeNode, out Vector2 position)
+        {
+            position = default;
+
+            if (runtimeNode is not Unity.GraphToolkit.Editor.Node node)
+                return false;
+
+            var implField = typeof(Unity.GraphToolkit.Editor.Node).GetField("m_Implementation", BindingFlags.Instance | BindingFlags.NonPublic);
+            var impl = implField?.GetValue(node);
+            if (impl == null)
+                return false;
+
+            var implType = impl.GetType();
+            var posProp = implType.GetProperty("Position", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (posProp != null && posProp.PropertyType == typeof(Vector2))
+            {
+                position = (Vector2)posProp.GetValue(impl);
+                return true;
+            }
+
+            var posField = implType.GetField("m_Position", BindingFlags.Instance | BindingFlags.NonPublic);
+            if (posField != null && posField.FieldType == typeof(Vector2))
+            {
+                position = (Vector2)posField.GetValue(impl);
+                return true;
+            }
+
+            return false;
+        }
+
         static IEnumerable<string> CollectChildren(IBTRuntimeJsonNode node, Dictionary<string, int> nodeOrder)
         {
             if (node is not INode graphNode)
@@ -147,16 +186,32 @@ namespace BT.Editor.RuntimeJson
                 if (connected.Count == 0)
                     yield break;
 
-                var children = new List<string>(connected.Count);
+                var children = new List<ChildSortInfo>(connected.Count);
                 for (var i = 0; i < connected.Count; i++)
                 {
                     var childNode = connected[i].GetNode();
-                    if (childNode is IBTRuntimeJsonNode child && !string.IsNullOrEmpty(child.NodeId))
-                        children.Add(child.NodeId);
+                    if (childNode is not IBTRuntimeJsonNode child || string.IsNullOrEmpty(child.NodeId))
+                        continue;
+
+                    var hasPos = TryGetNodePosition(child, out var pos);
+                    children.Add(new ChildSortInfo
+                    {
+                        id = child.NodeId,
+                        // 需求：顺序控制节点的子节点顺序按“从上到下”，即 y 越小越靠前；y 相同则 x 越大越靠后（x 越小越靠前）。
+                        // 如果拿不到位置，就把它排到最后，并用创建/枚举顺序做兜底以保证稳定性。
+                        position = hasPos ? pos : new Vector2(float.PositiveInfinity, float.PositiveInfinity),
+                        fallbackOrder = nodeOrder.TryGetValue(child.NodeId, out var idx) ? idx : int.MaxValue,
+                        fallbackIndex = i,
+                    });
                 }
 
-                foreach (var id in children.OrderBy(id => nodeOrder.TryGetValue(id, out var idx) ? idx : int.MaxValue))
-                    yield return id;
+                foreach (var info in children
+                             .OrderBy(c => c.position.y)
+                             .ThenBy(c => c.position.x)
+                             .ThenBy(c => c.fallbackOrder)
+                             .ThenBy(c => c.fallbackIndex)
+                             .ThenBy(c => c.id, StringComparer.Ordinal))
+                    yield return info.id;
             }
         }
     }

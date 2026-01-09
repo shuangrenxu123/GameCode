@@ -15,7 +15,10 @@
 
 编辑器里可用的节点类型来源于“运行时节点 + 特性标记”，并由生成器自动生成对应的 GraphToolkit Node：
 
-- 运行时特性定义：`BT.EditorIntegration.BTEditorNodeAttribute`、`BT.EditorIntegration.BTEditorConstructorAttribute`
+- 运行时特性定义：
+  - `BT.EditorIntegration.BTEditorNodeAttribute`
+  - `BT.EditorIntegration.BTEditorConstructorAttribute`
+  - `BT.EditorIntegration.BTEditorExposeAttribute`：标记运行时节点上需要在编辑器里可配置并导出到 JSON 的字段/属性（要求 public 或 internal 且可写）
 - 生成器入口：`Tools/BT/Regenerate Generated BT Nodes`
 - 生成后的编辑器节点目录：`Assets/Editor/BTWindowEditor/Generated/Nodes`
 
@@ -46,6 +49,7 @@ Select a `*.DefaultBTTreeGraph` asset in the Project window:
 1) 给运行时节点加特性（只加标记不改逻辑）：
    - `[BTEditorNode("Composite/Sequence", BTEditorNodeKind.Composite)]`
    - 在用于实例化的构造函数上加 `[BTEditorConstructor]`
+   - 给需要暴露为编辑器可配置参数的成员加 `[BTEditorExpose]`，例如：`[BTEditorExpose("probability")] public int Probability { get; set; }`
 2) 执行生成：`Tools/BT/Regenerate Generated BT Nodes`
 3) 创建/编辑图：`Assets/Create/EditorGraph/BT Tree Graph`
 4) 导出 JSON：`Assets/BT Tree Graph/Export Runtime JSON`

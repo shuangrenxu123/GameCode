@@ -113,6 +113,17 @@ namespace BT.Editor.Generator
                 {
                     sb.Append(ctor.ToString());
                 }
+
+                var exposed = GetExposedMembers(t);
+                for (var i = 0; i < exposed.Count; i++)
+                {
+                    var e = exposed[i];
+                    sb.Append('|')
+                        .Append(e.jsonName).Append(':')
+                        .Append(e.type.AssemblyQualifiedName).Append(':')
+                        .Append(e.runtimeMemberName).Append(':')
+                        .Append((int)e.memberKind);
+                }
                 sb.AppendLine();
             }
 
@@ -135,10 +146,195 @@ namespace BT.Editor.Generator
             return sb.ToString();
         }
 
+        static string TypeToCodeName(Type t)
+        {
+            if (t == null)
+                return "object";
+
+            if (t == typeof(string))
+                return "string";
+            if (t == typeof(int))
+                return "int";
+            if (t == typeof(float))
+                return "float";
+            if (t == typeof(bool))
+                return "bool";
+
+            // 仅处理本项目需要的类型（基础类型 + enum）。嵌套类型 FullName 会包含 '+'，C# 语法需要用 '.'。
+            var name = t.FullName ?? t.Name;
+            name = name.Replace('+', '.');
+            return $"global::{name}";
+        }
+
+        enum ExposedMemberKind
+        {
+            Field = 0,
+            Property = 1,
+        }
+
+        struct ExposedMember
+        {
+            public string safeName;
+            public string jsonName;
+            public Type type;
+            public string runtimeMemberName;
+            public ExposedMemberKind memberKind;
+        }
+
+        static List<ExposedMember> GetExposedMembers(Type runtimeType)
+        {
+            var result = new List<ExposedMember>();
+
+            foreach (var m in runtimeType.GetMembers(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                var attr = m.GetCustomAttribute<BTEditorExposeAttribute>(inherit: false);
+                if (attr == null)
+                    continue;
+
+                if (m is FieldInfo f)
+                {
+                    if (f.IsStatic || f.IsLiteral || f.IsInitOnly)
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{f.Name}：字段不可写。");
+                        continue;
+                    }
+
+                    if (!f.IsPublic && !f.IsAssembly)
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{f.Name}：字段必须是 public 或 internal 才能被生成的工厂赋值。");
+                        continue;
+                    }
+
+                    if (!IsSupportedArgType(f.FieldType))
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{f.Name}：不支持的参数类型 {f.FieldType.FullName}。");
+                        continue;
+                    }
+
+                    var jsonName = string.IsNullOrEmpty(attr.Name) ? f.Name : attr.Name;
+                    result.Add(new ExposedMember
+                    {
+                        safeName = SanitizeIdentifier(f.Name),
+                        jsonName = jsonName,
+                        type = f.FieldType,
+                        runtimeMemberName = f.Name,
+                        memberKind = ExposedMemberKind.Field,
+                    });
+                }
+                else if (m is PropertyInfo p)
+                {
+                    if (p.GetIndexParameters().Length > 0)
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{p.Name}：不支持索引器属性。");
+                        continue;
+                    }
+
+                    var setMethod = p.GetSetMethod(nonPublic: true);
+                    if (setMethod == null)
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{p.Name}：属性没有 setter。");
+                        continue;
+                    }
+
+                    if (!setMethod.IsPublic && !setMethod.IsAssembly)
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{p.Name}：属性 setter 必须是 public 或 internal 才能被生成的工厂赋值。");
+                        continue;
+                    }
+
+                    if (!IsSupportedArgType(p.PropertyType))
+                    {
+                        Debug.LogWarning($"[BTCodegen] 跳过 {runtimeType.FullName}.{p.Name}：不支持的参数类型 {p.PropertyType.FullName}。");
+                        continue;
+                    }
+
+                    var jsonName = string.IsNullOrEmpty(attr.Name) ? p.Name : attr.Name;
+                    result.Add(new ExposedMember
+                    {
+                        safeName = SanitizeIdentifier(p.Name),
+                        jsonName = jsonName,
+                        type = p.PropertyType,
+                        runtimeMemberName = p.Name,
+                        memberKind = ExposedMemberKind.Property,
+                    });
+                }
+            }
+
+            result.Sort((a, b) => string.CompareOrdinal(a.jsonName, b.jsonName));
+            EnsureUniqueSafeNames(result);
+            return result;
+        }
+
+        static bool IsSupportedArgType(Type t)
+        {
+            return t == typeof(string) || t == typeof(int) || t == typeof(float) || t == typeof(bool) || t.IsEnum;
+        }
+
+        static void EnsureUniqueSafeNames(List<ExposedMember> members)
+        {
+            if (members == null || members.Count == 0)
+                return;
+
+            var used = new HashSet<string>(StringComparer.Ordinal);
+            for (var i = 0; i < members.Count; i++)
+            {
+                var safe = members[i].safeName;
+                if (string.IsNullOrEmpty(safe))
+                    safe = "arg";
+
+                if (!used.Add(safe))
+                {
+                    var suffix = 2;
+                    var candidate = safe + "_" + suffix;
+                    while (!used.Add(candidate))
+                    {
+                        suffix++;
+                        candidate = safe + "_" + suffix;
+                    }
+                    safe = candidate;
+                }
+
+                var m = members[i];
+                m.safeName = safe;
+                members[i] = m;
+            }
+        }
+
+        static string BuildArgReadExpression(Type t, string jsonName)
+        {
+            if (t == typeof(string))
+                return $"GetString(args, \"{jsonName}\", \"\")";
+            if (t == typeof(int))
+                return $"GetInt(args, \"{jsonName}\", 0)";
+            if (t == typeof(float))
+                return $"GetFloat(args, \"{jsonName}\", 0f)";
+            if (t == typeof(bool))
+                return $"GetBool(args, \"{jsonName}\", false)";
+            if (t.IsEnum)
+                return $"({TypeToCodeName(t)})GetInt(args, \"{jsonName}\", 0)";
+            return $"default({TypeToCodeName(t)})";
+        }
+
+        static List<string> BuildApplyExposedStatements(Type runtimeType)
+        {
+            var exposed = GetExposedMembers(runtimeType);
+            if (exposed.Count == 0)
+                return new List<string>();
+
+            var result = new List<string>(exposed.Count);
+            for (var i = 0; i < exposed.Count; i++)
+            {
+                var e = exposed[i];
+                result.Add($"node.{e.runtimeMemberName} = {BuildArgReadExpression(e.type, e.jsonName)};");
+            }
+            return result;
+        }
+
         static void GenerateRuntimeFactory(List<(Type, BTEditorNodeAttribute, ConstructorInfo)> types)
         {
             var compositeTypes = types.Where(t => t.Item2.Kind == BTEditorNodeKind.Composite).ToList();
             var decoratorTypes = types.Where(t => t.Item2.Kind == BTEditorNodeKind.Decorator).ToList();
+            var leafTypes = types.Where(t => t.Item2.Kind != BTEditorNodeKind.Composite && t.Item2.Kind != BTEditorNodeKind.Decorator).ToList();
 
             var sb = new System.Text.StringBuilder();
             sb.AppendLine("using System;");
@@ -180,14 +376,41 @@ namespace BT.Editor.Generator
                 if (ctor == null)
                     continue;
 
+                var apply = BuildApplyExposedStatements(t.Item1);
                 if (ctor is ConstructorInfo ci && ci.GetParameters().Length > 0)
                 {
                     var ctorArgs = BuildCtorArgsExpression(ci);
-                    sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {t.Item1.FullName}({ctorArgs});");
+                    if (apply.Count == 0)
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\":");
+                        sb.AppendLine("                {");
+                        sb.AppendLine($"                    var node = new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                        for (var i = 0; i < apply.Count; i++)
+                            sb.AppendLine($"                    {apply[i]}");
+                        sb.AppendLine("                    return node;");
+                        sb.AppendLine("                }");
+                    }
                 }
                 else
                 {
-                    sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {t.Item1.FullName}();");
+                    if (apply.Count == 0)
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {TypeToCodeName(t.Item1)}();");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\":");
+                        sb.AppendLine("                {");
+                        sb.AppendLine($"                    var node = new {TypeToCodeName(t.Item1)}();");
+                        for (var i = 0; i < apply.Count; i++)
+                            sb.AppendLine($"                    {apply[i]}");
+                        sb.AppendLine("                    return node;");
+                        sb.AppendLine("                }");
+                    }
                 }
             }
             sb.AppendLine("                default: return null;");
@@ -206,14 +429,80 @@ namespace BT.Editor.Generator
                     continue;
 
                 var ctorArgs = BuildCtorArgsExpression(ctor, includeChild: true);
-                sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {t.Item1.FullName}({ctorArgs});");
+                var apply = BuildApplyExposedStatements(t.Item1);
+                if (apply.Count == 0)
+                {
+                    sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                }
+                else
+                {
+                    sb.AppendLine($"                case \"{t.Item1.FullName}\":");
+                    sb.AppendLine("                {");
+                    sb.AppendLine($"                    var node = new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                    for (var i = 0; i < apply.Count; i++)
+                        sb.AppendLine($"                    {apply[i]}");
+                    sb.AppendLine("                    return node;");
+                    sb.AppendLine("                }");
+                }
             }
             sb.AppendLine("                default: return null;");
             sb.AppendLine("            }");
             sb.AppendLine("        }");
             sb.AppendLine();
 
-            sb.AppendLine("        public static BTNode CreateLeaf(string typeId, List<BTArgJson> args) => null;");
+            sb.AppendLine("        public static BTNode CreateLeaf(string typeId, List<BTArgJson> args)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            switch (typeId)");
+            sb.AppendLine("            {");
+            foreach (var t in leafTypes)
+            {
+                var ctor = t.Item3 ?? t.Item1.GetConstructor(Type.EmptyTypes);
+                if (ctor == null)
+                    continue;
+
+                if (ctor.GetParameters().Any(p => p.ParameterType == typeof(BTNode)))
+                    continue;
+
+                var apply = BuildApplyExposedStatements(t.Item1);
+                if (ctor.GetParameters().Length > 0)
+                {
+                    var ctorArgs = BuildCtorArgsExpression(ctor);
+                    if (apply.Count == 0)
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\":");
+                        sb.AppendLine("                {");
+                        sb.AppendLine($"                    var node = new {TypeToCodeName(t.Item1)}({ctorArgs});");
+                        for (var i = 0; i < apply.Count; i++)
+                            sb.AppendLine($"                    {apply[i]}");
+                        sb.AppendLine("                    return node;");
+                        sb.AppendLine("                }");
+                    }
+                }
+                else
+                {
+                    if (apply.Count == 0)
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\": return new {TypeToCodeName(t.Item1)}();");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"                case \"{t.Item1.FullName}\":");
+                        sb.AppendLine("                {");
+                        sb.AppendLine($"                    var node = new {TypeToCodeName(t.Item1)}();");
+                        for (var i = 0; i < apply.Count; i++)
+                            sb.AppendLine($"                    {apply[i]}");
+                        sb.AppendLine("                    return node;");
+                        sb.AppendLine("                }");
+                    }
+                }
+            }
+            sb.AppendLine("                default: return null;");
+            sb.AppendLine("            }");
+            sb.AppendLine("        }");
             sb.AppendLine();
 
             sb.AppendLine("        static string GetString(List<BTArgJson> args, string name, string defaultValue)");
@@ -241,6 +530,14 @@ namespace BT.Editor.Generator
             sb.AppendLine("            var s = GetString(args, name, null);");
             sb.AppendLine("            if (string.IsNullOrEmpty(s)) return defaultValue;");
             sb.AppendLine("            return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : defaultValue;");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        static bool GetBool(List<BTArgJson> args, string name, bool defaultValue)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            var s = GetString(args, name, null);");
+            sb.AppendLine("            if (string.IsNullOrEmpty(s)) return defaultValue;");
+            sb.AppendLine("            if (bool.TryParse(s, out var v)) return v;");
+            sb.AppendLine("            return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i != 0 : defaultValue;");
             sb.AppendLine("        }");
             sb.AppendLine("    }");
             sb.AppendLine("}");
@@ -272,10 +569,12 @@ namespace BT.Editor.Generator
                     expr.Add($"GetInt(args, \"{p.Name}\", 0)");
                 else if (p.ParameterType == typeof(float))
                     expr.Add($"GetFloat(args, \"{p.Name}\", 0f)");
+                else if (p.ParameterType == typeof(bool))
+                    expr.Add($"GetBool(args, \"{p.Name}\", false)");
                 else if (p.ParameterType.IsEnum)
-                    expr.Add($"({p.ParameterType.FullName})GetInt(args, \"{p.Name}\", 0)");
+                    expr.Add($"({TypeToCodeName(p.ParameterType)})GetInt(args, \"{p.Name}\", 0)");
                 else
-                    expr.Add($"default({p.ParameterType.FullName})");
+                    expr.Add($"default({TypeToCodeName(p.ParameterType)})");
             }
 
             return string.Join(", ", expr);
@@ -318,14 +617,50 @@ namespace BT.Editor.Generator
             sb.AppendLine();
             sb.AppendLine("        [SerializeField] string nodeId;");
 
-            var extraArgs = GetCtorArgs(ctor);
-            foreach (var a in extraArgs)
+            var ctorArgs = GetCtorArgs(ctor);
+            var exposed = GetExposedMembers(runtimeType);
+
+            var allArgs = new List<(string safeName, string jsonName, Type type)>(ctorArgs.Count + exposed.Count);
+            var usedJsonNames = new HashSet<string>(StringComparer.Ordinal);
+            var usedSafeNames = new HashSet<string>(StringComparer.Ordinal);
+
+            for (var i = 0; i < ctorArgs.Count; i++)
             {
-                var fieldDecl = a.type == typeof(string) ? $"        [SerializeField] string {a.name};"
-                    : a.type == typeof(int) ? $"        [SerializeField] int {a.name};"
-                    : a.type == typeof(float) ? $"        [SerializeField] float {a.name};"
-                    : a.type == typeof(bool) ? $"        [SerializeField] bool {a.name};"
-                    : a.type.IsEnum ? $"        [SerializeField] {a.type.FullName} {a.name};"
+                var a = ctorArgs[i];
+                allArgs.Add((a.name, a.originalName, a.type));
+                usedJsonNames.Add(a.originalName);
+                usedSafeNames.Add(a.name);
+            }
+
+            for (var i = 0; i < exposed.Count; i++)
+            {
+                var e = exposed[i];
+                if (!usedJsonNames.Add(e.jsonName))
+                    continue;
+
+                var safe = string.IsNullOrEmpty(e.safeName) ? "arg" : e.safeName;
+                if (!usedSafeNames.Add(safe))
+                {
+                    var suffix = 2;
+                    var candidate = safe + "_" + suffix;
+                    while (!usedSafeNames.Add(candidate))
+                    {
+                        suffix++;
+                        candidate = safe + "_" + suffix;
+                    }
+                    safe = candidate;
+                }
+
+                allArgs.Add((safe, e.jsonName, e.type));
+            }
+
+            foreach (var a in allArgs)
+            {
+                var fieldDecl = a.type == typeof(string) ? $"        [SerializeField] string {a.safeName};"
+                    : a.type == typeof(int) ? $"        [SerializeField] int {a.safeName};"
+                    : a.type == typeof(float) ? $"        [SerializeField] float {a.safeName};"
+                    : a.type == typeof(bool) ? $"        [SerializeField] bool {a.safeName};"
+                    : a.type.IsEnum ? $"        [SerializeField] {TypeToCodeName(a.type)} {a.safeName};"
                     : null;
                 if (fieldDecl != null)
                     sb.AppendLine(fieldDecl);
@@ -341,6 +676,37 @@ namespace BT.Editor.Generator
             sb.AppendLine("        {");
             sb.AppendLine("            if (string.IsNullOrEmpty(nodeId)) nodeId = Guid.NewGuid().ToString(\"N\");");
             sb.AppendLine("        }");
+            sb.AppendLine();
+
+            sb.AppendLine("        protected override void OnDefineOptions(IOptionDefinitionContext context)");
+            sb.AppendLine("        {");
+            if (allArgs.Count == 0)
+            {
+                sb.AppendLine("        }");
+            }
+            else
+            {
+                foreach (var a in allArgs)
+                {
+                    var optionTypeName = a.type == typeof(string) ? "string"
+                        : a.type == typeof(int) ? "int"
+                        : a.type == typeof(float) ? "float"
+                        : a.type == typeof(bool) ? "bool"
+                        : a.type.IsEnum ? TypeToCodeName(a.type)
+                        : null;
+
+                    if (optionTypeName == null)
+                        continue;
+
+                    var defaultValueExpr = a.type == typeof(string) ? $"{a.safeName} ?? string.Empty"
+                        : a.safeName;
+
+                    sb.AppendLine($"            context.AddOption<{optionTypeName}>(\"{a.safeName}\")");
+                    sb.AppendLine($"                .WithDisplayName(\"{a.jsonName}\")");
+                    sb.AppendLine($"                .WithDefaultValue({defaultValueExpr});");
+                }
+                sb.AppendLine("        }");
+            }
             sb.AppendLine();
 
             sb.AppendLine("        protected override void OnDefinePorts(IPortDefinitionContext context)");
@@ -363,26 +729,41 @@ namespace BT.Editor.Generator
 
             sb.AppendLine("        public List<BTArgJson> CollectArgs()");
             sb.AppendLine("        {");
-            if (extraArgs.Count == 0)
+            if (allArgs.Count == 0)
             {
                 sb.AppendLine("            return new List<BTArgJson>();");
             }
             else
             {
+                foreach (var a in allArgs)
+                {
+                    var optionTypeName = a.type == typeof(string) ? "string"
+                        : a.type == typeof(int) ? "int"
+                        : a.type == typeof(float) ? "float"
+                        : a.type == typeof(bool) ? "bool"
+                        : a.type.IsEnum ? TypeToCodeName(a.type)
+                        : null;
+                    if (optionTypeName == null)
+                        continue;
+
+                    sb.AppendLine($"            var opt_{a.safeName} = GetNodeOptionByName(\"{a.safeName}\");");
+                    sb.AppendLine($"            if (opt_{a.safeName} != null && opt_{a.safeName}.TryGetValue<{optionTypeName}>(out var v_{a.safeName})) {a.safeName} = v_{a.safeName};");
+                }
+                sb.AppendLine();
                 sb.AppendLine("            return new List<BTArgJson>");
                 sb.AppendLine("            {");
-                foreach (var a in extraArgs)
+                foreach (var a in allArgs)
                 {
                     if (a.type == typeof(string))
-                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.originalName}\", type = BTArgType.String, value = {a.name} ?? string.Empty }},");
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.String, value = {a.safeName} ?? string.Empty }},");
                     else if (a.type == typeof(int))
-                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.originalName}\", type = BTArgType.Int, value = {a.name}.ToString(CultureInfo.InvariantCulture) }},");
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Int, value = {a.safeName}.ToString(CultureInfo.InvariantCulture) }},");
                     else if (a.type == typeof(float))
-                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.originalName}\", type = BTArgType.Float, value = {a.name}.ToString(CultureInfo.InvariantCulture) }},");
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Float, value = {a.safeName}.ToString(CultureInfo.InvariantCulture) }},");
                     else if (a.type == typeof(bool))
-                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.originalName}\", type = BTArgType.Bool, value = {a.name} ? \"true\" : \"false\" }},");
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Bool, value = {a.safeName} ? \"true\" : \"false\" }},");
                     else if (a.type.IsEnum)
-                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.originalName}\", type = BTArgType.Int, value = ((int){a.name}).ToString(CultureInfo.InvariantCulture) }},");
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Int, value = ((int){a.safeName}).ToString(CultureInfo.InvariantCulture) }},");
                 }
                 sb.AppendLine("            };");
             }

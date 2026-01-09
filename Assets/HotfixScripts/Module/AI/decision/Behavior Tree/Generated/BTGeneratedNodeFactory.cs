@@ -52,7 +52,20 @@ namespace BT
             }
         }
 
-        public static BTNode CreateLeaf(string typeId, List<BTArgJson> args) => null;
+        public static BTNode CreateLeaf(string typeId, List<BTArgJson> args)
+        {
+            switch (typeId)
+            {
+                case "DebugAction":
+                {
+                    var node = new DebugAction();
+                    node.logInfo = GetString(args, "logInfo", "");
+                    node.type = (DebugAction.DebugActionType)GetInt(args, "type", 0);
+                    return node;
+                }
+                default: return null;
+            }
+        }
 
         static string GetString(List<BTArgJson> args, string name, string defaultValue)
         {
@@ -77,6 +90,14 @@ namespace BT
             var s = GetString(args, name, null);
             if (string.IsNullOrEmpty(s)) return defaultValue;
             return float.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out var v) ? v : defaultValue;
+        }
+
+        static bool GetBool(List<BTArgJson> args, string name, bool defaultValue)
+        {
+            var s = GetString(args, name, null);
+            if (string.IsNullOrEmpty(s)) return defaultValue;
+            if (bool.TryParse(s, out var v)) return v;
+            return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i != 0 : defaultValue;
         }
     }
 }

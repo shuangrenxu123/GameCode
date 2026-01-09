@@ -1,6 +1,8 @@
 using BT;
+using BT.EditorIntegration;
 using UnityEngine;
 
+[BTEditorNode("BTAction/DebugAction", BTEditorNodeKind.Action)]
 public class DebugAction : BTAction
 {
     public enum DebugActionType
@@ -10,13 +12,15 @@ public class DebugAction : BTAction
         Error
     }
 
-    string logInfo;
+    [BTEditorExpose]
+    public string logInfo;
 
-    DebugActionType type;
-    public DebugAction(string info, DebugActionType type)
+    [BTEditorExpose]
+    public DebugActionType type = DebugActionType.Debug;
+
+    public DebugAction()
     {
-        this.type = type;
-        this.logInfo = info;
+
     }
     protected override BTResult Execute()
     {
