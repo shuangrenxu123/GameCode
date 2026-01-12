@@ -32,6 +32,16 @@ namespace BT.Editor.Generated.Nodes
             if (string.IsNullOrEmpty(nodeId)) nodeId = Guid.NewGuid().ToString("N");
         }
 
+        protected override void OnDefineOptions(IOptionDefinitionContext context)
+        {
+            context.AddOption<string>("databaseName")
+                .WithDisplayName("databaseName")
+                .WithDefaultValue(databaseName ?? string.Empty);
+            context.AddOption<float>("time")
+                .WithDisplayName("time")
+                .WithDefaultValue(time);
+        }
+
         protected override void OnDefinePorts(IPortDefinitionContext context)
         {
             context.AddInputPort(ParentPortId).WithDisplayName("Parent").Build();
@@ -51,6 +61,11 @@ namespace BT.Editor.Generated.Nodes
 
         public List<BTArgJson> CollectArgs()
         {
+            var opt_databaseName = GetNodeOptionByName("databaseName");
+            if (opt_databaseName != null && opt_databaseName.TryGetValue<string>(out var v_databaseName)) databaseName = v_databaseName;
+            var opt_time = GetNodeOptionByName("time");
+            if (opt_time != null && opt_time.TryGetValue<float>(out var v_time)) time = v_time;
+
             return new List<BTArgJson>
             {
                 new BTArgJson { name = "databaseName", type = BTArgType.String, value = databaseName ?? string.Empty },

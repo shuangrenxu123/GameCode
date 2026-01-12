@@ -13,7 +13,9 @@ namespace BT
     [BT.EditorIntegration.BTEditorNode("Composite/Parallel", BT.EditorIntegration.BTEditorNodeKind.Composite)]
     public class BTParallel : BTComposite
     {
-        private ParallelType ParallelType;
+
+        [BT.EditorIntegration.BTEditorExpose]
+        public ParallelType ParallelType;
         private List<BTResult> _results;
         private int endingResultCount;
         [BT.EditorIntegration.BTEditorConstructor]

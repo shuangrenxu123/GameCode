@@ -19,7 +19,8 @@ namespace BT.Editor.Generated.Nodes
         const string ChildPortId = "Child";
 
         [SerializeField] string nodeId;
-        [SerializeField] BT.ParallelType type;
+        [SerializeField] global::BT.ParallelType type;
+        [SerializeField] global::BT.ParallelType ParallelType;
 
         public string NodeId => nodeId;
         public string RuntimeTypeId => "BT.BTParallel";
@@ -29,6 +30,16 @@ namespace BT.Editor.Generated.Nodes
         public override void OnEnable()
         {
             if (string.IsNullOrEmpty(nodeId)) nodeId = Guid.NewGuid().ToString("N");
+        }
+
+        protected override void OnDefineOptions(IOptionDefinitionContext context)
+        {
+            context.AddOption<global::BT.ParallelType>("type")
+                .WithDisplayName("type")
+                .WithDefaultValue(type);
+            context.AddOption<global::BT.ParallelType>("ParallelType")
+                .WithDisplayName("ParallelType")
+                .WithDefaultValue(ParallelType);
         }
 
         protected override void OnDefinePorts(IPortDefinitionContext context)
@@ -50,9 +61,15 @@ namespace BT.Editor.Generated.Nodes
 
         public List<BTArgJson> CollectArgs()
         {
+            var opt_type = GetNodeOptionByName("type");
+            if (opt_type != null && opt_type.TryGetValue<global::BT.ParallelType>(out var v_type)) type = v_type;
+            var opt_ParallelType = GetNodeOptionByName("ParallelType");
+            if (opt_ParallelType != null && opt_ParallelType.TryGetValue<global::BT.ParallelType>(out var v_ParallelType)) ParallelType = v_ParallelType;
+
             return new List<BTArgJson>
             {
                 new BTArgJson { name = "type", type = BTArgType.Int, value = ((int)type).ToString(CultureInfo.InvariantCulture) },
+                new BTArgJson { name = "ParallelType", type = BTArgType.Int, value = ((int)ParallelType).ToString(CultureInfo.InvariantCulture) },
             };
         }
     }

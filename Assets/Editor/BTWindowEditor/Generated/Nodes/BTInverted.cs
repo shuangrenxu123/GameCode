@@ -30,6 +30,10 @@ namespace BT.Editor.Generated.Nodes
             if (string.IsNullOrEmpty(nodeId)) nodeId = Guid.NewGuid().ToString("N");
         }
 
+        protected override void OnDefineOptions(IOptionDefinitionContext context)
+        {
+        }
+
         protected override void OnDefinePorts(IPortDefinitionContext context)
         {
             context.AddInputPort(ParentPortId).WithDisplayName("Parent").Build();

@@ -8,6 +8,7 @@ namespace BT.RuntimeSerialization
     {
         public int version = 1;
         public string rootId;
+        public List<BTBlackboardEntryJson> blackboard = new();
         public List<BTNodeRuntimeJson> nodes = new();
     }
 
@@ -35,5 +36,20 @@ namespace BT.RuntimeSerialization
         public BTArgType type;
         public string value;
     }
-}
 
+    public enum BTBlackboardValueType
+    {
+        String = 0,
+        Int = 1,
+        Float = 2,
+        Bool = 3,
+    }
+
+    [Serializable]
+    public class BTBlackboardEntryJson
+    {
+        public string key;
+        public BTBlackboardValueType type;
+        public string value;
+    }
+}

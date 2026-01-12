@@ -32,10 +32,15 @@ namespace BT
         {
             switch (typeId)
             {
-                case "BT.BTParallel": return new BT.BTParallel((BT.ParallelType)GetInt(args, "type", 0));
-                case "BT.BTRandom": return new BT.BTRandom();
-                case "BT.BTSelector": return new BT.BTSelector();
-                case "BT.BTSequence": return new BT.BTSequence();
+                case "BT.BTParallel":
+                {
+                    var node = new global::BT.BTParallel((global::BT.ParallelType)GetInt(args, "type", 0));
+                    node.ParallelType = (global::BT.ParallelType)GetInt(args, "ParallelType", 0);
+                    return node;
+                }
+                case "BT.BTRandom": return new global::BT.BTRandom();
+                case "BT.BTSelector": return new global::BT.BTSelector();
+                case "BT.BTSequence": return new global::BT.BTSequence();
                 default: return null;
             }
         }
@@ -44,10 +49,10 @@ namespace BT
         {
             switch (typeId)
             {
-                case "BT.BTInverted": return new BT.BTInverted(child);
-                case "BT.BTProbability": return new BT.BTProbability(GetInt(args, "Probability", 0), child);
-                case "BT.BTTimer": return new BT.BTTimer(GetFloat(args, "timer", 0f), child);
-                case "BT.BTinterval": return new BT.BTinterval(GetString(args, "databaseName", ""), GetFloat(args, "time", 0f), child);
+                case "BT.BTInverted": return new global::BT.BTInverted(child);
+                case "BT.BTProbability": return new global::BT.BTProbability(GetInt(args, "Probability", 0), child);
+                case "BT.BTTimer": return new global::BT.BTTimer(GetFloat(args, "timer", 0f), child);
+                case "BT.BTinterval": return new global::BT.BTinterval(GetString(args, "databaseName", ""), GetFloat(args, "time", 0f), child);
                 default: return null;
             }
         }
@@ -58,9 +63,9 @@ namespace BT
             {
                 case "DebugAction":
                 {
-                    var node = new DebugAction();
+                    var node = new global::DebugAction();
                     node.logInfo = GetString(args, "logInfo", "");
-                    node.type = (DebugAction.DebugActionType)GetInt(args, "type", 0);
+                    node.type = (global::DebugAction.DebugActionType)GetInt(args, "type", 0);
                     return node;
                 }
                 default: return null;

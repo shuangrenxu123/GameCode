@@ -1,7 +1,6 @@
 using System;
 using Unity.GraphToolkit.Editor;
 using UnityEditor;
-using UnityEngine;
 
 namespace BT.Editor
 {

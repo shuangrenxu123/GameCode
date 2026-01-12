@@ -31,6 +31,13 @@ namespace BT.Editor.Generated.Nodes
             if (string.IsNullOrEmpty(nodeId)) nodeId = Guid.NewGuid().ToString("N");
         }
 
+        protected override void OnDefineOptions(IOptionDefinitionContext context)
+        {
+            context.AddOption<float>("timer")
+                .WithDisplayName("timer")
+                .WithDefaultValue(timer);
+        }
+
         protected override void OnDefinePorts(IPortDefinitionContext context)
         {
             context.AddInputPort(ParentPortId).WithDisplayName("Parent").Build();
@@ -50,6 +57,9 @@ namespace BT.Editor.Generated.Nodes
 
         public List<BTArgJson> CollectArgs()
         {
+            var opt_timer = GetNodeOptionByName("timer");
+            if (opt_timer != null && opt_timer.TryGetValue<float>(out var v_timer)) timer = v_timer;
+
             return new List<BTArgJson>
             {
                 new BTArgJson { name = "timer", type = BTArgType.Float, value = timer.ToString(CultureInfo.InvariantCulture) },
