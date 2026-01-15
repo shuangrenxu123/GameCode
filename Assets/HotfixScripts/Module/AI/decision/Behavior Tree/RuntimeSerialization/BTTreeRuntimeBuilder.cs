@@ -107,33 +107,33 @@ namespace BT.RuntimeSerialization
                 switch (kind)
                 {
                     case BTGeneratedNodeFactory.NodeKind.Decorator:
-                    {
-                        var childId = nodeDto.children != null && nodeDto.children.Count > 0 ? nodeDto.children[0] : null;
-                        var child = string.IsNullOrEmpty(childId) ? null : BuildNode(childId);
-                        result = BTGeneratedNodeFactory.CreateDecorator(nodeDto.typeId, nodeDto.args, child);
-                        break;
-                    }
+                        {
+                            var childId = nodeDto.children != null && nodeDto.children.Count > 0 ? nodeDto.children[0] : null;
+                            var child = string.IsNullOrEmpty(childId) ? null : BuildNode(childId);
+                            result = BTGeneratedNodeFactory.CreateDecorator(nodeDto.typeId, nodeDto.args, child);
+                            break;
+                        }
 
                     case BTGeneratedNodeFactory.NodeKind.Composite:
-                    {
-                        result = BTGeneratedNodeFactory.CreateComposite(nodeDto.typeId, nodeDto.args);
-                        if (result is BTComposite composite && nodeDto.children != null)
                         {
-                            foreach (var childId in nodeDto.children)
+                            result = BTGeneratedNodeFactory.CreateComposite(nodeDto.typeId, nodeDto.args);
+                            if (result is BTComposite composite && nodeDto.children != null)
                             {
-                                var child = string.IsNullOrEmpty(childId) ? null : BuildNode(childId);
-                                if (child != null)
-                                    composite.AddChild(child);
+                                foreach (var childId in nodeDto.children)
+                                {
+                                    var child = string.IsNullOrEmpty(childId) ? null : BuildNode(childId);
+                                    if (child != null)
+                                        composite.AddChild(child);
+                                }
                             }
+                            break;
                         }
-                        break;
-                    }
 
                     default:
-                    {
-                        result = BTGeneratedNodeFactory.CreateLeaf(nodeDto.typeId, nodeDto.args);
-                        break;
-                    }
+                        {
+                            result = BTGeneratedNodeFactory.CreateLeaf(nodeDto.typeId, nodeDto.args);
+                            break;
+                        }
                 }
 
                 visiting.Remove(id);

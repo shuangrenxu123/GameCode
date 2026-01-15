@@ -12,7 +12,7 @@ namespace BT.RuntimeSerialization
     /// - 默认仅在失败/异常时输出一次错误日志，避免刷屏
     /// </summary>
     [DisallowMultipleComponent]
-    public sealed class BTTreeRuntimeRunner : MonoBehaviour
+    public sealed partial class BTTreeRuntimeRunner : MonoBehaviour
     {
         public enum TickPhase
         {
@@ -103,6 +103,7 @@ namespace BT.RuntimeSerialization
 #if UNITY_EDITOR
         void OnValidate()
         {
+            EnsureInspectorBlackboardValueTypes();
             if (!rebuildOnValidateInPlayMode)
                 return;
             if (!Application.isPlaying)
@@ -186,6 +187,7 @@ namespace BT.RuntimeSerialization
 
             root = newRoot;
             blackboard = newBlackboard ?? new Blackboard();
+            ApplyInspectorBlackboard(blackboard);
             root.Activate(blackboard);
 
             ResetTickSchedule();
