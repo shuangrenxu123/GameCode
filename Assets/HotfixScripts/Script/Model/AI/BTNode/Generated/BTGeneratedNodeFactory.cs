@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using BT.RuntimeSerialization;
+using UnityEngine;
 
 namespace BT
 {
@@ -61,6 +62,14 @@ namespace BT
         {
             switch (typeId)
             {
+                case "BT.Nodes.BTCharacterInputNode":
+                {
+                    var node = new global::BT.Nodes.BTCharacterInputNode();
+                    node.actionType = (global::BT.Nodes.BTCharacterInputNode.ActionType)GetInt(args, "actionType", 0);
+                    node.boolValue = GetBool(args, "boolValue", false);
+                    node.vector2Value = GetVector2(args, "vector2Value", Vector2.zero);
+                    return node;
+                }
                 case "DebugAction":
                 {
                     var node = new global::DebugAction();
@@ -103,6 +112,29 @@ namespace BT
             if (string.IsNullOrEmpty(s)) return defaultValue;
             if (bool.TryParse(s, out var v)) return v;
             return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i != 0 : defaultValue;
+        }
+
+        static Vector2 GetVector2(List<BTArgJson> args, string name, Vector2 defaultValue)
+        {
+            var s = GetString(args, name, null);
+            if (string.IsNullOrEmpty(s)) return defaultValue;
+            var parts = s.Split(',');
+            if (parts.Length < 2) return defaultValue;
+            if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var x)) return defaultValue;
+            if (!float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var y)) return defaultValue;
+            return new Vector2(x, y);
+        }
+
+        static Vector3 GetVector3(List<BTArgJson> args, string name, Vector3 defaultValue)
+        {
+            var s = GetString(args, name, null);
+            if (string.IsNullOrEmpty(s)) return defaultValue;
+            var parts = s.Split(',');
+            if (parts.Length < 3) return defaultValue;
+            if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var x)) return defaultValue;
+            if (!float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var y)) return defaultValue;
+            if (!float.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out var z)) return defaultValue;
+            return new Vector3(x, y, z);
         }
     }
 }

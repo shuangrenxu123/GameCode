@@ -27,6 +27,8 @@ namespace BT.RuntimeSerialization
         Int = 1,
         Float = 2,
         Bool = 3,
+        Vector2 = 4,
+        Vector3 = 5,
     }
 
     [Serializable]

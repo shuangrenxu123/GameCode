@@ -81,6 +81,7 @@ MonoBehaviour:
         - rid: 5504505094159990793
         - rid: 5504505094159990800
         - rid: 5504505094159990805
+        - rid: 5504505203960840324
         m_GraphWireModels:
         - rid: 5504505094159990804
         - rid: 5504505094159990808
@@ -99,8 +100,8 @@ MonoBehaviour:
           serializedVersion: 2
           x: -662
           y: -233
-          width: 888
-          height: 497
+          width: 1305
+          height: 725
         m_GraphElementMetaData:
         - m_Guid:
             m_Value0: 18400110712813382193
@@ -198,6 +199,14 @@ MonoBehaviour:
             Hash: b013969296f194b61d7262fa8896109e
           m_Category: 2
           m_Index: 4
+        - m_Guid:
+            m_Value0: 10491141318824420005
+            m_Value1: 921846155070666658
+          m_HashGuid:
+            serializedVersion: 2
+            Hash: a5e2f3ec71059891a2f78ba2310ecb0c
+          m_Category: 0
+          m_Index: 6
         m_EntryPoint:
           rid: 5504505046895952044
         m_Graph:
@@ -662,3 +671,64 @@ MonoBehaviour:
           m_PortDirection: 1
           m_PortOrientation: 0
           m_Title: Parent
+    - rid: 5504505203960840324
+      type: {class: UserNodeModelImp, ns: Unity.GraphToolkit.Editor.Implementation,
+        asm: Unity.GraphToolkit.Editor}
+      data:
+        m_Guid:
+          m_Value0: 10491141318824420005
+          m_Value1: 921846155070666658
+        m_HashGuid:
+          serializedVersion: 2
+          Hash: a5e2f3ec71059891a2f78ba2310ecb0c
+        m_Version: 2
+        m_Position: {x: 438.2609, y: 349.56525}
+        m_Title: 
+        m_Tooltip: 
+        m_NodePreviewModel:
+          rid: -2
+        m_State: 0
+        m_InputConstantsById:
+          m_KeyList:
+          - __option_actionType
+          - __option_boolValue
+          m_ValueList:
+          - rid: 5504505203960840325
+          - rid: 5504505203960840326
+        m_InputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_OutputPortInfos:
+          expandedPortsById:
+            m_KeyList: []
+            m_ValueList: 
+        m_Collapsed: 0
+        m_CurrentModeIndex: 0
+        m_ElementColor:
+          m_Color: {r: 0, g: 0, b: 0, a: 0}
+          m_HasUserColor: 0
+        m_Node:
+          rid: 5504505203960840327
+    - rid: 5504505203960840325
+      type: {class: EnumConstant, ns: Unity.GraphToolkit.Editor, asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value:
+          m_EnumType:
+            m_Identification: BT.Nodes.BTCharacterInputNode+ActionType, Game.Runtime,
+              Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+          m_Value: 10
+        m_EnumType:
+          m_Identification: BT.Nodes.BTCharacterInputNode+ActionType, Game.Runtime,
+            Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    - rid: 5504505203960840326
+      type: {class: 'Constant`1[[System.Boolean, mscorlib]]', ns: Unity.GraphToolkit.Editor,
+        asm: Unity.GraphToolkit.Internal.Editor}
+      data:
+        m_Value: 0
+    - rid: 5504505203960840327
+      type: {class: BTCharacterInputNode, ns: BT.Editor.Generated.Nodes, asm: Game.BT.Editor}
+      data:
+        nodeId: 9e756b4377ed45e3803d0ee12ce4c711
+        actionType: 0
+        boolValue: 0

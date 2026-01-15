@@ -14,7 +14,7 @@ namespace BT.Editor.Generator
     static class BTCodegen
     {
         const string GeneratedEditorNodesDir = "Assets/Editor/BTWindowEditor/Generated/Nodes";
-        const string GeneratedRuntimeFactoryPath = "Assets/HotfixScripts/Module/AI/decision/Behavior Tree/Generated/BTGeneratedNodeFactory.cs";
+        const string GeneratedRuntimeFactoryPath = "Assets/HotfixScripts/Script/Model/AI/BTNode/Generated/BTGeneratedNodeFactory.cs";
         const string HashAssetPath = "Assets/Editor/BTWindowEditor/Generated/.bt_codegen_hash.txt";
 
         [MenuItem("Tools/BT/Regenerate Generated BT Nodes")]
@@ -267,7 +267,9 @@ namespace BT.Editor.Generator
 
         static bool IsSupportedArgType(Type t)
         {
-            return t == typeof(string) || t == typeof(int) || t == typeof(float) || t == typeof(bool) || t.IsEnum;
+            return t == typeof(string) || t == typeof(int) || t == typeof(float) || t == typeof(bool) ||
+                   t == typeof(Vector2) || t == typeof(Vector3) ||
+                   t.IsEnum;
         }
 
         static void EnsureUniqueSafeNames(List<ExposedMember> members)
@@ -310,6 +312,10 @@ namespace BT.Editor.Generator
                 return $"GetFloat(args, \"{jsonName}\", 0f)";
             if (t == typeof(bool))
                 return $"GetBool(args, \"{jsonName}\", false)";
+            if (t == typeof(Vector2))
+                return $"GetVector2(args, \"{jsonName}\", Vector2.zero)";
+            if (t == typeof(Vector3))
+                return $"GetVector3(args, \"{jsonName}\", Vector3.zero)";
             if (t.IsEnum)
                 return $"({TypeToCodeName(t)})GetInt(args, \"{jsonName}\", 0)";
             return $"default({TypeToCodeName(t)})";
@@ -341,6 +347,7 @@ namespace BT.Editor.Generator
             sb.AppendLine("using System.Collections.Generic;");
             sb.AppendLine("using System.Globalization;");
             sb.AppendLine("using BT.RuntimeSerialization;");
+            sb.AppendLine("using UnityEngine;");
             sb.AppendLine();
             sb.AppendLine("namespace BT");
             sb.AppendLine("{");
@@ -539,6 +546,29 @@ namespace BT.Editor.Generator
             sb.AppendLine("            if (bool.TryParse(s, out var v)) return v;");
             sb.AppendLine("            return int.TryParse(s, NumberStyles.Integer, CultureInfo.InvariantCulture, out var i) ? i != 0 : defaultValue;");
             sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        static Vector2 GetVector2(List<BTArgJson> args, string name, Vector2 defaultValue)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            var s = GetString(args, name, null);");
+            sb.AppendLine("            if (string.IsNullOrEmpty(s)) return defaultValue;");
+            sb.AppendLine("            var parts = s.Split(',');");
+            sb.AppendLine("            if (parts.Length < 2) return defaultValue;");
+            sb.AppendLine("            if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var x)) return defaultValue;");
+            sb.AppendLine("            if (!float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var y)) return defaultValue;");
+            sb.AppendLine("            return new Vector2(x, y);");
+            sb.AppendLine("        }");
+            sb.AppendLine();
+            sb.AppendLine("        static Vector3 GetVector3(List<BTArgJson> args, string name, Vector3 defaultValue)");
+            sb.AppendLine("        {");
+            sb.AppendLine("            var s = GetString(args, name, null);");
+            sb.AppendLine("            if (string.IsNullOrEmpty(s)) return defaultValue;");
+            sb.AppendLine("            var parts = s.Split(',');");
+            sb.AppendLine("            if (parts.Length < 3) return defaultValue;");
+            sb.AppendLine("            if (!float.TryParse(parts[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var x)) return defaultValue;");
+            sb.AppendLine("            if (!float.TryParse(parts[1], NumberStyles.Float, CultureInfo.InvariantCulture, out var y)) return defaultValue;");
+            sb.AppendLine("            if (!float.TryParse(parts[2], NumberStyles.Float, CultureInfo.InvariantCulture, out var z)) return defaultValue;");
+            sb.AppendLine("            return new Vector3(x, y, z);");
+            sb.AppendLine("        }");
             sb.AppendLine("    }");
             sb.AppendLine("}");
 
@@ -571,6 +601,10 @@ namespace BT.Editor.Generator
                     expr.Add($"GetFloat(args, \"{p.Name}\", 0f)");
                 else if (p.ParameterType == typeof(bool))
                     expr.Add($"GetBool(args, \"{p.Name}\", false)");
+                else if (p.ParameterType == typeof(Vector2))
+                    expr.Add($"GetVector2(args, \"{p.Name}\", Vector2.zero)");
+                else if (p.ParameterType == typeof(Vector3))
+                    expr.Add($"GetVector3(args, \"{p.Name}\", Vector3.zero)");
                 else if (p.ParameterType.IsEnum)
                     expr.Add($"({TypeToCodeName(p.ParameterType)})GetInt(args, \"{p.Name}\", 0)");
                 else
@@ -660,6 +694,8 @@ namespace BT.Editor.Generator
                     : a.type == typeof(int) ? $"        [SerializeField] int {a.safeName};"
                     : a.type == typeof(float) ? $"        [SerializeField] float {a.safeName};"
                     : a.type == typeof(bool) ? $"        [SerializeField] bool {a.safeName};"
+                    : a.type == typeof(Vector2) ? $"        [SerializeField] Vector2 {a.safeName};"
+                    : a.type == typeof(Vector3) ? $"        [SerializeField] Vector3 {a.safeName};"
                     : a.type.IsEnum ? $"        [SerializeField] {TypeToCodeName(a.type)} {a.safeName};"
                     : null;
                 if (fieldDecl != null)
@@ -692,6 +728,8 @@ namespace BT.Editor.Generator
                         : a.type == typeof(int) ? "int"
                         : a.type == typeof(float) ? "float"
                         : a.type == typeof(bool) ? "bool"
+                        : a.type == typeof(Vector2) ? "Vector2"
+                        : a.type == typeof(Vector3) ? "Vector3"
                         : a.type.IsEnum ? TypeToCodeName(a.type)
                         : null;
 
@@ -741,6 +779,8 @@ namespace BT.Editor.Generator
                         : a.type == typeof(int) ? "int"
                         : a.type == typeof(float) ? "float"
                         : a.type == typeof(bool) ? "bool"
+                        : a.type == typeof(Vector2) ? "Vector2"
+                        : a.type == typeof(Vector3) ? "Vector3"
                         : a.type.IsEnum ? TypeToCodeName(a.type)
                         : null;
                     if (optionTypeName == null)
@@ -762,6 +802,10 @@ namespace BT.Editor.Generator
                         sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Float, value = {a.safeName}.ToString(CultureInfo.InvariantCulture) }},");
                     else if (a.type == typeof(bool))
                         sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Bool, value = {a.safeName} ? \"true\" : \"false\" }},");
+                    else if (a.type == typeof(Vector2))
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Vector2, value = $\"{{{a.safeName}.x.ToString(CultureInfo.InvariantCulture)}},{{{a.safeName}.y.ToString(CultureInfo.InvariantCulture)}}\" }},");
+                    else if (a.type == typeof(Vector3))
+                        sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Vector3, value = $\"{{{a.safeName}.x.ToString(CultureInfo.InvariantCulture)}},{{{a.safeName}.y.ToString(CultureInfo.InvariantCulture)}},{{{a.safeName}.z.ToString(CultureInfo.InvariantCulture)}}\" }},");
                     else if (a.type.IsEnum)
                         sb.AppendLine($"                new BTArgJson {{ name = \"{a.jsonName}\", type = BTArgType.Int, value = ((int){a.safeName}).ToString(CultureInfo.InvariantCulture) }},");
                 }
@@ -784,7 +828,8 @@ namespace BT.Editor.Generator
                 if (p.ParameterType == typeof(BTNode))
                     continue;
 
-                if (p.ParameterType != typeof(string) && p.ParameterType != typeof(int) && p.ParameterType != typeof(float) && p.ParameterType != typeof(bool) && !p.ParameterType.IsEnum)
+                if (p.ParameterType != typeof(string) && p.ParameterType != typeof(int) && p.ParameterType != typeof(float) && p.ParameterType != typeof(bool) &&
+                    p.ParameterType != typeof(Vector2) && p.ParameterType != typeof(Vector3) && !p.ParameterType.IsEnum)
                     continue;
 
                 var safeName = SanitizeIdentifier(p.Name);
