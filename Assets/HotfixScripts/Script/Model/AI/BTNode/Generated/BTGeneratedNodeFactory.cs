@@ -62,11 +62,22 @@ namespace BT
         {
             switch (typeId)
             {
+                case "BT.BTWait":
+                {
+                    var node = new global::BT.BTWait();
+                    node.interval = GetFloat(args, "interval", 0f);
+                    return node;
+                }
                 case "BT.Nodes.BTCharacterInputNode":
                 {
                     var node = new global::BT.Nodes.BTCharacterInputNode();
                     node.actionType = (global::BT.Nodes.BTCharacterInputNode.ActionType)GetInt(args, "actionType", 0);
                     node.boolValue = GetBool(args, "boolValue", false);
+                    return node;
+                }
+                case "BT.Nodes.BTCharacterMoveNode":
+                {
+                    var node = new global::BT.Nodes.BTCharacterMoveNode();
                     node.vector2Value = GetVector2(args, "vector2Value", Vector2.zero);
                     return node;
                 }

@@ -64,7 +64,7 @@ namespace CharacterController
             }
             else
             {
-                if (isAI)
+                if (isAI && aiBehaviour != null)
                 {
                     characterActions.SetValues(aiBehaviour.characterActions);
                 }
@@ -136,7 +136,7 @@ namespace CharacterController
             {
                 UpdateBrainValues(0f);
             }
-            if (isAI)
+            if (isAI && aiBehaviour != null)
             {
                 // 对于AI而言他会清空输入，这样就不需要我们手动去处理输入值了
                 aiBehaviour.characterActions.ForceReset();
@@ -145,19 +145,22 @@ namespace CharacterController
         protected virtual void Update()
         {
             float dt = Time.deltaTime;
-            if (UpdateMode == UpdateModeType.FixedUpdate)
+            if (!isAI)
             {
-                if (firstUpdateFlag)
+                if (UpdateMode == UpdateModeType.FixedUpdate)
                 {
-                    firstUpdateFlag = false;
+                    if (firstUpdateFlag)
+                    {
+                        firstUpdateFlag = false;
+                        characterActions.Reset();
+                        characterUIActions.Reset();
+                    }
+                }
+                else
+                {
                     characterActions.Reset();
                     characterUIActions.Reset();
                 }
-            }
-            else
-            {
-                characterActions.Reset();
-                characterUIActions.Reset();
             }
 
             UpdateBrainValues(dt);

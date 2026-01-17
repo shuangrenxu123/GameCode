@@ -11,6 +11,13 @@ namespace BT.Editor.RuntimeJson
     {
         static readonly HashSet<string> PendingGraphAssetPaths = new(StringComparer.OrdinalIgnoreCase);
         static bool _scheduled;
+        static bool _postprocessScheduled;
+
+        [InitializeOnLoadMethod]
+        static void Initialize()
+        {
+            Debug.Log("[BTTreeRuntimeJson] Auto exporter initialized.");
+        }
 
         static string[] OnWillSaveAssets(string[] paths)
         {
@@ -24,12 +31,15 @@ namespace BT.Editor.RuntimeJson
                     continue;
 
                 if (p.EndsWith("." + BTTreeGraph.AssetExtension, StringComparison.OrdinalIgnoreCase))
+                {
                     PendingGraphAssetPaths.Add(p.Replace('\\', '/'));
+                }
             }
 
             if (PendingGraphAssetPaths.Count > 0 && !_scheduled)
             {
                 _scheduled = true;
+                Debug.Log($"[BTTreeRuntimeJson] Detected graph save: {string.Join(", ", PendingGraphAssetPaths)}");
                 EditorApplication.delayCall += ExportAfterSave;
             }
 
@@ -49,11 +59,17 @@ namespace BT.Editor.RuntimeJson
             var activePath = AssetDatabase.GetAssetPath(Selection.activeObject)?.Replace('\\', '/');
             var targetGraphPath = ResolveTargetGraphPath(candidates, activePath);
             if (string.IsNullOrEmpty(targetGraphPath))
+            {
+                Debug.LogWarning("[BTTreeRuntimeJson] Auto export skipped: no target graph resolved.");
                 return;
+            }
 
             var graph = GraphDatabase.LoadGraph<BTTreeGraph>(targetGraphPath);
             if (graph == null)
+            {
+                Debug.LogWarning($"[BTTreeRuntimeJson] Auto export skipped: failed to load graph '{targetGraphPath}'.");
                 return;
+            }
 
             var graphGuid = AssetDatabase.AssetPathToGUID(targetGraphPath);
             var configured = BTTreeRuntimeJsonExportSettings.instance.GetExportAssetPath(graphGuid);
@@ -98,6 +114,48 @@ namespace BT.Editor.RuntimeJson
             Array.Sort(candidates, StringComparer.OrdinalIgnoreCase);
             Debug.LogWarning("[BTTreeRuntimeJson] 本次保存包含多个 BTTreeGraph，且未能确定当前编辑的图；为避免误覆盖，已跳过自动导出。");
             return null;
+        }
+
+        internal static void ScheduleExportFromPostprocess(IEnumerable<string> candidates)
+        {
+            if (candidates == null)
+                return;
+
+            foreach (var path in candidates)
+            {
+                if (!string.IsNullOrEmpty(path) &&
+                    path.EndsWith("." + BTTreeGraph.AssetExtension, StringComparison.OrdinalIgnoreCase))
+                {
+                    PendingGraphAssetPaths.Add(path.Replace('\\', '/'));
+                }
+            }
+
+            if (PendingGraphAssetPaths.Count == 0 || _postprocessScheduled)
+                return;
+
+            _postprocessScheduled = true;
+            EditorApplication.delayCall += ExportAfterPostprocess;
+        }
+
+        static void ExportAfterPostprocess()
+        {
+            _postprocessScheduled = false;
+            ExportAfterSave();
+        }
+    }
+
+    class BTTreeRuntimeJsonAssetPostprocessor : AssetPostprocessor
+    {
+        static void OnPostprocessAllAssets(
+            string[] importedAssets,
+            string[] deletedAssets,
+            string[] movedAssets,
+            string[] movedFromAssetPaths)
+        {
+            if (importedAssets == null || importedAssets.Length == 0)
+                return;
+
+            BTTreeRuntimeJsonAutoExporter.ScheduleExportFromPostprocess(importedAssets);
         }
     }
 }

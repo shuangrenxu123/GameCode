@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using BT.Editor;
 using BT.RuntimeSerialization;
 using Unity.GraphToolkit.Editor;
@@ -14,6 +15,8 @@ namespace BT.Editor.RuntimeJson
     static class BTTreeRuntimeJsonExporter
     {
         static readonly System.Text.Encoding Utf8NoBom = new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false);
+        static readonly FieldInfo NodeImplementationField = typeof(Node).GetField("m_Implementation", BindingFlags.Instance | BindingFlags.NonPublic);
+        static readonly Dictionary<Type, PropertyInfo> NodePositionPropertyByType = new();
 
         public static string GetDefaultExportPath(string graphAssetPath)
         {
@@ -87,6 +90,7 @@ namespace BT.Editor.RuntimeJson
                 wroteFile = true;
 
                 AssetDatabase.ImportAsset(exportAssetPath, ImportAssetOptions.ForceUpdate);
+                Debug.Log($"[BTTreeRuntimeJson] 已生成：{exportAssetPath}");
                 return true;
             }
             catch (Exception e)
@@ -96,7 +100,7 @@ namespace BT.Editor.RuntimeJson
             }
         }
 
-        static BTTreeRuntimeJson BuildRuntimeJson(BTTreeGraph graph)
+        internal static BTTreeRuntimeJson BuildRuntimeJson(BTTreeGraph graph)
         {
             var nodes = graph.GetNodes().OfType<IBTRuntimeJsonNode>().ToList();
             var rootNode = graph.GetNodes().OfType<BTEditorRootNode>().FirstOrDefault();
@@ -123,6 +127,13 @@ namespace BT.Editor.RuntimeJson
             foreach (var node in nodes)
             {
                 var exportId = GetExportId(node);
+                var collectedChildren = CollectChildren(node, nodeOrder).ToList();
+                if (node.Kind == BT.EditorIntegration.BTEditorNodeKind.Decorator && collectedChildren.Count == 0)
+                {
+                    Debug.LogError($"[BTTreeRuntimeJson] Decorator 节点未连接子节点，已停止导出。NodeId='{exportId}', TypeId='{node.RuntimeTypeId}'");
+                    throw new InvalidOperationException("Decorator node must have a child when exporting runtime JSON.");
+                }
+
                 var nodeDto = new BTNodeRuntimeJson
                 {
                     id = exportId,
@@ -131,7 +142,7 @@ namespace BT.Editor.RuntimeJson
                     children = new List<string>(),
                 };
 
-                foreach (var child in CollectChildren(node, nodeOrder))
+                foreach (var child in collectedChildren)
                 {
                     var childId = GetExportId(child);
                     if (string.IsNullOrEmpty(childId))
@@ -285,7 +296,7 @@ namespace BT.Editor.RuntimeJson
                 if (connected.Count == 0)
                     yield break;
 
-                var children = new List<(IBTRuntimeJsonNode node, int order, int index, string id)>(connected.Count);
+                var children = new List<(IBTRuntimeJsonNode node, int order, int index, string id, float y, float x, bool hasPosition)>(connected.Count);
                 for (var i = 0; i < connected.Count; i++)
                 {
                     var childNode = connected[i].GetNode();
@@ -293,15 +304,57 @@ namespace BT.Editor.RuntimeJson
                         continue;
 
                     var order = nodeOrder.TryGetValue(child, out var idx) ? idx : int.MaxValue;
-                    children.Add((child, order, i, child.NodeId));
+                    var hasPosition = TryGetNodePosition(child, out var position);
+                    var y = hasPosition ? position.y : float.MaxValue;
+                    var x = hasPosition ? position.x : float.MaxValue;
+                    children.Add((child, order, i, child.NodeId, y, x, hasPosition));
                 }
 
                 foreach (var info in children
-                             .OrderBy(c => c.order)
+                             .OrderBy(c => c.hasPosition ? 0 : 1)
+                             .ThenBy(c => c.y)
+                             .ThenBy(c => c.x)
+                             .ThenBy(c => c.order)
                              .ThenBy(c => c.index)
                              .ThenBy(c => c.id, StringComparer.Ordinal))
                     yield return info.node;
             }
+        }
+
+        static bool TryGetNodePosition(IBTRuntimeJsonNode node, out Vector2 position)
+        {
+            position = Vector2.zero;
+            if (node == null)
+                return false;
+
+            try
+            {
+                var implementation = NodeImplementationField?.GetValue(node);
+                if (implementation == null)
+                    return false;
+
+                var type = implementation.GetType();
+                if (!NodePositionPropertyByType.TryGetValue(type, out var property))
+                {
+                    property = type.GetProperty("Position", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+                    NodePositionPropertyByType[type] = property;
+                }
+
+                if (property == null)
+                    return false;
+
+                if (property.GetValue(implementation) is Vector2 value)
+                {
+                    position = value;
+                    return true;
+                }
+            }
+            catch
+            {
+                return false;
+            }
+
+            return false;
         }
     }
 }

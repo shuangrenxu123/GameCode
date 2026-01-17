@@ -1,7 +1,6 @@
 using AIBlackboard;
 using BT.EditorIntegration;
 using CharacterController;
-using UnityEngine;
 
 namespace BT.Nodes
 {
@@ -19,8 +18,7 @@ namespace BT.Nodes
             HeavyAttack,
             Crouch,
             OpenUI,
-            OpenConsoleUI,
-            Movement
+            OpenConsoleUI
         }
 
         [BTEditorExpose]
@@ -28,9 +26,6 @@ namespace BT.Nodes
 
         [BTEditorExpose]
         public bool boolValue = true;
-
-        [BTEditorExpose]
-        public Vector2 vector2Value = Vector2.zero;
 
         CharacterBrain brain;
         CharacterActions inputAction => brain.CharacterActions;
@@ -80,9 +75,6 @@ namespace BT.Nodes
                     break;
                 case ActionType.OpenConsoleUI:
                     inputAction.OpenConsoleUI.value = boolValue;
-                    break;
-                case ActionType.Movement:
-                    inputAction.movement.value = vector2Value;
                     break;
             }
         }
