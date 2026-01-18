@@ -98,6 +98,12 @@ namespace BT.Editor.RuntimeJson
             if (candidates == null || candidates.Length == 0)
                 return null;
 
+            if (string.IsNullOrEmpty(activePath))
+            {
+                Debug.LogWarning("[BTTreeRuntimeJson] 当前未选中图资产，自动导出已跳过。");
+                return null;
+            }
+
             if (!string.IsNullOrEmpty(activePath) &&
                 activePath.EndsWith("." + BTTreeGraph.AssetExtension, StringComparison.OrdinalIgnoreCase))
             {

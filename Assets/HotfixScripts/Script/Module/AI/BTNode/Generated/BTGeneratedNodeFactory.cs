@@ -81,6 +81,12 @@ namespace BT
                     node.vector2Value = GetVector2(args, "vector2Value", Vector2.zero);
                     return node;
                 }
+                case "BT.Nodes.BTCharacterMoveToPosition":
+                {
+                    var node = new global::BT.Nodes.BTCharacterMoveToPosition();
+                    node.positionKey = GetString(args, "positionKey", "");
+                    return node;
+                }
                 case "DebugAction":
                 {
                     var node = new global::DebugAction();

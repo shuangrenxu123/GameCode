@@ -14,7 +14,7 @@ namespace BT.Editor.Generator
     static class BTCodegen
     {
         const string GeneratedEditorNodesDir = "Assets/Editor/BTWindowEditor/Generated/Nodes";
-        const string GeneratedRuntimeFactoryPath = "Assets/HotfixScripts/Script/Model/AI/BTNode/Generated/BTGeneratedNodeFactory.cs";
+        const string GeneratedRuntimeFactoryPath = "Assets/HotfixScripts/Script/Module/AI/BTNode/Generated/BTGeneratedNodeFactory.cs";
         const string HashAssetPath = "Assets/Editor/BTWindowEditor/Generated/.bt_codegen_hash.txt";
 
         [MenuItem("Tools/BT/Regenerate Generated BT Nodes")]
