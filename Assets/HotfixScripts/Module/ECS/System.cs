@@ -133,4 +133,46 @@ namespace Framework.ECS
             }
         }
     }
+
+    #region ThreadSystem
+
+    public interface IEcsThread
+    {
+        public void Execute();
+    }
+
+    public abstract class EcsThreadSystem : IEcsRunSystem, IEcsInitSystem
+    {
+
+        protected EcsFilters filters;
+
+        ThreadWorkFunction work;
+
+        protected abstract int GetChunkSize(IEcsSystems systems);
+        protected abstract EcsFilters GetFilter(ECSWorld world);
+        protected abstract ECSWorld GetWorld(IEcsSystems systems);
+        protected abstract void Execute(int threadId, int StartIndex, int EndIndex);
+
+        public void Run(IEcsSystems systems)
+        {
+            if (filters == null)
+            {
+                throw new System.Exception("filter is null");
+            }
+            if (filters.entityCount == 0)
+            {
+                return;
+            }
+            if (work == null)
+            {
+                work = Execute;
+            }
+            ThreadExecuter.Run(work, filters.GetEntitiesCount(), GetChunkSize(systems));
+        }
+
+        public abstract void Init(IEcsSystems systems);
+    }
+
+    #endregion
+
 }

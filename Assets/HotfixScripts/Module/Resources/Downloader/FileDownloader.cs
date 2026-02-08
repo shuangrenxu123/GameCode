@@ -69,7 +69,7 @@ namespace Downloader
         /// <summary>
         /// 取消下载
         /// </summary>
-        public void Cancle()
+        public void Cancel()
         {
             isCanceled = true;
         }
