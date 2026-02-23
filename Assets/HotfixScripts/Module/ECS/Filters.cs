@@ -60,6 +60,7 @@ namespace Framework.ECS
             lockCount++;
             return new Enumerator(this);
         }
+
         public void AddEntity(int entity)
         {
             if (AddDelayedOp(true, entity))
@@ -124,6 +125,12 @@ namespace Framework.ECS
                 delayedOpsCount = 0;
             }
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal int GetEntitiesCount()
+        {
+            return entityCount;
+        }
     }
 
 
@@ -143,7 +150,7 @@ namespace Framework.ECS
 
         public int Current
         {
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get => entities[index];
         }
 
