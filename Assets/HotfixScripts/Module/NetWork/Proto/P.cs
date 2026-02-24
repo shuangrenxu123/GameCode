@@ -27,18 +27,25 @@ namespace PlayerInfo {
             "CgdQLnByb3RvEgpwbGF5ZXJJbmZvIpEBCgRtb3ZlEiUKCHBvc2l0aW9uGAEg",
             "ASgLMhMucGxheWVySW5mby52ZWN0b3IzEiUKCHJvdGF0aW9uGAIgASgLMhMu",
             "cGxheWVySW5mby52ZWN0b3IzEiUKCHZlbG9jaXR5GAMgASgLMhMucGxheWVy",
-            "SW5mby52ZWN0b3IzEgkKAWgYBCABKAISCQoBdhgFIAEoAiIqCgd2ZWN0b3Iz",
-            "EgkKAXgYASABKAISCQoBeRgCIAEoAhIJCgF6GAMgASgCIhUKBHBpbmcSDQoF",
-            "dGltZXIYASABKAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAkiHAoGQWN0",
-            "aW9uEhIKCmFjdGlvbm5hbWUYASABKAkilAEKBUxvZ2luEhQKDGxlZnRXZWFw",
-            "b25pZBgBIAEoBRIVCg1yaWdodFdlYXBvbmlkGAIgASgFEg4KBmhlYWRpZBgD",
-            "IAEoBRIOCgZib2R5aWQYBCABKAUSEAoIdHJvdXNlcnMYBSABKAUSDQoFbGVn",
-            "aWQYBiABKAUSDQoFYXJtaWQYByABKAUSDgoGaGFuZGlkGAggASgFIhwKDVBs",
-            "YXllck1lc3NhZ2USCwoDbWVzGAEgASgJYgZwcm90bzM="));
+            "SW5mby52ZWN0b3IzEgkKAWgYBCABKAISCQoBdhgFIAEoAiKCAgoOQ2hhcmFj",
+            "dGVyU3RhdGUSJQoIcG9zaXRpb24YASABKAsyEy5wbGF5ZXJJbmZvLnZlY3Rv",
+            "cjMSEQoJbW92ZW1lbnRYGAIgASgCEhEKCW1vdmVtZW50WRgDIAEoAhIMCgRq",
+            "dW1wGAQgASgIEgsKA3J1bhgFIAEoCBIQCghpbnRlcmFjdBgGIAEoCBIMCgRy",
+            "b2xsGAcgASgIEgwKBGxvY2sYCCABKAgSDgoGYXR0YWNrGAkgASgIEhMKC2hl",
+            "YXZ5QXR0YWNrGAogASgIEg4KBmNyb3VjaBgLIAEoCBIOCgZvcGVuVUkYDCAB",
+            "KAgSFQoNb3BlbkNvbnNvbGVVSRgNIAEoCCIqCgd2ZWN0b3IzEgkKAXgYASAB",
+            "KAISCQoBeRgCIAEoAhIJCgF6GAMgASgCIhUKBHBpbmcSDQoFdGltZXIYASAB",
+            "KAkiGQoJQW5pbWF0aW9uEgwKBG5hbWUYASABKAkiHAoGQWN0aW9uEhIKCmFj",
+            "dGlvbm5hbWUYASABKAkilAEKBUxvZ2luEhQKDGxlZnRXZWFwb25pZBgBIAEo",
+            "BRIVCg1yaWdodFdlYXBvbmlkGAIgASgFEg4KBmhlYWRpZBgDIAEoBRIOCgZi",
+            "b2R5aWQYBCABKAUSEAoIdHJvdXNlcnMYBSABKAUSDQoFbGVnaWQYBiABKAUS",
+            "DQoFYXJtaWQYByABKAUSDgoGaGFuZGlkGAggASgFIhwKDVBsYXllck1lc3Nh",
+            "Z2USCwoDbWVzGAEgASgJYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.move), global::PlayerInfo.move.Parser, new[]{ "Position", "Rotation", "Velocity", "H", "V" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.CharacterState), global::PlayerInfo.CharacterState.Parser, new[]{ "Position", "MovementX", "MovementY", "Jump", "Run", "Interact", "Roll", "Lock", "Attack", "HeavyAttack", "Crouch", "OpenUI", "OpenConsoleUI" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.vector3), global::PlayerInfo.vector3.Parser, new[]{ "X", "Y", "Z" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.ping), global::PlayerInfo.ping.Parser, new[]{ "Timer" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::PlayerInfo.Animation), global::PlayerInfo.Animation.Parser, new[]{ "Name" }, null, null, null),
@@ -313,6 +320,480 @@ namespace PlayerInfo {
 
   }
 
+  /// <summary>
+  /// 角色同步（替代 move）
+  /// </summary>
+  public sealed partial class CharacterState : pb::IMessage<CharacterState> {
+    private static readonly pb::MessageParser<CharacterState> _parser = new pb::MessageParser<CharacterState>(() => new CharacterState());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<CharacterState> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[1]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CharacterState() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CharacterState(CharacterState other) : this() {
+      Position = other.position_ != null ? other.Position.Clone() : null;
+      movementX_ = other.movementX_;
+      movementY_ = other.movementY_;
+      jump_ = other.jump_;
+      run_ = other.run_;
+      interact_ = other.interact_;
+      roll_ = other.roll_;
+      lock_ = other.lock_;
+      attack_ = other.attack_;
+      heavyAttack_ = other.heavyAttack_;
+      crouch_ = other.crouch_;
+      openUI_ = other.openUI_;
+      openConsoleUI_ = other.openConsoleUI_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public CharacterState Clone() {
+      return new CharacterState(this);
+    }
+
+    /// <summary>Field number for the "position" field.</summary>
+    public const int PositionFieldNumber = 1;
+    private global::PlayerInfo.vector3 position_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::PlayerInfo.vector3 Position {
+      get { return position_; }
+      set {
+        position_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "movementX" field.</summary>
+    public const int MovementXFieldNumber = 2;
+    private float movementX_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float MovementX {
+      get { return movementX_; }
+      set {
+        movementX_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "movementY" field.</summary>
+    public const int MovementYFieldNumber = 3;
+    private float movementY_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public float MovementY {
+      get { return movementY_; }
+      set {
+        movementY_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "jump" field.</summary>
+    public const int JumpFieldNumber = 4;
+    private bool jump_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Jump {
+      get { return jump_; }
+      set {
+        jump_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "run" field.</summary>
+    public const int RunFieldNumber = 5;
+    private bool run_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Run {
+      get { return run_; }
+      set {
+        run_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "interact" field.</summary>
+    public const int InteractFieldNumber = 6;
+    private bool interact_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Interact {
+      get { return interact_; }
+      set {
+        interact_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "roll" field.</summary>
+    public const int RollFieldNumber = 7;
+    private bool roll_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Roll {
+      get { return roll_; }
+      set {
+        roll_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "lock" field.</summary>
+    public const int LockFieldNumber = 8;
+    private bool lock_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Lock {
+      get { return lock_; }
+      set {
+        lock_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "attack" field.</summary>
+    public const int AttackFieldNumber = 9;
+    private bool attack_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Attack {
+      get { return attack_; }
+      set {
+        attack_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "heavyAttack" field.</summary>
+    public const int HeavyAttackFieldNumber = 10;
+    private bool heavyAttack_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HeavyAttack {
+      get { return heavyAttack_; }
+      set {
+        heavyAttack_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "crouch" field.</summary>
+    public const int CrouchFieldNumber = 11;
+    private bool crouch_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Crouch {
+      get { return crouch_; }
+      set {
+        crouch_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "openUI" field.</summary>
+    public const int OpenUIFieldNumber = 12;
+    private bool openUI_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool OpenUI {
+      get { return openUI_; }
+      set {
+        openUI_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "openConsoleUI" field.</summary>
+    public const int OpenConsoleUIFieldNumber = 13;
+    private bool openConsoleUI_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool OpenConsoleUI {
+      get { return openConsoleUI_; }
+      set {
+        openConsoleUI_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as CharacterState);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(CharacterState other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(Position, other.Position)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MovementX, other.MovementX)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(MovementY, other.MovementY)) return false;
+      if (Jump != other.Jump) return false;
+      if (Run != other.Run) return false;
+      if (Interact != other.Interact) return false;
+      if (Roll != other.Roll) return false;
+      if (Lock != other.Lock) return false;
+      if (Attack != other.Attack) return false;
+      if (HeavyAttack != other.HeavyAttack) return false;
+      if (Crouch != other.Crouch) return false;
+      if (OpenUI != other.OpenUI) return false;
+      if (OpenConsoleUI != other.OpenConsoleUI) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (position_ != null) hash ^= Position.GetHashCode();
+      if (MovementX != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MovementX);
+      if (MovementY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(MovementY);
+      if (Jump != false) hash ^= Jump.GetHashCode();
+      if (Run != false) hash ^= Run.GetHashCode();
+      if (Interact != false) hash ^= Interact.GetHashCode();
+      if (Roll != false) hash ^= Roll.GetHashCode();
+      if (Lock != false) hash ^= Lock.GetHashCode();
+      if (Attack != false) hash ^= Attack.GetHashCode();
+      if (HeavyAttack != false) hash ^= HeavyAttack.GetHashCode();
+      if (Crouch != false) hash ^= Crouch.GetHashCode();
+      if (OpenUI != false) hash ^= OpenUI.GetHashCode();
+      if (OpenConsoleUI != false) hash ^= OpenConsoleUI.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (position_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Position);
+      }
+      if (MovementX != 0F) {
+        output.WriteRawTag(21);
+        output.WriteFloat(MovementX);
+      }
+      if (MovementY != 0F) {
+        output.WriteRawTag(29);
+        output.WriteFloat(MovementY);
+      }
+      if (Jump != false) {
+        output.WriteRawTag(32);
+        output.WriteBool(Jump);
+      }
+      if (Run != false) {
+        output.WriteRawTag(40);
+        output.WriteBool(Run);
+      }
+      if (Interact != false) {
+        output.WriteRawTag(48);
+        output.WriteBool(Interact);
+      }
+      if (Roll != false) {
+        output.WriteRawTag(56);
+        output.WriteBool(Roll);
+      }
+      if (Lock != false) {
+        output.WriteRawTag(64);
+        output.WriteBool(Lock);
+      }
+      if (Attack != false) {
+        output.WriteRawTag(72);
+        output.WriteBool(Attack);
+      }
+      if (HeavyAttack != false) {
+        output.WriteRawTag(80);
+        output.WriteBool(HeavyAttack);
+      }
+      if (Crouch != false) {
+        output.WriteRawTag(88);
+        output.WriteBool(Crouch);
+      }
+      if (OpenUI != false) {
+        output.WriteRawTag(96);
+        output.WriteBool(OpenUI);
+      }
+      if (OpenConsoleUI != false) {
+        output.WriteRawTag(104);
+        output.WriteBool(OpenConsoleUI);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (position_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Position);
+      }
+      if (MovementX != 0F) {
+        size += 1 + 4;
+      }
+      if (MovementY != 0F) {
+        size += 1 + 4;
+      }
+      if (Jump != false) {
+        size += 1 + 1;
+      }
+      if (Run != false) {
+        size += 1 + 1;
+      }
+      if (Interact != false) {
+        size += 1 + 1;
+      }
+      if (Roll != false) {
+        size += 1 + 1;
+      }
+      if (Lock != false) {
+        size += 1 + 1;
+      }
+      if (Attack != false) {
+        size += 1 + 1;
+      }
+      if (HeavyAttack != false) {
+        size += 1 + 1;
+      }
+      if (Crouch != false) {
+        size += 1 + 1;
+      }
+      if (OpenUI != false) {
+        size += 1 + 1;
+      }
+      if (OpenConsoleUI != false) {
+        size += 1 + 1;
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(CharacterState other) {
+      if (other == null) {
+        return;
+      }
+      if (other.position_ != null) {
+        if (position_ == null) {
+          position_ = new global::PlayerInfo.vector3();
+        }
+        Position.MergeFrom(other.Position);
+      }
+      if (other.MovementX != 0F) {
+        MovementX = other.MovementX;
+      }
+      if (other.MovementY != 0F) {
+        MovementY = other.MovementY;
+      }
+      if (other.Jump != false) {
+        Jump = other.Jump;
+      }
+      if (other.Run != false) {
+        Run = other.Run;
+      }
+      if (other.Interact != false) {
+        Interact = other.Interact;
+      }
+      if (other.Roll != false) {
+        Roll = other.Roll;
+      }
+      if (other.Lock != false) {
+        Lock = other.Lock;
+      }
+      if (other.Attack != false) {
+        Attack = other.Attack;
+      }
+      if (other.HeavyAttack != false) {
+        HeavyAttack = other.HeavyAttack;
+      }
+      if (other.Crouch != false) {
+        Crouch = other.Crouch;
+      }
+      if (other.OpenUI != false) {
+        OpenUI = other.OpenUI;
+      }
+      if (other.OpenConsoleUI != false) {
+        OpenConsoleUI = other.OpenConsoleUI;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (position_ == null) {
+              position_ = new global::PlayerInfo.vector3();
+            }
+            input.ReadMessage(position_);
+            break;
+          }
+          case 21: {
+            MovementX = input.ReadFloat();
+            break;
+          }
+          case 29: {
+            MovementY = input.ReadFloat();
+            break;
+          }
+          case 32: {
+            Jump = input.ReadBool();
+            break;
+          }
+          case 40: {
+            Run = input.ReadBool();
+            break;
+          }
+          case 48: {
+            Interact = input.ReadBool();
+            break;
+          }
+          case 56: {
+            Roll = input.ReadBool();
+            break;
+          }
+          case 64: {
+            Lock = input.ReadBool();
+            break;
+          }
+          case 72: {
+            Attack = input.ReadBool();
+            break;
+          }
+          case 80: {
+            HeavyAttack = input.ReadBool();
+            break;
+          }
+          case 88: {
+            Crouch = input.ReadBool();
+            break;
+          }
+          case 96: {
+            OpenUI = input.ReadBool();
+            break;
+          }
+          case 104: {
+            OpenConsoleUI = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
   public sealed partial class vector3 : pb::IMessage<vector3> {
     private static readonly pb::MessageParser<vector3> _parser = new pb::MessageParser<vector3>(() => new vector3());
     private pb::UnknownFieldSet _unknownFields;
@@ -321,7 +802,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[1]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -506,7 +987,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[2]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[3]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -635,7 +1116,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[3]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[4]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -764,7 +1245,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[4]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[5]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -893,7 +1374,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[5]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[6]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1218,7 +1699,7 @@ namespace PlayerInfo {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[6]; }
+      get { return global::PlayerInfo.PReflection.Descriptor.MessageTypes[7]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

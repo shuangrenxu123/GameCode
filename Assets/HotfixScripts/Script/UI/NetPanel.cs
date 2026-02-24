@@ -14,12 +14,12 @@ public class NetPanel : UIWindowBase
 
     private void CloseSer()
     {
-        NetWorkManager.Instance.DisConnectServer();
+        // NetWorkManager.Instance.Client.DisConnectServer();
     }
 
     private void ConnSer()
     {
-        NetWorkManager.Instance.ConnectServer(ip.text, int.Parse(port.text));
+        // NetWorkManager.Instance.Client.ConnectServer(ip.text, int.Parse(port.text));
     }
 
     private void SetIDValue(string arg0)

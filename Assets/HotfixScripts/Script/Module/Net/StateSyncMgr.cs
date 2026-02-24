@@ -1,12 +1,12 @@
-using System.Collections.Generic;
 using Character.Player;
+using Game.Net.Entities;
 using Network;
+using Network.Tcp;
 using PlayerInfo;
 using UnityEngine;
 
 public class StateSyncMgr : MonoBehaviour
 {
-
     #region setting
     /// <summary>
     /// 当超过该值的时候会被直接拉过去
@@ -14,78 +14,26 @@ public class StateSyncMgr : MonoBehaviour
     public static readonly int MaxDisplacement = 10;
     #endregion
     public Player player;
-    public Dictionary<string, NetObj> netObjs = new();
     public GameObject prefab;
-    [HideInInspector]
-    //多久更新一次ping值，单位s
-    private float time = 1f;
-    //定时器
-    private float timer = 0;
+    TcpClient client;
+    public TcpClient Client => client;
+    private readonly NetEntityRegistry entityRegistry = new NetEntityRegistry();
+    private NetSpawner spawner;
     private void Start()
     {
-        NetWorkManager.Instance.RegisterHandle(1, SyncGameObjectState);
-        NetWorkManager.Instance.RegisterHandle(2, SyncGameObjectState);
-        NetWorkManager.Instance.RegisterHandle(0, Heartbeat);
-        NetWorkManager.Instance.RegisterHandle(4, OnClientJoined);
-    }
+        EnsureLocalPlayerReference();
+        EnsureLocalPlayerId();
+        spawner = new NetSpawner(prefab);
 
-    private void SendPlayerState(object message)
-    {
-        var package = new Login()
-        {
-            Armid = 0,
-            Bodyid = 0,
-            Handid = 0,
-            Headid = 0,
-            LeftWeaponid = 0,
-            RightWeaponid = 0,
-            Legid = 0,
-            Trousers = 0,
-        };
-        NetWorkManager.Instance.SendMessage(player.id, 4, package);
-    }
+        var a = new NetWorkManager.CreateParameters();
+        a.PackageCoderType = typeof(DefaultNetworkPackageCoder);
+        a.PackageBodyCoderType = typeof(ProtobufCoder);
 
-    private void OnClientJoined(DefaultNetWorkPackage package)
-    {
-        Debug.Log("有玩家加入了房间:" + package.SenderId);
+        client = Network.NetWorkManager.Instance.CreateTcpClient(a);
 
-        if (package.SenderId == player.id || netObjs.ContainsKey(package.SenderId))
-        {
-            return;
-        }
-
-        var go = InstantiateNetObject(package.SenderId);
-        netObjs.Add(package.SenderId, go);
-
-    }
-
-    private void Update()
-    {
-        SendPing();
-    }
-
-    void SendPing()
-    {
-        if (timer >= time && NetWorkManager.Instance.state == ENetWorkState.Connected)
-        {
-            NetWorkManager.Instance.SendMessage(player.id, 0, new ping()
-            {
-                Timer = Time.time.ToString(),
-            });
-            timer -= time;
-        }
-        else
-        {
-            timer += Time.deltaTime;
-        }
-    }
-    void Heartbeat(DefaultNetWorkPackage package)
-    {
-        if (package.SenderId == player.id)
-        {
-            SetPingValue(package);
-            return;
-        }
+        client.ConnectServer("127.0.0.1", 9000);
+        client.RegisterHandle(1, SyncGameObjectState);
+        client.RegisterHandle(2, SyncGameObjectState);
     }
     /// <summary>
     /// 同步坐标位置
@@ -93,34 +41,181 @@ public class StateSyncMgr : MonoBehaviour
     /// <param name="package"></param>
     void SyncGameObjectState(DefaultNetWorkPackage package)
     {
-        if (package.SenderId == player.id)
-            return;
-        if (netObjs.ContainsKey(package.SenderId))
+        if (package == null)
         {
-            netObjs[package.SenderId].SyncData(package);
+            return;
+        }
+
+        if (package.MsgId == 1)
+        {
+            var state = package.MsgObj as CharacterState;
+            if (state == null)
+            {
+                return;
+            }
+
+            HandleCharacterState(package.SenderId, state, package);
+            return;
+        }
+
+        if (package.MsgId == 2)
+        {
+            // 动作消息由 NetObj 内部处理
+            if (entityRegistry.TryGet(package.SenderId, out var entity))
+            {
+                var netObj = entity.GetComponent<NetObj>();
+                if (netObj != null)
+                {
+                    netObj.SyncData(package);
+                }
+            }
+        }
+    }
+    public void SendCharacterState(Vector3 position, CharacterActions actions)
+    {
+        if (client == null || client.state != ENetWorkState.Connected)
+        {
+            return;
+        }
+
+        string senderId = player != null ? player.id : "0";
+        float movementX = 0f;
+        float movementY = 0f;
+        bool jump = false;
+        bool run = false;
+        bool interact = false;
+        bool roll = false;
+        bool @lock = false;
+        bool attack = false;
+        bool heavyAttack = false;
+        bool crouch = false;
+        bool openUI = false;
+        bool openConsoleUI = false;
+
+        if (actions != null)
+        {
+            movementX = actions.movement.value.x;
+            movementY = actions.movement.value.y;
+            jump = actions.jump.value;
+            run = actions.run.value;
+            interact = actions.interact.value;
+            roll = actions.roll.value;
+            @lock = actions.@lock.value;
+            attack = actions.attack.value;
+            heavyAttack = actions.heavyAttack.value;
+            crouch = actions.crouch.value;
+            openUI = actions.OpenUI.value;
+            openConsoleUI = actions.OpenConsoleUI.value;
+        }
+
+        var message = new CharacterState
+        {
+            Position = NetWorkUtility.ToProtoBufV3(position),
+            MovementX = movementX,
+            MovementY = movementY,
+            Jump = jump,
+            Run = run,
+            Interact = interact,
+            Roll = roll,
+            Lock = @lock,
+            Attack = attack,
+            HeavyAttack = heavyAttack,
+            Crouch = crouch,
+            OpenUI = openUI,
+            OpenConsoleUI = openConsoleUI,
+        };
+
+        client.SendMessage(senderId, 1, message);
+    }
+
+    public void SimulateCharacterState(string senderId, CharacterState state)
+    {
+        if (state == null)
+        {
+            return;
+        }
+
+        HandleCharacterState(senderId, state, null);
+    }
+
+    private NetEntity SpawnEntity(string name)
+    {
+        if (spawner == null)
+        {
+            spawner = new NetSpawner(prefab);
+        }
+
+        return spawner.Spawn(name);
+    }
+
+    private void HandleCharacterState(string senderId, CharacterState state, DefaultNetWorkPackage package)
+    {
+        if (IsLocalSender(senderId))
+        {
+            return;
+        }
+
+        if (entityRegistry.TryGet(senderId, out var entity))
+        {
+            ApplyCharacterState(entity, state, package);
         }
         else
         {
-            var go = InstantiateNetObject(package.SenderId);
-            netObjs.Add(package.SenderId, go);
-
+            var newEntity = SpawnEntity(senderId);
+            if (newEntity != null)
+            {
+                entityRegistry.Register(newEntity);
+                ApplyCharacterState(newEntity, state, package);
+            }
         }
-
     }
-    private void SetPingValue(DefaultNetWorkPackage data)
+
+    private static void ApplyCharacterState(NetEntity entity, CharacterState state, DefaultNetWorkPackage package)
     {
-        var obj = data.MsgObj as ping;
-        if (obj != null)
+        if (entity == null || state == null)
         {
-            //UIManager.Instance.GetUIWindow<PingPanel>().SetPingValue((int)(timer / 2 * 1000));
             return;
         }
+
+        var netObj = entity.GetComponent<NetObj>();
+        if (netObj != null && package != null)
+        {
+            netObj.SyncData(package);
+            return;
+        }
+
+        entity.transform.position = NetWorkUtility.ToUnityV3(state.Position);
     }
-    private NetObj InstantiateNetObject(string name = "")
+
+    private bool IsLocalSender(string senderId)
     {
-        var go = Instantiate(prefab, Vector3.zero, Quaternion.identity);
-        //go.transform.GetChild(0).gameObject.GetComponent<TextMeshPro>().text = name;
-        go.GetComponent<NetObj>().id = name;
-        return go.GetComponent<NetObj>();
+        return player != null && senderId == player.id;
+    }
+
+    private void EnsureLocalPlayerReference()
+    {
+        if (player != null)
+        {
+            return;
+        }
+
+        player = Player.Instance;
+        if (player == null)
+        {
+            player = FindObjectOfType<Player>();
+        }
+    }
+
+    private void EnsureLocalPlayerId()
+    {
+        if (player == null)
+        {
+            return;
+        }
+
+        if (string.IsNullOrEmpty(player.id))
+        {
+            player.id = System.Guid.NewGuid().ToString("N");
+        }
     }
 }

@@ -152,10 +152,10 @@ namespace UIPanel.Console
 
         private void SendPlayerMessage(string mess)
         {
-            if (NetWorkManager.Instance.state == ENetWorkState.Connected)
-            {
-                NetWorkManager.Instance.SendMessage(player.id, 5, new PlayerInfo.PlayerMessage { Mes = mess });
-            }
+            // if (NetWorkManager.Instance.Client.state == ENetWorkState.Connected)
+            // {
+            //     NetWorkManager.Instance.Client.SendMessage(player.id, 5, new PlayerInfo.PlayerMessage { Mes = mess });
+            // }
 
         }
         private void GetCommandTips(string inputText)

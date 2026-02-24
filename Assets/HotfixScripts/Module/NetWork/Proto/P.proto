@@ -8,6 +8,22 @@ message move{
 	float h = 4;
 	float v = 5;
 }
+// 角色同步（替代 move）
+message CharacterState{
+	vector3 position = 1;
+	float movementX = 2;
+	float movementY = 3;
+	bool jump = 4;
+	bool run = 5;
+	bool interact = 6;
+	bool roll = 7;
+	bool lock = 8;
+	bool attack = 9;
+	bool heavyAttack = 10;
+	bool crouch = 11;
+	bool openUI = 12;
+	bool openConsoleUI = 13;
+}
 message vector3{
 	float x=1;
 	float y=2;

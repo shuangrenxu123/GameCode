@@ -51,19 +51,26 @@ public class NetObj : MonoBehaviour
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
-        var state = (move)arg0.MsgObj;
+        var state = arg0.MsgObj as CharacterState;
         if (state != null)
         {
             syncDelta = Time.time - lastMotionState.lastMotionTime;
             lastMotionState.lastMotionTime = Time.time;
-            targetPosition = NetWorkUtility.ToUnityV3(state.Position) + NetWorkUtility.ToUnityV3(state.Velocity) * syncDelta;
+            targetPosition = NetWorkUtility.ToUnityV3(state.Position);
             startPosition = transform.position;
             smoothTick = syncDelta;
-            tartgetRotation = Quaternion.Euler(NetWorkUtility.ToUnityV3(state.Rotation));
-            lastMove = new Vector2(state.V, state.H);
-            currentAnimator.State.Parameter = state.V;
+            tartgetRotation = transform.rotation;
+            lastMove = new Vector2(state.MovementX, state.MovementY);
+            currentAnimator.State.Parameter = state.MovementY;
 
-            velocity = (targetPosition - startPosition) / smoothTick;
+            if (smoothTick > 0f)
+            {
+                velocity = (targetPosition - startPosition) / smoothTick;
+            }
+            else
+            {
+                velocity = Vector3.zero;
+            }
         }
     }
     private void SyncOtherAnim(DefaultNetWorkPackage arg0)

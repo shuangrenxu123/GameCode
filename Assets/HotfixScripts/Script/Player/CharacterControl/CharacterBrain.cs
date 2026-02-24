@@ -6,7 +6,8 @@ namespace CharacterController
     public enum BrainType
     {
         Player,
-        AI
+        AI,
+        Network,
     }
 
     public class CharacterBrain : MonoBehaviour
@@ -17,18 +18,24 @@ namespace CharacterController
         public UpdateModeType UpdateMode = UpdateModeType.FixedUpdate;
 
         bool isAI => brainType == BrainType.AI;
-        [SerializeField, ShowIf("@isAI==false")]
+        bool isNetwork => brainType == BrainType.Network;
+        bool isPlayer => brainType == BrainType.Player;
+
+        [SerializeField, ShowIf("@isPlayer")]
         InputHandlerSettings inputHandlerSettings = new InputHandlerSettings();
 
-        [SerializeField, ShowIf("@isAI==false")]
+        [SerializeField, ShowIf("@isPlayer")]
         InputHandlerSettings UIinputHandlerSettings = new InputHandlerSettings();
 
-        [ShowIf("@isAI==false")]
+        [ShowIf("@isPlayer")]
 
         public InputHandlerSettings CameraInputHandlerSettings = new InputHandlerSettings();
 
         [SerializeField, ShowIf("isAI")]
         GameObject entityBraidGo;
+
+        [SerializeField, ShowIf("isNetwork")]
+        NetCharacterInput netCharacterInput;
 
         IEnemyBrain aiBehaviour = null;
 
@@ -57,7 +64,7 @@ namespace CharacterController
 
         void UpdateHumanBrainValues(float dt)
         {
-            if (IsUIInput)
+            if (IsUIInput && !isNetwork)
             {
                 characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
                 characterUIActions.Update(dt);
@@ -67,6 +74,14 @@ namespace CharacterController
                 if (isAI && aiBehaviour != null)
                 {
                     characterActions.SetValues(aiBehaviour.characterActions);
+                }
+                else if (isNetwork && netCharacterInput != null)
+                {
+                    characterActions.SetValues(netCharacterInput.CharacterActions);
+                }
+                else if (isNetwork)
+                {
+                    characterActions.ForceReset();
                 }
                 else
                 {
@@ -80,6 +95,11 @@ namespace CharacterController
 
         public void EnableUIInput()
         {
+            if (isNetwork)
+            {
+                return;
+            }
+
             if (IsUIInput)
             {
                 return;
@@ -94,6 +114,11 @@ namespace CharacterController
         }
         public void DisableUIInput()
         {
+            if (isNetwork)
+            {
+                return;
+            }
+
             if (!IsUIInput)
             {
                 return;
