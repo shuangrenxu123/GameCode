@@ -84,6 +84,17 @@ public class ByteBuffer
         return readerIndex;
     }
     /// <summary>
+    /// 设置读取位置
+    /// </summary>
+    public void SetReaderIndex(int index)
+    {
+        if (index < 0 || index > writerIndex)
+        {
+            throw new IndexOutOfRangeException();
+        }
+        readerIndex = index;
+    }
+    /// <summary>
     /// 剩余的读取量
     /// </summary>
     /// <returns></returns>

@@ -114,18 +114,39 @@ namespace Network.Tcp
         }
         private void UpdateSending()
         {
-            if (sendQueue.Count > 0)
+            bool hasPacket;
+            lock (sendQueue)
+            {
+                hasPacket = sendQueue.Count > 0;
+            }
+
+            if (hasPacket)
             {
                 //清空缓存
                 sendBuffer.Clear();
                 //合并数据一起发送
-                while (sendQueue.Count > 0 && !isSending)
+                while (!isSending)
                 {
                     isSending = true;
                     if (sendBuffer.WriteBytes() < packageMaxSize)
+                    {
+                        isSending = false;
                         break;
+                    }
 
-                    object packet = sendQueue.Dequeue();//取出一个对象
+                    object packet = null;
+                    lock (sendQueue)
+                    {
+                        if (sendQueue.Count > 0)
+                        {
+                            packet = sendQueue.Dequeue();//取出一个对象
+                        }
+                    }
+                    if (packet == null)
+                    {
+                        isSending = false;
+                        break;
+                    }
                     packageCoder.EnCode(sendBuffer, packet);//编码并添加到发送数组中
                     sendArgs.SetBuffer(0, sendBuffer.ReadableBytes());//设置缓冲区，0为开始处的位置，后面的参数为可接受的最大数据量
 
@@ -186,13 +207,16 @@ namespace Network.Tcp
                 //判断能否写入待解码缓冲区
                 if (!decodeBuffer.CanWriteable(e.BytesTransferred))
                 {
+                    UnityEngine.Debug.LogWarning("接收缓冲区不足，丢弃本次接收数据");
+                    decodeBuffer.Clear();
+                    isReceive = false;
                     return;
                 }
                 decodeBuffer.WriteBytes(e.Buffer, 0, e.BytesTransferred);//将socket中收到的数据传入到待解码的缓冲区
                 decodeTempList.Clear();//清空临时缓冲列表
                 packageCoder.Decode(decodeBuffer, decodeTempList);//将接受到的数据解码并存到解码临时列表中
 
-                lock (receiveArgs)//接收到的信息
+                lock (receiveQueue)//接收到的信息
                 {
                     for (int i = 0; i < decodeTempList.Count; i++)
                     {
@@ -202,7 +226,9 @@ namespace Network.Tcp
                 //解码完成后等待接收下次的数据
                 e.SetBuffer(0, receiveBuffer.Length);
                 isReceive = false;
+                return;
             }
+            isReceive = false;
         }
         /// <summary>
         /// 消息发送完成时
@@ -219,6 +245,7 @@ namespace Network.Tcp
             else
             {
                 UnityEngine.Debug.LogError("发送信息失败");
+                isSending = false;
             }
         }
         /// <summary>

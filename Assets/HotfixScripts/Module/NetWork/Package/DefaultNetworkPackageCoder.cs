@@ -65,6 +65,7 @@ namespace Network
             if (package.MsgObj == null)
             {
                 Debug.LogError("消息为null");
+                ReferenceManager.Instance.Release(package);
                 return;
             }
             //获得包体数据
@@ -72,6 +73,7 @@ namespace Network
             bytes = _packageCoder.EnCode(package.MsgObj);
             if (bytes.Length > PackageBodyMaxSize)
             {
+                ReferenceManager.Instance.Release(package);
                 return;
             }
             //包长，这里只是计算，并未写入
@@ -92,6 +94,7 @@ namespace Network
                 if (package.MsgId > ushort.MaxValue)
                 {
                     Debug.LogError("消息id超出");
+                    ReferenceManager.Instance.Release(package);
                     return;
                 }
                 sendBuffer.WriteUshort((ushort)package.MsgId);
@@ -119,6 +122,7 @@ namespace Network
                 //(int)PackageSizeFieldType = 4字节
                 if (receiveBuffer.ReadableBytes() < (int)PackageSizeFieldType)
                     break;
+                int readerIndex = receiveBuffer.ReaderIndex();
                 int packageSize;
                 if (PackageSizeFieldType == EPackageSizeFieldType.UShort)
                     packageSize = receiveBuffer.ReadUshort();
@@ -127,6 +131,7 @@ namespace Network
 
                 if (receiveBuffer.ReadableBytes() < packageSize)
                 {
+                    receiveBuffer.SetReaderIndex(readerIndex);
                     break;//退出然后读够了数据再解包
                 }
                 var packager = ReferenceManager.Instance.Spawn<DefaultNetWorkPackage>();
@@ -146,6 +151,7 @@ namespace Network
                 if (bodySize > PackageBodyMaxSize)
                 {
                     Debug.LogError("包太长了");
+                    ReferenceManager.Instance.Release(packager);
                     break;
                 }
                 try
@@ -163,16 +169,19 @@ namespace Network
                         else
                         {
                             Debug.LogError("解码失败");
+                            ReferenceManager.Instance.Release(packager);
                         }
                     }
                     else
                     {
                         Debug.LogError("没有注册相关类型");
+                        ReferenceManager.Instance.Release(packager);
                     }
                 }
                 catch (System.Exception e)
                 {
                     Debug.LogError(e);
+                    ReferenceManager.Instance.Release(packager);
                     throw;
                 }
             }
