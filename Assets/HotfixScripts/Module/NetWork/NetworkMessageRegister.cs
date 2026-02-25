@@ -20,7 +20,6 @@ namespace Network
         {
             RegisterMessageType(0, typeof(PlayerInfo.ping));
             RegisterMessageType(1, typeof(PlayerInfo.CharacterState));
-            RegisterMessageType(2, typeof(PlayerInfo.Action));
             RegisterMessageType(4, typeof(PlayerInfo.Login));
             RegisterMessageType(5, typeof(PlayerInfo.PlayerMessage));
         }

@@ -23,8 +23,12 @@ namespace Game.Net.Sync
         [SerializeField]
         private bool applyLocal = true;
 
+        [SerializeField]
+        private float sendInterval = 0.1f;
+
         private bool active;
         private Vector3 simulatedPosition;
+        private float nextSendTime;
 
         private void Update()
         {
@@ -59,6 +63,7 @@ namespace Game.Net.Sync
             if (active)
             {
                 simulatedPosition = transform.position + spawnOffset;
+                nextSendTime = Time.unscaledTime;
                 SendSimulatedState(Vector2.zero);
             }
         }
@@ -112,6 +117,12 @@ namespace Game.Net.Sync
                 stateSyncMgr.SimulateCharacterState(simulatedId, state);
             }
 
+            if (sendInterval > 0f && Time.unscaledTime < nextSendTime)
+            {
+                return;
+            }
+
+            nextSendTime = Time.unscaledTime + sendInterval;
             TcpClient client = stateSyncMgr.Client;
             if (client != null && client.state == ENetWorkState.Connected)
             {

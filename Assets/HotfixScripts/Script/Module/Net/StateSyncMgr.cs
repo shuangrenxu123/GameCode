@@ -33,8 +33,8 @@ public class StateSyncMgr : MonoBehaviour
 
         client.ConnectServer("127.0.0.1", 9000);
         client.RegisterHandle(1, SyncGameObjectState);
-        client.RegisterHandle(2, SyncGameObjectState);
     }
+
     /// <summary>
     /// 同步坐标位置
     /// </summary>
@@ -58,18 +58,6 @@ public class StateSyncMgr : MonoBehaviour
             return;
         }
 
-        if (package.MsgId == 2)
-        {
-            // 动作消息由 NetObj 内部处理
-            if (entityRegistry.TryGet(package.SenderId, out var entity))
-            {
-                var netObj = entity.GetComponent<NetObj>();
-                if (netObj != null)
-                {
-                    netObj.SyncData(package);
-                }
-            }
-        }
     }
     public void SendCharacterState(Vector3 position, CharacterActions actions)
     {

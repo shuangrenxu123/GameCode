@@ -19,12 +19,20 @@ namespace Game.Net.Sync
         [SerializeField, Min(0.02f)]
         private float sendInterval = 0.05f;
 
+        [SerializeField]
+        private bool sendImmediateOnAttackStarted = true;
+
+        [SerializeField]
+        private bool sendImmediateOnHeavyAttackStarted = true;
+
         private float nextSendTime;
+        private int lastSendFrame = -1;
 
         private void OnEnable()
         {
             ResolveReferences();
             nextSendTime = Time.time;
+            lastSendFrame = -1;
         }
 
         private void Update()
@@ -38,12 +46,22 @@ namespace Game.Net.Sync
                 }
             }
 
-            if (Time.time < nextSendTime)
+            var actions = characterBrain != null ? characterBrain.CharacterActions : null;
+            bool immediateSend = ShouldSendImmediately(actions);
+            bool intervalDue = Time.time >= nextSendTime;
+            if (!immediateSend && !intervalDue)
             {
                 return;
             }
 
-            SendTransform();
+            // 同一帧只发一次，避免“定时发送+立即发送”重入导致重复发包。
+            if (lastSendFrame == Time.frameCount)
+            {
+                return;
+            }
+
+            SendTransform(actions);
+            lastSendFrame = Time.frameCount;
             float interval = sendInterval > 0f ? sendInterval : 0.05f;
             nextSendTime = Time.time + interval;
         }
@@ -83,10 +101,29 @@ namespace Game.Net.Sync
             }
         }
 
-        private void SendTransform()
+        private bool ShouldSendImmediately(CharacterActions actions)
+        {
+            if (actions == null)
+            {
+                return false;
+            }
+
+            if (sendImmediateOnAttackStarted && actions.attack.Started)
+            {
+                return true;
+            }
+
+            if (sendImmediateOnHeavyAttackStarted && actions.heavyAttack.Started)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void SendTransform(CharacterActions actions)
         {
             var target = transform;
-            var actions = characterBrain != null ? characterBrain.CharacterActions : null;
             stateSyncMgr.SendCharacterState(target.position, actions);
         }
     }

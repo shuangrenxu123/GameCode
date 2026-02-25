@@ -1,23 +1,31 @@
 using Animancer;
-using Character.Player;
 using PlayerInfo;
 using UnityEngine;
 
 public class NetObj : MonoBehaviour
 {
     public string id;
-    MotionState lastMotionState;
-    [HideInInspector]
-    private float syncDelta = 1;
-    private float smoothTick;
+
+    [Header("网络位置纠偏")]
+    [SerializeField, Min(0f)]
+    private float interpolationThresholdA = 0.35f;
+
+    [SerializeField, Min(0f)]
+    private float teleportThresholdB = 3f;
+
+    [SerializeField, Min(0.01f)]
+    private float interpolationDuration = 0.12f;
+
+    [SerializeField]
+    private bool clearVelocityWhenTeleport = true;
+
+    private bool isInterpolating;
+    private float interpolationTimer;
+    private Vector3 interpolationStartPosition = Vector3.zero;
+    private Vector3 interpolationTargetPosition = Vector3.zero;
+    private PhysicsActor physicsActor;
+
     #region movement
-    Vector3 targetPosition = Vector3.zero;
-    Vector3 startPosition = Vector3.zero;
-
-    Quaternion tartgetRotation;
-    Quaternion startRotation;
-
-    Vector3 velocity = Vector3.zero;
     Vector2 lastMove = Vector2.zero;
     #endregion
 
@@ -29,10 +37,14 @@ public class NetObj : MonoBehaviour
     CCAnimatorConfig config;
 
     #endregion
+
+    private void Awake()
+    {
+        physicsActor = GetComponentInParent<PhysicsActor>();
+    }
+
     private void Start()
     {
-        lastMotionState = new MotionState();
-        lastMotionState.lastMotionTime = float.MinValue;
         animacer = new AnimatorHelper(GetComponentInChildren<AnimancerComponent>());
         currentAnimator = config.linearMixerAnimators["NormalMove"];
         animacer.Play(currentAnimator);
@@ -43,73 +55,116 @@ public class NetObj : MonoBehaviour
         {
             SyncPostion(data);
         }
-        ///相关的动画事件，如后滚之类的
-        else if (data.MsgId == 2)
-        {
-            SyncOtherAnim(data);
-        }
     }
     private void SyncPostion(DefaultNetWorkPackage arg0)
     {
         var state = arg0.MsgObj as CharacterState;
-        if (state != null)
+        if (state == null)
         {
-            syncDelta = Time.time - lastMotionState.lastMotionTime;
-            lastMotionState.lastMotionTime = Time.time;
-            targetPosition = NetWorkUtility.ToUnityV3(state.Position);
-            startPosition = transform.position;
-            smoothTick = syncDelta;
-            tartgetRotation = transform.rotation;
-            lastMove = new Vector2(state.MovementX, state.MovementY);
-            currentAnimator.State.Parameter = state.MovementY;
-
-            if (smoothTick > 0f)
-            {
-                velocity = (targetPosition - startPosition) / smoothTick;
-            }
-            else
-            {
-                velocity = Vector3.zero;
-            }
+            return;
         }
-    }
-    private void SyncOtherAnim(DefaultNetWorkPackage arg0)
-    {
-        var animName = (Action)arg0.MsgObj;
-        if (animName != null)
+
+        lastMove = new Vector2(state.MovementX, state.MovementY);
+        currentAnimator.State.Parameter = state.MovementY;
+
+        Vector3 netPosition = NetWorkUtility.ToUnityV3(state.Position);
+        float distance = Vector3.Distance(GetCurrentPosition(), netPosition);
+        float interpolationThreshold = Mathf.Max(0f, interpolationThresholdA);
+        float teleportThreshold = Mathf.Max(interpolationThreshold, teleportThresholdB);
+
+        if (distance > teleportThreshold)
         {
-            animacer.Play(config.clipAnimators[animName.Actionname]);
+            TeleportTo(netPosition);
+            return;
+        }
+
+        if (distance > interpolationThreshold)
+        {
+            BeginInterpolation(netPosition);
+        }
+        else
+        {
+            StopInterpolation();
         }
     }
     private void Update()
     {
-        if (smoothTick > 0)
+        if (!isInterpolating)
         {
-            if ((targetPosition - startPosition).magnitude > StateSyncMgr.MaxDisplacement)
-            {
-                smoothTick = 0;
-                transform.SetPositionAndRotation(targetPosition, tartgetRotation);
-                velocity = Vector3.zero;
-                return;
-            }
-            float timer = Time.deltaTime / smoothTick;
-
-            transform.SetPositionAndRotation(Vector3.Lerp(startPosition, targetPosition, timer), Quaternion.Slerp(startRotation, tartgetRotation, timer));
-
-            smoothTick -= Time.deltaTime;
+            return;
         }
-        else
+
+        interpolationTimer += Time.deltaTime;
+        float duration = Mathf.Max(0.01f, interpolationDuration);
+        float t = Mathf.Clamp01(interpolationTimer / duration);
+        SetCurrentPosition(Vector3.Lerp(interpolationStartPosition, interpolationTargetPosition, t));
+
+        if (t >= 1f)
         {
-            transform.position += velocity * Time.deltaTime;
+            StopInterpolation();
         }
     }
 
     private void Reset()
     {
-        startPosition = targetPosition = Vector3.zero;
-        startRotation = tartgetRotation = Quaternion.identity;
-        smoothTick = 0;
+        interpolationStartPosition = interpolationTargetPosition = Vector3.zero;
+        interpolationTimer = 0f;
+        isInterpolating = false;
+    }
 
+    private void OnValidate()
+    {
+        if (teleportThresholdB < interpolationThresholdA)
+        {
+            teleportThresholdB = interpolationThresholdA;
+        }
+    }
+
+    private Vector3 GetCurrentPosition()
+    {
+        return physicsActor != null ? physicsActor.Position : transform.position;
+    }
+
+    private void SetCurrentPosition(Vector3 position)
+    {
+        if (physicsActor != null)
+        {
+            physicsActor.Position = position;
+            return;
+        }
+
+        transform.position = position;
+    }
+
+    private void BeginInterpolation(Vector3 targetPosition)
+    {
+        interpolationStartPosition = GetCurrentPosition();
+        interpolationTargetPosition = targetPosition;
+        interpolationTimer = 0f;
+        isInterpolating = true;
+    }
+
+    private void StopInterpolation()
+    {
+        isInterpolating = false;
+        interpolationTimer = 0f;
+    }
+
+    private void TeleportTo(Vector3 targetPosition)
+    {
+        StopInterpolation();
+
+        if (physicsActor != null)
+        {
+            physicsActor.Teleport(targetPosition, transform.rotation);
+            if (clearVelocityWhenTeleport)
+            {
+                physicsActor.Velocity = Vector3.zero;
+            }
+            return;
+        }
+
+        transform.position = targetPosition;
     }
 
 }

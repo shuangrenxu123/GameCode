@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using UnityEngine;
 
 namespace Network.Tcp
 {
@@ -190,8 +191,6 @@ namespace Network.Tcp
                 if (!decodeBuffer.CanWriteable(e.BytesTransferred))
                 {
                     UnityEngine.Debug.LogWarning("接收缓冲区不足，丢弃本次接收数据");
-                    decodeBuffer.Clear();
-                    isReceive = false;
                     return;
                 }
                 decodeBuffer.WriteBytes(e.Buffer, 0, e.BytesTransferred);//将socket中收到的数据传入到待解码的缓冲区
@@ -207,10 +206,13 @@ namespace Network.Tcp
                 }
                 //解码完成后等待接收下次的数据
                 e.SetBuffer(0, receiveBuffer.Length);
-                isReceive = false;
-                return;
+
+                bool willRaiseEvent = socket.ReceiveAsync(e);
+                if (!willRaiseEvent)
+                {
+                    ProcessReceive(e);
+                }
             }
-            isReceive = false;
         }
         /// <summary>
         /// 消息发送完成时
