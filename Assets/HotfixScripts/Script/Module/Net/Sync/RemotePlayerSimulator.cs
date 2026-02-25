@@ -53,8 +53,11 @@ namespace Game.Net.Sync
                 movement.Normalize();
             }
 
+            bool attackPressed = Input.GetKeyDown(KeyCode.Alpha2);
+            bool jumpPressed = Input.GetKeyDown(KeyCode.Alpha3);
+
             simulatedPosition += new Vector3(movement.x, 0f, movement.y) * moveSpeed * Time.deltaTime;
-            SendSimulatedState(movement);
+            SendSimulatedState(movement, jumpPressed, attackPressed);
         }
 
         private void ToggleSimulation()
@@ -64,7 +67,7 @@ namespace Game.Net.Sync
             {
                 simulatedPosition = transform.position + spawnOffset;
                 nextSendTime = Time.unscaledTime;
-                SendSimulatedState(Vector2.zero);
+                SendSimulatedState(Vector2.zero, false, false);
             }
         }
 
@@ -93,19 +96,19 @@ namespace Game.Net.Sync
             return new Vector2(x, y);
         }
 
-        private void SendSimulatedState(Vector2 movement)
+        private void SendSimulatedState(Vector2 movement, bool jump, bool attack)
         {
             var state = new CharacterState
             {
                 Position = NetWorkUtility.ToProtoBufV3(simulatedPosition),
                 MovementX = movement.x,
                 MovementY = movement.y,
-                Jump = false,
+                Jump = jump,
                 Run = false,
                 Interact = false,
                 Roll = false,
                 Lock = false,
-                Attack = false,
+                Attack = attack,
                 HeavyAttack = false,
                 Crouch = false,
                 OpenUI = false,
@@ -117,7 +120,8 @@ namespace Game.Net.Sync
                 stateSyncMgr.SimulateCharacterState(simulatedId, state);
             }
 
-            if (sendInterval > 0f && Time.unscaledTime < nextSendTime)
+            bool forceSend = jump || attack;
+            if (sendInterval > 0f && !forceSend && Time.unscaledTime < nextSendTime)
             {
                 return;
             }
