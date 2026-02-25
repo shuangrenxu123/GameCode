@@ -114,47 +114,29 @@ namespace Network.Tcp
         }
         private void UpdateSending()
         {
-            bool hasPacket;
-            lock (sendQueue)
-            {
-                hasPacket = sendQueue.Count > 0;
-            }
-
-            if (hasPacket)
+            if (sendQueue.Count > 0)
             {
                 //清空缓存
                 sendBuffer.Clear();
                 //合并数据一起发送
-                while (!isSending)
+                while (sendQueue.Count > 0 && !isSending)
                 {
                     isSending = true;
                     if (sendBuffer.WriteBytes() < packageMaxSize)
-                    {
-                        isSending = false;
-                        break;
-                    }
 
-                    object packet = null;
-                    lock (sendQueue)
-                    {
-                        if (sendQueue.Count > 0)
-                        {
-                            packet = sendQueue.Dequeue();//取出一个对象
-                        }
-                    }
-                    if (packet == null)
-                    {
-                        isSending = false;
+
                         break;
-                    }
+
+                    object packet = sendQueue.Dequeue();//取出一个对象
+
+
                     packageCoder.EnCode(sendBuffer, packet);//编码并添加到发送数组中
-                    sendArgs.SetBuffer(0, sendBuffer.ReadableBytes());//设置缓冲区，0为开始处的位置，后面的参数为可接受的最大数据量
-
-
-                    bool willRaiseEvent = socket.SendAsync(sendArgs);
-                    if (!willRaiseEvent)
-                        ProcessSend(sendArgs);
                 }
+
+                sendArgs.SetBuffer(0, sendBuffer.ReadableBytes());//设置缓冲区，0为开始处的位置，后面的参数为可接受的最大数据量
+                bool willRaiseEvent = socket.SendAsync(sendArgs);
+                if (!willRaiseEvent)
+                    ProcessSend(sendArgs);
             }
         }
         private void UpdateReceiving()
