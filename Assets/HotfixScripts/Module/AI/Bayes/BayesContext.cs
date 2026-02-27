@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Bayes
 {
-    public sealed class BayesContext : IBayesContext, IBayesQuery, IBayesUpdate
+    public sealed class BayesContext
     {
         private sealed class VariableDef
         {
@@ -38,11 +38,14 @@ namespace Bayes
         private List<string> _topoOrder = new List<string>();
         private bool _topoDirty = true;
 
+        /// <summary>
+        /// 创建一个新的贝叶斯上下文实例。
+        /// </summary>
         public static BayesContext Create() => new BayesContext();
 
-        public IBayesQuery Query => this;
-        public IBayesUpdate Update => this;
-
+        /// <summary>
+        /// 定义离散变量及其取值集合，并在网络中创建对应节点。
+        /// </summary>
         public void DefineVariable(string name, IReadOnlyList<string> values)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -81,6 +84,9 @@ namespace Bayes
             _topoDirty = true;
         }
 
+        /// <summary>
+        /// 为无父节点变量设置先验分布。
+        /// </summary>
         public void SetPrior(string varName, Distribution prior)
         {
             var def = GetVariable(varName);
@@ -100,6 +106,9 @@ namespace Bayes
             node.Conditional = null;
         }
 
+        /// <summary>
+        /// 为子节点设置父节点列表和条件概率表(CPT)。
+        /// </summary>
         public void SetConditional(string childVar, IReadOnlyList<string> parentVars, Cpt table)
         {
             var childDef = GetVariable(childVar);
@@ -145,6 +154,9 @@ namespace Bayes
             _topoDirty = true;
         }
 
+        /// <summary>
+        /// 根据样本统计更新网络参数，可选加法平滑。
+        /// </summary>
         public void FitFromSamples(IEnumerable<Sample> samples, float smoothing = 0f)
         {
             if (samples == null)
@@ -268,6 +280,9 @@ namespace Bayes
             _topoDirty = true;
         }
 
+        /// <summary>
+        /// 查询目标变量在证据条件下取某个值的后验概率。
+        /// </summary>
         public float Probability(string targetVar, string targetValue, EvidenceSet evidence)
         {
             var dist = Marginal(targetVar, evidence);
@@ -278,6 +293,9 @@ namespace Bayes
             return p;
         }
 
+        /// <summary>
+        /// 查询目标变量在证据条件下的后验分布。
+        /// </summary>
         public Distribution Marginal(string targetVar, EvidenceSet evidence)
         {
             var targetDef = GetVariable(targetVar);
@@ -324,6 +342,9 @@ namespace Bayes
             return new Distribution(result, normalize: false);
         }
 
+        /// <summary>
+        /// 查询目标变量在证据条件下的最大后验(MAP)取值。
+        /// </summary>
         public string MAP(string targetVar, EvidenceSet evidence)
         {
             var dist = Marginal(targetVar, evidence);
@@ -340,6 +361,9 @@ namespace Bayes
             return bestValue;
         }
 
+        /// <summary>
+        /// 获取变量定义并做存在性校验。
+        /// </summary>
         private VariableDef GetVariable(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -353,6 +377,9 @@ namespace Bayes
             return def;
         }
 
+        /// <summary>
+        /// 校验所有节点是否已具备推理所需参数（先验或条件分布）。
+        /// </summary>
         private void ValidateReady()
         {
             foreach (var kv in _nodes)
@@ -375,6 +402,9 @@ namespace Bayes
             }
         }
 
+        /// <summary>
+        /// 校验分布是否与变量取值域一致。
+        /// </summary>
         private void ValidateDistribution(VariableDef def, Distribution dist)
         {
             if (dist.Values.Count != def.Values.Count)
@@ -391,6 +421,9 @@ namespace Bayes
             }
         }
 
+        /// <summary>
+        /// 校验条件概率表结构、父节点集合和取值合法性。
+        /// </summary>
         private void ValidateCpt(VariableDef childDef, IReadOnlyList<string> parents, Cpt cpt)
         {
             foreach (var kv in cpt.Table)
@@ -432,6 +465,9 @@ namespace Bayes
             }
         }
 
+        /// <summary>
+        /// 按父子依赖关系构建拓扑序，并检测是否存在环。
+        /// </summary>
         private void EnsureTopologicalOrder()
         {
             if (!_topoDirty)
@@ -494,6 +530,9 @@ namespace Bayes
             _topoDirty = false;
         }
 
+        /// <summary>
+        /// 构建并校验证据映射。
+        /// </summary>
         private Dictionary<string, string> BuildEvidenceMap(EvidenceSet evidence)
         {
             var map = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -518,6 +557,9 @@ namespace Bayes
             return map;
         }
 
+        /// <summary>
+        /// 依据拓扑序执行枚举推理。
+        /// </summary>
         private double EnumerateAll(int index, List<string> order, Dictionary<string, string> assignment)
         {
             if (index >= order.Count)
@@ -545,6 +587,9 @@ namespace Bayes
             return sum;
         }
 
+        /// <summary>
+        /// 读取节点的局部概率：先验或对应父组合下的条件概率。
+        /// </summary>
         private double GetLocalProbability(string varName, string value, Dictionary<string, string> assignment)
         {
             var node = _nodes[varName];
@@ -582,6 +627,9 @@ namespace Bayes
             return GetValueProbability(dist, value, varName);
         }
 
+        /// <summary>
+        /// 从分布中读取指定取值概率。
+        /// </summary>
         private float GetValueProbability(Distribution dist, string value, string varName)
         {
             if (!dist.Values.TryGetValue(value, out var p))
@@ -591,6 +639,9 @@ namespace Bayes
             return p;
         }
 
+        /// <summary>
+        /// 生成父节点所有取值组合键。
+        /// </summary>
         private List<ParentsKey> BuildParentKeys(List<string> parents)
         {
             if (parents == null || parents.Count == 0)
@@ -604,6 +655,9 @@ namespace Bayes
             return result;
         }
 
+        /// <summary>
+        /// 递归展开父节点笛卡尔积以生成组合键。
+        /// </summary>
         private void BuildParentKeysRecursive(int index, List<string> parents, (string Var, string Value)[] buffer, List<ParentsKey> result)
         {
             if (index >= parents.Count)
@@ -621,6 +675,9 @@ namespace Bayes
             }
         }
 
+        /// <summary>
+        /// 根据计数构建概率分布；无有效计数时回退到已有分布或均匀分布。
+        /// </summary>
         private Distribution BuildDistribution(VariableDef def, float[] counts, float smoothing, Distribution fallback)
         {
             int valueCount = def.Values.Count;
