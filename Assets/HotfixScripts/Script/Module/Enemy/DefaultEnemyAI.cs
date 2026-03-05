@@ -4,10 +4,8 @@ using Character.AI.Sensor;
 using Character.Controller;
 using Character.Player;
 using CharacterController;
-using Enemy.AI.Utility;
 using Fight;
 using UnityEngine;
-using UtilityAI;
 
 namespace Enemy.AI
 {
@@ -20,9 +18,6 @@ namespace Enemy.AI
 
         [SerializeField]
         SensorManager sensorManager;
-
-        [SerializeField]
-        EnemyPerceptionSensor perceptionSensor;
 
         [SerializeField]
         NPCStateMgr npcStateMgr;
@@ -109,8 +104,6 @@ namespace Enemy.AI
             npcStateMgr?.SetStateMachineData("aiBlackboard", database);
 
             SetupSensors();
-            SetupUtilityAI();
-            UpdateSensorSnapshot();
 
             // 创建行为树大脑
             behaviorTree = new EnemyBT();
@@ -133,8 +126,6 @@ namespace Enemy.AI
                 return;
             }
 
-            UpdateSensorSnapshot();
-
             // 执行行为树逻辑
             behaviorTree?.Update();
         }
@@ -146,7 +137,7 @@ namespace Enemy.AI
         {
             // 清理资源
             behaviorTree = null;
-            utilityBrain?.Stop();
+            // utilityBrain?.Stop();
         }
 
         void SetupSensors()
@@ -157,98 +148,6 @@ namespace Enemy.AI
             }
 
             sensorManager?.BindBlackboard(database);
-
-            if (perceptionSensor == null)
-            {
-                perceptionSensor = sensorManager?.GetComponentInChildren<EnemyPerceptionSensor>();
-            }
-
-            if (perceptionSensor != null && player != null)
-            {
-                perceptionSensor.AssignTarget(player.transform);
-                perceptionSensor.ConfigureRange(detectionRange);
-                perceptionSensor.ForceSample();
-            }
-        }
-
-        void SetupUtilityAI()
-        {
-            if (body == null || _characterBrain == null)
-            {
-                Debug.LogWarning("Utility AI setup skipped because body or character brain is missing.", this);
-                return;
-            }
-
-            var playerVisibleKey = CreateKey<bool>(EnemyAIDatabaseKey.PlayerVisible);
-            var playerDistanceKey = CreateKey<float>(EnemyAIDatabaseKey.PlayerDistance);
-            var combatEntityKey = CreateKey<CombatEntity>(EnemyAIDatabaseKey.CombatEntity);
-
-            utilityBrain = new UtilityBrain(database)
-            {
-                DecisionInterval = utilityDecisionInterval,
-                AllowInterrupt = allowUtilityInterrupt,
-                InterruptThreshold = interruptThreshold
-            };
-
-            // 1. Patrol (Default behavior)
-            // Weight: 0.3
-            // Condition: Player NOT visible
-            var patrolOption = new Option("Patrol")
-            {
-                baseWeight = 0.3f
-            };
-            patrolOption.AddConsideration(new BoolConsideration("NoEnemy", playerVisibleKey, false));
-
-            // 2. Chase
-            // Weight: 0.5
-            // Condition: Player Visible AND Far
-            var chaseOption = new Option("Chase")
-            {
-                baseWeight = 0.5f
-            };
-            chaseOption
-                .AddConsideration(new BoolConsideration("HasEnemy", playerVisibleKey, true))
-                .AddConsideration(new PlayerDistanceConsideration("PlayerFar", playerDistanceKey, attackRange, false));
-
-            // 3. Attack (Aggressive)
-            // Weight: 0.7 (Base) -> Boosted by Low Health
-            // Condition: Player Visible AND Close
-            var attackOption = new Option("Attack")
-            {
-                baseWeight = 0.7f
-            };
-            attackOption
-                .AddConsideration(new BoolConsideration("HasEnemy", playerVisibleKey, true))
-                .AddConsideration(new PlayerDistanceConsideration("PlayerClose", playerDistanceKey, attackRange, true))
-                // Aggressive: Health lower -> Score higher
-                // Curve: Linear, Slope -0.5, Offset 1.0 => 1.0 at 0 health, 0.5 at 1 health
-                .AddConsideration(new CombatEntityHealthConsideration("Aggression", combatEntityKey,
-                    new ResponseCurve { curveType = CurveType.Linear, slope = -0.5f, yOffset = 1.0f }));
-
-            utilityBrain.AddOption(patrolOption);
-            utilityBrain.AddOption(chaseOption);
-            utilityBrain.AddOption(attackOption);
-            utilityBrain.Start();
-
-            database.SetValue(EnemyAIDatabaseKey.UtilityBrain, utilityBrain);
-        }
-
-        void UpdateSensorSnapshot()
-        {
-            if (perceptionSensor != null)
-            {
-                return;
-            }
-
-            if (player == null || body == null)
-            {
-                return;
-            }
-
-            float distance = Vector3.Distance(player.transform.position, body.transform.position);
-            database.SetValue(EnemyAIDatabaseKey.PlayerDistance, distance);
-            bool visible = distance <= detectionRange;
-            database.SetValue(EnemyAIDatabaseKey.PlayerVisible, visible);
         }
 
         static BlackboardKey<TValue> CreateKey<TValue>(EnemyAIDatabaseKey key)
