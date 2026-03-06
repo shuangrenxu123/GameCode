@@ -53,7 +53,7 @@ namespace Enemy.AI
         float interruptThreshold = 1.2f;
 
         Blackboard database;
-        UtilityBrain utilityBrain;
+        // UtilityBrain utilityBrain;
         bool actionsInitialized;
 
 
