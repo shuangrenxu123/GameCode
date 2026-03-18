@@ -44,7 +44,7 @@ namespace CharacterController.Camera
             isShaking = true;
 
             // 为每个震动实例使用不同的噪声偏移，避免重复
-            noiseOffset = Random.Range(0f, 1000f);
+            noiseOffset = UnityEngine.Random.Range(0f, 1000f);
         }
 
         /// <summary>

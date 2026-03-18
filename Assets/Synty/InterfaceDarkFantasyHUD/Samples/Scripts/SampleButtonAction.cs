@@ -97,7 +97,7 @@ namespace Synty.Interface.DarkFantasyHUD.Samples
                 activateObject.SetActive(true);
                 if (applyRandomRotationToActivateObject)
                 {
-                    activateObject.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
+                    activateObject.transform.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 360));
                 }
             }
 

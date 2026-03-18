@@ -28,8 +28,8 @@ public class BTRandomTargetPosition : BTAction
         Vector3 ray;
         do
         {
-            pos.x = Random.Range(-Range.x, Range.x);
-            pos.z = Random.Range(-Range.y, Range.y);
+            pos.x = UnityEngine.Random.Range(-Range.x, Range.x);
+            pos.z = UnityEngine.Random.Range(-Range.y, Range.y);
             ray = pos;
         } while (Physics.Raycast(actor.Position, ray, 10f));
         target.position = actor.Position + pos;

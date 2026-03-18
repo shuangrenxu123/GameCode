@@ -27,4 +27,10 @@ namespace Character.Controller.State
         InjIry = 4,
         Death = 5
     }
+
+    public enum ECharacterRandomMoveState
+    {
+        idle = 0,
+        move = 1,
+    }
 }

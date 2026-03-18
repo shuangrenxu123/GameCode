@@ -65,7 +65,7 @@ namespace BT.Action
         {
             var origin = database.GetValue(EnemyAIDatabaseKey.PatrolOrigin, enemy.transform.position);
             var radius = Mathf.Max(1f, database.GetValue(EnemyAIDatabaseKey.PatrolRadius, 8f));
-            var random = Random.insideUnitCircle * radius;
+            var random = UnityEngine.Random.insideUnitCircle * radius;
             var destination = origin + new Vector3(random.x, 0f, random.y);
             database.SetValue(EnemyAIDatabaseKey.PatrolDestination, destination);
             return destination;
