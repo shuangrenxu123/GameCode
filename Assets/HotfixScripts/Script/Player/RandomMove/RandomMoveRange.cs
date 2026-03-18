@@ -1,6 +1,6 @@
+using System.Collections;
 using Character.Controller.State;
 using HFSM;
-using System.Collections;
 using UnityEditorInternal;
 using UnityEngine;
 
@@ -32,6 +32,9 @@ public class RandomMoveRange : MonoBehaviour
         characterRandomMoveState.randomMoveRange = this;
         stateMachine.randomMoveRange = this;
         characterIdleState.idleDuration = 1f;
+
+        stateMachine.AddState(characterIdleState);
+        stateMachine.AddState(characterRandomMoveState);
     }
 
     private void Start()
