@@ -34,9 +34,9 @@ namespace Synty.Interface.DarkFantasyHUD.Samples
         private void Awake()
         {
             // Set random starting values.
-            currentLevel = UnityEngine.Random.Range(1, 69);
+            currentLevel = Random.Range(1, 69);
             currentXPNormalized = 0;
-            secondsPerLevelUp = UnityEngine.Random.Range(4, 20f);
+            secondsPerLevelUp = Random.Range(4, 20f);
         }
 
         private void Reset()
