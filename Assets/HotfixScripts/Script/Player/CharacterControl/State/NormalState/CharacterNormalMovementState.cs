@@ -16,7 +16,7 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
             }
-            else if (characterActions.run.Started)
+            else if (characterActions.run.Started && characterActor.Velocity != Vector3.zero)
             {
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
             }
