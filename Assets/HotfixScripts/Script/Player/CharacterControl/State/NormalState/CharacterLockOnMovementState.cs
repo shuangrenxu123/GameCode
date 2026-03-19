@@ -53,7 +53,7 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 return;
             }
-            if (characterActions.run.Started && characterActor.Velocity != Vector3.zero)
+            if (characterActions.run.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
                 return;
