@@ -1,7 +1,6 @@
-using AIBlackboard;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
+using AIBlackboard;
 namespace HFSM
 {
     public abstract class StateBase<T> : IState where T : Enum
