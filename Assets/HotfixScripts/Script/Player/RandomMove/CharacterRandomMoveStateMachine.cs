@@ -13,23 +13,30 @@ namespace HFSM
         public override ECharacterRandomMoveState currentType => ECharacterRandomMoveState.idle;
 
         public RandomMoveRange randomMoveRange;
-
-       
+        public void Start()
+        {
+            AddState(new CharacterRandomMoveState());
+            AddState(new CharacterIdleState());
+        }
 
         public override void Update()
         {
             base.Update();
 
-            if (Input.GetKeyDown(KeyCode.A))
+            if (Input.GetKey(KeyCode.A))
             {
                 Debug.Log("状态机切换为静止状态");
                 ChangeState(ECharacterRandomMoveState.idle);
             }
-            else if (Input.GetKeyDown(KeyCode.D))
+            else if (Input.GetKey(KeyCode.D))
             {
+                Debug.Log("状态机切换为移动状态");
                 ChangeState(ECharacterRandomMoveState.move);
-
             }
+            //else
+            //{
+            //    Debug.Log("状态机没在动");
+            //}
         }
     }
 }
