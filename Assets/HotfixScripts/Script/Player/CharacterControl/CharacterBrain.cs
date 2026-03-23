@@ -1,6 +1,8 @@
 using Enemy;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
+
 namespace CharacterController
 {
     public enum BrainType
@@ -12,6 +14,15 @@ namespace CharacterController
 
     public class CharacterBrain : MonoBehaviour
     {
+        enum InputSourceType
+        {
+            None,
+            Player,
+            AI,
+            Network,
+            UI,
+        }
+
         [EnumToggleButtons, HideLabel]
         public BrainType brainType = BrainType.Player;
 
@@ -28,23 +39,22 @@ namespace CharacterController
         InputHandlerSettings UIinputHandlerSettings = new InputHandlerSettings();
 
         [ShowIf("@isPlayer")]
-
         public InputHandlerSettings CameraInputHandlerSettings = new InputHandlerSettings();
 
-        [SerializeField, ShowIf("isAI")]
-        GameObject entityBraidGo;
+        [SerializeField, ShowIf("isAI"), FormerlySerializedAs("entityBraidGo")]
+        GameObject entityBrainGo;
 
         [SerializeField, ShowIf("isNetwork")]
         NetCharacterInput netCharacterInput;
 
-        IEnemyBrain aiBehaviour = null;
+        IEnemyBrain aiBehaviour;
 
         CharacterActions characterActions = new CharacterActions();
         CharacterUIActions characterUIActions = new CharacterUIActions();
 
-        private bool IsUIInput = false;
-
-        bool firstUpdateFlag = false;
+        bool isUIInputEnabled;
+        bool shouldResetActionsOnNextUpdate;
+        bool actionsInitialized;
 
         public bool IsAI => isAI;
 
@@ -53,120 +63,125 @@ namespace CharacterController
 
         public void SetAction(CharacterActions characterActions) => this.characterActions = characterActions;
 
-
         public void UpdateBrainValues(float dt)
         {
-            if (Time.timeScale == 0)
+            if (Time.timeScale == 0f)
+            {
                 return;
+            }
 
-            UpdateHumanBrainValues(dt);
+            UpdateActions(dt, ResolveInputSource());
         }
 
-        void UpdateHumanBrainValues(float dt)
+        void UpdateActions(float dt, InputSourceType inputSource)
         {
-            if (IsUIInput && !isNetwork)
+            if (inputSource == InputSourceType.UI)
             {
-                characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
-                characterUIActions.Update(dt);
+                UpdateUIActions(dt);
+                return;
+            }
+
+            UpdateGameplayActions(dt, inputSource);
+        }
+
+        void UpdateGameplayActions(float dt, InputSourceType inputSource)
+        {
+            switch (inputSource)
+            {
+                case InputSourceType.Player:
+                    ApplyPlayerInput();
+                    break;
+                case InputSourceType.AI:
+                    characterActions.SetValues(aiBehaviour.characterActions);
+                    break;
+                case InputSourceType.Network:
+                    characterActions.SetValues(netCharacterInput.CharacterActions);
+                    break;
+                default:
+                    characterActions.ForceReset();
+                    break;
+            }
+
+            characterActions.Update(dt);
+        }
+
+        void UpdateUIActions(float dt)
+        {
+            if (UIinputHandlerSettings.InputHandler == null)
+            {
+                characterUIActions.SetValues(default(CharacterUIActions));
             }
             else
             {
-                if (isAI && aiBehaviour != null)
-                {
-                    characterActions.SetValues(aiBehaviour.characterActions);
-                }
-                else if (isNetwork && netCharacterInput != null)
-                {
-                    characterActions.SetValues(netCharacterInput.CharacterActions);
-                }
-                else if (isNetwork)
-                {
-                    characterActions.ForceReset();
-                }
-                else
-                {
-                    characterActions.SetValues(inputHandlerSettings.InputHandler);
-                }
-
-                characterActions.Update(dt);
+                characterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
             }
 
+            characterUIActions.Update(dt);
+        }
+
+        void ApplyPlayerInput()
+        {
+            if (inputHandlerSettings.InputHandler == null)
+            {
+                characterActions.ForceReset();
+                return;
+            }
+
+            characterActions.SetValues(inputHandlerSettings.InputHandler);
         }
 
         public void EnableUIInput()
         {
-            if (isNetwork)
-            {
-                return;
-            }
-
-            if (IsUIInput)
-            {
-                return;
-            }
-
-            IsUIInput = true;
-            characterActions.Reset();
-            characterUIActions.Reset();
-            inputHandlerSettings.InputHandler.Disable();
-            UIinputHandlerSettings.InputHandler.Enable();
-            CameraInputHandlerSettings.InputHandler.Disable();
+            SetUIInputEnabled(true);
         }
+
         public void DisableUIInput()
         {
-            if (isNetwork)
-            {
-                return;
-            }
-
-            if (!IsUIInput)
-            {
-                return;
-            }
-
-            characterActions.Reset();
-            characterUIActions.Reset();
-            inputHandlerSettings.InputHandler.Enable();
-            UIinputHandlerSettings.InputHandler.Disable();
-            CameraInputHandlerSettings.InputHandler.Enable();
-            IsUIInput = false;
+            SetUIInputEnabled(false);
         }
+
+        public void SetUIInputEnabled(bool enabled)
+        {
+            if (isNetwork || isUIInputEnabled == enabled)
+            {
+                return;
+            }
+
+            isUIInputEnabled = enabled;
+            ResetLocalActions();
+
+            SetHandlerEnabled(inputHandlerSettings, !enabled);
+            SetHandlerEnabled(UIinputHandlerSettings, enabled);
+            SetHandlerEnabled(CameraInputHandlerSettings, !enabled);
+        }
+
         protected virtual void Awake()
         {
-            characterActions.InitializeActions();
-            characterUIActions.InitializeActions();
-
-            if (isAI)
-            {
-                aiBehaviour = entityBraidGo.GetComponent<IEnemyBrain>();
-            }
+            InitializeActions();
+            ResolveExternalReferences();
         }
+
         protected virtual void OnEnable()
         {
-            characterActions.InitializeActions();
-            characterUIActions.InitializeActions();
-            characterUIActions.Reset();
-            characterActions.Reset();
+            InitializeActions();
+            ResetLocalActions();
         }
+
         protected virtual void OnDisable()
         {
-            characterActions.Reset();
-            characterUIActions.Reset();
+            ResetLocalActions();
         }
 
         protected virtual void FixedUpdate()
         {
-            firstUpdateFlag = true;
             if (UpdateMode == UpdateModeType.FixedUpdate)
             {
+                shouldResetActionsOnNextUpdate = !isAI;
                 UpdateBrainValues(0f);
-            }
-            if (isAI && aiBehaviour != null)
-            {
-                // 对于AI而言他会清空输入，这样就不需要我们手动去处理输入值了
-                aiBehaviour.characterActions.ForceReset();
+                ResetExternalInputSourceIfNeeded();
             }
         }
+
         protected virtual void Update()
         {
             float dt = Time.deltaTime;
@@ -174,23 +189,108 @@ namespace CharacterController
             {
                 if (UpdateMode == UpdateModeType.FixedUpdate)
                 {
-                    if (firstUpdateFlag)
+                    if (shouldResetActionsOnNextUpdate)
                     {
-                        firstUpdateFlag = false;
-                        characterActions.Reset();
-                        characterUIActions.Reset();
+                        shouldResetActionsOnNextUpdate = false;
+                        ResetLocalActions();
                     }
                 }
                 else
                 {
-                    characterActions.Reset();
-                    characterUIActions.Reset();
+                    ResetLocalActions();
                 }
             }
 
             UpdateBrainValues(dt);
-
         }
-        public enum UpdateModeType { FixedUpdate, Update }
+
+        InputSourceType ResolveInputSource()
+        {
+            if (isUIInputEnabled && !isNetwork)
+            {
+                return InputSourceType.UI;
+            }
+
+            if (isAI && aiBehaviour != null)
+            {
+                return InputSourceType.AI;
+            }
+
+            if (isNetwork && netCharacterInput != null)
+            {
+                return InputSourceType.Network;
+            }
+
+            if (isPlayer)
+            {
+                return InputSourceType.Player;
+            }
+
+            return InputSourceType.None;
+        }
+
+        void InitializeActions()
+        {
+            if (actionsInitialized)
+            {
+                return;
+            }
+
+            characterActions.InitializeActions();
+            characterUIActions.InitializeActions();
+            actionsInitialized = true;
+        }
+
+        void ResolveExternalReferences()
+        {
+            if (isAI)
+            {
+                aiBehaviour = entityBrainGo != null
+                    ? entityBrainGo.GetComponent<IEnemyBrain>()
+                    : GetComponentInChildren<IEnemyBrain>();
+            }
+
+            if (isNetwork && netCharacterInput == null)
+            {
+                netCharacterInput = GetComponentInChildren<NetCharacterInput>();
+            }
+        }
+
+        void ResetLocalActions()
+        {
+            characterActions.Reset();
+            characterUIActions.Reset();
+        }
+
+        void ResetExternalInputSourceIfNeeded()
+        {
+            if (isAI && aiBehaviour != null)
+            {
+                aiBehaviour.characterActions.ForceReset();
+            }
+        }
+
+        static void SetHandlerEnabled(InputHandlerSettings settings, bool enabled)
+        {
+            if (settings == null || settings.InputHandler == null)
+            {
+                return;
+            }
+
+            if (enabled)
+            {
+                settings.InputHandler.Enable();
+            }
+            else
+            {
+                settings.InputHandler.Disable();
+            }
+        }
+
+        public enum UpdateModeType
+        {
+            FixedUpdate,
+            Update
+        }
     }
 }
