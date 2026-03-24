@@ -5,6 +5,11 @@ public struct CharacterUIActions
 
     public BoolAction confirm;
     public BoolAction cancel;
+    public void ClearFrameFlags()
+    {
+        confirm.ClearFrameFlags();
+        cancel.ClearFrameFlags();
+    }
     public void Reset()
     {
         confirm.Reset();
@@ -27,7 +32,6 @@ public struct CharacterUIActions
     {
         if (input == null)
         {
-            Debug.Log("inputAsset is null");
             return;
         }
         confirm.value = input.GetBool("confirm");

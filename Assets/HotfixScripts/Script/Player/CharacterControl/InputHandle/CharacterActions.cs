@@ -14,6 +14,20 @@ public class CharacterActions
     public BoolAction @OpenConsoleUI;
     public Vector2Action @movement;
 
+    public void ClearFrameFlags()
+    {
+        jump.ClearFrameFlags();
+        run.ClearFrameFlags();
+        interact.ClearFrameFlags();
+        roll.ClearFrameFlags();
+        @lock.ClearFrameFlags();
+        attack.ClearFrameFlags();
+        heavyAttack.ClearFrameFlags();
+        crouch.ClearFrameFlags();
+        OpenUI.ClearFrameFlags();
+        @OpenConsoleUI.ClearFrameFlags();
+    }
+
     public void Reset()
     {
         jump.Reset();
@@ -28,19 +42,10 @@ public class CharacterActions
         OpenUI.Reset();
         @OpenConsoleUI.Reset();
     }
+
     public void ForceReset()
     {
-        jump.ForceReset();
-        run.ForceReset();
-        interact.ForceReset();
-        roll.ForceReset();
-        movement.ForceReset();
-        @lock.ForceReset();
-        attack.ForceReset();
-        heavyAttack.ForceReset();
-        crouch.ForceReset();
-        OpenUI.ForceReset();
-        @OpenConsoleUI.ForceReset();
+        Reset();
     }
 
 
@@ -158,32 +163,40 @@ public struct BoolAction
     public float LastInactiveTime { get; private set; }
 
     bool previousValue;
-    bool previousStarted;
-    bool previousCanceled;
-
     public void Initialize()
     {
-        StartedElapsedTime = Mathf.Infinity;
-        CanceledElapsedTime = Mathf.Infinity;
-
-        value = false;
-        previousValue = false;
-        previousStarted = false;
-        previousCanceled = false;
+        Reset();
     }
-    public void Reset()
+
+    public void ClearFrameFlags()
     {
         Started = false;
         Canceled = false;
     }
-    public void ForceReset()
+
+    public void Reset()
     {
         value = false;
+        previousValue = false;
+        Started = false;
+        Canceled = false;
+        StartedElapsedTime = Mathf.Infinity;
+        CanceledElapsedTime = Mathf.Infinity;
+        ActiveTime = 0f;
+        InactiveTime = 0f;
+        LastActiveTime = 0f;
+        LastInactiveTime = 0f;
     }
+
+    public void ForceReset()
+    {
+        Reset();
+    }
+
     public void Update(float dt)
     {
-        Started |= !previousValue && value;
-        Canceled |= previousValue && !value;
+        Started = !previousValue && value;
+        Canceled = previousValue && !value;
 
         StartedElapsedTime += dt;
         CanceledElapsedTime += dt;
@@ -191,23 +204,15 @@ public struct BoolAction
         if (Started)
         {
             StartedElapsedTime = 0f;
-
-            if (!previousStarted)
-            {
-                LastActiveTime = 0f;
-                LastInactiveTime = InactiveTime;
-            }
+            LastActiveTime = 0f;
+            LastInactiveTime = InactiveTime;
         }
 
         if (Canceled)
         {
             CanceledElapsedTime = 0f;
-
-            if (!previousCanceled)
-            {
-                LastActiveTime = ActiveTime;
-                LastInactiveTime = 0f;
-            }
+            LastActiveTime = ActiveTime;
+            LastInactiveTime = 0f;
         }
 
 
@@ -224,8 +229,6 @@ public struct BoolAction
 
 
         previousValue = value;
-        previousStarted = Started;
-        previousCanceled = Canceled;
     }
 
 }
