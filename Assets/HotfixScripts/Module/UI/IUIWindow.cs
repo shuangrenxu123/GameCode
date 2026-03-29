@@ -1,15 +1,26 @@
 using UnityEngine;
 
-public interface IUIWindow
+namespace UIWindow
 {
-    public string WindowName { get; set; }
-    public CanvasGroup raycaster { get; set; }
-    public Canvas canves { get; set; }
-    public abstract void OnCreate();
-    public abstract void OnUpdate();
-    public abstract void OnDelete();
-    public abstract void OnFocus();
-    public abstract void OnFocusOtherUI();
+    public interface IUIWindow
+    {
+        string WindowName { get; }
+        Canvas CanvasComponent { get; }
+        CanvasGroup CanvasGroup { get; }
+        UIWindowGroup UIGroup { get; }
+        bool PauseCoveredWindow { get; }
+        int DepthInUIGroup { get; }
+        int SortingOrderOffset { get; }
 
-
+        void OnInit(object userData);
+        void OnOpen(object userData);
+        void OnClose(object userData);
+        void OnPause();
+        void OnResume();
+        void OnCover();
+        void OnReveal();
+        void OnRefocus(object userData);
+        void OnUpdate();
+        void OnDepthChanged(int depthInUIGroup);
+    }
 }
