@@ -2,8 +2,8 @@ using CharacterController;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using Fight;
+using Fight.Number;
 using UnityEngine;
-using static Fight.Number.CombatNumberBox;
 
 namespace Character.Player
 {
@@ -31,11 +31,13 @@ namespace Character.Player
 
         void Start()
         {
-            CombatEntity.hp.SetMaxValue(100);
-            CombatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
-            CombatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
-            CombatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 100);
-            CombatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
+            CombatEntity.properties.BeginBatch();
+            CombatEntity.properties.RegisterProperty(PropertyType.MaxHp, 100, 1, 999999);
+            CombatEntity.properties.RegisterProperty(PropertyType.Attack, 10, 0, 999999);
+            CombatEntity.properties.RegisterProperty(PropertyType.Defense, 10, 0, 999999);
+            CombatEntity.properties.RegisterProperty(PropertyType.SpeedMultiplier, 100, 0, 10000);
+            CombatEntity.properties.RegisterProperty(PropertyType.RotationMultiplier, 100, 0, 10000);
+            CombatEntity.properties.EndBatch();
 
         }
     }

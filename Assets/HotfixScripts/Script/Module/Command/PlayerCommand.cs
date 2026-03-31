@@ -108,7 +108,7 @@ public class PlayerCommand : MonoBehaviour
         return true;
     }
 
-    static bool TryResolveHealth(Player target, out Fight.Number.HealthPoint hp)
+    static bool TryResolveHealth(Player target, out Fight.Number.ResourceValue hp)
     {
         hp = target.CombatEntity?.hp;
         if (hp == null)

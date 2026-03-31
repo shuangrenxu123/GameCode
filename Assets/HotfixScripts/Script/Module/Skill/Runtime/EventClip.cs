@@ -1,8 +1,8 @@
 using System;
 using Animancer;
 using Fight;
+using Fight.Number;
 using UnityEngine;
-using static Fight.Number.CombatNumberBox;
 
 namespace SkillRuntimeClip
 {
@@ -125,7 +125,7 @@ namespace SkillRuntimeClip
             this.usePositionRootMotion = usePositionRootMotion;
             this.useRotationRootMotion = useRotationRootMotion;
         }
-        Guid speedChange, rotationChange;
+        ModifierHandle speedChange, rotationChange;
         public override void OnStart()
         {
             base.OnStart();
@@ -134,12 +134,12 @@ namespace SkillRuntimeClip
             var properties = runner.actor.GetComponent<CombatEntity>().properties;
             speedChange = properties.AddModifier(PropertyType.SpeedMultiplier
                   , positionMultiplier
-                  , Fight.Number.ModifierType.Percent
-                  , Fight.Number.PropertySourceTypes.Buff);
+                  , Fight.Number.ModifierType.AddPercent
+                  , new Fight.Number.ModifierSource(Fight.Number.ModifierSourceType.Buff));
             rotationChange = properties.AddModifier(PropertyType.RotationMultiplier
                    , rotationMultiplier
-                   , Fight.Number.ModifierType.Percent
-                   , Fight.Number.PropertySourceTypes.Buff);
+                   , Fight.Number.ModifierType.AddPercent
+                   , new Fight.Number.ModifierSource(Fight.Number.ModifierSourceType.Buff));
         }
         public override void OnFinish()
         {

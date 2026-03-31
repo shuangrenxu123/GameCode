@@ -16,23 +16,21 @@ namespace Fight
         [SerializeField]
         CombatEntityType entityType;
 
-        public HealthPoint hp;
-        public CombatNumberBox properties;
+        public ResourceValue hp;
+        public CombatPropertySet properties;
         ActionPointManager ActionPointManager;
         BuffManager buffManager;
         public UnityEvent onEntityDead = new UnityEvent();
 
         public void Awake()
         {
-            hp = new HealthPoint();
-
             ActionPointManager = new ActionPointManager();
             ActionPointManager.Init();
 
-            properties = new CombatNumberBox();
+            properties = new CombatPropertySet();
+            hp = properties.RegisterResource(ResourceType.Hp, PropertyType.MaxHp);
+            hp.OnEmpty += OnEntityDead;
             buffManager = new BuffManager(this);
-
-            // hp.OnDead += OnEntityDead;
         }
         private void Update()
         {

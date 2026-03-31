@@ -114,11 +114,6 @@ namespace UIPanel.Console
                 Destroy(logStack.Pop());
         }
 
-        public override void OnDelete()
-        {
-            ConsoleManager.Instance.OnOutput -= OutputPanel;
-            HideInputPanel();
-        }
 
         private void SubmitCommand(string text)
         {

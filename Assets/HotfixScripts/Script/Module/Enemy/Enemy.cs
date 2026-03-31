@@ -3,9 +3,9 @@ using Animancer;
 using Character.Controller;
 using CharacterController;
 using Fight;
+using Fight.Number;
 using UnityEngine;
 using UnityEngine.Events;
-using static Fight.Number.CombatNumberBox;
 
 namespace Enemy
 {
@@ -43,11 +43,13 @@ namespace Enemy
         /// </summary>
         void InitCombatProperty()
         {
-            combatEntity.hp.SetMaxValue(100);
-            combatEntity.properties.RegisterAttribute(PropertyType.Attack, 10);
-            combatEntity.properties.RegisterAttribute(PropertyType.Defense, 10);
-            combatEntity.properties.RegisterAttribute(PropertyType.SpeedMultiplier, 100);
-            combatEntity.properties.RegisterAttribute(PropertyType.RotationMultiplier, 100);
+            combatEntity.properties.BeginBatch();
+            combatEntity.properties.RegisterProperty(PropertyType.MaxHp, 100, 1, 999999);
+            combatEntity.properties.RegisterProperty(PropertyType.Attack, 10, 0, 999999);
+            combatEntity.properties.RegisterProperty(PropertyType.Defense, 10, 0, 999999);
+            combatEntity.properties.RegisterProperty(PropertyType.SpeedMultiplier, 100, 0, 10000);
+            combatEntity.properties.RegisterProperty(PropertyType.RotationMultiplier, 100, 0, 10000);
+            combatEntity.properties.EndBatch();
         }
 
         /// <summary>

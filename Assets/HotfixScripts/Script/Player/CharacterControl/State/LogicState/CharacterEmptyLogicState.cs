@@ -17,13 +17,13 @@ namespace Character.Controller.LogicState
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
-            combatEntity.hp.OnHit += TryChangeHitState;
+            combatEntity.hp.OnValueReduced += TryChangeHitState;
         }
 
         public override void Exit()
         {
             base.Exit();
-            combatEntity.hp.OnHit -= TryChangeHitState;
+            combatEntity.hp.OnValueReduced -= TryChangeHitState;
         }
 
         private void TryChangeHitState()

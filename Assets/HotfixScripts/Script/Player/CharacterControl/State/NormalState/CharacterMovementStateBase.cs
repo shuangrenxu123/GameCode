@@ -2,6 +2,7 @@ using Animancer;
 using Character.Controller.State;
 using CharacterController;
 using Fight;
+using Fight.Number;
 using HFSM;
 using UnityEngine;
 using static CharacterController.PlanarMovementParameters;
@@ -251,7 +252,7 @@ namespace Character.Controller.MoveState
                 targetLookingDirection);
 
             var rotationMultiplier = combatEntity.properties
-                .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.RotationMultiplier) / 100f;
+                .GetFinalValue(PropertyType.RotationMultiplier) / 100f;
 
             Quaternion currentDeltaDotation = Quaternion.Slerp(Quaternion.identity,
                 targetDeltaRotation,

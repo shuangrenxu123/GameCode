@@ -2,6 +2,7 @@ using Animancer;
 using Character.Controller.State;
 using CharacterController;
 using CharacterController.Camera;
+using Fight.Number;
 using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
@@ -74,7 +75,7 @@ namespace Character.Controller.MoveState
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
             float characterSpeedMultiplier = combatEntity.properties
-                .GetPropertyValue(Fight.Number.CombatNumberBox.PropertyType.SpeedMultiplier) / 100f;
+                .GetFinalValue(PropertyType.SpeedMultiplier) / 100f;
 
             float finalSpeedMultiplier = characterSpeedMultiplier * lockOnMoveSpeed;
             currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;

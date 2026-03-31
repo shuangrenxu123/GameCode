@@ -32,16 +32,16 @@ namespace Character.UI
         void OnEnable()
         {
             combatEntity = GetComponentInParent<CombatEntity>();
-            combatEntity.hp.OnHpMinus += OnHpMinus;
-            combatEntity.hp.OnHpAdd += OnHpAdd;
+            combatEntity.hp.OnValueMinus += OnHpMinus;
+            combatEntity.hp.OnValueAdd += OnHpAdd;
 
             combatEntity.onEntityDead.AddListener(HideCanvas);
         }
 
         void OnDisable()
         {
-            combatEntity.hp.OnHpMinus -= OnHpMinus;
-            combatEntity.hp.OnHpAdd -= OnHpAdd;
+            combatEntity.hp.OnValueMinus -= OnHpMinus;
+            combatEntity.hp.OnValueAdd -= OnHpAdd;
 
             combatEntity.onEntityDead.RemoveListener(HideCanvas);
         }

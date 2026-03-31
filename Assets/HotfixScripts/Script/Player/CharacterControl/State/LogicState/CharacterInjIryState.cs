@@ -22,7 +22,7 @@ namespace Character.Controller.LogicState
             characterActor.Velocity = Vector3.zero;
             var injIryInput = input as CharacterInjIryStateInput;
 
-            combatEntity.hp.OnHit += OnHit;
+            combatEntity.hp.OnValueReduced += OnHit;
 
             //Test
             var state = Animancer.Play(injIryAnimations["0"]);
@@ -57,7 +57,7 @@ namespace Character.Controller.LogicState
             parentMachine.movementStateMachine.EnableMachine(true, true);
             parentMachine.movementStateMachine.RefreshAnimator();
 
-            combatEntity.hp.OnHit -= OnHit;
+            combatEntity.hp.OnValueReduced -= OnHit;
 
         }
     }
