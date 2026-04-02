@@ -1,16 +1,7 @@
-using System;
+﻿using System;
 
 namespace Fight.Number
 {
-    public enum ResourceType
-    {
-        Hp = 0,
-    }
-
-    /// <summary>
-    /// 资源层对象，负责管理“当前值 / 最大值 / 百分比 / 变化事件”。
-    /// 当前资源最大值通常由 CombatPropertySet 中某个属性驱动，例如 HP 绑定到 MaxHp。
-    /// </summary>
     public class ResourceValue
     {
         public event Action<int, int> OnValueChange;

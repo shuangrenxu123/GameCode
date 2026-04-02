@@ -1,159 +1,8 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace Fight.Number
 {
-    /// <summary>
-    /// Modifier 的整数缩放规则：
-    /// 1. Add：直接加减绝对值，例如 +10 攻击。
-    /// 2. AddPercent：按百分数叠加，100 表示 100%，15 表示 15%。
-    /// 3. Multiply：按倍率百分数相乘，100 表示 x1.0，150 表示 x1.5，50 表示 x0.5。
-    /// 4. Override：直接覆盖最终值，不参与其他计算。
-    ///
-    /// 属性本身如果是倍率/百分比语义，也统一使用相同规则：
-    /// 100 表示 100%，业务层读取后自行 / 100f 转成浮点倍率。
-    ///
-    /// 当前系统统一只处理 int。
-    /// 如果未来需要更细的小数精度，必须在“该属性的生产方、Modifier、消费方”三处使用同一套放大规则。
-    /// </summary>
-    public enum ModifierType
-    {
-        Add = 0,
-        AddPercent = 1,
-        Multiply = 2,
-        Override = 3,
-    }
-
-    public enum ModifierSourceType
-    {
-        None = 0,
-        Self = 1,
-        Equipment = 2,
-        Buff = 3,
-        Skill = 4,
-        Talent = 5,
-    }
-
-    public readonly struct ModifierSource : IEquatable<ModifierSource>
-    {
-        public readonly ModifierSourceType Type;
-        public readonly int SourceKey;
-
-        public ModifierSource(ModifierSourceType type, int sourceKey = 0)
-        {
-            Type = type;
-            SourceKey = sourceKey;
-        }
-
-        public bool Equals(ModifierSource other)
-        {
-            return Type == other.Type && SourceKey == other.SourceKey;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is ModifierSource other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine((int)Type, SourceKey);
-        }
-
-        public static bool operator ==(ModifierSource left, ModifierSource right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ModifierSource left, ModifierSource right)
-        {
-            return !left.Equals(right);
-        }
-    }
-
-    public readonly struct ModifierHandle : IEquatable<ModifierHandle>
-    {
-        public static readonly ModifierHandle Invalid = new ModifierHandle(0);
-
-        public readonly int Value;
-
-        public ModifierHandle(int value)
-        {
-            Value = value;
-        }
-
-        public bool IsValid
-        {
-            get { return Value > 0; }
-        }
-
-        public bool Equals(ModifierHandle other)
-        {
-            return Value == other.Value;
-        }
-
-        public override bool Equals(object obj)
-        {
-            return obj is ModifierHandle other && Equals(other);
-        }
-
-        public override int GetHashCode()
-        {
-            return Value;
-        }
-
-        public static bool operator ==(ModifierHandle left, ModifierHandle right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(ModifierHandle left, ModifierHandle right)
-        {
-            return !left.Equals(right);
-        }
-    }
-
-    public readonly struct DerivedPropertyContext
-    {
-        private readonly CombatPropertySet _owner;
-
-        internal DerivedPropertyContext(CombatPropertySet owner)
-        {
-            _owner = owner;
-        }
-
-        public int GetFinalValue(PropertyType id)
-        {
-            return _owner.GetFinalValue(id);
-        }
-
-        public bool TryGetFinalValue(PropertyType id, out int value)
-        {
-            return _owner.TryGetFinalValue(id, out value);
-        }
-    }
-
-    internal struct StatModifier
-    {
-        public int Handle;
-        public int Value;
-        public ModifierType Type;
-        public ModifierSource Source;
-        public bool Active;
-    }
-
-    internal sealed class StatSlot
-    {
-        public int BaseValue;
-        public int ComputedBaseValue;
-        public int FinalValue;
-        public bool Dirty;
-        public bool IsDerived;
-        public PropertyType[] Dependencies = Array.Empty<PropertyType>();
-        public Func<DerivedPropertyContext, int> Formula;
-        public readonly List<StatModifier> Modifiers = new List<StatModifier>(4);
-    }
-
     public sealed class CombatPropertySet
     {
         private readonly Dictionary<PropertyType, StatDefinition> _definitions = new Dictionary<PropertyType, StatDefinition>();
@@ -167,6 +16,13 @@ namespace Fight.Number
 
         public event Action<PropertyType, int, int> OnStatChanged;
 
+        /// <summary>
+        /// 注册一个普通属性，并初始化基础值与上下限。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="defaultBaseValue">默认基础值。</param>
+        /// <param name="minFinalValue">最终值下限。</param>
+        /// <param name="maxFinalValue">最终值上限。</param>
         public void RegisterProperty(PropertyType id, int defaultBaseValue = 0, int minFinalValue = 0, int maxFinalValue = int.MaxValue)
         {
             ThrowIfPropertyRegistered(id);
@@ -188,6 +44,14 @@ namespace Fight.Number
             SyncResourcesForProperty(id);
         }
 
+        /// <summary>
+        /// 注册一个派生属性，其基础值由依赖属性通过公式动态计算。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="dependencies">该派生属性依赖的属性列表。</param>
+        /// <param name="formula">派生公式，输入为属性上下文，返回基础值。</param>
+        /// <param name="minFinalValue">最终值下限。</param>
+        /// <param name="maxFinalValue">最终值上限。</param>
         public void RegisterDerivedProperty(
             PropertyType id,
             PropertyType[] dependencies,
@@ -265,11 +129,22 @@ namespace Fight.Number
             }
         }
 
+        /// <summary>
+        /// 判断指定属性是否已注册。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <returns>已注册返回 true，否则返回 false。</returns>
         public bool IsRegistered(PropertyType id)
         {
             return _definitions.ContainsKey(id);
         }
 
+        /// <summary>
+        /// 注册一个资源对象，并绑定其最大值来源属性。
+        /// </summary>
+        /// <param name="resourceType">资源类型。</param>
+        /// <param name="maxPropertyType">驱动资源最大值的属性类型。</param>
+        /// <returns>创建并注册后的资源对象。</returns>
         public ResourceValue RegisterResource(ResourceType resourceType, PropertyType maxPropertyType)
         {
             if (_resources.ContainsKey(resourceType))
@@ -284,16 +159,28 @@ namespace Fight.Number
             return resource;
         }
 
+        /// <summary>
+        /// 尝试获取已注册的资源对象。
+        /// </summary>
+        /// <param name="resourceType">资源类型。</param>
+        /// <param name="resource">输出的资源对象。</param>
+        /// <returns>获取成功返回 true，否则返回 false。</returns>
         public bool TryGetResource(ResourceType resourceType, out ResourceValue resource)
         {
             return _resources.TryGetValue(resourceType, out resource);
         }
 
+        /// <summary>
+        /// 开启批处理模式。批处理期间变更只标记脏，不立即级联重算。
+        /// </summary>
         public void BeginBatch()
         {
             _batchDepth++;
         }
 
+        /// <summary>
+        /// 结束一次批处理。最外层批处理结束时会统一重算所有脏属性。
+        /// </summary>
         public void EndBatch()
         {
             if (_batchDepth <= 0)
@@ -308,6 +195,11 @@ namespace Fight.Number
             }
         }
 
+        /// <summary>
+        /// 设置普通属性的基础值。派生属性不允许直接设置。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="value">新的基础值。</param>
         public void SetBaseValue(PropertyType id, int value)
         {
             var definition = GetDefinition(id);
@@ -329,18 +221,34 @@ namespace Fight.Number
             MarkDirty(id);
         }
 
+        /// <summary>
+        /// 获取属性当前基础值（普通属性为 BaseValue，派生属性为公式计算值）。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <returns>属性基础值。</returns>
         public int GetBaseValue(PropertyType id)
         {
             RecalculateIfDirty(id);
             return GetSlot(id).ComputedBaseValue;
         }
 
+        /// <summary>
+        /// 获取属性最终值（基础值叠加所有激活 Modifier 后并做上下限裁剪）。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <returns>属性最终值。</returns>
         public int GetFinalValue(PropertyType id)
         {
             RecalculateIfDirty(id);
             return GetSlot(id).FinalValue;
         }
 
+        /// <summary>
+        /// 尝试获取属性最终值；若属性未注册则返回 false。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="value">输出的属性最终值。</param>
+        /// <returns>获取成功返回 true，否则返回 false。</returns>
         public bool TryGetFinalValue(PropertyType id, out int value)
         {
             if (!_definitions.ContainsKey(id))
@@ -353,6 +261,14 @@ namespace Fight.Number
             return true;
         }
 
+        /// <summary>
+        /// 为指定属性添加一个 Modifier。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="value">修正值。</param>
+        /// <param name="type">修正类型。</param>
+        /// <param name="source">修正来源。</param>
+        /// <returns>新增 Modifier 的句柄。</returns>
         public ModifierHandle AddModifier(PropertyType id, int value, ModifierType type, ModifierSource source)
         {
             var slot = GetSlot(id);
@@ -370,6 +286,13 @@ namespace Fight.Number
             return new ModifierHandle(modifier.Handle);
         }
 
+        /// <summary>
+        /// 更新指定 Modifier 的数值。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="handle">Modifier 句柄。</param>
+        /// <param name="newValue">新的修正值。</param>
+        /// <returns>更新成功返回 true，否则返回 false。</returns>
         public bool UpdateModifierValue(PropertyType id, ModifierHandle handle, int newValue)
         {
             if (!handle.IsValid)
@@ -395,6 +318,12 @@ namespace Fight.Number
             return false;
         }
 
+        /// <summary>
+        /// 移除指定句柄对应的 Modifier。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="handle">Modifier 句柄。</param>
+        /// <returns>移除成功返回 true，否则返回 false。</returns>
         public bool RemoveModifier(PropertyType id, ModifierHandle handle)
         {
             if (!handle.IsValid)
@@ -418,6 +347,13 @@ namespace Fight.Number
             return false;
         }
 
+        /// <summary>
+        /// 设置指定 Modifier 的激活状态。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
+        /// <param name="handle">Modifier 句柄。</param>
+        /// <param name="isActive">是否激活。</param>
+        /// <returns>设置成功返回 true，否则返回 false。</returns>
         public bool SetModifierActive(PropertyType id, ModifierHandle handle, bool isActive)
         {
             if (!handle.IsValid)
@@ -443,6 +379,11 @@ namespace Fight.Number
             return false;
         }
 
+        /// <summary>
+        /// 按来源批量移除所有属性上的 Modifier。
+        /// </summary>
+        /// <param name="source">目标来源。</param>
+        /// <returns>实际移除的 Modifier 数量。</returns>
         public int RemoveModifiersBySource(ModifierSource source)
         {
             bool flushImmediately = _batchDepth == 0;
@@ -490,6 +431,10 @@ namespace Fight.Number
             return removedCount;
         }
 
+        /// <summary>
+        /// 若指定属性为脏，则执行一次重算并在最终值变化时触发事件。
+        /// </summary>
+        /// <param name="id">属性类型。</param>
         public void RecalculateIfDirty(PropertyType id)
         {
             var definition = GetDefinition(id);
@@ -526,6 +471,9 @@ namespace Fight.Number
             }
         }
 
+        /// <summary>
+        /// 重算当前所有脏属性。
+        /// </summary>
         public void RecalculateAllDirty()
         {
             foreach (var propertyType in _slots.Keys)
@@ -799,3 +747,5 @@ namespace Fight.Number
         }
     }
 }
+
+
