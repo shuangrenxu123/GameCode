@@ -1,19 +1,37 @@
-﻿namespace Fight.Number
+﻿using Sirenix.OdinInspector;
+
+namespace Fight.Number
 {
     public enum PropertyType
     {
+        [LabelText("攻击")]
         Attack = 0,
+
+        [LabelText("防御")]
         Defense = 1,
+
+        [LabelText("移速倍率")]
         SpeedMultiplier = 2,
+
+        [LabelText("转向倍率")]
         RotationMultiplier = 3,
+
+        [LabelText("最大生命")]
         MaxHp = 4,
+
+        [LabelText("全能")]
         AllRound = 5,
+
+        [LabelText("减伤率")]
         DamageReductionRate = 6,
     }
 
     public enum ResourceType
     {
+        [LabelText("生命")]
         Hp = 0,
+
+        [LabelText("护盾")]
         Shield = 1,
     }
 

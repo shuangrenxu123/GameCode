@@ -11,7 +11,7 @@ namespace Fight
         Enemy,
         ally
     }
-    public sealed class CombatEntity : MonoBehaviour
+    public sealed partial class CombatEntity : MonoBehaviour
     {
         [SerializeField]
         CombatEntityType entityType;
@@ -28,7 +28,8 @@ namespace Fight
             ActionPointManager.Init();
 
             properties = new CombatPropertySet();
-            hp = properties.RegisterResource(ResourceType.Hp, PropertyType.MaxHp);
+            ApplyConfiguredProperties();
+            hp = properties.RegisterPropertyBoundResource(ResourceType.Hp, PropertyType.MaxHp);
             hp.OnEmpty += OnEntityDead;
             buffManager = new BuffManager(this);
         }

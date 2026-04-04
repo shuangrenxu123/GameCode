@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-partial
+
 namespace Fight.Number
 {
     public sealed class CombatPropertySet

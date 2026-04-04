@@ -37,14 +37,18 @@ public class BuffManager
         for (int i = _buffs.Count - 1; i >= 0; i--)
         {
             var buff = _buffs[i];
-            buff.nowTime += Time.deltaTime;
-            if (buff.nowTime >= buff.data.Maxtime)
+            if (buff == null)
             {
-                RemoveBuff(buff);
-                //entity.stateUI.RemoveBuff(buff);
-                OnRemoveBuff?.Invoke(buff);
-                return;
+                continue;
             }
+
+            buff.nowTime += Time.deltaTime;
+            if (buff.data != null && buff.data.Maxtime > 0 && buff.nowTime >= buff.data.Maxtime)
+            {
+                RemoveBuffInternal(buff, invokeEvent: true);
+                continue;
+            }
+
             buff.OnTrigger();
         }
     }
@@ -69,9 +73,12 @@ public class BuffManager
             }
             buff.OnAdd();
             _buffs.Add(buff);
-            foreach (var i in buff.data.Tag)
+            if (buff.data != null && buff.data.Tag != null)
             {
-                _tags.Add(i);
+                foreach (var i in buff.data.Tag)
+                {
+                    _tags.Add(i);
+                }
             }
             OnAddBuff?.Invoke(buff);
             return;
@@ -84,11 +91,33 @@ public class BuffManager
     }
     public void RemoveBuff(BuffBase buff)
     {
+        RemoveBuffInternal(buff, invokeEvent: true);
+    }
+
+    private bool RemoveBuffInternal(BuffBase buff, bool invokeEvent)
+    {
+        if (buff == null || !_buffs.Contains(buff))
+        {
+            return false;
+        }
+
+        buff.OnRemove();
         buff.OnDestroy();
         _buffs.Remove(buff);
-        foreach (var i in buff.data.Tag)
+
+        if (buff.data != null && buff.data.Tag != null)
         {
-            _tags.Remove(i);
+            foreach (var i in buff.data.Tag)
+            {
+                _tags.Remove(i);
+            }
         }
+
+        if (invokeEvent)
+        {
+            OnRemoveBuff?.Invoke(buff);
+        }
+
+        return true;
     }
 }

@@ -2,7 +2,6 @@ using CharacterController;
 using CharacterController.Camera;
 using CharacterControllerStateMachine;
 using Fight;
-using Fight.Number;
 using UnityEngine;
 
 namespace Character.Player
@@ -29,17 +28,6 @@ namespace Character.Player
             StateManager = GetComponentInChildren<StateManger>();
         }
 
-        void Start()
-        {
-            CombatEntity.properties.BeginBatch();
-            CombatEntity.properties.RegisterProperty(PropertyType.MaxHp, 100, 1, 999999);
-            CombatEntity.properties.RegisterProperty(PropertyType.Attack, 10, 0, 999999);
-            CombatEntity.properties.RegisterProperty(PropertyType.Defense, 10, 0, 999999);
-            CombatEntity.properties.RegisterProperty(PropertyType.SpeedMultiplier, 100, 0, 10000);
-            CombatEntity.properties.RegisterProperty(PropertyType.RotationMultiplier, 100, 0, 10000);
-            CombatEntity.properties.EndBatch();
-
-        }
     }
     public struct MotionState
     {
