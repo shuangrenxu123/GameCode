@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
+partial
 namespace Fight.Number
 {
     public sealed class CombatPropertySet
     {
-        private readonly Dictionary<PropertyType, StatDefinition> _definitions = new Dictionary<PropertyType, StatDefinition>();
-        private readonly Dictionary<PropertyType, StatSlot> _slots = new Dictionary<PropertyType, StatSlot>();
-        private readonly Dictionary<PropertyType, List<PropertyType>> _dependents = new Dictionary<PropertyType, List<PropertyType>>();
-        private readonly Dictionary<ResourceType, ResourceValue> _resources = new Dictionary<ResourceType, ResourceValue>();
-        private readonly Dictionary<ResourceType, PropertyType> _resourceMaxBindings = new Dictionary<ResourceType, PropertyType>();
+        private readonly Dictionary<PropertyType, StatNode> _stats = new Dictionary<PropertyType, StatNode>();
+        private readonly Dictionary<ResourceType, ResourceNode> _resources = new Dictionary<ResourceType, ResourceNode>();
+
         private readonly HashSet<PropertyType> _recalculating = new HashSet<PropertyType>();
         private int _nextHandle = 1;
         private int _batchDepth;
@@ -19,18 +18,15 @@ namespace Fight.Number
         /// <summary>
         /// 注册一个普通属性，并初始化基础值与上下限。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="defaultBaseValue">默认基础值。</param>
-        /// <param name="minFinalValue">最终值下限。</param>
-        /// <param name="maxFinalValue">最终值上限。</param>
         public void RegisterProperty(PropertyType id, int defaultBaseValue = 0, int minFinalValue = 0, int maxFinalValue = int.MaxValue)
         {
             ThrowIfPropertyRegistered(id);
 
             var definition = new StatDefinition(defaultBaseValue, minFinalValue, maxFinalValue);
             int normalizedBaseValue = NormalizeValue(definition, defaultBaseValue);
-            var slot = new StatSlot
+            var node = new StatNode
             {
+                Definition = definition,
                 BaseValue = normalizedBaseValue,
                 ComputedBaseValue = normalizedBaseValue,
                 FinalValue = normalizedBaseValue,
@@ -38,20 +34,13 @@ namespace Fight.Number
                 IsDerived = false,
             };
 
-            _definitions.Add(id, definition);
-            _slots.Add(id, slot);
-            EnsureDependentsList(id);
+            _stats.Add(id, node);
             SyncResourcesForProperty(id);
         }
 
         /// <summary>
         /// 注册一个派生属性，其基础值由依赖属性通过公式动态计算。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="dependencies">该派生属性依赖的属性列表。</param>
-        /// <param name="formula">派生公式，输入为属性上下文，返回基础值。</param>
-        /// <param name="minFinalValue">最终值下限。</param>
-        /// <param name="maxFinalValue">最终值上限。</param>
         public void RegisterDerivedProperty(
             PropertyType id,
             PropertyType[] dependencies,
@@ -82,7 +71,7 @@ namespace Fight.Number
                     throw new InvalidOperationException("Derived property cannot depend on itself: " + id);
                 }
 
-                if (!_definitions.ContainsKey(dependency))
+                if (!_stats.ContainsKey(dependency))
                 {
                     throw new InvalidOperationException("Derived property dependency is not registered: " + dependency);
                 }
@@ -101,22 +90,20 @@ namespace Fight.Number
             }
 
             var definition = new StatDefinition(0, minFinalValue, maxFinalValue);
-            var slot = new StatSlot
+            var node = new StatNode
             {
+                Definition = definition,
                 Dirty = true,
                 IsDerived = true,
                 Dependencies = dependencyCopy,
                 Formula = formula,
             };
 
-            _definitions.Add(id, definition);
-            _slots.Add(id, slot);
-            EnsureDependentsList(id);
+            _stats.Add(id, node);
 
             for (int i = 0; i < dependencyCopy.Length; i++)
             {
-                EnsureDependentsList(dependencyCopy[i]);
-                _dependents[dependencyCopy[i]].Add(id);
+                GetNode(dependencyCopy[i]).Dependents.Add(id);
             }
 
             if (_batchDepth == 0)
@@ -132,42 +119,113 @@ namespace Fight.Number
         /// <summary>
         /// 判断指定属性是否已注册。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <returns>已注册返回 true，否则返回 false。</returns>
         public bool IsRegistered(PropertyType id)
         {
-            return _definitions.ContainsKey(id);
+            return _stats.ContainsKey(id);
         }
 
         /// <summary>
         /// 注册一个资源对象，并绑定其最大值来源属性。
         /// </summary>
-        /// <param name="resourceType">资源类型。</param>
-        /// <param name="maxPropertyType">驱动资源最大值的属性类型。</param>
-        /// <returns>创建并注册后的资源对象。</returns>
-        public ResourceValue RegisterResource(ResourceType resourceType, PropertyType maxPropertyType)
+        public ResourceValue RegisterPropertyBoundResource(ResourceType resourceType, PropertyType maxPropertyType)
         {
-            if (_resources.ContainsKey(resourceType))
-            {
-                throw new InvalidOperationException("Resource already registered: " + resourceType);
-            }
+            ThrowIfResourceRegistered(resourceType);
 
             var resource = new ResourceValue();
-            _resources.Add(resourceType, resource);
-            _resourceMaxBindings.Add(resourceType, maxPropertyType);
+            var node = new ResourceNode(resource, new PropertyBoundMaxPolicy(maxPropertyType));
+            _resources.Add(resourceType, node);
             SyncResourceMaxValue(resourceType, true);
             return resource;
         }
 
         /// <summary>
+        /// 注册一个不依赖属性的独立资源对象。
+        /// </summary>
+        public ResourceValue RegisterStandaloneResource(ResourceType resourceType, int maxValue, bool resetCurrent = true)
+        {
+            ThrowIfResourceRegistered(resourceType);
+
+            var resource = new ResourceValue();
+            var node = new ResourceNode(resource, new FixedMaxPolicy(maxValue));
+            _resources.Add(resourceType, node);
+
+            int resolvedMax = node.MaxPolicy.ResolveMaxValue(this);
+            resource.SyncMaxValue(resolvedMax, resetCurrent);
+            return resource;
+        }
+
+        /// <summary>
+        /// 设置独立资源的最大值。若资源是属性绑定型则返回 false。
+        /// </summary>
+        public bool SetResourceMax(ResourceType resourceType, int maxValue, bool keepPercent = false)
+        {
+            if (!_resources.TryGetValue(resourceType, out var node))
+            {
+                return false;
+            }
+
+            if (!node.MaxPolicy.TrySetMaxValue(maxValue))
+            {
+                return false;
+            }
+
+            int oldMax = node.Resource.MaxValue;
+            int oldValue = node.Resource.Value;
+
+            int resolvedMax = node.MaxPolicy.ResolveMaxValue(this);
+            node.Resource.SyncMaxValue(resolvedMax, false);
+
+            if (!keepPercent)
+            {
+                return true;
+            }
+
+            int targetValue;
+            if (oldMax <= 0)
+            {
+                targetValue = node.Resource.MaxValue;
+            }
+            else
+            {
+                double ratio = (double)oldValue / oldMax;
+                targetValue = (int)Math.Round(ratio * node.Resource.MaxValue, MidpointRounding.AwayFromZero);
+            }
+
+            if (targetValue < 0)
+            {
+                targetValue = 0;
+            }
+            else if (targetValue > node.Resource.MaxValue)
+            {
+                targetValue = node.Resource.MaxValue;
+            }
+
+            int delta = targetValue - node.Resource.Value;
+            if (delta > 0)
+            {
+                node.Resource.Add(delta);
+            }
+            else if (delta < 0)
+            {
+                node.Resource.Minus(-delta);
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// 尝试获取已注册的资源对象。
         /// </summary>
-        /// <param name="resourceType">资源类型。</param>
-        /// <param name="resource">输出的资源对象。</param>
-        /// <returns>获取成功返回 true，否则返回 false。</returns>
         public bool TryGetResource(ResourceType resourceType, out ResourceValue resource)
         {
-            return _resources.TryGetValue(resourceType, out resource);
+            if (_resources.TryGetValue(resourceType, out var node))
+            {
+                resource = node.Resource;
+                return true;
+            }
+
+            resource = null;
+            return false;
         }
 
         /// <summary>
@@ -198,60 +256,50 @@ namespace Fight.Number
         /// <summary>
         /// 设置普通属性的基础值。派生属性不允许直接设置。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="value">新的基础值。</param>
         public void SetBaseValue(PropertyType id, int value)
         {
-            var definition = GetDefinition(id);
-            var slot = GetSlot(id);
-            if (slot.IsDerived)
+            var node = GetNode(id);
+            if (node.IsDerived)
             {
                 throw new InvalidOperationException("Cannot set base value on derived property: " + id);
             }
 
-            value = NormalizeValue(definition, value);
+            value = NormalizeValue(node.Definition, value);
 
-            if (slot.BaseValue == value)
+            if (node.BaseValue == value)
             {
                 return;
             }
 
-            slot.BaseValue = value;
-            slot.ComputedBaseValue = value;
+            node.BaseValue = value;
+            node.ComputedBaseValue = value;
             MarkDirty(id);
         }
 
         /// <summary>
         /// 获取属性当前基础值（普通属性为 BaseValue，派生属性为公式计算值）。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <returns>属性基础值。</returns>
         public int GetBaseValue(PropertyType id)
         {
             RecalculateIfDirty(id);
-            return GetSlot(id).ComputedBaseValue;
+            return GetNode(id).ComputedBaseValue;
         }
 
         /// <summary>
         /// 获取属性最终值（基础值叠加所有激活 Modifier 后并做上下限裁剪）。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <returns>属性最终值。</returns>
         public int GetFinalValue(PropertyType id)
         {
             RecalculateIfDirty(id);
-            return GetSlot(id).FinalValue;
+            return GetNode(id).FinalValue;
         }
 
         /// <summary>
         /// 尝试获取属性最终值；若属性未注册则返回 false。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="value">输出的属性最终值。</param>
-        /// <returns>获取成功返回 true，否则返回 false。</returns>
         public bool TryGetFinalValue(PropertyType id, out int value)
         {
-            if (!_definitions.ContainsKey(id))
+            if (!_stats.ContainsKey(id))
             {
                 value = default;
                 return false;
@@ -264,14 +312,9 @@ namespace Fight.Number
         /// <summary>
         /// 为指定属性添加一个 Modifier。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="value">修正值。</param>
-        /// <param name="type">修正类型。</param>
-        /// <param name="source">修正来源。</param>
-        /// <returns>新增 Modifier 的句柄。</returns>
         public ModifierHandle AddModifier(PropertyType id, int value, ModifierType type, ModifierSource source)
         {
-            var slot = GetSlot(id);
+            var node = GetNode(id);
             var modifier = new StatModifier
             {
                 Handle = _nextHandle++,
@@ -281,7 +324,7 @@ namespace Fight.Number
                 Active = true,
             };
 
-            slot.Modifiers.Add(modifier);
+            node.Modifiers.Add(modifier);
             MarkDirty(id);
             return new ModifierHandle(modifier.Handle);
         }
@@ -289,10 +332,6 @@ namespace Fight.Number
         /// <summary>
         /// 更新指定 Modifier 的数值。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="handle">Modifier 句柄。</param>
-        /// <param name="newValue">新的修正值。</param>
-        /// <returns>更新成功返回 true，否则返回 false。</returns>
         public bool UpdateModifierValue(PropertyType id, ModifierHandle handle, int newValue)
         {
             if (!handle.IsValid)
@@ -300,17 +339,17 @@ namespace Fight.Number
                 return false;
             }
 
-            var slot = GetSlot(id);
-            for (int i = 0; i < slot.Modifiers.Count; i++)
+            var node = GetNode(id);
+            for (int i = 0; i < node.Modifiers.Count; i++)
             {
-                var modifier = slot.Modifiers[i];
+                var modifier = node.Modifiers[i];
                 if (modifier.Handle != handle.Value || modifier.Value == newValue)
                 {
                     continue;
                 }
 
                 modifier.Value = newValue;
-                slot.Modifiers[i] = modifier;
+                node.Modifiers[i] = modifier;
                 MarkDirty(id);
                 return true;
             }
@@ -321,9 +360,6 @@ namespace Fight.Number
         /// <summary>
         /// 移除指定句柄对应的 Modifier。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="handle">Modifier 句柄。</param>
-        /// <returns>移除成功返回 true，否则返回 false。</returns>
         public bool RemoveModifier(PropertyType id, ModifierHandle handle)
         {
             if (!handle.IsValid)
@@ -331,15 +367,15 @@ namespace Fight.Number
                 return false;
             }
 
-            var slot = GetSlot(id);
-            for (int i = 0; i < slot.Modifiers.Count; i++)
+            var node = GetNode(id);
+            for (int i = 0; i < node.Modifiers.Count; i++)
             {
-                if (slot.Modifiers[i].Handle != handle.Value)
+                if (node.Modifiers[i].Handle != handle.Value)
                 {
                     continue;
                 }
 
-                RemoveAtSwapBack(slot.Modifiers, i);
+                RemoveAtSwapBack(node.Modifiers, i);
                 MarkDirty(id);
                 return true;
             }
@@ -350,10 +386,6 @@ namespace Fight.Number
         /// <summary>
         /// 设置指定 Modifier 的激活状态。
         /// </summary>
-        /// <param name="id">属性类型。</param>
-        /// <param name="handle">Modifier 句柄。</param>
-        /// <param name="isActive">是否激活。</param>
-        /// <returns>设置成功返回 true，否则返回 false。</returns>
         public bool SetModifierActive(PropertyType id, ModifierHandle handle, bool isActive)
         {
             if (!handle.IsValid)
@@ -361,17 +393,17 @@ namespace Fight.Number
                 return false;
             }
 
-            var slot = GetSlot(id);
-            for (int i = 0; i < slot.Modifiers.Count; i++)
+            var node = GetNode(id);
+            for (int i = 0; i < node.Modifiers.Count; i++)
             {
-                var modifier = slot.Modifiers[i];
+                var modifier = node.Modifiers[i];
                 if (modifier.Handle != handle.Value || modifier.Active == isActive)
                 {
                     continue;
                 }
 
                 modifier.Active = isActive;
-                slot.Modifiers[i] = modifier;
+                node.Modifiers[i] = modifier;
                 MarkDirty(id);
                 return true;
             }
@@ -382,8 +414,6 @@ namespace Fight.Number
         /// <summary>
         /// 按来源批量移除所有属性上的 Modifier。
         /// </summary>
-        /// <param name="source">目标来源。</param>
-        /// <returns>实际移除的 Modifier 数量。</returns>
         public int RemoveModifiersBySource(ModifierSource source)
         {
             bool flushImmediately = _batchDepth == 0;
@@ -396,25 +426,25 @@ namespace Fight.Number
 
             try
             {
-                foreach (var pair in _slots)
+                foreach (var pair in _stats)
                 {
                     var propertyType = pair.Key;
-                    var slot = pair.Value;
-                    bool removedFromCurrentSlot = false;
+                    var node = pair.Value;
+                    bool removedFromCurrentNode = false;
 
-                    for (int modifierIndex = slot.Modifiers.Count - 1; modifierIndex >= 0; modifierIndex--)
+                    for (int modifierIndex = node.Modifiers.Count - 1; modifierIndex >= 0; modifierIndex--)
                     {
-                        if (slot.Modifiers[modifierIndex].Source != source)
+                        if (node.Modifiers[modifierIndex].Source != source)
                         {
                             continue;
                         }
 
-                        RemoveAtSwapBack(slot.Modifiers, modifierIndex);
+                        RemoveAtSwapBack(node.Modifiers, modifierIndex);
                         removedCount++;
-                        removedFromCurrentSlot = true;
+                        removedFromCurrentNode = true;
                     }
 
-                    if (removedFromCurrentSlot)
+                    if (removedFromCurrentNode)
                     {
                         MarkDirty(propertyType);
                     }
@@ -434,12 +464,10 @@ namespace Fight.Number
         /// <summary>
         /// 若指定属性为脏，则执行一次重算并在最终值变化时触发事件。
         /// </summary>
-        /// <param name="id">属性类型。</param>
         public void RecalculateIfDirty(PropertyType id)
         {
-            var definition = GetDefinition(id);
-            var slot = GetSlot(id);
-            if (!slot.Dirty)
+            var node = GetNode(id);
+            if (!node.Dirty)
             {
                 return;
             }
@@ -451,13 +479,13 @@ namespace Fight.Number
 
             try
             {
-                int oldValue = slot.FinalValue;
-                int baseValue = ResolveBaseValue(slot);
-                int finalValue = CalculateFinalValue(definition, baseValue, slot.Modifiers);
+                int oldValue = node.FinalValue;
+                int baseValue = ResolveBaseValue(node);
+                int finalValue = CalculateFinalValue(node.Definition, baseValue, node.Modifiers);
 
-                slot.ComputedBaseValue = baseValue;
-                slot.FinalValue = finalValue;
-                slot.Dirty = false;
+                node.ComputedBaseValue = baseValue;
+                node.FinalValue = finalValue;
+                node.Dirty = false;
 
                 if (oldValue != finalValue)
                 {
@@ -476,7 +504,7 @@ namespace Fight.Number
         /// </summary>
         public void RecalculateAllDirty()
         {
-            foreach (var propertyType in _slots.Keys)
+            foreach (var propertyType in _stats.Keys)
             {
                 RecalculateIfDirty(propertyType);
             }
@@ -484,46 +512,45 @@ namespace Fight.Number
 
         private void ThrowIfPropertyRegistered(PropertyType id)
         {
-            if (_definitions.ContainsKey(id))
+            if (_stats.ContainsKey(id))
             {
                 throw new InvalidOperationException("Property already registered: " + id);
             }
         }
 
-        private void EnsureDependentsList(PropertyType id)
+        private void ThrowIfResourceRegistered(ResourceType resourceType)
         {
-            if (!_dependents.ContainsKey(id))
+            if (_resources.ContainsKey(resourceType))
             {
-                _dependents.Add(id, new List<PropertyType>());
+                throw new InvalidOperationException("Resource already registered: " + resourceType);
             }
         }
 
         private void InitializeDerivedProperty(PropertyType id)
         {
-            var definition = GetDefinition(id);
-            var slot = GetSlot(id);
-            int baseValue = ResolveBaseValue(slot);
-            int finalValue = CalculateFinalValue(definition, baseValue, slot.Modifiers);
+            var node = GetNode(id);
+            int baseValue = ResolveBaseValue(node);
+            int finalValue = CalculateFinalValue(node.Definition, baseValue, node.Modifiers);
 
-            slot.ComputedBaseValue = baseValue;
-            slot.FinalValue = finalValue;
-            slot.Dirty = false;
+            node.ComputedBaseValue = baseValue;
+            node.FinalValue = finalValue;
+            node.Dirty = false;
             SyncResourcesForProperty(id);
         }
 
-        private int ResolveBaseValue(StatSlot slot)
+        private int ResolveBaseValue(StatNode node)
         {
-            if (!slot.IsDerived)
+            if (!node.IsDerived)
             {
-                return slot.BaseValue;
+                return node.BaseValue;
             }
 
-            for (int i = 0; i < slot.Dependencies.Length; i++)
+            for (int i = 0; i < node.Dependencies.Length; i++)
             {
-                RecalculateIfDirty(slot.Dependencies[i]);
+                RecalculateIfDirty(node.Dependencies[i]);
             }
 
-            return slot.Formula(new DerivedPropertyContext(this));
+            return node.Formula(new DerivedPropertyContext(this));
         }
 
         private void MarkDirty(PropertyType id)
@@ -545,17 +572,12 @@ namespace Fight.Number
                 return;
             }
 
-            var slot = GetSlot(id);
-            slot.Dirty = true;
+            var node = GetNode(id);
+            node.Dirty = true;
 
-            if (!_dependents.TryGetValue(id, out var dependents))
+            for (int i = 0; i < node.Dependents.Count; i++)
             {
-                return;
-            }
-
-            for (int i = 0; i < dependents.Count; i++)
-            {
-                MarkDirtyRecursive(dependents[i], visited);
+                MarkDirtyRecursive(node.Dependents[i], visited);
             }
         }
 
@@ -568,14 +590,10 @@ namespace Fight.Number
 
             RecalculateIfDirty(id);
 
-            if (!_dependents.TryGetValue(id, out var dependents))
+            var node = GetNode(id);
+            for (int i = 0; i < node.Dependents.Count; i++)
             {
-                return;
-            }
-
-            for (int i = 0; i < dependents.Count; i++)
-            {
-                RecalculateDirtyCascade(dependents[i], visited);
+                RecalculateDirtyCascade(node.Dependents[i], visited);
             }
         }
 
@@ -597,15 +615,15 @@ namespace Fight.Number
                 return true;
             }
 
-            var slot = GetSlot(current);
-            if (!slot.IsDerived)
+            var node = GetNode(current);
+            if (!node.IsDerived)
             {
                 return false;
             }
 
-            for (int i = 0; i < slot.Dependencies.Length; i++)
+            for (int i = 0; i < node.Dependencies.Length; i++)
             {
-                if (HasDependencyPath(slot.Dependencies[i], target, visited))
+                if (HasDependencyPath(node.Dependencies[i], target, visited))
                 {
                     return true;
                 }
@@ -614,21 +632,11 @@ namespace Fight.Number
             return false;
         }
 
-        private StatDefinition GetDefinition(PropertyType id)
+        private StatNode GetNode(PropertyType id)
         {
-            if (_definitions.TryGetValue(id, out var definition))
+            if (_stats.TryGetValue(id, out var node))
             {
-                return definition;
-            }
-
-            throw new InvalidOperationException("Property is not registered: " + id);
-        }
-
-        private StatSlot GetSlot(PropertyType id)
-        {
-            if (_slots.TryGetValue(id, out var slot))
-            {
-                return slot;
+                return node;
             }
 
             throw new InvalidOperationException("Property is not registered: " + id);
@@ -713,39 +721,33 @@ namespace Fight.Number
 
         private void SyncResourcesForProperty(PropertyType propertyType)
         {
-            foreach (var binding in _resourceMaxBindings)
+            foreach (var pair in _resources)
             {
-                if (binding.Value != propertyType)
+                if (!pair.Value.MaxPolicy.TryGetBoundProperty(out var boundPropertyType))
                 {
                     continue;
                 }
 
-                SyncResourceMaxValue(binding.Key, false);
+                if (boundPropertyType != propertyType)
+                {
+                    continue;
+                }
+
+                SyncResourceMaxValue(pair.Key, false);
             }
         }
 
         private void SyncResourceMaxValue(ResourceType resourceType, bool forceResetWhenUninitialized)
         {
-            if (!_resources.TryGetValue(resourceType, out var resource))
+            if (!_resources.TryGetValue(resourceType, out var node))
             {
                 return;
             }
 
-            if (!_resourceMaxBindings.TryGetValue(resourceType, out var maxPropertyType))
-            {
-                return;
-            }
-
-            if (!TryGetFinalValue(maxPropertyType, out var maxValue))
-            {
-                resource.SyncMaxValue(0, false);
-                return;
-            }
-
+            var resource = node.Resource;
+            int maxValue = node.MaxPolicy.ResolveMaxValue(this);
             bool resetCurrent = forceResetWhenUninitialized && resource.MaxValue == 0 && resource.Value == 0;
             resource.SyncMaxValue(maxValue, resetCurrent);
         }
     }
 }
-
-

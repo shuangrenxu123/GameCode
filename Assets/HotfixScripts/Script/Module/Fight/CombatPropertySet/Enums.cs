@@ -14,6 +14,7 @@
     public enum ResourceType
     {
         Hp = 0,
+        Shield = 1,
     }
 
     public enum ModifierType
