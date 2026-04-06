@@ -10,26 +10,38 @@ namespace Fight.Number
         [LabelText("防御")]
         Defense = 1,
 
-        [LabelText("移速倍率")]
-        SpeedMultiplier = 2,
-
         [LabelText("转向倍率")]
         RotationMultiplier = 3,
 
         [LabelText("最大生命")]
         MaxHp = 4,
 
+        [LabelText("MP")]
+        MaxMP = 8,
+
+        [LabelText("最大精力")]
+        MaxEnergy = 9,
+
         [LabelText("全能")]
         AllRound = 5,
 
         [LabelText("减伤率")]
         DamageReductionRate = 6,
+
+        [LabelText("移动速度")]
+        MoveSpeed = 7,
     }
 
     public enum ResourceType
     {
         [LabelText("生命")]
         Hp = 0,
+
+        [LabelText("魔法")]
+        MP = 2,
+
+        [LabelText("精力")]
+        Energy = 3,
 
         [LabelText("护盾")]
         Shield = 1,

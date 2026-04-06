@@ -26,7 +26,7 @@ namespace UIWindow
 
         public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
 
-        protected virtual void Awake()
+        protected void Awake()
         {
             CanvasComponent = GetComponent<Canvas>();
             if (CanvasComponent == null)

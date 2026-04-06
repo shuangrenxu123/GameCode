@@ -47,13 +47,19 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
+            if (!TryGetMoveSpeed(out float moveSpeed))
+            {
+                currentPlanarSpeedLimit = 0f;
+                return Vector3.zero;
+            }
+
             float speedMultiplier = materialControl == null ?
                 1f : materialControl.CurrentSurface.speedMultiplier
                 * materialControl.CurrentVolume.speedMultiplier;
 
             Vector3 targetPlanarVelocity;
 
-            currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit
+            currentPlanarSpeedLimit = moveSpeed
                 * runMoveParameters.runSpeedMultiplier;
 
             targetPlanarVelocity = CustomUtilities.Multiply

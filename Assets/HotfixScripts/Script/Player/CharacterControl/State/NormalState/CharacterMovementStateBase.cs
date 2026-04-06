@@ -22,6 +22,7 @@ namespace Character.Controller.MoveState
         public LinearMixerTransition currentAnimator;
         protected CombatEntity combatEntity;
 
+
         public CharacterActions characterActions
         {
             get
@@ -210,6 +211,24 @@ namespace Character.Controller.MoveState
         }
         protected Vector3 targetLookingDirection = Vector3.zero;
 
+        protected bool TryGetMoveSpeed(out float moveSpeed)
+        {
+            moveSpeed = 0f;
+            if (combatEntity == null || combatEntity.properties == null)
+            {
+                Debug.LogError("MoveSpeed 获取失败：CombatEntity 或 properties 为空。");
+                return false;
+            }
+
+            if (!combatEntity.properties.TryGetFinalValue(PropertyType.MoveSpeed, out int moveSpeedValue))
+            {
+                Debug.LogError("MoveSpeed 获取失败：属性未注册，角色移动将被禁用。");
+                return false;
+            }
+
+            moveSpeed = Mathf.Max(0f, moveSpeedValue);
+            return true;
+        }
         protected virtual void HandleRotation(float dt)
         {
             HandleLookingDirection(dt);

@@ -50,15 +50,16 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float characterSpeedMultiplier = combatEntity.properties
-                .GetFinalValue(PropertyType.SpeedMultiplier) / 100f;
+            if (!TryGetMoveSpeed(out float moveSpeed))
+            {
+                currentPlanarSpeedLimit = 0f;
+                return Vector3.zero;
+            }
 
             float groundSpeedMultiplier = materialControl == null ?
                 1f :
                 materialControl.CurrentSurface.speedMultiplier
                     * materialControl.CurrentVolume.speedMultiplier;
-
-            float finalSpeedMultiplier = characterSpeedMultiplier * groundSpeedMultiplier;
             Vector3 targetPlanarVelocity = default;
 
             switch (characterActor.CurrentState)
@@ -67,25 +68,25 @@ namespace Character.Controller.MoveState
                     if (characterActor.WasGrounded)
                     {
                         currentPlanarSpeedLimit = Mathf.Max
-                        (characterActor.PlanarVelocity.magnitude, planarMovementParameters.baseSpeedLimit);
+                        (characterActor.PlanarVelocity.magnitude, moveSpeed);
                     }
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, groundSpeedMultiplier, currentPlanarSpeedLimit);
                     break;
 
                 case CharacterActorState.StableGrounded:
-                    currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;
+                    currentPlanarSpeedLimit = moveSpeed;
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, groundSpeedMultiplier, currentPlanarSpeedLimit);
                     break
                     ;
                 case CharacterActorState.UnstableGrounded:
-                    currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;
+                    currentPlanarSpeedLimit = moveSpeed;
 
                     targetPlanarVelocity = CustomUtilities.Multiply
-                        (parentMachine.InputMovementReference, finalSpeedMultiplier, currentPlanarSpeedLimit);
+                        (parentMachine.InputMovementReference, groundSpeedMultiplier, currentPlanarSpeedLimit);
                     break;
             }
             return targetPlanarVelocity;

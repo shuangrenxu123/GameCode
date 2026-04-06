@@ -132,7 +132,7 @@ namespace SkillRuntimeClip
             runner.actor.SetUpRootMotion(usePositionRootMotion, useRotationRootMotion);
 
             var properties = runner.actor.GetComponent<CombatEntity>().properties;
-            speedChange = properties.AddModifier(PropertyType.SpeedMultiplier
+            speedChange = properties.AddModifier(PropertyType.MoveSpeed
                   , positionMultiplier
                   , Fight.Number.ModifierType.AddPercent
                   , new Fight.Number.ModifierSource(Fight.Number.ModifierSourceType.Buff));
@@ -146,7 +146,7 @@ namespace SkillRuntimeClip
             base.OnFinish();
             runner.actor.SetUpRootMotion(true, true);
             var properties = runner.actor.GetComponent<CombatEntity>().properties;
-            properties.RemoveModifier(PropertyType.SpeedMultiplier, speedChange);
+            properties.RemoveModifier(PropertyType.MoveSpeed, speedChange);
             properties.RemoveModifier(PropertyType.RotationMultiplier, rotationChange);
 
         }

@@ -31,7 +31,7 @@ namespace Fight
             new PropertySetupItem { propertyType = PropertyType.MaxHp, baseValue = 100 },
             new PropertySetupItem { propertyType = PropertyType.Attack, baseValue = 10 },
             new PropertySetupItem { propertyType = PropertyType.Defense, baseValue = 10 },
-            new PropertySetupItem { propertyType = PropertyType.SpeedMultiplier, baseValue = 100 },
+            new PropertySetupItem { propertyType = PropertyType.MoveSpeed, baseValue = 6 },
             new PropertySetupItem { propertyType = PropertyType.RotationMultiplier, baseValue = 100 },
         };
 

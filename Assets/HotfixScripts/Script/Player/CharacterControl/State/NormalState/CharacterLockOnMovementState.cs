@@ -74,15 +74,17 @@ namespace Character.Controller.MoveState
 
         protected override Vector3 ProcessPlanarMovement(float dt)
         {
-            float characterSpeedMultiplier = combatEntity.properties
-                .GetFinalValue(PropertyType.SpeedMultiplier) / 100f;
+            if (!TryGetMoveSpeed(out float moveSpeed))
+            {
+                currentPlanarSpeedLimit = 0f;
+                return Vector3.zero;
+            }
 
-            float finalSpeedMultiplier = characterSpeedMultiplier * lockOnMoveSpeed;
-            currentPlanarSpeedLimit = planarMovementParameters.baseSpeedLimit;
+            currentPlanarSpeedLimit = moveSpeed * lockOnMoveSpeed;
 
             Vector3 targetPlanarVelocity = CustomUtilities.Multiply(
                 parentMachine.InputMovementReference,
-                finalSpeedMultiplier,
+                1f,
                 currentPlanarSpeedLimit
             );
 
