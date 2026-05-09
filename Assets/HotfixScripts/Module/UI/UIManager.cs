@@ -8,10 +8,15 @@ namespace UIWindow
     {
         private const string UIRootName = "[UIRoot]";
         private const string UIInstanceRootName = "UI Form Instances";
+        private const string UIAssetRootPath = "Assets/SoulKnight2/GameRes/Prefab/UI";
+        private const string UIPrefabExtension = ".prefab";
         private const int GroupOrderStep = 1000;
         private const int WindowOrderStep = 10;
 
         private readonly Dictionary<string, UIWindowBase> loadedWindows = new(System.StringComparer.Ordinal);
+        private readonly Dictionary<string, GameObject> loadedPrefabWindows = new();
+        private readonly Dictionary<UIWindowBase, string> loadedWindowNames = new();
+        private readonly Dictionary<UIWindowBase, UIWindowGroup> loadedWindowGroups = new();
         private readonly Dictionary<UIWindowGroup, UIGroupRuntime> uiGroups = new();
         private readonly List<UIGroupRuntime> cachedGroupSortList = new();
 
@@ -60,46 +65,69 @@ namespace UIWindow
             return true;
         }
 
-        public T OpenUI<T>(UIWindowBase prefab) where T : UIWindowBase
+        public T OpenUI<T>(string path, UIWindowGroup group) where T : UIWindowBase
         {
-            return OpenUI<T>(prefab, null);
+            return OpenUI<T>(path, group, null);
         }
 
-        public T OpenUI<T>(UIWindowBase prefab, object userData) where T : UIWindowBase
+        public T OpenUI<T>(string path, UIWindowGroup group, object userData) where T : UIWindowBase
         {
-            if (prefab == null)
+            return OpenUIInternal<T>(path, group, userData);
+        }
+
+        private T OpenUIInternal<T>(string path, UIWindowGroup group, object userData) where T : UIWindowBase
+        {
+            //使用缓存预制件
+            GameObject panelPrefab = null;
+            if (!loadedPrefabWindows.TryGetValue(path, out panelPrefab))
             {
-                Debug.LogError("Open UI failed, prefab is null.");
+                panelPrefab = Resources.Load<GameObject>(path);
+                loadedPrefabWindows.Add(path, panelPrefab);
+            }
+
+            if (panelPrefab == null)
+            {
+                Debug.LogError("未能加载UI预制体：" + path);
                 return null;
             }
 
-            string windowName = typeof(T).FullName;
+            UIWindowBase panelPrefabComponent = panelPrefab.GetComponent<UIWindowBase>();
+            if (panelPrefabComponent == null)
+            {
+                Debug.LogError("UI预制体缺少 UIWindowBase 组件：" + path);
+                return null;
+            }
+
+            string windowName = panelPrefabComponent.WindowName;
             if (loadedWindows.TryGetValue(windowName, out UIWindowBase existingWindow))
             {
-                RefocusWindow(existingWindow, userData);
+                RefocusWindow(existingWindow, path);
                 return existingWindow as T;
             }
 
-            T instance = UnityEngine.Object.Instantiate(prefab) as T;
-            if (instance == null)
+            T panel = Object.Instantiate(panelPrefabComponent) as T;
+            if (panel == null)
             {
-                Debug.LogError($"Open UI failed, prefab '{prefab.name}' can not instantiate as '{typeof(T).FullName}'.");
+                Debug.LogError($"Open UI failed, prefab '{panelPrefab.name}' can not instantiate as '{typeof(T).FullName}'.");
                 return null;
             }
 
-            EnsureGroup(instance.UIGroup);
-            loadedWindows.Add(instance.WindowName, instance);
+            EnsureGroup(group);
+            UIGroupRuntime groupRuntime = uiGroups[group];
 
-            UIGroupRuntime group = uiGroups[instance.UIGroup];
-            instance.transform.SetParent(group.Root, false);
-            instance.transform.SetAsLastSibling();
-            group.Add(instance);
+            panel.transform.SetParent(groupRuntime.Root, false);
+            panel.transform.SetAsLastSibling();
+            groupRuntime.Add(panel);
 
-            instance.OnInit(userData);
-            instance.OnOpen(userData);
+            loadedWindows.Add(panel.WindowName, panel);
+            loadedWindowNames.Add(panel, panel.WindowName);
+            loadedWindowGroups.Add(panel, group);
 
-            RefreshGroup(group);
-            return instance;
+            panel.OnInit(userData);
+            panel.OnOpen(userData);
+
+            RefreshGroup(groupRuntime);
+            return panel;
         }
 
         public T GetUIWindow<T>() where T : UIWindowBase
@@ -144,12 +172,18 @@ namespace UIWindow
                 return;
             }
 
-            if (!loadedWindows.Remove(window.WindowName))
+            string loadedWindowName = GetLoadedWindowName(window);
+            if (!loadedWindows.Remove(loadedWindowName))
             {
                 return;
             }
 
-            if (!uiGroups.TryGetValue(window.UIGroup, out UIGroupRuntime group))
+            loadedWindowNames.Remove(window);
+
+            UIWindowGroup runtimeGroup = GetRuntimeWindowGroup(window);
+            loadedWindowGroups.Remove(window);
+
+            if (!uiGroups.TryGetValue(runtimeGroup, out UIGroupRuntime group))
             {
                 window.OnClose(userData);
                 GameObject.Destroy(window.gameObject);
@@ -170,6 +204,7 @@ namespace UIWindow
                 CloseUI(window, userData);
             }
         }
+
 
         public bool HasUI<T>() where T : UIWindowBase => loadedWindows.ContainsKey(typeof(T).FullName);
 
@@ -372,6 +407,37 @@ namespace UIWindow
             return group.ToString();
         }
 
+        private string GetUIAssetLocation(string uiPath)
+        {
+            string normalizedPath = uiPath.Replace('\\', '/').Trim('/');
+            if (!normalizedPath.EndsWith(UIPrefabExtension, System.StringComparison.OrdinalIgnoreCase))
+            {
+                normalizedPath += UIPrefabExtension;
+            }
+
+            return $"{UIAssetRootPath}/{normalizedPath}";
+        }
+
+        private string GetLoadedWindowName(UIWindowBase window)
+        {
+            if (window != null && loadedWindowNames.TryGetValue(window, out string loadedWindowName))
+            {
+                return loadedWindowName;
+            }
+
+            return window != null ? window.WindowName : string.Empty;
+        }
+
+        private UIWindowGroup GetRuntimeWindowGroup(UIWindowBase window)
+        {
+            if (window != null && loadedWindowGroups.TryGetValue(window, out UIWindowGroup runtimeGroup))
+            {
+                return runtimeGroup;
+            }
+
+            return window != null ? window.UIGroup : UIWindowGroup.Normal;
+        }
+
         private void RefocusWindow(UIWindowBase window, object userData)
         {
             if (window == null)
@@ -379,7 +445,8 @@ namespace UIWindow
                 return;
             }
 
-            if (!uiGroups.TryGetValue(window.UIGroup, out UIGroupRuntime group))
+            UIWindowGroup runtimeGroup = GetRuntimeWindowGroup(window);
+            if (!uiGroups.TryGetValue(runtimeGroup, out UIGroupRuntime group))
             {
                 return;
             }

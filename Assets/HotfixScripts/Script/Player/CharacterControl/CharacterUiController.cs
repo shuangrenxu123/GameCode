@@ -24,8 +24,7 @@ public class CharacterUiController : MonoBehaviour
         if (InputActions.OpenUI.Started)
         {
             CharacterBrain.EnableUIInput();
-            var ui = ResourcesManager.Instance.LoadAsset<GameObject>("ui", "GameUI.prefab");
-            UIManager.Instance.OpenUI<GameUIMgr>(ui.GetComponent<GameUIMgr>());
+            // UIManager.Instance.OpenUI<GameUIMgr>(UIWindowGroup.Normal);
         }
         if (InputActions.OpenConsoleUI.Started)
         {
@@ -42,13 +41,6 @@ public class CharacterUiController : MonoBehaviour
             return existing;
         }
 
-        var ui = Resources.Load<GameObject>("UI/ConsolePanel/ConsoleUI");
-        if (ui == null)
-        {
-            Debug.LogWarning("ConsoleUI prefab not found in Resources/UI/ConsolePanel");
-            return null;
-        }
-
-        return UIManager.Instance.OpenUI<CommandUI>(ui.GetComponent<CommandUI>());
+        return UIManager.Instance.OpenUI<CommandUI>("UI/CommandUI/CommandUI", UIWindowGroup.Normal);
     }
 }

@@ -108,6 +108,12 @@ namespace CharacterController
                 {
                     sampledCharacterUIActions.SetValues(UIinputHandlerSettings.InputHandler);
                 }
+
+                if (inputHandlerSettings.InputHandler != null)
+                {
+                    // UI模式下仍然允许控制台快捷键通过角色输入触发。
+                    sampledCharacterActions.OpenConsoleUI.value = inputHandlerSettings.InputHandler.GetBool("OpenConsole");
+                }
             }
             else
             {

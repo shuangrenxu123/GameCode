@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UIWindow
 {
@@ -17,6 +18,7 @@ namespace UIWindow
         public Canvas CanvasComponent { get; private set; }
         public string WindowName => GetType().FullName;
         public CanvasGroup CanvasGroup { get; private set; }
+        public GraphicRaycaster GraphicRaycaster { get; private set; }
         public virtual UIWindowGroup UIGroup => uiGroup;
         public virtual bool PauseCoveredWindow => pauseCoveredWindow;
         public int DepthInUIGroup { get; private set; }
@@ -26,7 +28,7 @@ namespace UIWindow
 
         public Dictionary<string, UIEventListener> listeners = new Dictionary<string, UIEventListener>();
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             CanvasComponent = GetComponent<Canvas>();
             if (CanvasComponent == null)
@@ -35,6 +37,12 @@ namespace UIWindow
             }
 
             CanvasComponent.overrideSorting = true;
+
+            GraphicRaycaster = GetComponent<GraphicRaycaster>();
+            if (GraphicRaycaster == null)
+            {
+                GraphicRaycaster = gameObject.AddComponent<GraphicRaycaster>();
+            }
 
             CanvasGroup = GetComponent<CanvasGroup>();
             if (CanvasGroup == null)
