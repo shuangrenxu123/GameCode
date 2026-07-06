@@ -70,6 +70,8 @@ namespace Fight
         }
         public virtual void OnRelease()
         {
+            Creator = null;
+            Target = null;
             PreCreatorAction = null;
             PostCreatorAction = null;
             PreTargetActions.Clear();

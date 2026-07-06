@@ -16,13 +16,15 @@ public class RegenerationAction : CombatAction
             target.hp.Add(result);
             PostProcess(Creator, target);
         }
+
+        Release();
     }
 
     protected override void PostProcess(CombatEntity c, CombatEntity t)
     {
         foreach (var target in Target)
         {
-            target.TriggerActionPoint(ActionPointType.PostReceiveDamage, this);
+            target.TriggerActionPoint(ActionPointType.PostRestoreHP, this);
         }
     }
 

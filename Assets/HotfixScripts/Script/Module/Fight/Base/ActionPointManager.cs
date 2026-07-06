@@ -68,6 +68,6 @@ namespace Fight
         /// </summary>
         PostRestoreHP,
 
-        Length = 5,
+        Length = 6,
     }
 }
