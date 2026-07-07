@@ -1,8 +1,9 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using Character.Player;
 using ConsoleLog;
+using Helper;
 using Network;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -13,29 +14,29 @@ namespace UIPanel.Console
 {
     public class CommandUI : UIWindowBase
     {
-        [SerializeField]
+        [SerializeField, LabelText("命令输入框")]
         TMP_InputField input;
 
-        [SerializeField]
+        [SerializeField, LabelText("文本模板")]
         TMP_Text Text;
 
-        [SerializeField]
+        [SerializeField, LabelText("日志父节点")]
         GameObject parent;
 
-        [SerializeField]
+        [SerializeField, LabelText("提示父节点")]
         Transform tipsParent;
 
         [SerializeField, LabelText("透明度")]
         CanvasGroup canvasGroup;
 
-        [SerializeField]
+        [SerializeField, LabelText("提示普通颜色")]
         Color tipNormalColor = Color.white;
 
-        [SerializeField]
+        [SerializeField, LabelText("提示高亮颜色")]
         Color tipHighlightColor = Color.yellow;
 
         #region Message
-        private Stack<TMP_Text> logStack;
+        private Queue<TMP_Text> logQueue;
         private const int MAXCOUNT = 20;
 
         private int logCount = 0;
@@ -44,7 +45,7 @@ namespace UIPanel.Console
         #region Command
         private List<string> commandStack;//
         private int currentCommandIndex = 0;
-        private List<string> tipsCommand;
+        private List<CommandSuggestion> tipsCommand;
         private readonly List<TMP_Text> activeTipItems = new();
         private const int MaxSuggestionCount = 6;
         private int selectedTipIndex = -1;
@@ -55,7 +56,7 @@ namespace UIPanel.Console
         bool inputActive;
         private void Start()
         {
-            logStack = new Stack<TMP_Text>();
+            logQueue = new Queue<TMP_Text>();
             commandStack = new();
             tipsCommand = new();
             input.onSubmit.AddListener((string text) => SubmitCommand(text));
@@ -99,19 +100,33 @@ namespace UIPanel.Console
 
         private void OutputPanel(string arg1, string col)
         {
-            if (arg1 != "" && arg1 != string.Empty && arg1 != null)
+            if (!string.IsNullOrEmpty(arg1))
             {
                 var go = Instantiate(Text, parent.transform);
-                if (ColorUtility.TryParseHtmlString($"#{col}", out var color))
+                string colorText = string.IsNullOrEmpty(col) ? "FFFFFF" : col.Trim();
+                if (!colorText.StartsWith("#"))
+                {
+                    colorText = "#" + colorText;
+                }
+
+                if (ColorUtility.TryParseHtmlString(colorText, out var color))
                 {
                     go.color = color;
                 }
                 go.text = arg1;
-                logStack.Push(go);
+                logQueue.Enqueue(go);
                 logCount += 1;
             }
-            if (logCount >= MAXCOUNT)
-                Destroy(logStack.Pop());
+            if (logCount > MAXCOUNT)
+            {
+                TMP_Text oldLog = logQueue.Dequeue();
+                if (oldLog != null)
+                {
+                    Destroy(oldLog.gameObject);
+                }
+
+                logCount -= 1;
+            }
         }
 
 
@@ -174,20 +189,19 @@ namespace UIPanel.Console
             }
 
             string keyword = inputText.Length > 1 ? inputText.Substring(1) : string.Empty;
-            var matches = ConsoleManager.Instance.MatchCommands(keyword);
+            var matches = ConsoleManager.Instance.MatchCommandSuggestions(keyword);
             if (matches == null || matches.Count == 0)
             {
                 return;
             }
 
-            tipsCommand.Clear();
-            tipsCommand.AddRange(matches);
-
             int count = Mathf.Min(matches.Count, MaxSuggestionCount);
+            tipsCommand.Clear();
             for (int i = 0; i < count; i++)
             {
+                tipsCommand.Add(matches[i]);
                 var go = Instantiate(Text, tipsParent);
-                go.text = matches[i];
+                go.text = matches[i].DisplayText;
                 go.color = tipNormalColor;
                 activeTipItems.Add(go);
             }
@@ -267,7 +281,8 @@ namespace UIPanel.Console
                 return;
             }
 
-            selectedTipIndex = Mathf.Clamp(selectedTipIndex + direction, 0, tipsCommand.Count - 1);
+            int maxIndex = Mathf.Min(tipsCommand.Count, activeTipItems.Count) - 1;
+            selectedTipIndex = Mathf.Clamp(selectedTipIndex + direction, 0, maxIndex);
             UpdateTipHighlight();
         }
 
@@ -286,7 +301,11 @@ namespace UIPanel.Console
 
         private bool IsSelectingSuggestion()
         {
-            return tipsCommand != null && tipsCommand.Count > 0 && selectedTipIndex >= 0 && selectedTipIndex < tipsCommand.Count;
+            return tipsCommand != null
+                && tipsCommand.Count > 0
+                && selectedTipIndex >= 0
+                && selectedTipIndex < tipsCommand.Count
+                && selectedTipIndex < activeTipItems.Count;
         }
 
         private void ApplySelectedSuggestion()
@@ -299,7 +318,7 @@ namespace UIPanel.Console
             suppressTipRefresh = true;
             var suggestion = tipsCommand[selectedTipIndex];
             ClearTips();
-            input.text = $"/{suggestion}";
+            input.text = $"/{suggestion.InsertText}";
             input.MoveTextEnd(false);
         }
 

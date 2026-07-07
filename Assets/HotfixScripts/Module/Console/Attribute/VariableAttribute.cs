@@ -1,11 +1,11 @@
 using System;
 
 [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-public sealed class ConsoleVariableAttribute : Attribute
+public sealed class VariableAttribute : Attribute
 {
     public string Name { get; }
 
-    public ConsoleVariableAttribute(string name = null)
+    public VariableAttribute(string name = null)
     {
         Name = name;
     }

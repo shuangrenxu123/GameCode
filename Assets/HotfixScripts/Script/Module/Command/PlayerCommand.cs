@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class PlayerCommand : MonoBehaviour
 {
-    [ConsoleVariable("player")]
+    [Variable("player")]
     static Player player;
 
     static readonly string SuccessColor = ColorUtility.ToHtmlStringRGB(new Color(0.38f, 0.94f, 0.61f));
