@@ -49,6 +49,11 @@ namespace Character.Controller.MoveState
         {
             base.Update();
 
+            if (!characterActor.IsGrounded)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+                return;
+            }
             if (characterActions.@lock.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);
@@ -65,8 +70,7 @@ namespace Character.Controller.MoveState
                 return;
             }
 
-            else if (characterActions.jump.Started ||
-                (!characterActor.IsGrounded && characterActor.IsFalling))
+            else if (characterActions.jump.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }

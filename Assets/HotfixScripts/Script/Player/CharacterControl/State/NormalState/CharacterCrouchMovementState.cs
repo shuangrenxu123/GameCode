@@ -17,7 +17,11 @@ namespace Character.Controller.MoveState
         public override void Update()
         {
             base.Update();
-            if (crouchParameters.inputMode == InputMode.Hold)
+            if (!characterActor.IsGrounded)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+            }
+            else if (crouchParameters.inputMode == InputMode.Hold)
             {
                 if (characterActions.crouch.value == false)
                 {

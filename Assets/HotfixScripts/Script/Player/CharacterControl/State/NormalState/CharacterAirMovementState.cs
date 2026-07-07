@@ -26,12 +26,12 @@ namespace Character.Controller.MoveState
         {
             // characterActor.alwaysNotGrounded = true;
             characterActor.ForceNotGrounded(10);
-            currentAirState = AirState.Upward;
             if (characterActions.jump.Started)
             {
                 Jump();
-                currentAirState = AirState.Fall;
             }
+            currentAirState = characterActor.IsAscending ? AirState.Fall : AirState.Upward;
+            RefreshAirAnimation();
             isEnd = false;
         }
 
@@ -78,16 +78,21 @@ namespace Character.Controller.MoveState
         {
             if (!characterActor.IsGrounded)
             {
-                if (characterActor.Velocity.y > 0 && currentAirState != AirState.Upward)
-                {
-                    currentAirState = AirState.Upward;
-                    Animancer.Play(jumpAnim);
-                }
-                else if (characterActor.Velocity.y < 0 && currentAirState != AirState.Fall)
-                {
-                    currentAirState = AirState.Fall;
-                    Animancer.Play(downAnim);
-                }
+                RefreshAirAnimation();
+            }
+        }
+
+        void RefreshAirAnimation()
+        {
+            if (characterActor.IsAscending && currentAirState != AirState.Upward)
+            {
+                currentAirState = AirState.Upward;
+                Animancer.Play(jumpAnim);
+            }
+            else if (!characterActor.IsAscending && currentAirState != AirState.Fall)
+            {
+                currentAirState = AirState.Fall;
+                Animancer.Play(downAnim);
             }
         }
         public override void RefreshAnimator()

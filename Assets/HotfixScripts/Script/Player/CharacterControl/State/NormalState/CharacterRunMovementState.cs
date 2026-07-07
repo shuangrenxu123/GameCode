@@ -23,7 +23,11 @@ namespace Character.Controller.MoveState
         {
             base.Update();
             base.Update();
-            if (runMoveParameters.runInputMode == InputMode.Hold)
+            if (!characterActor.IsGrounded)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+            }
+            else if (runMoveParameters.runInputMode == InputMode.Hold)
             {
                 if (characterActions.run.value == false)
                 {

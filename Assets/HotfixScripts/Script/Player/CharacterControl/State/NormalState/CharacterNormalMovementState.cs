@@ -13,7 +13,11 @@ namespace Character.Controller.MoveState
         public override void Update()
         {
             base.Update();
-            if (characterActions.crouch.Started)
+            if (!characterActor.IsGrounded)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump);
+            }
+            else if (characterActions.crouch.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
             }
@@ -22,8 +26,7 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
             }
 
-            else if (characterActions.jump.Started ||
-                (!characterActor.IsGrounded && characterActor.IsFalling))
+            else if (characterActions.jump.Started)
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }
