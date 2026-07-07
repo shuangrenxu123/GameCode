@@ -41,7 +41,7 @@ namespace Utf8Json.Resolvers
 
                 try
                 {
-                    if (attr.FormatterType.IsGenericType && !attr.FormatterType.GetTypeInfo().IsConstructedGenericType())
+                    if (attr.FormatterType.IsGenericType && !attr.FormatterType.GetTypeInfo().IsConstructedGenericType)
                     {
                         var t = attr.FormatterType.MakeGenericType(typeof(T)); // use T self
                         formatter = (IJsonFormatter<T>)Activator.CreateInstance(t, attr.Arguments);

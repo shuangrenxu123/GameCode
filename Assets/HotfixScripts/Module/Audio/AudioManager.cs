@@ -74,6 +74,7 @@ namespace Audio
                     continue;
                 }
 
+                ApplySpatialMode(agent, audioData.layer);
                 agent.PlayAudio(clip, audioData.looping);
                 RegisterAgent(agent, audioData.layer);
             }
@@ -90,6 +91,7 @@ namespace Audio
             var agent = SpawnAgent(position);
             if (agent != null)
             {
+                ApplySpatialMode(agent, layer);
                 agent.PlayAudio(clip, loop);
                 RegisterAgent(agent, layer);
             }
@@ -214,6 +216,14 @@ namespace Audio
             agent.OnEnd += release;
         }
 
+        private void ApplySpatialMode(AudioAgent agent, AudioLayer layer)
+        {
+            if (agent == null)
+                return;
+
+            agent.SetSpatialBlend(layer == AudioLayer.WorldSfx ? 1f : 0f);
+        }
+
         private void RemovePendingFade(AudioAgent agent)
         {
             if (agent == null || fadeRequests.Count == 0)
@@ -272,20 +282,20 @@ namespace Audio
     public enum AudioLayer
     {
         /// <summary>
-        /// 音乐
+        /// 背景音乐
         /// </summary>
-        Music,
+        Bgm,
         /// <summary>
-        /// BGM，背景音乐
+        /// 普通音效，默认无视距离
         /// </summary>
-        Ambient,
+        Sfx,
         /// <summary>
         /// 语音
         /// </summary>
         Voice,
         /// <summary>
-        /// 音效
+        /// 世界音效，使用 3D 距离衰减
         /// </summary>
-        Sound,
+        WorldSfx,
     }
 }

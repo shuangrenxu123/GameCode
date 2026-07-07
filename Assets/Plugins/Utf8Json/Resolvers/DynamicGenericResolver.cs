@@ -123,7 +123,7 @@ namespace Utf8Json.Resolvers.Internal
                 {
                     return CreateInstance(typeof(KeyValuePairFormatter<,>), ti.GenericTypeArguments);
                 }
-                else if (isNullable && nullableElementType.GetTypeInfo().IsConstructedGenericType() && nullableElementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
+                else if (isNullable && nullableElementType.GetTypeInfo().IsConstructedGenericType && nullableElementType.GetGenericTypeDefinition() == typeof(KeyValuePair<,>))
                 {
                     return CreateInstance(typeof(NullableFormatter<>), new[] { nullableElementType });
                 }
@@ -228,7 +228,7 @@ namespace Utf8Json.Resolvers.Internal
                         return CreateInstance(typeof(ArraySegmentFormatter<>), ti.GenericTypeArguments);
                     }
                 }
-                else if (isNullable && nullableElementType.GetTypeInfo().IsConstructedGenericType() && nullableElementType.GetGenericTypeDefinition() == typeof(ArraySegment<>))
+                else if (isNullable && nullableElementType.GetTypeInfo().IsConstructedGenericType && nullableElementType.GetGenericTypeDefinition() == typeof(ArraySegment<>))
                 {
                     if (nullableElementType == typeof(ArraySegment<byte>))
                     {
@@ -251,7 +251,7 @@ namespace Utf8Json.Resolvers.Internal
 
                     // generic collection
                     else if (ti.GenericTypeArguments.Length == 1
-                          && ti.ImplementedInterfaces.Any(x => x.GetTypeInfo().IsConstructedGenericType() && x.GetGenericTypeDefinition() == typeof(ICollection<>))
+                          && ti.ImplementedInterfaces.Any(x => x.GetTypeInfo().IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(ICollection<>))
                           && ti.DeclaredConstructors.Any(x => x.GetParameters().Length == 0))
                     {
                         var elemType = ti.GenericTypeArguments[0];
@@ -259,7 +259,7 @@ namespace Utf8Json.Resolvers.Internal
                     }
                     // generic dictionary
                     else if (ti.GenericTypeArguments.Length == 2
-                          && ti.ImplementedInterfaces.Any(x => x.GetTypeInfo().IsConstructedGenericType() && x.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                          && ti.ImplementedInterfaces.Any(x => x.GetTypeInfo().IsConstructedGenericType && x.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                           && ti.DeclaredConstructors.Any(x => x.GetParameters().Length == 0))
                     {
                         var keyType = ti.GenericTypeArguments[0];

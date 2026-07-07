@@ -76,7 +76,7 @@ public static class Engine
         if (priority < 0)
             throw new Exception("模块的优先级不能为负数");
         if (Contains(typeof(T)))
-            throw new Exception("已经包含模块");
+            throw new Exception($"已经包含模块 {typeof(T)}");
         Debug.Log($"创建了{typeof(T)}组件");
         T module = Activator.CreateInstance<T>();
         ModuleWrapper wrapper = new ModuleWrapper(priority, module);

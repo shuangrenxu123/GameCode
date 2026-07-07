@@ -25,6 +25,8 @@ namespace Audio
         public override void Init()
         {
             audioSource = gameObject.AddComponent<AudioSource>();
+            audioSource.playOnAwake = false;
+            SetSpatialBlend(0f);
             ResetCallbacks();
         }
         public void PlayAudio(AudioClip clip, bool hasLoop)
@@ -121,6 +123,10 @@ namespace Audio
         public void SetMute(bool v)
         {
             audioSource.mute = v;
+        }
+        public void SetSpatialBlend(float value)
+        {
+            audioSource.spatialBlend = Mathf.Clamp01(value);
         }
         public float GetVolume()
         {

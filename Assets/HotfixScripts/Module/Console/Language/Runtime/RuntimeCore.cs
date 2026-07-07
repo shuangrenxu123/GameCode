@@ -228,7 +228,10 @@ namespace Helper
 
         public CallFrame(RuntimeFunction function, int slotStart)
         {
-            Reset(function, slotStart, slotStart);
+            Function = function;
+            SlotStart = slotStart;
+            BaseSlot = slotStart;
+            InstructionPointer = 0;
         }
 
         public void Reset(RuntimeFunction function, int slotStart, int baseSlot)

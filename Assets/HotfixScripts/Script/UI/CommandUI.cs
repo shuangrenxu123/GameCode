@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Character.Player;
 using ConsoleLog;
 using Helper;
+using LitMotion;
+using LitMotion.Extensions;
 using Network;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -36,8 +38,29 @@ namespace UIPanel.Console
         Color tipHighlightColor = Color.yellow;
 
         #region Message
-        private Queue<TMP_Text> logQueue;
-        private const int MAXCOUNT = 20;
+        [SerializeField, LabelText("最大日志数量"), Min(1)]
+        int maxLogCount = 20;
+
+        [SerializeField, LabelText("日志淡入淡出时间"), Min(0f)]
+        float logFadeDuration = 0.2f;
+
+        [SerializeField, LabelText("日志移动时间"), Min(0f)]
+        float logMoveDuration = 0.2f;
+
+        [SerializeField, LabelText("日志进入偏移"), Min(0f)]
+        float logEnterOffsetY = 20f;
+
+        [SerializeField, LabelText("空闲隐藏延迟"), Min(0f)]
+        float idleHideDelay = 5f;
+
+        [SerializeField, LabelText("整体淡出时间"), Min(0f)]
+        float consoleFadeDuration = 0.3f;
+
+        private readonly List<LogItem> logItems = new();
+        RectTransform logParentRect;
+        MotionHandle consoleFadeHandle;
+        float lastLogTime;
+        bool consoleHiddenByIdle;
 
         private int logCount = 0;
         #endregion
@@ -56,9 +79,10 @@ namespace UIPanel.Console
         bool inputActive;
         private void Start()
         {
-            logQueue = new Queue<TMP_Text>();
             commandStack = new();
             tipsCommand = new();
+            logParentRect = parent != null ? parent.transform as RectTransform : null;
+            lastLogTime = Time.unscaledTime;
             input.onSubmit.AddListener((string text) => SubmitCommand(text));
             input.onValueChanged.AddListener((string text) => GetCommandTips(text));
 
@@ -96,39 +120,292 @@ namespace UIPanel.Console
             {
                 ApplySelectedSuggestion();
             }
+
+            UpdateConsoleIdleFade();
         }
 
         private void OutputPanel(string arg1, string col)
         {
-            if (!string.IsNullOrEmpty(arg1))
+            if (string.IsNullOrEmpty(arg1))
             {
-                var go = Instantiate(Text, parent.transform);
-                string colorText = string.IsNullOrEmpty(col) ? "FFFFFF" : col.Trim();
-                if (!colorText.StartsWith("#"))
-                {
-                    colorText = "#" + colorText;
-                }
-
-                if (ColorUtility.TryParseHtmlString(colorText, out var color))
-                {
-                    go.color = color;
-                }
-                go.text = arg1;
-                logQueue.Enqueue(go);
-                logCount += 1;
+                return;
             }
-            if (logCount > MAXCOUNT)
-            {
-                TMP_Text oldLog = logQueue.Dequeue();
-                if (oldLog != null)
-                {
-                    Destroy(oldLog.gameObject);
-                }
 
-                logCount -= 1;
+            EnsureConsoleVisible();
+            lastLogTime = Time.unscaledTime;
+
+            Dictionary<LogItem, Vector2> oldPositions = CaptureLogPositions();
+            LogItem newItem = CreateLogItem(arg1, col);
+            logItems.Add(newItem);
+            logCount = logItems.Count;
+
+            LogItem removedItem = null;
+            if (logItems.Count > maxLogCount)
+            {
+                removedItem = logItems[0];
+                logItems.RemoveAt(0);
+                logCount = logItems.Count;
+                SetIgnoreLayout(removedItem, true);
+            }
+
+            RebuildLogLayout();
+            AnimateLogPositions(oldPositions);
+            AnimateLogEnter(newItem);
+
+            if (removedItem != null)
+            {
+                AnimateLogExit(removedItem, oldPositions);
             }
         }
 
+        private LogItem CreateLogItem(string message, string colorText)
+        {
+            var text = Instantiate(Text, parent.transform);
+            text.text = message;
+            ApplyLogColor(text, colorText);
+
+            RectTransform rect = text.transform as RectTransform;
+            CanvasGroup itemCanvasGroup = text.GetComponent<CanvasGroup>();
+            if (itemCanvasGroup == null)
+            {
+                itemCanvasGroup = text.gameObject.AddComponent<CanvasGroup>();
+            }
+
+            itemCanvasGroup.alpha = 0f;
+            return new LogItem(text, rect, itemCanvasGroup);
+        }
+
+        private void ApplyLogColor(TMP_Text text, string col)
+        {
+            string colorText = string.IsNullOrEmpty(col) ? "FFFFFF" : col.Trim();
+            if (!colorText.StartsWith("#"))
+            {
+                colorText = "#" + colorText;
+            }
+
+            if (ColorUtility.TryParseHtmlString(colorText, out var color))
+            {
+                text.color = color;
+            }
+        }
+
+        private Dictionary<LogItem, Vector2> CaptureLogPositions()
+        {
+            Dictionary<LogItem, Vector2> positions = new(logItems.Count);
+            for (int i = 0; i < logItems.Count; i++)
+            {
+                LogItem item = logItems[i];
+                if (item?.Rect == null)
+                {
+                    continue;
+                }
+
+                positions[item] = item.Rect.anchoredPosition;
+            }
+
+            return positions;
+        }
+
+        private void RebuildLogLayout()
+        {
+            if (logParentRect == null)
+            {
+                return;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(logParentRect);
+        }
+
+        private void AnimateLogPositions(Dictionary<LogItem, Vector2> oldPositions)
+        {
+            for (int i = 0; i < logItems.Count; i++)
+            {
+                LogItem item = logItems[i];
+                if (item?.Rect == null)
+                {
+                    continue;
+                }
+
+                Vector2 targetPosition = item.Rect.anchoredPosition;
+                if (!oldPositions.TryGetValue(item, out Vector2 startPosition))
+                {
+                    continue;
+                }
+
+                item.Rect.anchoredPosition = startPosition;
+                CancelHandle(ref item.MoveHandle);
+                item.MoveHandle = LMotion.Create(startPosition, targetPosition, logMoveDuration)
+                    .WithEase(Ease.OutCubic)
+                    .BindToAnchoredPosition(item.Rect)
+                    .AddTo(item.Text);
+            }
+        }
+
+        private void AnimateLogEnter(LogItem item)
+        {
+            if (item?.Rect == null || item.CanvasGroup == null)
+            {
+                return;
+            }
+
+            Vector2 targetPosition = item.Rect.anchoredPosition;
+            Vector2 startPosition = targetPosition - new Vector2(0f, logEnterOffsetY);
+            item.Rect.anchoredPosition = startPosition;
+
+            CancelHandle(ref item.MoveHandle);
+            item.MoveHandle = LMotion.Create(startPosition, targetPosition, logMoveDuration)
+                .WithEase(Ease.OutCubic)
+                .BindToAnchoredPosition(item.Rect)
+                .AddTo(item.Text);
+
+            CancelHandle(ref item.FadeHandle);
+            item.FadeHandle = LMotion.Create(0f, 1f, logFadeDuration)
+                .WithEase(Ease.OutSine)
+                .BindToAlpha(item.CanvasGroup)
+                .AddTo(item.Text);
+        }
+
+        private void AnimateLogExit(LogItem item, Dictionary<LogItem, Vector2> oldPositions)
+        {
+            if (item?.Text == null || item.Rect == null || item.CanvasGroup == null)
+            {
+                return;
+            }
+
+            Vector2 startPosition = oldPositions != null && oldPositions.TryGetValue(item, out Vector2 oldPosition)
+                ? oldPosition
+                : item.Rect.anchoredPosition;
+            Vector2 targetPosition = startPosition + GetExitMoveOffset(oldPositions);
+            item.Rect.anchoredPosition = startPosition;
+
+            CancelHandle(ref item.MoveHandle);
+            item.MoveHandle = LMotion.Create(startPosition, targetPosition, logMoveDuration)
+                .WithEase(Ease.OutCubic)
+                .BindToAnchoredPosition(item.Rect)
+                .AddTo(item.Text);
+
+            CancelHandle(ref item.FadeHandle);
+            item.FadeHandle = LMotion.Create(item.CanvasGroup.alpha, 0f, logFadeDuration)
+                .WithEase(Ease.OutSine)
+                .WithOnComplete(() =>
+                {
+                    if (item.Text != null)
+                    {
+                        Destroy(item.Text.gameObject);
+                    }
+                })
+                .BindToAlpha(item.CanvasGroup)
+                .AddTo(item.Text);
+        }
+
+        private Vector2 GetExitMoveOffset(Dictionary<LogItem, Vector2> oldPositions)
+        {
+            if (oldPositions != null)
+            {
+                for (int i = 0; i < logItems.Count; i++)
+                {
+                    LogItem item = logItems[i];
+                    if (item?.Rect == null || !oldPositions.TryGetValue(item, out Vector2 oldPosition))
+                    {
+                        continue;
+                    }
+
+                    Vector2 offset = item.Rect.anchoredPosition - oldPosition;
+                    if (offset.sqrMagnitude > 0.01f)
+                    {
+                        return offset;
+                    }
+                }
+            }
+
+            float fallbackDistance = 0f;
+            if (Text != null && Text.transform is RectTransform textRect)
+            {
+                fallbackDistance = textRect.rect.height;
+            }
+
+            fallbackDistance += logEnterOffsetY;
+            return Vector2.up * fallbackDistance;
+        }
+
+        private static void SetIgnoreLayout(LogItem item, bool ignoreLayout)
+        {
+            if (item?.Text == null)
+            {
+                return;
+            }
+
+            LayoutElement layoutElement = item.Text.GetComponent<LayoutElement>();
+            if (layoutElement == null)
+            {
+                layoutElement = item.Text.gameObject.AddComponent<LayoutElement>();
+            }
+
+            layoutElement.ignoreLayout = ignoreLayout;
+        }
+
+        private void EnsureConsoleVisible()
+        {
+            consoleHiddenByIdle = false;
+            if (canvasGroup == null)
+            {
+                return;
+            }
+
+            CancelHandle(ref consoleFadeHandle);
+            if (Mathf.Approximately(canvasGroup.alpha, 1f))
+            {
+                canvasGroup.alpha = 1f;
+                return;
+            }
+
+            consoleFadeHandle = LMotion.Create(canvasGroup.alpha, 1f, consoleFadeDuration)
+                .WithEase(Ease.OutSine)
+                .BindToAlpha(canvasGroup)
+                .AddTo(this);
+        }
+
+        private void UpdateConsoleIdleFade()
+        {
+            if (canvasGroup == null || consoleHiddenByIdle || IsInputEditing())
+            {
+                return;
+            }
+
+            if (Time.unscaledTime - lastLogTime < idleHideDelay)
+            {
+                return;
+            }
+
+            consoleHiddenByIdle = true;
+            CancelHandle(ref consoleFadeHandle);
+            consoleFadeHandle = LMotion.Create(canvasGroup.alpha, 0f, consoleFadeDuration)
+                .WithEase(Ease.OutSine)
+                .BindToAlpha(canvasGroup)
+                .AddTo(this);
+        }
+
+        private bool IsInputEditing()
+        {
+            if (input == null)
+            {
+                return false;
+            }
+
+            return inputActive || input.isFocused || !string.IsNullOrEmpty(input.text);
+        }
+
+        private static void CancelHandle(ref MotionHandle handle)
+        {
+            if (handle.Equals(MotionHandle.None))
+            {
+                return;
+            }
+
+            handle.TryCancel();
+            handle = MotionHandle.None;
+        }
 
         private void SubmitCommand(string text)
         {
@@ -250,6 +527,7 @@ namespace UIPanel.Console
 
         public void ShowInputPanel()
         {
+            EnsureConsoleVisible();
             if (inputActive)
             {
                 input.ActivateInputField();
@@ -272,6 +550,27 @@ namespace UIPanel.Console
             inputActive = false;
             input.DeactivateInputField();
             input.gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            if (ConsoleManager.Instance != null)
+            {
+                ConsoleManager.Instance.OnOutput -= OutputPanel;
+            }
+
+            CancelHandle(ref consoleFadeHandle);
+            for (int i = 0; i < logItems.Count; i++)
+            {
+                LogItem item = logItems[i];
+                if (item == null)
+                {
+                    continue;
+                }
+
+                CancelHandle(ref item.MoveHandle);
+                CancelHandle(ref item.FadeHandle);
+            }
         }
 
         private void MoveTipSelection(int direction)
@@ -320,6 +619,22 @@ namespace UIPanel.Console
             ClearTips();
             input.text = $"/{suggestion.InsertText}";
             input.MoveTextEnd(false);
+        }
+
+        sealed class LogItem
+        {
+            public readonly TMP_Text Text;
+            public readonly RectTransform Rect;
+            public readonly CanvasGroup CanvasGroup;
+            public MotionHandle MoveHandle;
+            public MotionHandle FadeHandle;
+
+            public LogItem(TMP_Text text, RectTransform rect, CanvasGroup canvasGroup)
+            {
+                Text = text;
+                Rect = rect;
+                CanvasGroup = canvasGroup;
+            }
         }
 
     }
