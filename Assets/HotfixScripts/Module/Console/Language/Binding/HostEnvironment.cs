@@ -133,11 +133,37 @@ namespace Helper
 
         void LoadAssemblyBindings()
         {
-            Type[] types = Assembly.GetExecutingAssembly().GetTypes();
-            foreach (Type type in types)
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
             {
-                commandRegistry.LoadCommands(type);
-                variableRegistry.LoadVariables(type);
+                if (assembly.IsDynamic)
+                    continue;
+
+                Type[] types = GetAssemblyTypes(assembly);
+                foreach (Type type in types)
+                {
+                    if (type == null)
+                        continue;
+
+                    commandRegistry.LoadCommands(type);
+                    variableRegistry.LoadVariables(type);
+                }
+            }
+        }
+
+        static Type[] GetAssemblyTypes(Assembly assembly)
+        {
+            try
+            {
+                return assembly.GetTypes();
+            }
+            catch (ReflectionTypeLoadException ex)
+            {
+                return ex.Types ?? Array.Empty<Type>();
+            }
+            catch (Exception)
+            {
+                return Array.Empty<Type>();
             }
         }
     }
