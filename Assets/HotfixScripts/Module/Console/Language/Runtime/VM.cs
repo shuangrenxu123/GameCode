@@ -67,7 +67,7 @@ namespace Helper
         Object
     }
 
-    public readonly struct RuntimeValue
+    public readonly struct RuntimeValue : IEquatable<RuntimeValue>
     {
         readonly double number;
         readonly bool boolean;
@@ -198,6 +198,24 @@ namespace Helper
             return Equals(reference, other.reference);
         }
 
+        public bool Equals(RuntimeValue other)
+        {
+            return Kind == other.Kind
+                   && number.Equals(other.number)
+                   && boolean == other.boolean
+                   && Equals(reference, other.reference);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is RuntimeValue other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Kind, number, boolean, reference);
+        }
+
         public override string ToString()
         {
             return ToDisplayString();
@@ -221,10 +239,10 @@ namespace Helper
 
     public struct CallFrame
     {
-        public RuntimeFunction Function { get; private set; }
-        public int InstructionPointer { get; set; }
-        public int SlotStart { get; private set; }
-        public int BaseSlot { get; private set; }
+        public RuntimeFunction Function;
+        public int InstructionPointer;
+        public int SlotStart;
+        public int BaseSlot;
 
         public CallFrame(RuntimeFunction function, int slotStart)
         {
@@ -242,24 +260,20 @@ namespace Helper
             InstructionPointer = 0;
         }
 
-        public Instruction ReadInstruction()
-        {
-            return Function.Chunk.Instructions[InstructionPointer++];
-        }
     }
 
     public sealed class VM
     {
-        readonly Runtime runtime;
+        readonly HostEnvironment host;
         readonly Dictionary<InternedString, RuntimeValue> globals = new();
         RuntimeValue[] stack = new RuntimeValue[256];
         int stackCount;
         CallFrame[] frames = new CallFrame[64];
         int frameCount;
 
-        public VM(Runtime runtime)
+        public VM(HostEnvironment host)
         {
-            this.runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+            this.host = host ?? throw new ArgumentNullException(nameof(host));
         }
 
         public ExecutionResult Execute(RuntimeFunction function)
@@ -299,16 +313,19 @@ namespace Helper
             while (frameCount > 0)
             {
                 ref CallFrame frame = ref CurrentFrame;
-                if (frame.InstructionPointer >= frame.Function.Chunk.Count)
+                Chunk chunk = frame.Function.Chunk;
+                if (frame.InstructionPointer >= chunk.Count)
                 {
                     return ReturnFromFrame(RuntimeValue.Nil);
                 }
 
-                Instruction instruction = frame.ReadInstruction();
-                switch (instruction.Code)
+                int instructionOffset = frame.InstructionPointer;
+                OpCode code = chunk.ReadOpCode(ref frame.InstructionPointer);
+                int line = chunk.GetLine(instructionOffset);
+                switch (code)
                 {
                     case OpCode.Constant:
-                        Push(RuntimeValue.FromObject(frame.Function.Chunk.Constants.Get((int)instruction.Operand)));
+                        Push(chunk.Constants.Get(ReadInt(chunk, ref frame)));
                         break;
                     case OpCode.Nil:
                         Push(RuntimeValue.Nil);
@@ -320,79 +337,74 @@ namespace Helper
                         Push(RuntimeValue.FromBool(false));
                         break;
                     case OpCode.Pop:
-                        Pop(instruction.Line);
+                        Pop(line);
                         break;
                     case OpCode.DefineGlobal:
-                        DefineGlobal((NameOperand)instruction.Operand, instruction.Line);
+                        DefineGlobal(ReadName(chunk, ref frame, line), line);
                         break;
                     case OpCode.GetGlobal:
-                        GetGlobal((NameOperand)instruction.Operand, instruction.Line);
+                        GetGlobal(ReadName(chunk, ref frame, line), line);
                         break;
                     case OpCode.SetGlobal:
-                        SetGlobal((NameOperand)instruction.Operand, instruction.Line);
+                        SetGlobal(ReadName(chunk, ref frame, line), line);
                         break;
                     case OpCode.GetLocal:
-                        Push(GetLocal((int)instruction.Operand, instruction.Line));
+                        Push(GetLocal(ReadInt(chunk, ref frame), line));
                         break;
                     case OpCode.SetLocal:
-                        SetLocal((int)instruction.Operand, instruction.Line);
+                        SetLocal(ReadInt(chunk, ref frame), line);
                         break;
                     case OpCode.Add:
-                        Add(instruction.Line);
+                        Add(line);
                         break;
                     case OpCode.Subtract:
-                        Subtract(instruction.Line);
+                        Subtract(line);
                         break;
                     case OpCode.Multiply:
-                        Multiply(instruction.Line);
+                        Multiply(line);
                         break;
                     case OpCode.Divide:
-                        Divide(instruction.Line);
+                        Divide(line);
                         break;
                     case OpCode.Negate:
-                        Negate(instruction.Line);
+                        Negate(line);
                         break;
                     case OpCode.Not:
-                        Not(instruction.Line);
+                        Not(line);
                         break;
                     case OpCode.Equal:
-                        Equal(instruction.Line);
+                        Equal(line);
                         break;
                     case OpCode.Greater:
-                        Greater(instruction.Line);
+                        Greater(line);
                         break;
                     case OpCode.GreaterEqual:
-                        GreaterEqual(instruction.Line);
+                        GreaterEqual(line);
                         break;
                     case OpCode.Less:
-                        Less(instruction.Line);
+                        Less(line);
                         break;
                     case OpCode.LessEqual:
-                        LessEqual(instruction.Line);
-                        break;
-                    case OpCode.And:
-                        LogicalAnd(instruction.Line);
-                        break;
-                    case OpCode.Or:
-                        LogicalOr(instruction.Line);
+                        LessEqual(line);
                         break;
                     case OpCode.Jump:
-                        frame.InstructionPointer = (int)instruction.Operand;
+                        frame.InstructionPointer = ReadInt(chunk, ref frame);
                         break;
                     case OpCode.JumpIfFalse:
-                        if (!Peek(instruction.Line).IsTruthy())
+                        int falseTarget = ReadInt(chunk, ref frame);
+                        if (!Peek(line).IsTruthy())
                         {
-                            frame.InstructionPointer = (int)instruction.Operand;
+                            frame.InstructionPointer = falseTarget;
                         }
                         break;
                     case OpCode.Loop:
-                        frame.InstructionPointer = (int)instruction.Operand;
+                        frame.InstructionPointer = ReadInt(chunk, ref frame);
                         break;
                     case OpCode.Call:
-                        CallValue((int)instruction.Operand, instruction.Line);
+                        CallValue(ReadInt(chunk, ref frame), line);
                         break;
                     case OpCode.Return:
-                        RuntimeValue result = stackCount > 0 ? Pop(instruction.Line) : RuntimeValue.Nil;
+                        RuntimeValue result = stackCount > 0 ? Pop(line) : RuntimeValue.Nil;
                         RuntimeValue final = ReturnFromFrame(result);
                         if (frameCount == 0)
                         {
@@ -400,25 +412,25 @@ namespace Helper
                         }
                         break;
                     case OpCode.InvokeCommand:
-                        InvokeCommand((CommandOperand)instruction.Operand, instruction.Line);
+                        InvokeCommand(ReadName(chunk, ref frame, line), ReadInt(chunk, ref frame), line);
                         break;
                     case OpCode.GetExternal:
-                        Push(RuntimeValue.FromObject(runtime.GetExternal(((NameOperand)instruction.Operand).Name)));
+                        Push(RuntimeValue.FromObject(host.GetExternal(ReadName(chunk, ref frame, line))));
                         break;
                     case OpCode.SetExternal:
-                        runtime.SetExternal(((NameOperand)instruction.Operand).Name, Peek(instruction.Line).ToObject());
+                        host.SetExternal(ReadName(chunk, ref frame, line), Peek(line).ToObject());
                         break;
                     case OpCode.GetMember:
-                        Push(RuntimeValue.FromObject(runtime.GetMember(Pop(instruction.Line).ToObject(), ((NameOperand)instruction.Operand).Name)));
+                        Push(RuntimeValue.FromObject(host.GetMember(Pop(line).ToObject(), ReadName(chunk, ref frame, line))));
                         break;
                     case OpCode.SetMember:
-                        SetMember((NameOperand)instruction.Operand, instruction.Line);
+                        SetMember(ReadName(chunk, ref frame, line), line);
                         break;
                     case OpCode.InvokeMember:
-                        InvokeMember((MemberInvokeOperand)instruction.Operand, instruction.Line);
+                        InvokeMember(ReadName(chunk, ref frame, line), ReadInt(chunk, ref frame), line);
                         break;
                     default:
-                        throw new RuntimeException($"未知字节码 {instruction.Code}", instruction.Line);
+                        throw new RuntimeException($"未知字节码 {code}", line);
                 }
             }
 
@@ -427,37 +439,54 @@ namespace Helper
 
         ref CallFrame CurrentFrame => ref frames[frameCount - 1];
 
-        void DefineGlobal(NameOperand operand, int line)
+        static int ReadInt(Chunk chunk, ref CallFrame frame)
         {
-            RuntimeValue value = Pop(line);
-            globals[operand.Name] = value;
+            return chunk.ReadInt(ref frame.InstructionPointer);
         }
 
-        void GetGlobal(NameOperand operand, int line)
+        InternedString ReadName(Chunk chunk, ref CallFrame frame, int line)
         {
-            if (globals.TryGetValue(operand.Name, out RuntimeValue value))
+            RuntimeValue value = chunk.Constants.Get(ReadInt(chunk, ref frame));
+            InternedString name = value.CommandName;
+            if (name != null)
+            {
+                return name;
+            }
+
+            throw new RuntimeException("字节码名称常量无效", line);
+        }
+
+        void DefineGlobal(InternedString name, int line)
+        {
+            RuntimeValue value = Pop(line);
+            globals[name] = value;
+        }
+
+        void GetGlobal(InternedString name, int line)
+        {
+            if (globals.TryGetValue(name, out RuntimeValue value))
             {
                 Push(value);
                 return;
             }
 
-            if (runtime.HasCommand(operand.Name))
+            if (host.HasCommand(name))
             {
-                Push(RuntimeValue.FromCommand(operand.Name));
+                Push(RuntimeValue.FromCommand(name));
                 return;
             }
 
-            throw new RuntimeException($"变量未定义 {operand.Name.Value}", line);
+            throw new RuntimeException($"变量未定义 {name.Value}", line);
         }
 
-        void SetGlobal(NameOperand operand, int line)
+        void SetGlobal(InternedString name, int line)
         {
-            if (!globals.ContainsKey(operand.Name))
+            if (!globals.ContainsKey(name))
             {
-                throw new RuntimeException($"变量未定义 {operand.Name.Value}", line);
+                throw new RuntimeException($"变量未定义 {name.Value}", line);
             }
 
-            globals[operand.Name] = Peek(line);
+            globals[name] = Peek(line);
         }
 
         RuntimeValue GetLocal(int slot, int line)
@@ -582,22 +611,6 @@ namespace Helper
             stackCount--;
         }
 
-        void LogicalAnd(int line)
-        {
-            RequireStackCount(2, line);
-            int leftIndex = stackCount - 2;
-            stack[leftIndex] = RuntimeValue.FromBool(stack[leftIndex].IsTruthy() && stack[leftIndex + 1].IsTruthy());
-            stackCount--;
-        }
-
-        void LogicalOr(int line)
-        {
-            RequireStackCount(2, line);
-            int leftIndex = stackCount - 2;
-            stack[leftIndex] = RuntimeValue.FromBool(stack[leftIndex].IsTruthy() || stack[leftIndex + 1].IsTruthy());
-            stackCount--;
-        }
-
         void CallValue(int argumentCount, int line)
         {
             int calleeIndex = stackCount - argumentCount - 1;
@@ -623,31 +636,31 @@ namespace Helper
             {
                 List<object> args = ReadArguments(calleeIndex + 1, argumentCount);
                 RemoveStackRange(calleeIndex, argumentCount + 1);
-                Push(RuntimeValue.FromObject(runtime.InvokeCommand(callee.CommandName, args)));
+                Push(RuntimeValue.FromObject(host.InvokeCommand(callee.CommandName, args)));
                 return;
             }
 
             throw new RuntimeException("该值不可调用", line);
         }
 
-        void InvokeCommand(CommandOperand operand, int line)
+        void InvokeCommand(InternedString name, int argumentCount, int line)
         {
-            List<object> args = PopArguments(operand.ArgumentCount, line);
-            Push(RuntimeValue.FromObject(runtime.InvokeCommand(operand.Name, args)));
+            List<object> args = PopArguments(argumentCount, line);
+            Push(RuntimeValue.FromObject(host.InvokeCommand(name, args)));
         }
 
-        void InvokeMember(MemberInvokeOperand operand, int line)
+        void InvokeMember(InternedString name, int argumentCount, int line)
         {
-            List<object> args = PopArguments(operand.ArgumentCount, line);
+            List<object> args = PopArguments(argumentCount, line);
             object target = Pop(line).ToObject();
-            Push(RuntimeValue.FromObject(runtime.InvokeMember(target, operand.Name, args)));
+            Push(RuntimeValue.FromObject(host.InvokeMember(target, name, args)));
         }
 
-        void SetMember(NameOperand operand, int line)
+        void SetMember(InternedString name, int line)
         {
             RuntimeValue value = Pop(line);
             object target = Pop(line).ToObject();
-            runtime.SetMember(target, operand.Name, value.ToObject());
+            host.SetMember(target, name, value.ToObject());
             Push(value);
         }
 

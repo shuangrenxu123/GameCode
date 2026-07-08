@@ -18,14 +18,61 @@ namespace Helper
         }
     }
 
-    public sealed class Runtime
+    static class ArgumentBufferPool
+    {
+        const int MaxCachedArraysPerLength = 32;
+        static readonly Dictionary<int, Stack<object[]>> Pools = new();
+
+        public static object[] Rent(int length)
+        {
+            if (length <= 0)
+            {
+                return Array.Empty<object>();
+            }
+
+            lock (Pools)
+            {
+                if (Pools.TryGetValue(length, out Stack<object[]> pool) && pool.Count > 0)
+                {
+                    return pool.Pop();
+                }
+            }
+
+            return new object[length];
+        }
+
+        public static void Return(object[] buffer, int length)
+        {
+            if (buffer == null || length <= 0)
+            {
+                return;
+            }
+
+            Array.Clear(buffer, 0, length);
+            lock (Pools)
+            {
+                if (!Pools.TryGetValue(length, out Stack<object[]> pool))
+                {
+                    pool = new Stack<object[]>(MaxCachedArraysPerLength);
+                    Pools[length] = pool;
+                }
+
+                if (pool.Count < MaxCachedArraysPerLength)
+                {
+                    pool.Push(buffer);
+                }
+            }
+        }
+    }
+
+    public sealed class HostEnvironment
     {
         readonly StringTable strings;
         readonly CommandRegistry commandRegistry;
         readonly VariableRegistry variableRegistry;
         readonly ExternalMemberBinder memberBinder;
 
-        public Runtime(StringTable strings)
+        public HostEnvironment(StringTable strings)
         {
             this.strings = strings ?? throw new ArgumentNullException(nameof(strings));
             commandRegistry = new CommandRegistry(strings);
@@ -160,6 +207,7 @@ namespace Helper
 
     public sealed class MethodCallable
     {
+        static readonly List<object> EmptyArguments = new(0);
         static readonly Dictionary<Type, string> TypeAliases = new()
         {
             { typeof(void), "void" },
@@ -183,46 +231,122 @@ namespace Helper
         readonly MethodInfo method;
         readonly ParameterInfo[] parameters;
         readonly string description;
+        readonly int requiredArgumentCount;
 
         public InternedString Name { get; }
         public string DisplayText { get; }
 
-        public MethodCallable(InternedString name, MethodInfo method, string description)
+        public MethodCallable(InternedString name, MethodInfo method, string description, bool buildDisplay = true)
         {
             Name = name;
             this.method = method;
             this.description = description;
             parameters = method.GetParameters();
-            DisplayText = BuildDisplayText();
+            requiredArgumentCount = CountRequiredArguments();
+            DisplayText = buildDisplay ? BuildDisplayText() : string.Empty;
         }
 
         public object Execute(List<object> args)
         {
-            args ??= new List<object>();
-            object[] converted = new object[parameters.Length];
-
-            for (int i = 0; i < parameters.Length; i++)
-            {
-                if (i >= args.Count)
-                {
-                    if (parameters[i].HasDefaultValue)
-                    {
-                        converted[i] = parameters[i].DefaultValue;
-                        continue;
-                    }
-
-                    throw new RuntimeException($"{Name.Value} 缺少参数 {parameters[i].Name}");
-                }
-
-                converted[i] = ConvertValue(args[i], parameters[i].ParameterType, parameters[i].Name);
-            }
-
+            args ??= EmptyArguments;
             if (args.Count > parameters.Length)
             {
                 throw new RuntimeException($"{Name.Value} 参数过多");
             }
 
-            return method.Invoke(null, converted);
+            object[] converted = ArgumentBufferPool.Rent(parameters.Length);
+            try
+            {
+                for (int i = 0; i < parameters.Length; i++)
+                {
+                    if (i >= args.Count)
+                    {
+                        if (parameters[i].HasDefaultValue)
+                        {
+                            converted[i] = parameters[i].DefaultValue;
+                            continue;
+                        }
+
+                        throw new RuntimeException($"{Name.Value} 缺少参数 {parameters[i].Name}");
+                    }
+
+                    converted[i] = ConvertValue(args[i], parameters[i].ParameterType, parameters[i].Name);
+                }
+
+                return method.Invoke(null, converted);
+            }
+            finally
+            {
+                ArgumentBufferPool.Return(converted, parameters.Length);
+            }
+        }
+
+        public bool TryInvoke(object target, List<object> args, out object result)
+        {
+            args ??= EmptyArguments;
+            result = null;
+            if (args.Count < requiredArgumentCount || args.Count > parameters.Length)
+            {
+                return false;
+            }
+
+            object[] converted = ArgumentBufferPool.Rent(parameters.Length);
+            try
+            {
+                if (!TryPrepareArguments(args, converted))
+                {
+                    return false;
+                }
+
+                result = method.Invoke(target, converted);
+                return true;
+            }
+            finally
+            {
+                ArgumentBufferPool.Return(converted, parameters.Length);
+            }
+        }
+
+        int CountRequiredArguments()
+        {
+            int count = 0;
+            for (int i = 0; i < parameters.Length; i++)
+            {
+                if (!parameters[i].HasDefaultValue)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        bool TryPrepareArguments(List<object> args, object[] converted)
+        {
+            int index = 0;
+            for (; index < args.Count; index++)
+            {
+                try
+                {
+                    converted[index] = ConvertValue(args[index], parameters[index].ParameterType, parameters[index].Name);
+                }
+                catch (RuntimeException)
+                {
+                    return false;
+                }
+            }
+
+            for (; index < parameters.Length; index++)
+            {
+                if (!parameters[index].HasDefaultValue)
+                {
+                    return false;
+                }
+
+                converted[index] = parameters[index].DefaultValue;
+            }
+
+            return true;
         }
 
         string BuildDisplayText()
@@ -399,7 +523,19 @@ namespace Helper
                 MethodInfo setterInfo = property.GetSetMethod(true);
                 if (setterInfo != null && setterInfo.IsStatic)
                 {
-                    setter = value => setterInfo.Invoke(null, new[] { MethodCallable.ConvertValue(value, property.PropertyType, property.Name) });
+                    setter = value =>
+                    {
+                        object[] converted = ArgumentBufferPool.Rent(1);
+                        try
+                        {
+                            converted[0] = MethodCallable.ConvertValue(value, property.PropertyType, property.Name);
+                            setterInfo.Invoke(null, converted);
+                        }
+                        finally
+                        {
+                            ArgumentBufferPool.Return(converted, 1);
+                        }
+                    };
                 }
 
                 RegisterInternal(attribute.Name ?? property.Name, property.PropertyType, getter, setter);
@@ -489,8 +625,10 @@ namespace Helper
 
     public sealed class ExternalMemberBinder
     {
+        static readonly List<object> EmptyArguments = new(0);
         readonly Dictionary<Type, Dictionary<InternedString, MemberAccessor>> memberAccessorCache = new();
-        readonly Dictionary<Type, Dictionary<InternedString, MethodInfo[]>> methodCache = new();
+        readonly Dictionary<Type, Dictionary<InternedString, MethodCallable[]>> methodCache = new();
+        readonly Dictionary<MemberMethodCacheKey, MethodCallable> matchedMethodCache = new();
 
         public ExternalMemberBinder(StringTable strings)
         {
@@ -536,12 +674,26 @@ namespace Helper
                 throw new RuntimeException($"调用 {methodName.Value} 时对象为空");
             }
 
-            MethodInfo[] methods = GetMethodCandidates(target.GetType(), methodName);
-            foreach (MethodInfo method in methods)
+            Type targetType = target.GetType();
+            args ??= EmptyArguments;
+            MemberMethodCacheKey key = new(targetType, methodName, args);
+            if (matchedMethodCache.TryGetValue(key, out MethodCallable cached))
             {
-                if (TryPrepareArguments(method.GetParameters(), args, out object[] converted))
+                if (cached.TryInvoke(target, args, out object cachedResult))
                 {
-                    return method.Invoke(target, converted);
+                    return cachedResult;
+                }
+
+                matchedMethodCache.Remove(key);
+            }
+
+            MethodCallable[] methods = GetMethodCandidates(targetType, methodName);
+            foreach (MethodCallable method in methods)
+            {
+                if (method.TryInvoke(target, args, out object result))
+                {
+                    matchedMethodCache[key] = method;
+                    return result;
                 }
             }
 
@@ -582,59 +734,155 @@ namespace Helper
             return null;
         }
 
-        MethodInfo[] GetMethodCandidates(Type type, InternedString methodName)
+        MethodCallable[] GetMethodCandidates(Type type, InternedString methodName)
         {
-            if (!methodCache.TryGetValue(type, out Dictionary<InternedString, MethodInfo[]> cache))
+            if (!methodCache.TryGetValue(type, out Dictionary<InternedString, MethodCallable[]> cache))
             {
-                cache = new Dictionary<InternedString, MethodInfo[]>();
+                cache = new Dictionary<InternedString, MethodCallable[]>();
                 methodCache[type] = cache;
             }
 
-            if (cache.TryGetValue(methodName, out MethodInfo[] methods))
+            if (cache.TryGetValue(methodName, out MethodCallable[] methods))
             {
                 return methods;
             }
 
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic;
-            methods = Array.FindAll(type.GetMethods(flags), method => string.Equals(method.Name, methodName.Value, StringComparison.Ordinal));
+            MethodInfo[] candidates = Array.FindAll(type.GetMethods(flags), method => string.Equals(method.Name, methodName.Value, StringComparison.Ordinal));
+            methods = new MethodCallable[candidates.Length];
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                methods[i] = new MethodCallable(methodName, candidates[i], null, false);
+            }
+
             cache[methodName] = methods;
             return methods;
         }
 
-        static bool TryPrepareArguments(ParameterInfo[] parameters, List<object> args, out object[] converted)
+        readonly struct MemberMethodCacheKey : IEquatable<MemberMethodCacheKey>
         {
-            args ??= new List<object>();
-            converted = Array.Empty<object>();
-            if (args.Count > parameters.Length)
+            readonly Type targetType;
+            readonly InternedString methodName;
+            readonly ArgumentSignature signature;
+            readonly int hash;
+
+            public MemberMethodCacheKey(Type targetType, InternedString methodName, List<object> args)
             {
-                return false;
+                this.targetType = targetType;
+                this.methodName = methodName;
+                signature = new ArgumentSignature(args);
+
+                HashCode hashCode = new();
+                hashCode.Add(targetType);
+                hashCode.Add(methodName);
+                hashCode.Add(signature);
+                hash = hashCode.ToHashCode();
             }
 
-            converted = new object[parameters.Length];
-            int index = 0;
-            for (; index < args.Count; index++)
+            public bool Equals(MemberMethodCacheKey other)
             {
-                try
+                return targetType == other.targetType
+                    && Equals(methodName, other.methodName)
+                    && signature.Equals(other.signature);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return obj is MemberMethodCacheKey other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return hash;
+            }
+        }
+
+        readonly struct ArgumentSignature : IEquatable<ArgumentSignature>
+        {
+            readonly int count;
+            readonly Type first;
+            readonly Type second;
+            readonly Type third;
+            readonly Type fourth;
+            readonly Type[] rest;
+            readonly int hash;
+
+            public ArgumentSignature(List<object> args)
+            {
+                count = args?.Count ?? 0;
+                first = GetArgumentType(args, 0);
+                second = GetArgumentType(args, 1);
+                third = GetArgumentType(args, 2);
+                fourth = GetArgumentType(args, 3);
+                rest = null;
+
+                HashCode hashCode = new();
+                hashCode.Add(count);
+                hashCode.Add(first);
+                hashCode.Add(second);
+                hashCode.Add(third);
+                hashCode.Add(fourth);
+
+                if (count > 4)
                 {
-                    converted[index] = MethodCallable.ConvertValue(args[index], parameters[index].ParameterType, parameters[index].Name);
+                    rest = new Type[count - 4];
+                    for (int i = 4; i < count; i++)
+                    {
+                        Type type = GetArgumentType(args, i);
+                        rest[i - 4] = type;
+                        hashCode.Add(type);
+                    }
                 }
-                catch (RuntimeException)
+
+                hash = hashCode.ToHashCode();
+            }
+
+            public bool Equals(ArgumentSignature other)
+            {
+                if (count != other.count
+                    || first != other.first
+                    || second != other.second
+                    || third != other.third
+                    || fourth != other.fourth)
                 {
                     return false;
                 }
-            }
 
-            for (; index < parameters.Length; index++)
-            {
-                if (!parameters[index].HasDefaultValue)
+                if (count <= 4)
                 {
-                    return false;
+                    return true;
                 }
 
-                converted[index] = parameters[index].DefaultValue;
+                for (int i = 0; i < rest.Length; i++)
+                {
+                    if (rest[i] != other.rest[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
 
-            return true;
+            public override bool Equals(object obj)
+            {
+                return obj is ArgumentSignature other && Equals(other);
+            }
+
+            public override int GetHashCode()
+            {
+                return hash;
+            }
+
+            static Type GetArgumentType(List<object> args, int index)
+            {
+                if (args == null || index >= args.Count)
+                {
+                    return null;
+                }
+
+                return args[index]?.GetType();
+            }
         }
 
         sealed class MemberAccessor
@@ -683,7 +931,16 @@ namespace Helper
             {
                 if (property != null)
                 {
-                    setter.Invoke(target, new[] { value });
+                    object[] args = ArgumentBufferPool.Rent(1);
+                    try
+                    {
+                        args[0] = value;
+                        setter.Invoke(target, args);
+                    }
+                    finally
+                    {
+                        ArgumentBufferPool.Return(args, 1);
+                    }
                     return;
                 }
 
