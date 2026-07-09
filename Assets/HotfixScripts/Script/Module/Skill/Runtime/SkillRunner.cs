@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Animancer;
 using AYellowpaper.SerializedCollections;
 using CharacterController;
+using Fight.Projectile.UnityAdapter;
 using SkillRuntimeClip;
 using Unity.Collections;
 using UnityEngine;
@@ -12,13 +13,12 @@ using Utilities;
 namespace Fight
 {
     [Serializable]
-    public class KeyCodeGameObjectListDictionary : UnitySerializedDictionary<string, DamageCollider> { }
+    public class KeyCodeGameObjectListDictionary : UnitySerializedDictionary<string, MeleeProjectileEmitter> { }
 
     public class SkillRunner : MonoBehaviour
     {
         [SerializeField]
         KeyCodeGameObjectListDictionary damageColliders = new();
-        // public Dictionary<string, DamageCollider> damageColliders = new();
         [SerializeField]
         public CharacterActor actor;
         public bool isFinish { get; private set; } = false;

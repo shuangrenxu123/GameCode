@@ -2,6 +2,7 @@ using System;
 using Animancer;
 using Fight;
 using Fight.Number;
+using Fight.Projectile.UnityAdapter;
 using UnityEngine;
 
 namespace SkillRuntimeClip
@@ -183,11 +184,11 @@ namespace SkillRuntimeClip
     }
     class ColliderEventClip : EventClip
     {
-        private DamageCollider collider;
+        private MeleeProjectileEmitter collider;
 
         protected override EventClipType clipType => EventClipType.Collider;
 
-        public ColliderEventClip(SkillRunner skillRunner, DamageCollider collider)
+        public ColliderEventClip(SkillRunner skillRunner, MeleeProjectileEmitter collider)
             : base(skillRunner)
         {
             this.collider = collider;
