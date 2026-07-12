@@ -57,7 +57,7 @@ namespace Helper
         }
     }
 
-    public enum OpCode
+    public enum OpCode : byte
     {
         Constant,
         Nil,
@@ -80,8 +80,6 @@ namespace Helper
         GreaterEqual,
         Less,
         LessEqual,
-        And,
-        Or,
         Jump,
         JumpIfFalse,
         Loop,
@@ -95,79 +93,28 @@ namespace Helper
         InvokeMember
     }
 
-    public readonly struct Instruction
-    {
-        public readonly OpCode Code;
-        public readonly object Operand;
-        public readonly int Line;
-
-        public Instruction(OpCode code, object operand, int line)
-        {
-            Code = code;
-            Operand = operand;
-            Line = line;
-        }
-    }
-
-    public readonly struct NameOperand
-    {
-        public readonly InternedString Name;
-
-        public NameOperand(InternedString name)
-        {
-            Name = name;
-        }
-    }
-
-    public readonly struct CommandOperand
-    {
-        public readonly InternedString Name;
-        public readonly int ArgumentCount;
-
-        public CommandOperand(InternedString name, int argumentCount)
-        {
-            Name = name;
-            ArgumentCount = argumentCount;
-        }
-    }
-
-    public readonly struct MemberInvokeOperand
-    {
-        public readonly InternedString Name;
-        public readonly int ArgumentCount;
-
-        public MemberInvokeOperand(InternedString name, int argumentCount)
-        {
-            Name = name;
-            ArgumentCount = argumentCount;
-        }
-    }
-
     public sealed class ConstantPool
     {
-        readonly List<object> constants = new();
-        readonly Dictionary<object, int> knownConstants = new();
+        readonly List<RuntimeValue> constants = new();
+        readonly Dictionary<RuntimeValue, int> knownConstants = new();
 
-        public IReadOnlyList<object> Values => constants;
+        public IReadOnlyList<RuntimeValue> Values => constants;
 
-        public int Add(object value)
+        public int Add(RuntimeValue value)
         {
-            if (value != null && IsReusableConstant(value) && knownConstants.TryGetValue(value, out int index))
+            if (knownConstants.TryGetValue(value, out int index))
             {
                 return index;
             }
 
             constants.Add(value);
             int newIndex = constants.Count - 1;
-            if (value != null && IsReusableConstant(value))
-            {
-                knownConstants[value] = newIndex;
-            }
+            knownConstants[value] = newIndex;
 
             return newIndex;
         }
 
-        public object Get(int index)
+        public RuntimeValue Get(int index)
         {
             if (index < 0 || index >= constants.Count)
             {
@@ -176,49 +123,94 @@ namespace Helper
 
             return constants[index];
         }
-
-        static bool IsReusableConstant(object value)
-        {
-            return value is string
-                || value is double
-                || value is bool
-                || value is InternedString;
-        }
     }
 
     public sealed class Chunk
     {
-        readonly List<Instruction> instructions = new();
+        readonly List<byte> code = new();
+        readonly List<int> lines = new();
 
         public ConstantPool Constants { get; } = new();
-        public IReadOnlyList<Instruction> Instructions => instructions;
-        public int Count => instructions.Count;
+        public int Count => code.Count;
 
-        public int AddConstant(object value)
+        public int AddConstant(RuntimeValue value)
         {
             return Constants.Add(value);
         }
 
         public int Write(OpCode code, int line)
         {
-            return Write(code, null, line);
+            return WriteByte((byte)code, line);
         }
 
-        public int Write(OpCode code, object operand, int line)
+        public int WriteByte(byte value, int line)
         {
-            instructions.Add(new Instruction(code, operand, line));
-            return instructions.Count - 1;
+            this.code.Add(value);
+            lines.Add(line);
+            return this.code.Count - 1;
         }
 
-        public void PatchOperand(int instructionIndex, object operand)
+        public int WriteInt(int value, int line)
         {
-            if (instructionIndex < 0 || instructionIndex >= instructions.Count)
+            int offset = code.Count;
+            WriteByte((byte)(value & 0xFF), line);
+            WriteByte((byte)((value >> 8) & 0xFF), line);
+            WriteByte((byte)((value >> 16) & 0xFF), line);
+            WriteByte((byte)((value >> 24) & 0xFF), line);
+            return offset;
+        }
+
+        public void PatchInt(int offset, int value)
+        {
+            if (offset < 0 || offset + 3 >= code.Count)
             {
-                throw new ArgumentOutOfRangeException(nameof(instructionIndex));
+                throw new ArgumentOutOfRangeException(nameof(offset));
             }
 
-            Instruction old = instructions[instructionIndex];
-            instructions[instructionIndex] = new Instruction(old.Code, operand, old.Line);
+            code[offset] = (byte)(value & 0xFF);
+            code[offset + 1] = (byte)((value >> 8) & 0xFF);
+            code[offset + 2] = (byte)((value >> 16) & 0xFF);
+            code[offset + 3] = (byte)((value >> 24) & 0xFF);
+        }
+
+        public OpCode ReadOpCode(ref int offset)
+        {
+            return (OpCode)ReadByte(ref offset);
+        }
+
+        public byte ReadByte(ref int offset)
+        {
+            if (offset < 0 || offset >= code.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            return code[offset++];
+        }
+
+        public int ReadInt(ref int offset)
+        {
+            if (offset < 0 || offset + 3 >= code.Count)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offset));
+            }
+
+            int value = code[offset]
+                | (code[offset + 1] << 8)
+                | (code[offset + 2] << 16)
+                | (code[offset + 3] << 24);
+            offset += 4;
+            return value;
+        }
+
+        public int GetLine(int offset)
+        {
+            if (offset < 0 || offset >= lines.Count)
+            {
+                return 0;
+            }
+
+            return lines[offset];
         }
     }
 }

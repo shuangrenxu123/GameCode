@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using Character.Player;
 using ConsoleLog;
+using Helper;
 using UI;
 using UnityEngine;
 
@@ -17,29 +19,52 @@ public class PlayerCommand : MonoBehaviour
     {
         player = FindFirstObjectByType<Player>();
     }
-    [Command("Help")]
+    [Command("Help", "打印所有已注册命令")]
     static void Help()
     {
-        ConsoleManager.Instance.OutputToConsole("Help=========", ColorUtility.ToHtmlStringRGB(Color.green));
+        List<CommandSuggestion> commands = ConsoleManager.Instance.MatchCommandSuggestions(string.Empty);
+        if (commands == null || commands.Count == 0)
+        {
+            ConsoleManager.Instance.OutputToConsole("当前没有已注册命令", WarningColor);
+            return;
+        }
+
+        StringBuilder builder = new();
+        builder.AppendLine("已注册命令:");
+        for (int i = 0; i < commands.Count; i++)
+        {
+            builder.Append("  ");
+            builder.Append(i + 1);
+            builder.Append(". ");
+            builder.Append(commands[i].DisplayText);
+            if (i < commands.Count - 1)
+            {
+                builder.AppendLine();
+            }
+        }
+
+        ConsoleManager.Instance.OutputToConsole(builder.ToString(), SuccessColor);
     }
 
-    [Command("TestDialogue")]
+    [Command("TestDialogue", "显示一条测试对话")]
     static void TestDialog()
     {
         DialogueCommon.ShowChat("测试用户", "对你说了一句悄悄话", Color.green);
     }
-    [Command("Test")]
+
+    [Command("Test", "输出测试命令文本")]
     static void Test()
     {
         ConsoleManager.Instance.OutputToConsole($"TestCommand");
     }
-    [Command("Print")]
+
+    [Command("Print", "输出传入参数")]
     static void Print(object obj)
     {
         ConsoleManager.Instance.OutputToConsole(obj.ToString());
     }
 
-    [Command("PlayerInfo")]
+    [Command("PlayerInfo", "输出玩家当前状态")]
     static void ShowPlayerInfo()
     {
         if (!TryResolvePlayer(out var target))
@@ -54,7 +79,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole(info, SuccessColor);
     }
 
-    [Command("PlayerSetId")]
+    [Command("PlayerSetId", "设置玩家 ID")]
     static void SetPlayerId(string newId)
     {
         if (!TryResolvePlayer(out var target))
@@ -65,7 +90,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"player.id 从 {oldId} 修改为 {newId}", SuccessColor);
     }
 
-    [Command("PlayerHeal")]
+    [Command("PlayerHeal", "恢复玩家生命值")]
     static void HealPlayer(int amount = 10)
     {
         if (!TryResolvePlayer(out var target) || !TryResolveHealth(target, out var hp))
@@ -75,7 +100,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"执行 player.CombatEntity.hp.Add({amount})，当前HP {hp.Value}/{hp.MaxValue}", SuccessColor);
     }
 
-    [Command("PlayerDamage")]
+    [Command("PlayerDamage", "扣除玩家生命值")]
     static void DamagePlayer(int amount = 10)
     {
         if (!TryResolvePlayer(out var target) || !TryResolveHealth(target, out var hp))
@@ -85,7 +110,7 @@ public class PlayerCommand : MonoBehaviour
         ConsoleManager.Instance.OutputToConsole($"执行 player.CombatEntity.hp.Minus({amount})，当前HP {hp.Value}/{hp.MaxValue}", SuccessColor);
     }
 
-    [Command("PlayerTeleport")]
+    [Command("PlayerTeleport", "传送玩家到指定坐标")]
     static void TeleportPlayer(float x, float y, float z)
     {
         if (!TryResolvePlayer(out var target))

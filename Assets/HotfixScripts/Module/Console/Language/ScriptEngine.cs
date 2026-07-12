@@ -6,15 +6,15 @@ namespace Helper
     public sealed class ScriptEngine
     {
         readonly StringTable strings = new();
-        readonly Runtime runtime;
+        readonly HostEnvironment host;
         readonly Compiler compiler;
         readonly VM vm;
 
         public ScriptEngine()
         {
-            runtime = new Runtime(strings);
+            host = new HostEnvironment(strings);
             compiler = new Compiler(strings);
-            vm = new VM(runtime);
+            vm = new VM(host);
         }
 
         public ExecutionResult Execute(string source)
@@ -30,17 +30,17 @@ namespace Helper
 
         public void RegisterVariable(string name, object instance, bool readOnly = false)
         {
-            runtime.RegisterVariable(name, instance, readOnly);
+            host.RegisterVariable(name, instance, readOnly);
         }
 
         public void RegisterVariable(string name, Func<object> getter, Action<object> setter = null, Type declaredType = null)
         {
-            runtime.RegisterVariable(name, getter, setter, declaredType);
+            host.RegisterVariable(name, getter, setter, declaredType);
         }
 
         public List<CommandSuggestion> MatchCommandSuggestions(string keyword)
         {
-            return runtime.MatchCommands(keyword);
+            return host.MatchCommands(keyword);
         }
 
         public List<string> MatchCommands(string keyword)

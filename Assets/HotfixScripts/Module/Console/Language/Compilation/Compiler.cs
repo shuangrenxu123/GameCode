@@ -162,7 +162,7 @@ namespace Helper
 
             if (currentCompiler.ScopeDepth == 0)
             {
-                Emit(OpCode.DefineGlobal, new NameOperand(name), nameToken.Line);
+                EmitName(OpCode.DefineGlobal, name, nameToken.Line);
             }
             else
             {
@@ -202,7 +202,7 @@ namespace Helper
             EmitNilReturn();
 
             currentCompiler = enclosing;
-            EmitConstant(function, line);
+            EmitConstant(RuntimeValue.FromFunction(function), line);
         }
 
         void VariableDeclaration()
@@ -223,7 +223,7 @@ namespace Helper
 
             if (currentCompiler.ScopeDepth == 0)
             {
-                Emit(OpCode.DefineGlobal, new NameOperand(name), nameToken.Line);
+                EmitName(OpCode.DefineGlobal, name, nameToken.Line);
             }
             else
             {
@@ -352,7 +352,7 @@ namespace Helper
             }
 
             ConsumeOptionalSemicolon();
-            Emit(OpCode.InvokeCommand, new CommandOperand(commandName, argumentCount), commandToken.Line);
+            EmitCallName(OpCode.InvokeCommand, commandName, argumentCount, commandToken.Line);
             Emit(OpCode.Pop, commandToken.Line);
         }
 
@@ -389,12 +389,14 @@ namespace Helper
 
         void Number(bool canAssign)
         {
-            EmitConstant(Previous().Literal, Previous().Line);
+            double value = Previous().Literal is double number ? number : 0d;
+            EmitConstant(RuntimeValue.FromNumber(value), Previous().Line);
         }
 
         void String(bool canAssign)
         {
-            EmitConstant(Previous().Literal, Previous().Line);
+            string value = Previous().Literal as string;
+            EmitConstant(RuntimeValue.FromString(value), Previous().Line);
         }
 
         void Literal(bool canAssign)
@@ -474,13 +476,26 @@ namespace Helper
                 case TokenType.LessEqual:
                     Emit(OpCode.LessEqual, Previous().Line);
                     break;
-                case TokenType.And:
-                    Emit(OpCode.And, Previous().Line);
-                    break;
-                case TokenType.Or:
-                    Emit(OpCode.Or, Previous().Line);
-                    break;
             }
+        }
+
+        void And(bool canAssign)
+        {
+            int endJump = EmitJump(OpCode.JumpIfFalse, Previous().Line);
+            Emit(OpCode.Pop, Previous().Line);
+            ParsePrecedence(Precedence.And);
+            PatchJump(endJump);
+        }
+
+        void Or(bool canAssign)
+        {
+            int elseJump = EmitJump(OpCode.JumpIfFalse, Previous().Line);
+            int endJump = EmitJump(OpCode.Jump, Previous().Line);
+
+            PatchJump(elseJump);
+            Emit(OpCode.Pop, Previous().Line);
+            ParsePrecedence(Precedence.Or);
+            PatchJump(endJump);
         }
 
         void Variable(bool canAssign)
@@ -494,16 +509,29 @@ namespace Helper
             int localSlot = ResolveLocal(name);
             OpCode getOp = localSlot >= 0 ? OpCode.GetLocal : OpCode.GetGlobal;
             OpCode setOp = localSlot >= 0 ? OpCode.SetLocal : OpCode.SetGlobal;
-            object operand = localSlot >= 0 ? localSlot : new NameOperand(name);
 
             if (canAssign && Match(TokenType.Equal))
             {
                 Expression();
-                Emit(setOp, operand, nameToken.Line);
+                if (localSlot >= 0)
+                {
+                    Emit(setOp, localSlot, nameToken.Line);
+                }
+                else
+                {
+                    EmitName(setOp, name, nameToken.Line);
+                }
             }
             else
             {
-                Emit(getOp, operand, nameToken.Line);
+                if (localSlot >= 0)
+                {
+                    Emit(getOp, localSlot, nameToken.Line);
+                }
+                else
+                {
+                    EmitName(getOp, name, nameToken.Line);
+                }
             }
         }
 
@@ -518,39 +546,39 @@ namespace Helper
                 if (chain.Count == 0)
                 {
                     Expression();
-                    Emit(OpCode.SetExternal, new NameOperand(root), rootToken.Line);
+                    EmitName(OpCode.SetExternal, root, rootToken.Line);
                     return;
                 }
 
-                Emit(OpCode.GetExternal, new NameOperand(root), rootToken.Line);
+                EmitName(OpCode.GetExternal, root, rootToken.Line);
                 for (int i = 0; i < chain.Count - 1; i++)
                 {
-                    Emit(OpCode.GetMember, new NameOperand(chain[i]), rootToken.Line);
+                    EmitName(OpCode.GetMember, chain[i], rootToken.Line);
                 }
 
                 Expression();
-                Emit(OpCode.SetMember, new NameOperand(chain[^1]), rootToken.Line);
+                EmitName(OpCode.SetMember, chain[^1], rootToken.Line);
                 return;
             }
 
             if (Check(TokenType.LeftParen) && chain.Count > 0)
             {
                 Advance();
-                Emit(OpCode.GetExternal, new NameOperand(root), rootToken.Line);
+                EmitName(OpCode.GetExternal, root, rootToken.Line);
                 for (int i = 0; i < chain.Count - 1; i++)
                 {
-                    Emit(OpCode.GetMember, new NameOperand(chain[i]), rootToken.Line);
+                    EmitName(OpCode.GetMember, chain[i], rootToken.Line);
                 }
 
                 int argumentCount = FinishArgumentList();
-                Emit(OpCode.InvokeMember, new MemberInvokeOperand(chain[^1], argumentCount), rootToken.Line);
+                EmitCallName(OpCode.InvokeMember, chain[^1], argumentCount, rootToken.Line);
                 return;
             }
 
-            Emit(OpCode.GetExternal, new NameOperand(root), rootToken.Line);
+            EmitName(OpCode.GetExternal, root, rootToken.Line);
             foreach (InternedString member in chain)
             {
-                Emit(OpCode.GetMember, new NameOperand(member), rootToken.Line);
+                EmitName(OpCode.GetMember, member, rootToken.Line);
             }
         }
 
@@ -613,8 +641,8 @@ namespace Helper
                 TokenType.Identifier => new ParseRule(Variable, null, Precedence.None),
                 TokenType.String => new ParseRule(String, null, Precedence.None),
                 TokenType.Number => new ParseRule(Number, null, Precedence.None),
-                TokenType.And => new ParseRule(null, Binary, Precedence.And),
-                TokenType.Or => new ParseRule(null, Binary, Precedence.Or),
+                TokenType.And => new ParseRule(null, And, Precedence.And),
+                TokenType.Or => new ParseRule(null, Or, Precedence.Or),
                 TokenType.False => new ParseRule(Literal, null, Precedence.None),
                 TokenType.True => new ParseRule(Literal, null, Precedence.None),
                 TokenType.Nil => new ParseRule(Literal, null, Precedence.None),
@@ -702,7 +730,7 @@ namespace Helper
             return -1;
         }
 
-        void EmitConstant(object value, int line)
+        void EmitConstant(RuntimeValue value, int line)
         {
             int constant = CurrentChunk.AddConstant(value);
             Emit(OpCode.Constant, constant, line);
@@ -719,19 +747,35 @@ namespace Helper
             CurrentChunk.Write(code, line);
         }
 
-        void Emit(OpCode code, object operand, int line)
+        void Emit(OpCode code, int operand, int line)
         {
-            CurrentChunk.Write(code, operand, line);
+            CurrentChunk.Write(code, line);
+            CurrentChunk.WriteInt(operand, line);
+        }
+
+        void EmitName(OpCode code, InternedString name, int line)
+        {
+            int nameIndex = CurrentChunk.AddConstant(RuntimeValue.FromCommand(name));
+            Emit(code, nameIndex, line);
+        }
+
+        void EmitCallName(OpCode code, InternedString name, int argumentCount, int line)
+        {
+            int nameIndex = CurrentChunk.AddConstant(RuntimeValue.FromCommand(name));
+            CurrentChunk.Write(code, line);
+            CurrentChunk.WriteInt(nameIndex, line);
+            CurrentChunk.WriteInt(argumentCount, line);
         }
 
         int EmitJump(OpCode code, int line)
         {
-            return CurrentChunk.Write(code, null, line);
+            CurrentChunk.Write(code, line);
+            return CurrentChunk.WriteInt(0, line);
         }
 
         void PatchJump(int instructionIndex)
         {
-            CurrentChunk.PatchOperand(instructionIndex, CurrentChunk.Count);
+            CurrentChunk.PatchInt(instructionIndex, CurrentChunk.Count);
         }
 
         Chunk CurrentChunk => currentCompiler.Function.Chunk;
