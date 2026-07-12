@@ -13,6 +13,7 @@ namespace Character.Controller.State
         #region parameters
         public MovementReferenceParameters movementReferenceParameters = new();
         public Vector3 InputMovementReference => movementReferenceParameters.InputMovementReference;
+        public Vector2 CurrentMovementInput { get; private set; }
         #endregion
 
         public override ECharacterControllerState currentType => ECharacterControllerState.Move;
@@ -76,7 +77,14 @@ namespace Character.Controller.State
 
         public override void FixUpdate()
         {
-            movementReferenceParameters.UpdateData(characterBrain.CharacterActions.movement.value);
+            if (characterBrain.TryGetLatestInputCommand(
+                CharacterInputType.Movement,
+                out CharacterInputCommand movementCommand))
+            {
+                CurrentMovementInput = movementCommand.Vector2Value;
+            }
+
+            movementReferenceParameters.UpdateData(CurrentMovementInput);
             currentState.FixUpdate();
         }
         void OnAnimatorIK(int layerIndex)

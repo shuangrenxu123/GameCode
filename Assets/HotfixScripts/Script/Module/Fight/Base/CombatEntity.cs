@@ -56,6 +56,11 @@ namespace Fight
         {
             ActionPointManager.TriggerActionPoint(actionPointType, action);
         }
+
+        public void AddBuff(BuffId buffId, CombatEntity creator)
+        {
+            buffManager?.AddBuff(buffId, creator != null ? creator : this);
+        }
     }
 
 }

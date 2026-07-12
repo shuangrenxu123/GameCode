@@ -84,6 +84,34 @@ namespace Fight.Projectile.Authoring
     }
 
     [Serializable]
+    public sealed class ProjectileHitEffectConfig
+    {
+        [SerializeField, LabelText("启用")]
+        public bool enabled = true;
+
+        [SerializeField, LabelText("执行顺序")]
+        [MinValue(0)]
+        public int order = 300;
+
+        [SerializeField, LabelText("效果类型")]
+        public ProjectileHitEffectType type = ProjectileHitEffectType.Damage;
+
+        [SerializeField, LabelText("基础数值（0 使用命中配置基础数值）")]
+        [MinValue(0)]
+        public int baseValue;
+
+        [SerializeField, LabelText("Buff ID")]
+        public BuffId buffId = BuffId.None;
+    }
+
+    public enum ProjectileHitEffectType
+    {
+        Damage = 0,
+        Regeneration = 1,
+        AddBuff = 2,
+    }
+
+    [Serializable]
     public sealed class ProjectileHitConfig
     {
         [SerializeField, LabelText("结算类型")]
@@ -110,6 +138,9 @@ namespace Fight.Projectile.Authoring
 
         [SerializeField, LabelText("忽略发射者")]
         public bool ignoreOwner = true;
+
+        [SerializeField, LabelText("组合命中效果")]
+        public ProjectileHitEffectConfig[] effects = Array.Empty<ProjectileHitEffectConfig>();
     }
 
     [Serializable]

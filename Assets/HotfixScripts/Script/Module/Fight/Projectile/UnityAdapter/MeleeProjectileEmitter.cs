@@ -7,7 +7,12 @@ namespace Fight.Projectile.UnityAdapter
 {
     public sealed class MeleeProjectileEmitter : MonoBehaviour
     {
-        [SerializeField, LabelText("投射物配方")]
+        const QueryTriggerInteraction TriggerInteraction = QueryTriggerInteraction.Collide;
+        const int QueryBufferSize = 32;
+        const int MaxProjectilesPerFrame = 32;
+        const int PrewarmCount = 4;
+
+        [SerializeField, LabelText("投射物配置")]
         ProjectileRecipeSO recipe;
 
         [SerializeField, LabelText("投射物执行器预制体")]
@@ -22,21 +27,8 @@ namespace Fight.Projectile.UnityAdapter
         [SerializeField, LabelText("发起者")]
         CombatEntity owner;
 
-        [SerializeField, LabelText("目标解析器")]
-        MonoBehaviour targetResolverSource;
-
-        [SerializeField, LabelText("战斗结算器")]
-        MonoBehaviour combatResolverSource;
-
         [SerializeField, LabelText("命中层级")]
         LayerMask hitMask = ~0;
-
-        [SerializeField, LabelText("触发器检测模式")]
-        QueryTriggerInteraction triggerInteraction = QueryTriggerInteraction.Collide;
-
-        [SerializeField, LabelText("单次查询缓存数量")]
-        [MinValue(1)]
-        int queryBufferSize = 32;
 
         [SerializeField, LabelText("时间插值采样数")]
         [MinValue(1)]
@@ -45,17 +37,6 @@ namespace Fight.Projectile.UnityAdapter
         [SerializeField, LabelText("刀身采样数")]
         [MinValue(1)]
         int bladeSampleCount = 5;
-
-        [SerializeField, LabelText("每帧最多生成数量")]
-        [MinValue(1)]
-        int maxProjectilesPerFrame = 32;
-
-        [SerializeField, LabelText("对象池预热数量")]
-        [MinValue(0)]
-        int prewarmCount = 32;
-
-        [SerializeField, LabelText("绘制调试线")]
-        bool drawDebug;
 
         readonly Stack<UnityProjectileRuntimeRunner> pool = new Stack<UnityProjectileRuntimeRunner>(32);
         readonly List<UnityProjectileRuntimeRunner> activeProjectiles = new List<UnityProjectileRuntimeRunner>(32);
@@ -154,7 +135,7 @@ namespace Fight.Projectile.UnityAdapter
                 float timeT = timeIndex / (float)resolvedTimeSamples;
                 for (int bladeIndex = 0; bladeIndex < resolvedBladeSamples; bladeIndex++)
                 {
-                    if (emittedCount >= maxProjectilesPerFrame)
+                    if (emittedCount >= MaxProjectilesPerFrame)
                     {
                         break;
                     }
@@ -168,13 +149,6 @@ namespace Fight.Projectile.UnityAdapter
                     SpawnHitProjectile(spawnPosition, forward, emittedCount);
                     emittedCount++;
                 }
-            }
-
-            if (drawDebug)
-            {
-                Debug.DrawLine(previousPointA, currentPointA, Color.cyan, 0.1f);
-                Debug.DrawLine(previousPointB, currentPointB, Color.cyan, 0.1f);
-                Debug.DrawLine(currentPointA, currentPointB, Color.red, 0.1f);
             }
 
             previousPointA = currentPointA;
@@ -212,7 +186,7 @@ namespace Fight.Projectile.UnityAdapter
                 spawnIndex,
                 seed,
                 context);
-            runner.Launch(in request, services, Mathf.Max(1, queryBufferSize));
+            runner.Launch(in request, services, QueryBufferSize);
         }
 
         UnityProjectileRuntimeRunner RentRunner()
@@ -252,7 +226,7 @@ namespace Fight.Projectile.UnityAdapter
                 return;
             }
 
-            while (pool.Count < prewarmCount)
+            while (pool.Count < PrewarmCount)
             {
                 UnityProjectileRuntimeRunner runner = Instantiate(runnerPrefab, transform);
                 runner.gameObject.SetActive(false);
@@ -262,28 +236,12 @@ namespace Fight.Projectile.UnityAdapter
 
         void CreateServices()
         {
-            IUnityProjectileTargetResolver targetResolver = targetResolverSource as IUnityProjectileTargetResolver;
-            IProjectileCombatResolver combatResolver = combatResolverSource as IProjectileCombatResolver;
-            if (targetResolver == null)
-            {
-                Debug.LogError("MeleeProjectileEmitter: 目标解析器未绑定或未实现 IUnityProjectileTargetResolver。", this);
-                services = null;
-                return;
-            }
-
-            if (combatResolver == null)
-            {
-                Debug.LogWarning("MeleeProjectileEmitter: 战斗结算器未绑定，投射物只触发命中事件，不执行伤害或治疗结算。", this);
-            }
-
             services = new ProjectileWorldServices
             {
                 Query = new UnityProjectilePhysicsQuery(
                     hitMask,
-                    triggerInteraction,
-                    targetResolver,
-                    Mathf.Max(1, queryBufferSize)),
-                CombatResolver = combatResolver,
+                    TriggerInteraction,
+                    QueryBufferSize),
                 TargetProvider = new UnityProjectileTargetProvider(),
                 HitFilters = new IProjectileHitFilter[]
                 {

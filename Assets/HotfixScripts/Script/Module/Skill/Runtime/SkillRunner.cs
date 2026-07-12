@@ -99,7 +99,13 @@ namespace Fight
                     }
                     else if (track is ColliderTrack)
                     {
-                        clip = new ColliderEventClip(this, damageColliders[e.displayName]);
+                        if (!TryResolveDamageCollider(e.displayName, out MeleeProjectileEmitter damageCollider))
+                        {
+                            Debug.LogError($"[{nameof(SkillRunner)}] 未找到碰撞事件 `{e.displayName}` 对应的 {nameof(MeleeProjectileEmitter)}。", this);
+                            continue;
+                        }
+
+                        clip = new ColliderEventClip(this, damageCollider);
                     }
                     else if (track is RootMotionTrack)
                     {
@@ -108,6 +114,11 @@ namespace Fight
                             (this, c.usePositionRootMotion, c.useRotationRootMotion,
                             c.positionMultiplier, c.rotationMultiplier);
                     }
+                    if (clip == null)
+                    {
+                        continue;
+                    }
+
                     clip.StartTime = (float)e.start;
                     clip.EndTime = (float)e.end;
                     trackRunner.AddEvent(clip);
@@ -126,6 +137,42 @@ namespace Fight
         {
             trackRunners.Clear();
             isFinish = false;
+        }
+
+        bool TryResolveDamageCollider(string key, out MeleeProjectileEmitter damageCollider)
+        {
+            damageCollider = null;
+            if (damageColliders != null
+                && damageColliders.TryGetValue(key, out damageCollider)
+                && damageCollider != null)
+            {
+                return true;
+            }
+
+            MeleeProjectileEmitter[] emitters = GetComponentsInChildren<MeleeProjectileEmitter>(true);
+            if (emitters == null || emitters.Length == 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < emitters.Length; i++)
+            {
+                MeleeProjectileEmitter emitter = emitters[i];
+                if (emitter != null && emitter.name == key)
+                {
+                    damageCollider = emitter;
+                    return true;
+                }
+            }
+
+            if (emitters.Length == 1)
+            {
+                damageCollider = emitters[0];
+                Debug.LogWarning($"[{nameof(SkillRunner)}] 碰撞事件 `{key}` 未绑定，已使用唯一的 {nameof(MeleeProjectileEmitter)} `{damageCollider.name}` 作为兜底。", this);
+                return damageCollider != null;
+            }
+
+            return false;
         }
     }
 }

@@ -23,14 +23,16 @@ namespace Character.Controller.MoveState
             }
             else if (crouchParameters.inputMode == InputMode.Hold)
             {
-                if (characterActions.crouch.value == false)
+                if (TryGetLatestInput(CharacterInputType.Crouch, out var crouchCommand)
+                    && !crouchCommand.BoolValue)
                 {
                     parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 }
             }
             else
             {
-                if (characterActions.crouch.Started)
+                if (TryGetInput(CharacterInputType.Crouch, out var crouchCommand)
+                    && crouchCommand.Phase == CharacterInputPhase.Started)
                 {
                     parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 }

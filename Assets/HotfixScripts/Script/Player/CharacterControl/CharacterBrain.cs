@@ -55,6 +55,17 @@ namespace CharacterController
         CharacterUIActions characterUIActions = new CharacterUIActions();
         CharacterUIActions sampledCharacterUIActions = new CharacterUIActions();
 
+        [SerializeField, Min(8)]
+        int inputQueueCapacity = 64;
+
+        [SerializeField, Min(0.02f)]
+        float inputCommandLifeTime = 0.3f;
+
+        CharacterInputCommandQueue inputCommandQueue;
+        CharacterInputMask enabledInputMask = CharacterInputMask.All;
+        Vector2 lastQueuedMovement;
+        uint inputSequence;
+
         bool isUIInputEnabled;
         bool actionsInitialized;
         bool aiReferenceWarningShown;
@@ -64,10 +75,80 @@ namespace CharacterController
 
         public CharacterActions CharacterActions => characterActions;
         public CharacterUIActions CharacterUIActions => characterUIActions;
+        public int PendingInputCount => inputCommandQueue?.Count ?? 0;
 
         public void UpdateBrainValues(float dt)
         {
             AdvanceActions(dt);
+            EnqueueCurrentActions();
+        }
+
+        public bool TryGetInputCommand(CharacterInputType type, out CharacterInputCommand command)
+        {
+            if (inputCommandQueue == null)
+            {
+                command = default;
+                return false;
+            }
+
+            return inputCommandQueue.TryConsume(type, Time.time, out command);
+        }
+
+        public bool TryGetLatestInputCommand(CharacterInputType type, out CharacterInputCommand command)
+        {
+            if (inputCommandQueue == null)
+            {
+                command = default;
+                return false;
+            }
+
+            return inputCommandQueue.TryConsumeLatest(type, Time.time, out command);
+        }
+
+        public bool IsInputEnabled(CharacterInputType type)
+        {
+            return (enabledInputMask & type.ToMask()) != 0;
+        }
+
+        public void EnableInput(CharacterInputMask mask)
+        {
+            enabledInputMask |= mask;
+        }
+
+        public void DisableInput(CharacterInputMask mask, bool clearQueuedCommands = true)
+        {
+            enabledInputMask &= ~mask;
+
+            if (!clearQueuedCommands || inputCommandQueue == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i <= (int)CharacterInputType.UICancel; i++)
+            {
+                CharacterInputType type = (CharacterInputType)i;
+                if ((mask & type.ToMask()) != 0)
+                {
+                    inputCommandQueue.Remove(type);
+                }
+            }
+        }
+
+        public void SetEnabledInputs(CharacterInputMask mask, bool clearDisabledCommands = true)
+        {
+            CharacterInputMask disabledMask = CharacterInputMask.All & ~mask;
+            enabledInputMask = mask;
+
+            if (clearDisabledCommands)
+            {
+                DisableInput(disabledMask, true);
+                enabledInputMask = mask;
+            }
+        }
+
+        public void ClearInputCommands()
+        {
+            inputCommandQueue?.Clear();
         }
 
         void AdvanceActions(float dt)
@@ -182,6 +263,7 @@ namespace CharacterController
 
         protected virtual void Awake()
         {
+            inputCommandQueue = new CharacterInputCommandQueue(inputQueueCapacity);
             InitializeActions();
             ResolveExternalReferences();
         }
@@ -199,9 +281,94 @@ namespace CharacterController
             ResetLocalActions();
         }
 
-        protected virtual void Update()
+        protected virtual void FixedUpdate()
         {
-            AdvanceActions(Time.deltaTime);
+            AdvanceActions(Time.fixedDeltaTime);
+            EnqueueCurrentActions();
+        }
+
+        void EnqueueCurrentActions()
+        {
+            if (inputCommandQueue == null)
+            {
+                return;
+            }
+
+            float currentTime = Time.time;
+            inputCommandQueue.RemoveExpired(currentTime);
+
+            EnqueueBool(CharacterInputType.Jump, characterActions.jump, currentTime);
+            EnqueueBool(CharacterInputType.Run, characterActions.run, currentTime);
+            EnqueueBool(CharacterInputType.Interact, characterActions.interact, currentTime);
+            EnqueueBool(CharacterInputType.Roll, characterActions.roll, currentTime);
+            EnqueueBool(CharacterInputType.Lock, characterActions.@lock, currentTime);
+            EnqueueBool(CharacterInputType.Attack, characterActions.attack, currentTime);
+            EnqueueBool(CharacterInputType.HeavyAttack, characterActions.heavyAttack, currentTime);
+            EnqueueBool(CharacterInputType.Crouch, characterActions.crouch, currentTime);
+            EnqueueBool(CharacterInputType.OpenUI, characterActions.OpenUI, currentTime);
+            EnqueueBool(CharacterInputType.OpenConsole, characterActions.OpenConsoleUI, currentTime);
+            EnqueueBool(CharacterInputType.UIConfirm, characterUIActions.confirm, currentTime);
+            EnqueueBool(CharacterInputType.UICancel, characterUIActions.cancel, currentTime);
+            EnqueueMovement(characterActions.movement.value, currentTime);
+        }
+
+        void EnqueueBool(CharacterInputType type, BoolAction action, float currentTime)
+        {
+            if (!action.value && !action.Canceled)
+            {
+                return;
+            }
+
+            CharacterInputPhase phase = action.Started
+                ? CharacterInputPhase.Started
+                : action.Canceled
+                    ? CharacterInputPhase.Canceled
+                    : CharacterInputPhase.Performed;
+
+            EnqueueCommand(type, phase, action.value, Vector2.zero, currentTime);
+        }
+
+        void EnqueueMovement(Vector2 movement, float currentTime)
+        {
+            bool hasMovement = movement != Vector2.zero;
+            bool hadMovement = lastQueuedMovement != Vector2.zero;
+
+            if (!hasMovement && !hadMovement)
+            {
+                return;
+            }
+
+            CharacterInputPhase phase = !hadMovement && hasMovement
+                ? CharacterInputPhase.Started
+                : hadMovement && !hasMovement
+                    ? CharacterInputPhase.Canceled
+                    : CharacterInputPhase.Performed;
+
+            EnqueueCommand(CharacterInputType.Movement, phase, hasMovement, movement, currentTime);
+            lastQueuedMovement = movement;
+        }
+
+        void EnqueueCommand(
+            CharacterInputType type,
+            CharacterInputPhase phase,
+            bool boolValue,
+            Vector2 vector2Value,
+            float currentTime)
+        {
+            if (!IsInputEnabled(type))
+            {
+                return;
+            }
+
+            inputSequence++;
+            inputCommandQueue.Enqueue(new CharacterInputCommand(
+                type,
+                phase,
+                boolValue,
+                vector2Value,
+                currentTime,
+                currentTime + inputCommandLifeTime,
+                inputSequence));
         }
 
         InputSourceType ResolveInputSource()
@@ -254,6 +421,8 @@ namespace CharacterController
             sampledCharacterActions.Reset();
             characterUIActions.Reset();
             sampledCharacterUIActions.Reset();
+            lastQueuedMovement = Vector2.zero;
+            inputCommandQueue?.Clear();
         }
 
         void ApplyPlayerInputMode()

@@ -54,12 +54,15 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
                 return;
             }
-            if (characterActions.@lock.Started)
+            if (TryGetInput(CharacterInputType.Lock, out var lockCommand)
+                && lockCommand.BoolValue)
             {
                 parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 return;
             }
-            if (characterActions.run.Started && characterActor.Velocity != Vector3.zero)
+            if (TryGetLatestInput(CharacterInputType.Run, out var runCommand)
+                && runCommand.BoolValue
+                && characterActor.Velocity != Vector3.zero)
             {
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
                 return;
@@ -70,9 +73,10 @@ namespace Character.Controller.MoveState
                 return;
             }
 
-            else if (characterActions.jump.Started)
+            else if (TryGetInput(CharacterInputType.Jump, out var jumpCommand)
+                && jumpCommand.BoolValue)
             {
-                parentMachine.ChangeState(ECharacterMoveState.Jump);
+                parentMachine.ChangeState(ECharacterMoveState.Jump, new CharacterJumpStateInput(true));
             }
         }
 

@@ -22,12 +22,6 @@ namespace Fight.Projectile.UnityAdapter
         [SerializeField, LabelText("目标对象")]
         Object targetObject;
 
-        [SerializeField, LabelText("目标解析器")]
-        MonoBehaviour targetResolverSource;
-
-        [SerializeField, LabelText("战斗结算器")]
-        MonoBehaviour combatResolverSource;
-
         [SerializeField, LabelText("命中层级")]
         LayerMask hitMask = ~0;
 
@@ -226,29 +220,12 @@ namespace Fight.Projectile.UnityAdapter
 
         void CreateServices()
         {
-            IUnityProjectileTargetResolver targetResolver = targetResolverSource as IUnityProjectileTargetResolver;
-            IProjectileCombatResolver combatResolver = combatResolverSource as IProjectileCombatResolver;
-
-            if (targetResolver == null)
-            {
-                Debug.LogError("UnityProjectileEmitter: 目标解析器未绑定或未实现 IUnityProjectileTargetResolver。", this);
-                services = null;
-                return;
-            }
-
-            if (combatResolver == null)
-            {
-                Debug.LogWarning("UnityProjectileEmitter: 战斗结算器未绑定，投射物只触发命中事件，不执行伤害或治疗结算。", this);
-            }
-
             services = new ProjectileWorldServices
             {
                 Query = new UnityProjectilePhysicsQuery(
                     hitMask,
                     triggerInteraction,
-                    targetResolver,
                     Mathf.Max(1, queryBufferSize)),
-                CombatResolver = combatResolver,
                 TargetProvider = new UnityProjectileTargetProvider(),
             };
         }

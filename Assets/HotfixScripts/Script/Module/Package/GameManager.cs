@@ -1,14 +1,10 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using UIWindow;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
     private PackageTable packageTable;
-    private PackageTableItem packageItem;
 
     private void Awake()
     {
@@ -16,18 +12,7 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public static GameManager Instance
-    {
-        get
-        {
-            return _instance;
-        }
-    }
-
-    void Start()
-    {
-        
-    }
+    public static GameManager Instance => _instance;
 
     public PackageTable GetPackageTable()
     {
@@ -46,21 +31,19 @@ public class GameManager : MonoBehaviour
 
     public List<PackageLocalItem> GetPackageLocalData()
     {
-        List<PackageLocalItem> localItems = PackageLocalData.Instance.LoadPackage();
-        return localItems;
+        return PackageLocalData.Instance.LoadPackage();
     }
 
     public PackageLocalItem AddItem(int id, int num)
     {
         PackageTableItem packageTableItem = GetPackageItemById(id);
-
         if (packageTableItem == null)
         {
             Debug.LogError($"PackageTable 中找不到 id 为 {id} 的物品");
             return null;
         }
 
-        PackageLocalItem packageLocalItem = new PackageLocalItem()
+        PackageLocalItem packageLocalItem = new PackageLocalItem
         {
             id = packageTableItem.id,
             num = num,
@@ -68,7 +51,6 @@ public class GameManager : MonoBehaviour
 
         PackageLocalData.Instance.items.Add(packageLocalItem);
         PackageLocalData.Instance.SavePackage();
-
         return packageLocalItem;
     }
 }

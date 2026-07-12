@@ -17,29 +17,32 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
             }
-            else if (characterActions.crouch.Started)
+            else if (TryGetLatestInput(CharacterInputType.Crouch, out var crouchCommand)
+                && crouchCommand.BoolValue)
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
             }
-            else if (characterActions.run.Started && characterActor.Velocity != Vector3.zero)
+            else if (TryGetLatestInput(CharacterInputType.Run, out var runCommand)
+                && runCommand.BoolValue
+                && characterActor.Velocity != Vector3.zero)
             {
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
             }
 
-            else if (characterActions.jump.Started)
+            else if (TryGetInput(CharacterInputType.Jump, out var jumpCommand)
+                && jumpCommand.BoolValue)
             {
-                parentMachine.ChangeState(ECharacterMoveState.Jump);
+                parentMachine.ChangeState(ECharacterMoveState.Jump, new CharacterJumpStateInput(true));
             }
-            else if (characterActions.interact.Started
-                && characterActor.Triggers.Count > 0)
+            else if (characterActor.Triggers.Count > 0
+                && characterActor.Triggers[0].transform.GetComponentInParent<Ladder>() != null
+                && TryGetInput(CharacterInputType.Interact, out var interactCommand)
+                && interactCommand.BoolValue)
             {
-                var ladder = characterActor.Triggers[0].transform.GetComponentInParent<Ladder>();
-                if (ladder != null)
-                {
-                    parentMachine.ChangeState(ECharacterMoveState.Climb);
-                }
+                parentMachine.ChangeState(ECharacterMoveState.Climb);
             }
-            else if (characterActions.@lock.Started)
+            else if (TryGetInput(CharacterInputType.Lock, out var lockCommand)
+                && lockCommand.BoolValue)
             {
                 var nearestEnemy = FindNearestEnemy();
                 if (nearestEnemy != null)

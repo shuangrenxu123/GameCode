@@ -5,6 +5,7 @@ using Character.Player;
 using ConsoleLog;
 using Helper;
 using UI;
+using UIWindow;
 using UnityEngine;
 
 public class PlayerCommand : MonoBehaviour
@@ -18,6 +19,177 @@ public class PlayerCommand : MonoBehaviour
     private void Start()
     {
         player = FindFirstObjectByType<Player>();
+        RegisterCommands();
+    }
+
+    static void RegisterCommands()
+    {
+        var console = ConsoleManager.Instance;
+        console.RegisterCommand("Help", "Help()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "Help");
+            Help();
+            return null;
+        });
+        console.RegisterCommand("TestDialogue", "TestDialogue()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "TestDialogue");
+            TestDialog();
+            return null;
+        });
+        console.RegisterCommand("Test", "Test()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "Test");
+            Test();
+            return null;
+        });
+        console.RegisterCommand("Print", "Print(object obj)", args =>
+        {
+            ValidateArgumentCount(args, 1, 1, "Print");
+            Print(args[0]);
+            return null;
+        });
+        console.RegisterCommand("PlayerInfo", "PlayerInfo()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "PlayerInfo");
+            ShowPlayerInfo();
+            return null;
+        });
+        console.RegisterCommand("PlayerSetId", "PlayerSetId(string newId)", args =>
+        {
+            ValidateArgumentCount(args, 1, 1, "PlayerSetId");
+            SetPlayerId(ReadArgument<string>(args, 0, "newId"));
+            return null;
+        });
+        console.RegisterCommand("PlayerHeal", "PlayerHeal(int amount = 10)", args =>
+        {
+            ValidateArgumentCount(args, 0, 1, "PlayerHeal");
+            HealPlayer(args.Count == 0 ? 10 : ReadArgument<int>(args, 0, "amount"));
+            return null;
+        });
+        console.RegisterCommand("PlayerDamage", "PlayerDamage(int amount = 10)", args =>
+        {
+            ValidateArgumentCount(args, 0, 1, "PlayerDamage");
+            DamagePlayer(args.Count == 0 ? 10 : ReadArgument<int>(args, 0, "amount"));
+            return null;
+        });
+        console.RegisterCommand("PlayerTeleport", "PlayerTeleport(float x, float y, float z)", args =>
+        {
+            ValidateArgumentCount(args, 3, 3, "PlayerTeleport");
+            TeleportPlayer(
+                ReadArgument<float>(args, 0, "x"),
+                ReadArgument<float>(args, 1, "y"),
+                ReadArgument<float>(args, 2, "z"));
+            return null;
+        });
+        console.RegisterCommand("ReadTable", "ReadTable()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "ReadTable");
+            ReadTable();
+            return null;
+        });
+        console.RegisterCommand("CreateLocalPackageData", "CreateLocalPackageData()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "CreateLocalPackageData");
+            CreateLocalPackageData();
+            return null;
+        });
+        console.RegisterCommand("ReadLocalPackageData", "ReadLocalPackageData()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "ReadLocalPackageData");
+            ReadLocalPackageData();
+            return null;
+        });
+        console.RegisterCommand("OpenPackagePanel", "OpenPackagePanel()", args =>
+        {
+            ValidateArgumentCount(args, 0, 0, "OpenPackagePanel");
+            OpenPackagePanel();
+            return null;
+        });
+        console.RegisterCommand("AddItem", "AddItem(int id = 1, int num = 1)", args =>
+        {
+            ValidateArgumentCount(args, 0, 2, "AddItem");
+            int id = args.Count > 0 ? ReadArgument<int>(args, 0, "id") : 1;
+            int num = args.Count > 1 ? ReadArgument<int>(args, 1, "num") : 1;
+            AddItem(id, num);
+            return null;
+        });
+    }
+
+    static T ReadArgument<T>(List<object> args, int index, string name)
+    {
+        return (T)Helper.MethodCallable.ConvertValue(args[index], typeof(T), name);
+    }
+
+    static void ValidateArgumentCount(List<object> args, int minCount, int maxCount, string commandName)
+    {
+        int count = args?.Count ?? 0;
+        if (count < minCount)
+        {
+            throw new Helper.RuntimeException($"{commandName} 缺少参数");
+        }
+
+        if (count > maxCount)
+        {
+            throw new Helper.RuntimeException($"{commandName} 参数过多");
+        }
+    }
+
+    static void ReadTable()
+    {
+        PackageTable packageTable = Resources.Load<PackageTable>("UI/TableData/PackageTable");
+        if (packageTable == null)
+        {
+            ConsoleManager.Instance.OutputToConsole("未找到背包配置表 UI/TableData/PackageTable", WarningColor);
+            return;
+        }
+
+        foreach (PackageTableItem packageItem in packageTable.DataList)
+        {
+            ConsoleManager.Instance.OutputToConsole($"[id] {packageItem.id}, [name] {packageItem.name}");
+        }
+    }
+
+    static void CreateLocalPackageData()
+    {
+        PackageLocalData.Instance.items = new List<PackageLocalItem>();
+        PackageLocalData.Instance.SavePackage();
+        ConsoleManager.Instance.OutputToConsole("已创建空的本地背包数据", SuccessColor);
+    }
+
+    static void ReadLocalPackageData()
+    {
+        List<PackageLocalItem> readItems = PackageLocalData.Instance.LoadPackage();
+        if (readItems == null || readItems.Count == 0)
+        {
+            ConsoleManager.Instance.OutputToConsole("本地背包数据为空");
+            return;
+        }
+
+        foreach (PackageLocalItem item in readItems)
+        {
+            ConsoleManager.Instance.OutputToConsole(item != null ? item.ToString() : "null");
+        }
+    }
+
+    static void OpenPackagePanel()
+    {
+        AUIManager.Instance.OpenPanel(UIConst.PackagePanel);
+    }
+
+    static void AddItem(int id, int num)
+    {
+        if (GameManager.Instance == null)
+        {
+            ConsoleManager.Instance.OutputToConsole("场景中不存在 GameManager", WarningColor);
+            return;
+        }
+
+        PackageLocalItem item = GameManager.Instance.AddItem(id, num);
+        if (item != null)
+        {
+            ConsoleManager.Instance.OutputToConsole($"已添加物品 id={id}, num={num}", SuccessColor);
+        }
     }
     [Command("Help", "打印所有已注册命令")]
     static void Help()

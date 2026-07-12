@@ -9,6 +9,7 @@ namespace Fight.Projectile
         public readonly IProjectileMotionModule[] MotionModules;
         public readonly ProjectileDetectionSpec Detection;
         public readonly ProjectileHitSpec Hit;
+        public readonly IProjectileHitResolver HitResolver;
         public readonly ProjectileStopSpec Stop;
 
         public ProjectileRecipeSpec(
@@ -17,6 +18,7 @@ namespace Fight.Projectile
             IProjectileMotionModule[] motionModules,
             in ProjectileDetectionSpec detection,
             in ProjectileHitSpec hit,
+            IProjectileHitResolver hitResolver,
             in ProjectileStopSpec stop)
         {
             ProjectileAssetId = projectileAssetId;
@@ -24,6 +26,7 @@ namespace Fight.Projectile
             MotionModules = motionModules ?? Array.Empty<IProjectileMotionModule>();
             Detection = detection.Normalized();
             Hit = hit.Normalized();
+            HitResolver = hitResolver;
             Stop = stop.Normalized();
         }
     }

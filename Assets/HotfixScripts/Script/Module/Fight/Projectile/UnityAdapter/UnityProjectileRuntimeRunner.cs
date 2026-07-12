@@ -223,8 +223,7 @@ namespace Fight.Projectile.UnityAdapter
                 ProjectileHitProcessResult result = hitProcessor.Process(
                     state,
                     in hit,
-                    ref state.Pose,
-                    services.CombatResolver);
+                    ref state.Pose);
                 if (!result.Passed)
                 {
                     continue;

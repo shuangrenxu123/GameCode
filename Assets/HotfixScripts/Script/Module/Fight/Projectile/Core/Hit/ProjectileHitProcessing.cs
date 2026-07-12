@@ -1,3 +1,5 @@
+using Fight;
+
 namespace Fight.Projectile
 {
     public interface IProjectileHitFilter
@@ -10,28 +12,19 @@ namespace Fight.Projectile
         void OnHit(ProjectileRuntimeState state, in ProjectileHitContext context, ref ProjectilePose pose);
     }
 
-    public interface IProjectileCombatResolver
-    {
-        void ResolveHit(ProjectileRuntimeState state, in ProjectileHitContext context);
-    }
-
     public readonly struct ProjectileHitContext
     {
         public readonly ProjectileHit Hit;
+        public readonly CombatEntity Target;
         public readonly int HitIndex;
-        public readonly ProjectileHitResolveType ResolveType;
-        public readonly int BaseValue;
 
         public ProjectileHitContext(
             in ProjectileHit hit,
-            int hitIndex,
-            ProjectileHitResolveType resolveType,
-            int baseValue)
+            int hitIndex)
         {
             Hit = hit;
+            Target = hit.UserData as CombatEntity;
             HitIndex = hitIndex;
-            ResolveType = resolveType;
-            BaseValue = baseValue;
         }
     }
 
@@ -90,14 +83,11 @@ namespace Fight.Projectile
         public ProjectileHitProcessResult Process(
             ProjectileRuntimeState state,
             in ProjectileHit hit,
-            ref ProjectilePose pose,
-            IProjectileCombatResolver combatResolver)
+            ref ProjectilePose pose)
         {
             var context = new ProjectileHitContext(
                 in hit,
-                state.TotalHitCount,
-                state.Recipe.Hit.ResolveType,
-                state.BaseValue);
+                state.TotalHitCount);
 
             if (!PassFilters(state, in context))
             {
@@ -117,7 +107,7 @@ namespace Fight.Projectile
 
             if (state.CanResolveHit)
             {
-                combatResolver?.ResolveHit(state, in context);
+                state.Recipe.HitResolver?.ResolveHit(state, in context);
             }
 
             state.TotalHitCount++;

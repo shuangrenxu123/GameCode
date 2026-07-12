@@ -195,11 +195,22 @@ namespace SkillRuntimeClip
         }
         public override void OnStart()
         {
+            if (collider == null)
+            {
+                Debug.LogError($"[{nameof(ColliderEventClip)}] {nameof(MeleeProjectileEmitter)} 为空，无法开启近战投射物窗口。");
+                return;
+            }
+
             collider.EnableDamageCollider();
         }
 
         public override void OnFinish()
         {
+            if (collider == null)
+            {
+                return;
+            }
+
             collider.DisableDamageCollider();
         }
 

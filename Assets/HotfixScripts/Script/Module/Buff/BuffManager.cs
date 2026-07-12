@@ -89,6 +89,16 @@ public class BuffManager
     {
         AddBuff(buffName, entity);
     }
+    public void AddBuff(BuffId buffId, CombatEntity creator)
+    {
+        if (!BuffFactory.TryGetBuffName(buffId, out string buffName))
+        {
+            Debug.LogWarning($"BuffId {buffId} 不存在");
+            return;
+        }
+
+        AddBuff(buffName, creator);
+    }
     public void RemoveBuff(BuffBase buff)
     {
         RemoveBuffInternal(buff, invokeEvent: true);

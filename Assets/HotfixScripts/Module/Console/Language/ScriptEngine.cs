@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace Helper
@@ -41,6 +41,11 @@ namespace Helper
         public List<CommandSuggestion> MatchCommandSuggestions(string keyword)
         {
             return host.MatchCommands(keyword);
+        }
+
+        public void RegisterCommand(string name, string displayText, Func<List<object>, object> handler)
+        {
+            host.RegisterCommand(name, displayText, handler);
         }
 
         public List<string> MatchCommands(string keyword)

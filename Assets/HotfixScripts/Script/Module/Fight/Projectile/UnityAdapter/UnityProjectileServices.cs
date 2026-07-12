@@ -1,37 +1,25 @@
 using System.Collections.Generic;
+using Fight;
 using Fight.Projectile;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Fight.Projectile.UnityAdapter
 {
-    public interface IUnityProjectileTargetResolver
-    {
-        bool TryResolve(
-            Collider collider,
-            in ProjectileVector3 point,
-            in ProjectileVector3 normal,
-            float distance,
-            out ProjectileRawHit hit);
-    }
-
     public sealed class UnityProjectilePhysicsQuery : IProjectileQuery
     {
         readonly LayerMask hitMask;
         readonly QueryTriggerInteraction triggerInteraction;
-        readonly IUnityProjectileTargetResolver targetResolver;
         readonly RaycastHit[] raycastHits;
         readonly Collider[] colliderHits;
 
         public UnityProjectilePhysicsQuery(
             LayerMask hitMask,
             QueryTriggerInteraction triggerInteraction,
-            IUnityProjectileTargetResolver targetResolver,
             int maxHits)
         {
             this.hitMask = hitMask;
             this.triggerInteraction = triggerInteraction;
-            this.targetResolver = targetResolver;
             int capacity = Mathf.Max(1, maxHits);
             raycastHits = new RaycastHit[capacity];
             colliderHits = new Collider[capacity];
@@ -39,7 +27,7 @@ namespace Fight.Projectile.UnityAdapter
 
         public int Query(in ProjectileQueryRequest request, ProjectileRawHit[] results)
         {
-            if (targetResolver == null || results == null || results.Length == 0)
+            if (results == null || results.Length == 0)
             {
                 return 0;
             }
@@ -91,7 +79,7 @@ namespace Fight.Projectile.UnityAdapter
                     continue;
                 }
 
-                if (targetResolver.TryResolve(
+                if (TryResolve(
                         hit.collider,
                         hit.point.ToProjectile(),
                         hit.normal.ToProjectile(),
@@ -218,7 +206,7 @@ namespace Fight.Projectile.UnityAdapter
                 }
 
                 float distance = Vector3.Distance(origin, point);
-                if (targetResolver.TryResolve(
+                if (TryResolve(
                         hitCollider,
                         point.ToProjectile(),
                         normal.normalized.ToProjectile(),
@@ -274,7 +262,7 @@ namespace Fight.Projectile.UnityAdapter
                     continue;
                 }
 
-                if (targetResolver.TryResolve(
+                if (TryResolve(
                         hit.collider,
                         hit.point.ToProjectile(),
                         hit.normal.ToProjectile(),
@@ -334,12 +322,52 @@ namespace Fight.Projectile.UnityAdapter
             }
 
             float distance = Vector3.Distance(origin, point);
-            return targetResolver.TryResolve(
+            return TryResolve(
                 hitCollider,
                 point.ToProjectile(),
                 normal.normalized.ToProjectile(),
                 distance,
                 out rawHit);
+        }
+
+        static bool TryResolve(
+            Collider collider,
+            in ProjectileVector3 point,
+            in ProjectileVector3 normal,
+            float distance,
+            out ProjectileRawHit hit)
+        {
+            hit = default;
+            if (collider == null)
+            {
+                return false;
+            }
+
+            CombatEntity target = collider.GetComponentInParent<CombatEntity>();
+            if (target != null)
+            {
+                hit = new ProjectileRawHit
+                {
+                    TargetKind = ProjectileTargetKind.Entity,
+                    TargetId = target.GetInstanceID(),
+                    Point = point,
+                    Normal = normal,
+                    Distance = distance,
+                    UserData = target,
+                };
+                return true;
+            }
+
+            hit = new ProjectileRawHit
+            {
+                TargetKind = ProjectileTargetKind.Environment,
+                TargetId = collider.GetInstanceID(),
+                Point = point,
+                Normal = normal,
+                Distance = distance,
+                UserData = collider,
+            };
+            return true;
         }
 
         static bool IsInsideCone(Vector3 origin, Vector3 forward, float halfAngle, Collider collider)

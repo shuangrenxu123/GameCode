@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0eeef222dd1ee1445b1f28d87343e143, type: 3}
+  m_Name: DefaultFistProjectileRecipe
+  m_EditorClassIdentifier: Game.Runtime::Fight.Projectile.Authoring.ProjectileRecipeSO
+  projectileAssetId: 0
+  initialSpeed: 0
+  spawnConfig:
+    spawnCount: 1
+    spawnAngle: 0
+    batchRandomAngle: 0
+    randomAngleMin: 0
+    randomAngleMax: 0
+  detectionConfig:
+    type: 2
+    radius: 0.25
+    angle: 60
+    rayCount: 5
+    boxWidth: 1
+    boxHeight: 1
+    boxLength: 2
+    maxHits: 16
+  hitConfig:
+    resolveType: 1
+    resolveMode: 0
+    baseValue: 10
+    pierceCount: 0
+    hitInterval: 0
+    targetHitCooldown: 0
+    ignoreOwner: 1
+  stopConfig:
+    maxLifeTime: 0.02
+    maxDistance: 0
+    destroyOnTargetHit: 0
+    stopWhenTargetLost: 0
+  motionConfigs:
+  - enabled: 1
+    order: 100
+    type: 1
+    speed: 0
+    stopAfterSeconds: 0
+    roundRadius: 2
+    angularSpeed: 180
+    homingTurnSpeed: 90

@@ -29,14 +29,16 @@ namespace Character.Controller.MoveState
             }
             else if (runMoveParameters.runInputMode == InputMode.Hold)
             {
-                if (characterActions.run.value == false)
+                if (TryGetLatestInput(CharacterInputType.Run, out var runCommand)
+                    && !runCommand.BoolValue)
                 {
                     parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 }
             }
             else
             {
-                if (characterActions.run.Started)
+                if (TryGetInput(CharacterInputType.Run, out var runCommand)
+                    && runCommand.Phase == CharacterInputPhase.Started)
                 {
                     parentMachine.ChangeState(ECharacterMoveState.NormalMove);
                 }

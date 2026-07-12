@@ -78,6 +78,16 @@ namespace ConsoleLog
             return scriptEngine.MatchCommandSuggestions(keyword) ?? new List<CommandSuggestion>();
         }
 
+        public void RegisterCommand(string name, string displayText, Func<List<object>, object> handler)
+        {
+            if (scriptEngine == null)
+            {
+                throw new InvalidOperationException("控制台脚本引擎尚未初始化");
+            }
+
+            scriptEngine.RegisterCommand(name, displayText, handler);
+        }
+
         public void OnUpdate()
         {
         }

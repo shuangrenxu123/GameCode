@@ -22,7 +22,6 @@ namespace Fight.Projectile
     public sealed class ProjectileWorldServices
     {
         public IProjectileQuery Query;
-        public IProjectileCombatResolver CombatResolver;
         public IProjectileTargetProvider TargetProvider;
         public IProjectileInstanceFactory InstanceFactory;
         public IProjectilePoseWriter PoseWriter;
@@ -293,8 +292,7 @@ namespace Fight.Projectile
                     ProjectileHitProcessResult result = hitProcessor.Process(
                         state,
                         in hit,
-                        ref state.Pose,
-                        services.CombatResolver);
+                        ref state.Pose);
                     if (!result.Passed)
                     {
                         continue;

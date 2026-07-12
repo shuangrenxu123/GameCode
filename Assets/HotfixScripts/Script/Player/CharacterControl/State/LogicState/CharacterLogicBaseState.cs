@@ -32,6 +32,28 @@ namespace Character.Controller.LogicState
                     new CharacterActions() : characterBrain.CharacterActions;
             }
         }
+
+        protected bool TryGetInput(CharacterInputType type, out CharacterInputCommand command)
+        {
+            if (characterBrain != null)
+            {
+                return characterBrain.TryGetInputCommand(type, out command);
+            }
+
+            command = default;
+            return false;
+        }
+
+        protected bool TryGetLatestInput(CharacterInputType type, out CharacterInputCommand command)
+        {
+            if (characterBrain != null)
+            {
+                return characterBrain.TryGetLatestInputCommand(type, out command);
+            }
+
+            command = default;
+            return false;
+        }
         public CharacterMovementStateMachine movementMachine => parentMachine.movementStateMachine;
 
         protected ECharacterMoveState GetMovementState()

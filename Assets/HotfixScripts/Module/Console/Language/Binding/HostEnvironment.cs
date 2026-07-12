@@ -96,6 +96,11 @@ namespace Helper
             return commandRegistry.Match(keyword);
         }
 
+        public void RegisterCommand(string name, string displayText, Func<List<object>, object> handler)
+        {
+            commandRegistry.Register(name, displayText, handler);
+        }
+
         public void RegisterVariable(string name, object instance, bool readOnly = false)
         {
             variableRegistry.Register(name, instance, readOnly);
@@ -171,7 +176,7 @@ namespace Helper
     public sealed class CommandRegistry
     {
         readonly StringTable strings;
-        readonly Dictionary<InternedString, MethodCallable> commands = new();
+        readonly Dictionary<InternedString, ICommandCallable> commands = new();
         readonly Dictionary<InternedString, string> displayCache = new();
 
         public CommandRegistry(StringTable strings)
@@ -201,9 +206,22 @@ namespace Helper
             }
         }
 
+        public void Register(string name, string displayText, Func<List<object>, object> handler)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("命令名称不能为空", nameof(name));
+            }
+
+            InternedString commandName = strings.Intern(name);
+            DelegateCommandCallable callable = new(displayText, handler);
+            commands[commandName] = callable;
+            displayCache[commandName] = callable.DisplayText;
+        }
+
         public object Invoke(InternedString name, List<object> args)
         {
-            if (!commands.TryGetValue(name, out MethodCallable callable))
+            if (!commands.TryGetValue(name, out ICommandCallable callable))
             {
                 throw new RuntimeException($"未找到命令 {name.Value}");
             }
@@ -215,7 +233,7 @@ namespace Helper
         {
             keyword ??= string.Empty;
             List<CommandSuggestion> matches = new(commands.Count);
-            foreach (KeyValuePair<InternedString, MethodCallable> pair in commands)
+            foreach (KeyValuePair<InternedString, ICommandCallable> pair in commands)
             {
                 if (keyword.Length == 0 ||
                     pair.Key.Value.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -231,7 +249,31 @@ namespace Helper
         }
     }
 
-    public sealed class MethodCallable
+    public interface ICommandCallable
+    {
+        string DisplayText { get; }
+        object Execute(List<object> args);
+    }
+
+    public sealed class DelegateCommandCallable : ICommandCallable
+    {
+        readonly Func<List<object>, object> handler;
+
+        public DelegateCommandCallable(string displayText, Func<List<object>, object> handler)
+        {
+            DisplayText = displayText ?? string.Empty;
+            this.handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        }
+
+        public string DisplayText { get; }
+
+        public object Execute(List<object> args)
+        {
+            return handler(args ?? new List<object>());
+        }
+    }
+
+    public sealed class MethodCallable : ICommandCallable
     {
         static readonly List<object> EmptyArguments = new(0);
         static readonly Dictionary<Type, string> TypeAliases = new()

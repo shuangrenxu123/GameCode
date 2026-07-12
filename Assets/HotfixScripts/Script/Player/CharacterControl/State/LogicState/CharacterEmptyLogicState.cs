@@ -40,7 +40,9 @@ namespace Character.Controller.LogicState
             {
                 var trigger = characterActor.Triggers[0];
                 var Interaction = trigger.gameObject.GetComponent<Intractable>();
-                if (Interaction && characterActions.interact.Started)
+                if (Interaction
+                    && TryGetInput(CharacterInputType.Interact, out var interactCommand)
+                    && interactCommand.BoolValue)
                 {
                     var animClipName = GetInteractionAnimClipName(Interaction);
 
@@ -56,7 +58,8 @@ namespace Character.Controller.LogicState
                 }
             }
             //进入翻滚
-            if (characterActions.roll.Started &&
+            if (TryGetInput(CharacterInputType.Roll, out var rollCommand)
+                && rollCommand.BoolValue &&
                 movementMachine.CurrentStateType is ECharacterMoveState.NormalMove or ECharacterMoveState.RunMove)
             {
                 parentMachine.ChangeState(ECharacterLogicState.Interaction,
@@ -68,7 +71,8 @@ namespace Character.Controller.LogicState
                            null, null));
             }
 
-            if (characterActions.attack.Started)
+            if (TryGetInput(CharacterInputType.Attack, out var attackCommand)
+                && attackCommand.BoolValue)
             {
                 parentMachine.ChangeState(ECharacterLogicState.Attack);
 

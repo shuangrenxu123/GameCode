@@ -59,7 +59,7 @@ namespace Character.Controller.MoveState
         {
             base.FixUpdate();
 
-            YSpeed = characterBrain.CharacterActions.movement.value.y;
+            YSpeed = parentMachine.CurrentMovementInput.y;
             if (YSpeed != 0 && !inMove)
             {
                 PlayAnimation();

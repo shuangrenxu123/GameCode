@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Character.Player;
+using CharacterController;
 using ConsoleLog;
 using Helper;
 using LitMotion;
@@ -93,11 +94,11 @@ namespace UIPanel.Console
         }
         public override void OnUpdate()
         {
-            // if (UIInput.cancel.Started)
-            // {
-            //     HideInputPanel();
-            //     UIManager.Instance.CloseUI(GetType());
-            // }
+            if (TryConsumeCancelInput())
+            {
+                HideInputPanel();
+                return;
+            }
 
             if (Input.GetKeyDown(KeyCode.Tab))
             {
@@ -114,11 +115,6 @@ namespace UIPanel.Console
                 {
                     MoveTipSelection(1);
                 }
-            }
-
-            if ((Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter)) && IsSelectingSuggestion())
-            {
-                ApplySelectedSuggestion();
             }
 
             UpdateConsoleIdleFade();
@@ -409,12 +405,6 @@ namespace UIPanel.Console
 
         private void SubmitCommand(string text)
         {
-            if (IsSelectingSuggestion())
-            {
-                ApplySelectedSuggestion();
-                return;
-            }
-
             if (text == "" || text == string.Empty)
             {
                 HideInputPanel();
@@ -456,11 +446,6 @@ namespace UIPanel.Console
             ClearTips();
 
             if (string.IsNullOrEmpty(inputText) || inputText[0] != '/')
-            {
-                return;
-            }
-
-            if (inputText.Length <= 1)
             {
                 return;
             }
@@ -542,18 +527,41 @@ namespace UIPanel.Console
 
         public void HideInputPanel()
         {
+            ResolvePlayerBrain()?.DisableUIInput();
+
             if (!inputActive)
             {
                 return;
             }
 
             inputActive = false;
+            ClearTips();
             input.DeactivateInputField();
             input.gameObject.SetActive(false);
         }
 
+        private bool TryConsumeCancelInput()
+        {
+            CharacterBrain brain = ResolvePlayerBrain();
+            return brain != null
+                && brain.TryGetInputCommand(CharacterInputType.UICancel, out var command)
+                && command.BoolValue;
+        }
+
+        private CharacterBrain ResolvePlayerBrain()
+        {
+            if (player == null)
+            {
+                player = Player.Instance != null ? Player.Instance : FindFirstObjectByType<Player>();
+            }
+
+            return player != null ? player.brain : null;
+        }
+
         private void OnDestroy()
         {
+            ResolvePlayerBrain()?.DisableUIInput();
+
             if (ConsoleManager.Instance != null)
             {
                 ConsoleManager.Instance.OnOutput -= OutputPanel;

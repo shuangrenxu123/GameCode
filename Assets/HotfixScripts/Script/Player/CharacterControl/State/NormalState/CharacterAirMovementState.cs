@@ -4,6 +4,8 @@ using HFSM;
 using UnityEngine;
 namespace Character.Controller.MoveState
 {
+    public record CharacterJumpStateInput(bool ShouldJump) : StateBaseInput;
+
     public class CharacterAirMovementState : CharacterMovementStateBase
     {
         enum AirState
@@ -26,7 +28,7 @@ namespace Character.Controller.MoveState
         {
             // characterActor.alwaysNotGrounded = true;
             characterActor.ForceNotGrounded(10);
-            if (characterActions.jump.Started)
+            if (input is CharacterJumpStateInput { ShouldJump: true })
             {
                 Jump();
             }

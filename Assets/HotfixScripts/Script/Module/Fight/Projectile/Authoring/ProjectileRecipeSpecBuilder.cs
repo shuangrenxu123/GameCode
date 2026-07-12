@@ -34,6 +34,7 @@ namespace Fight.Projectile.Authoring
                 DestroyOnTargetHit = stopConfig == null || stopConfig.destroyOnTargetHit,
                 StopWhenTargetLost = stopConfig != null && stopConfig.stopWhenTargetLost,
             };
+            IProjectileHitResolver hitResolver = BuildHitResolver(hitConfig);
 
             return new ProjectileRecipeSpec(
                 projectileAssetId,
@@ -41,7 +42,65 @@ namespace Fight.Projectile.Authoring
                 motions,
                 in detection,
                 in hit,
+                hitResolver,
                 in stop);
+        }
+
+        static IProjectileHitResolver BuildHitResolver(ProjectileHitConfig hitConfig)
+        {
+            var resolvers = new List<IProjectileHitResolver>();
+            ProjectileHitEffectConfig[] effects = hitConfig?.effects;
+            if (effects != null)
+            {
+                for (int i = 0; i < effects.Length; i++)
+                {
+                    ProjectileHitEffectConfig effect = effects[i];
+                    if (effect == null || !effect.enabled)
+                    {
+                        continue;
+                    }
+
+                    IProjectileHitResolver resolver = CreateHitResolver(effect);
+                    if (resolver != null)
+                    {
+                        resolvers.Add(resolver);
+                    }
+                }
+            }
+
+            if (resolvers.Count == 0 && hitConfig != null)
+            {
+                switch (hitConfig.resolveType)
+                {
+                    case ProjectileHitResolveType.Damage:
+                        resolvers.Add(new DamageActionHitResolver());
+                        break;
+                    case ProjectileHitResolveType.Regeneration:
+                        resolvers.Add(new RegenerationActionHitResolver());
+                        break;
+                }
+            }
+
+            return resolvers.Count > 0
+                ? new CompositeProjectileHitResolver(resolvers)
+                : null;
+        }
+
+        static IProjectileHitResolver CreateHitResolver(ProjectileHitEffectConfig effect)
+        {
+            switch (effect.type)
+            {
+                case ProjectileHitEffectType.Damage:
+                    return new DamageActionHitResolver(effect.baseValue, effect.order);
+                case ProjectileHitEffectType.Regeneration:
+                    return new RegenerationActionHitResolver(effect.baseValue, effect.order);
+                case ProjectileHitEffectType.AddBuff:
+                    return effect.buffId != BuffId.None
+                        ? new ApplyBuffHitResolver(effect.buffId, effect.order)
+                        : null;
+                default:
+                    return null;
+            }
         }
 
         static ProjectileDetectionSpec BuildDetectionSpec(ProjectileDetectionConfig detectionConfig)
