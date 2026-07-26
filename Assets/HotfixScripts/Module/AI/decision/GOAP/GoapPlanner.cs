@@ -1,248 +1,489 @@
 using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace GOAP
 {
-    class Node<T, V>
+    readonly struct SearchStateSignature : IEquatable<SearchStateSignature>
     {
-        /// <summary>
-        /// 父节点
-        /// </summary>
-        public Node<T, V> parent;
+        public readonly int ConditionsHash;
+        public readonly int ConditionCount;
+        public readonly ulong UsedActionMask;
 
-        /// <summary>
-        /// 运行时代价
-        /// </summary>
-        public float runningCost;
-
-        public Dictionary<T, V> state;
-
-        /// <summary>
-        /// Action
-        /// </summary>
-        public GoapAction<T, V> action;
-
-        public Node(Node<T, V> parent, float runningCost, Dictionary<T, V> state, GoapAction<T, V> action)
+        public SearchStateSignature(
+            int conditionsHash,
+            int conditionCount,
+            ulong usedActionMask)
         {
-            this.parent = parent;
-            this.runningCost = runningCost;
-            this.state = state;
-            this.action = action;
+            ConditionsHash = conditionsHash;
+            ConditionCount = conditionCount;
+            UsedActionMask = usedActionMask;
+        }
+
+        public bool Equals(SearchStateSignature other)
+        {
+            return ConditionsHash == other.ConditionsHash &&
+                   ConditionCount == other.ConditionCount &&
+                   UsedActionMask == other.UsedActionMask;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is SearchStateSignature other && Equals(other);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = ConditionsHash;
+                hash = (hash * 397) ^ ConditionCount;
+                hash = (hash * 397) ^ UsedActionMask.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
+    readonly struct ConditionChange<T, V>
+    {
+        public readonly T Key;
+        public readonly bool Existed;
+        public readonly V OldValue;
+
+        public ConditionChange(T key, bool existed, V oldValue)
+        {
+            Key = key;
+            Existed = existed;
+            OldValue = oldValue;
+        }
+    }
+
+    readonly struct ConditionSnapshot<T, V>
+    {
+        public readonly T Key;
+        public readonly V Value;
+
+        public ConditionSnapshot(T key, V value)
+        {
+            Key = key;
+            Value = value;
+        }
+    }
+
+    struct CachedSearchState
+    {
+        public int ConditionsOffset;
+        public int ConditionCount;
+        public float BestCost;
+        public int NextCollisionIndex;
+
+        public CachedSearchState(
+            int conditionsOffset,
+            int conditionCount,
+            float bestCost,
+            int nextCollisionIndex)
+        {
+            ConditionsOffset = conditionsOffset;
+            ConditionCount = conditionCount;
+            BestCost = bestCost;
+            NextCollisionIndex = nextCollisionIndex;
         }
     }
 
     public class GoapPlanner<T, V>
     {
+        private readonly HashSet<GoapAction<T, V>> usableActions = new();
+        private readonly Dictionary<T, V> workingConditions = new();
+        private readonly List<ConditionChange<T, V>> conditionChanges = new();
+        private readonly List<ConditionSnapshot<T, V>> conditionSnapshots = new();
+        private readonly List<CachedSearchState> cachedSearchStates = new();
+        private readonly Dictionary<SearchStateSignature, int> stateBucketHeads = new();
+        private readonly List<GoapAction<T, V>> currentPath = new();
+        private readonly List<GoapAction<T, V>> bestPath = new();
 
-        HashSet<GoapAction<T, V>> usableActions = new();
+        private float bestCost;
+        private int workingConditionsHash;
+
+        public int LastExpandedNodeCount { get; private set; }
+        public int LastDeduplicatedNodeCount { get; private set; }
+        public int LastHashCollisionStateCount { get; private set; }
 
         /// <summary>
-        /// 叶子节点
+        /// 从目标条件开始反向回归，寻找能够由当前世界状态支持的最低成本 Action 序列。
+        /// 搜索过程只复用一个条件字典，并通过修改栈在递归返回时恢复状态。
         /// </summary>
-        List<Node<T, V>> leavesNodes = new();
-
-        /// <summary>
-        /// 生成行动计划队列。过滤可用行动，构建状态图找到达到目标的最低代价路径。
-        /// </summary>
-        /// <param name="availableActions">所有可用行动集合</param>
-        /// <param name="worldState">当前世界状态</param>
-        /// <param name="goal">目标状态</param>
-        /// <returns>如果找到路径，返回行动队列；否则返回null</returns>
-        public Queue<GoapAction<T, V>> Plan(HashSet<GoapAction<T, V>> availableActions,
+        public Queue<GoapAction<T, V>> Plan(
+            HashSet<GoapAction<T, V>> availableActions,
             Dictionary<T, V> worldState,
             Dictionary<T, V> goal)
         {
+            ResetSearch();
+
+            try
+            {
+                CollectUsableActions(availableActions, worldState);
+                InitializeWorkingConditions(goal);
+                RegisterOrImproveCurrentState(0f, 0UL);
+
+                if (InState(workingConditions, worldState))
+                {
+                    bestCost = 0f;
+                }
+                else
+                {
+                    BuildGraph(0f, 0UL, worldState);
+                }
+
+                if (bestCost == float.MaxValue)
+                {
+                    return null;
+                }
+
+                Queue<GoapAction<T, V>> plan = new(bestPath.Count);
+                for (int index = bestPath.Count - 1; index >= 0; index--)
+                {
+                    plan.Enqueue(bestPath[index]);
+                }
+
+                return plan;
+            }
+            finally
+            {
+                ClearTransientSearchData();
+            }
+        }
+
+        private void ResetSearch()
+        {
             usableActions.Clear();
-            foreach (var a in availableActions)
+            workingConditions.Clear();
+            conditionChanges.Clear();
+            conditionSnapshots.Clear();
+            cachedSearchStates.Clear();
+            stateBucketHeads.Clear();
+            currentPath.Clear();
+            bestPath.Clear();
+
+            bestCost = float.MaxValue;
+            workingConditionsHash = 0;
+            LastExpandedNodeCount = 0;
+            LastDeduplicatedNodeCount = 0;
+            LastHashCollisionStateCount = 0;
+        }
+
+        private void ClearTransientSearchData()
+        {
+            usableActions.Clear();
+            workingConditions.Clear();
+            conditionChanges.Clear();
+            conditionSnapshots.Clear();
+            cachedSearchStates.Clear();
+            stateBucketHeads.Clear();
+            currentPath.Clear();
+            bestPath.Clear();
+            workingConditionsHash = 0;
+        }
+
+        private void CollectUsableActions(
+            HashSet<GoapAction<T, V>> availableActions,
+            Dictionary<T, V> worldState)
+        {
+            ulong availableActionMask = 0UL;
+            foreach (GoapAction<T, V> action in availableActions)
             {
-                if (a.CheckProceduralPreCondition(worldState))
+                if (action == null)
                 {
-                    usableActions.Add(a);
+                    throw new ArgumentException(
+                        "availableActions 不能包含 null。",
+                        nameof(availableActions));
+                }
+
+                ValidateActionMask(action.ActionMask, nameof(availableActions));
+                if ((availableActionMask & action.ActionMask) != 0UL)
+                {
+                    throw new ArgumentException(
+                        $"ActionMask {action.ActionMask} 被多个 Action 重复使用。",
+                        nameof(availableActions));
+                }
+
+                availableActionMask |= action.ActionMask;
+
+                // 负成本会破坏最低成本剪枝，因此不允许参与规划。
+                if (action.cost >= 0f && action.CheckProceduralPreCondition(worldState))
+                {
+                    usableActions.Add(action);
+                }
+            }
+        }
+
+        private void InitializeWorkingConditions(Dictionary<T, V> goal)
+        {
+            foreach (KeyValuePair<T, V> condition in goal)
+            {
+                workingConditions.Add(condition.Key, condition.Value);
+                workingConditionsHash ^=
+                    GetConditionHash(condition.Key, condition.Value);
+            }
+        }
+
+        private bool BuildGraph(
+            float runningCost,
+            ulong usedActionMask,
+            Dictionary<T, V> worldState)
+        {
+            bool foundPlan = false;
+            LastExpandedNodeCount++;
+
+            foreach (GoapAction<T, V> action in usableActions)
+            {
+                if ((usedActionMask & action.ActionMask) != 0UL)
+                {
+                    continue;
+                }
+
+                float nextCost = runningCost + action.cost;
+                if (nextCost >= bestCost)
+                {
+                    continue;
+                }
+
+                int rollbackMarker = conditionChanges.Count;
+                int previousHash = workingConditionsHash;
+
+                if (!TryRegressInPlace(action))
+                {
+                    RollbackConditions(rollbackMarker, previousHash);
+                    continue;
+                }
+
+                ulong nextUsedActionMask = usedActionMask | action.ActionMask;
+                if (!RegisterOrImproveCurrentState(nextCost, nextUsedActionMask))
+                {
+                    LastDeduplicatedNodeCount++;
+                    RollbackConditions(rollbackMarker, previousHash);
+                    continue;
+                }
+
+                currentPath.Add(action);
+
+                if (InState(workingConditions, worldState))
+                {
+                    bestCost = nextCost;
+                    bestPath.Clear();
+                    bestPath.AddRange(currentPath);
+                    foundPlan = true;
+                }
+                else if (BuildGraph(nextCost, nextUsedActionMask, worldState))
+                {
+                    foundPlan = true;
+                }
+
+                currentPath.RemoveAt(currentPath.Count - 1);
+                RollbackConditions(rollbackMarker, previousHash);
+            }
+
+            return foundPlan;
+        }
+
+        private bool TryRegressInPlace(GoapAction<T, V> action)
+        {
+            bool satisfiesCondition = false;
+
+            // 先完整检查 Effect，避免发生冲突后才修改工作字典。
+            foreach (KeyValuePair<T, V> effect in action.Effects)
+            {
+                if (!workingConditions.TryGetValue(effect.Key, out V requiredValue))
+                {
+                    continue;
+                }
+
+                if (!EqualityComparer<V>.Default.Equals(effect.Value, requiredValue))
+                {
+                    return false;
+                }
+
+                satisfiesCondition = true;
+            }
+
+            if (!satisfiesCondition)
+            {
+                return false;
+            }
+
+            foreach (KeyValuePair<T, V> effect in action.Effects)
+            {
+                if (workingConditions.TryGetValue(effect.Key, out V requiredValue) &&
+                    EqualityComparer<V>.Default.Equals(effect.Value, requiredValue))
+                {
+                    conditionChanges.Add(new ConditionChange<T, V>(
+                        effect.Key,
+                        true,
+                        requiredValue));
+                    workingConditions.Remove(effect.Key);
+                    workingConditionsHash ^=
+                        GetConditionHash(effect.Key, requiredValue);
                 }
             }
 
-            leavesNodes.Clear();
-            Node<T, V> start = new(null, 0, worldState, null);
-            bool success = BuildGraph(start, leavesNodes, usableActions, goal);
-
-            if (!success)
+            foreach (KeyValuePair<T, V> precondition in action.Preconditions)
             {
-                Debug.LogError("【GOAP】没能成功找到一个可用的行为列表");
-                return null;
+                if (workingConditions.TryGetValue(precondition.Key, out V requiredValue))
+                {
+                    if (!EqualityComparer<V>.Default.Equals(
+                            precondition.Value,
+                            requiredValue))
+                    {
+                        return false;
+                    }
+
+                    continue;
+                }
+
+                conditionChanges.Add(new ConditionChange<T, V>(
+                    precondition.Key,
+                    false,
+                    default));
+                workingConditions.Add(precondition.Key, precondition.Value);
+                workingConditionsHash ^=
+                    GetConditionHash(precondition.Key, precondition.Value);
             }
 
-            Node<T, V> cheapestNode = null;
-            //找到代价最小的节点
-            foreach (Node<T, V> leaf in leavesNodes)
+            return true;
+        }
+
+        private void RollbackConditions(int marker, int previousHash)
+        {
+            for (int index = conditionChanges.Count - 1; index >= marker; index--)
             {
-                if (cheapestNode == null)
+                ConditionChange<T, V> change = conditionChanges[index];
+                if (change.Existed)
                 {
-                    cheapestNode = leaf;
+                    workingConditions[change.Key] = change.OldValue;
                 }
                 else
                 {
-                    if (leaf.runningCost < cheapestNode.runningCost)
-                    {
-                        cheapestNode = leaf;
-                    }
+                    workingConditions.Remove(change.Key);
                 }
             }
 
-            List<GoapAction<T, V>> result = new List<GoapAction<T, V>>();
-            Node<T, V> n = cheapestNode;
+            if (conditionChanges.Count > marker)
+            {
+                conditionChanges.RemoveRange(
+                    marker,
+                    conditionChanges.Count - marker);
+            }
 
-            while (n != null)
-            {
-                if (n.action != null)
-                {
-                    result.Add(n.action);
-                }
-                n = n.parent;
-            }
-            Queue<GoapAction<T, V>> queue = new();
-            foreach (var i in result)
-            {
-                queue.Enqueue(i);
-            }
-            return queue;
+            workingConditionsHash = previousHash;
         }
 
-        /// <summary>
-        /// 递归构建状态搜索图，探索行动序列直到达到目标状态。
-        /// 使用深度优先搜索，剪枝行动，收集到达目标的叶子节点。
-        /// </summary>
-        /// <param name="parent">当前父节点</param>
-        /// <param name="leaves">收集的叶子节点列表（到达目标的节点）</param>
-        /// <param name="usableActions">当前可用的行动集合</param>
-        /// <param name="goal">目标状态</param>
-        /// <returns>如果找到路径，返回true</returns>
-        private bool BuildGraph(Node<T, V> parent,
-            List<Node<T, V>> leaves,
-            HashSet<GoapAction<T, V>> usableActions,
-            Dictionary<T, V> goal)
+        private bool RegisterOrImproveCurrentState(
+            float runningCost,
+            ulong usedActionMask)
         {
-            bool foundOnd = false;
-            foreach (var action in usableActions)
+            SearchStateSignature signature = new(
+                workingConditionsHash,
+                workingConditions.Count,
+                usedActionMask);
+
+            int collisionIndex = -1;
+            if (stateBucketHeads.TryGetValue(signature, out int stateIndex))
             {
-                if (InState(action.Preconditions, parent.state))
+                collisionIndex = stateIndex;
+                while (stateIndex >= 0)
                 {
-                    Dictionary<T, V> currentState = PopulateState(parent.state, action.Effects);
-                    Node<T, V> node = new(parent, parent.runningCost + action.cost, currentState, action);
-                    if (InState(goal, currentState))
+                    CachedSearchState cachedState = cachedSearchStates[stateIndex];
+                    if (CurrentConditionsEqual(cachedState))
                     {
-                        leaves.Add(node);
-                        node.action.PlanEnter();
-                        foundOnd = true;
-                    }
-                    else
-                    {
-                        HashSet<GoapAction<T, V>> subset = ActionSubset(usableActions, action);
-                        bool found = BuildGraph(node, leaves, subset, goal);
-                        if (found)
+                        if (cachedState.BestCost <= runningCost)
                         {
-                            foundOnd = true;
+                            return false;
                         }
-                    }
-                }
 
-                Dictionary<T, V> currentWorldState = PopulateState(parent.state, action.Effects);
-                if (InState(goal, currentWorldState))
-                {
-                    Node<T, V> node = new(parent, parent.runningCost + action.cost, currentWorldState, action);
-                    if (!InState(action.Preconditions, currentWorldState))
-                    {
-                        HashSet<GoapAction<T, V>> subset = ActionSubset(usableActions, action);
-                        bool found = BuildGraph(node, leaves, subset, action.Preconditions);
-                        if (found)
-                        {
-                            foundOnd = true;
-                        }
+                        cachedState.BestCost = runningCost;
+                        cachedSearchStates[stateIndex] = cachedState;
+                        return true;
                     }
-                    else
-                    {
-                        leaves.Add(node);
-                        node.action.PlanEnter();
-                        foundOnd = true;
-                    }
+
+                    stateIndex = cachedState.NextCollisionIndex;
                 }
             }
-            return foundOnd;
-        }
 
-        /// <summary>
-        /// 从行动集合中移除指定行动，返回新的子集合，用于递归搜索中的action组合。
-        /// </summary>
-        /// <param name="actions">原始行动集合</param>
-        /// <param name="removeMe">要移除的行动</param>
-        /// <returns>移除指定行动后的新集合</returns>
-        private HashSet<GoapAction<T, V>> ActionSubset(HashSet<GoapAction<T, V>> actions, GoapAction<T, V> removeMe)
-        {
-            HashSet<GoapAction<T, V>> subset = new();
-            foreach (var a in actions)
+            int conditionsOffset = conditionSnapshots.Count;
+            foreach (KeyValuePair<T, V> condition in workingConditions)
             {
-                if (!a.Equals(removeMe))
-                {
-                    subset.Add(a);
-                }
+                conditionSnapshots.Add(new ConditionSnapshot<T, V>(
+                    condition.Key,
+                    condition.Value));
             }
-            return subset;
-        }
 
-        /// <summary>
-        /// 根据行动的影响更新状态集。若状态键存在，则累加数值（支持增量）；若不存在，则添加新键值。
-        /// 修改版本：假设V为int，支持增量计算而非覆盖。
-        /// </summary>
-        /// <param name="currentState">当前状态集</param>
-        /// <param name="stateChange">待应用的状态变化集</param>
-        /// <returns>更新后的新状态集</returns>
-        private Dictionary<T, V> PopulateState
-            (Dictionary<T, V> currentState,
-            Dictionary<T, V> stateChange)
-        {
-            Dictionary<T, V> state = new Dictionary<T, V>(currentState);
-
-            foreach (var change in stateChange)
+            int newStateIndex = cachedSearchStates.Count;
+            if (collisionIndex >= 0)
             {
-                if (state.ContainsKey(change.Key))
-                {
-                    // 假设 V 是 int，进行增量更新
-                    if (typeof(V) == typeof(int))
-                    {
-                        int newVal = ((int)(object)state[change.Key]) + ((int)(object)change.Value);
-                        state[change.Key] = (V)(object)newVal;
-                    }
-                    else
-                    {
-                        state[change.Key] = change.Value;
-                    }
-                }
-                else
-                {
-                    state.Add(change.Key, change.Value);
-                }
+                LastHashCollisionStateCount++;
             }
-            return state;
+
+            cachedSearchStates.Add(new CachedSearchState(
+                conditionsOffset,
+                workingConditions.Count,
+                runningCost,
+                collisionIndex));
+            stateBucketHeads[signature] = newStateIndex;
+            return true;
         }
 
-        /// <summary>
-        /// 检查前提条件是否在当前状态中完全匹配。
-        /// 前提条件的每个键值对必须在状态集中存在并相等。
-        /// </summary>
-        /// <param name="preconditions">前提条件集</param>
-        /// <param name="state">当前状态集</param>
-        /// <returns>如果所有前提条件满足，返回true</returns>
-        private bool InState(Dictionary<T, V> preconditions, Dictionary<T, V> state)
+        private bool CurrentConditionsEqual(CachedSearchState cachedState)
         {
-            foreach (var kvp in preconditions)
+            if (cachedState.ConditionCount != workingConditions.Count)
             {
-                if (!state.ContainsKey(kvp.Key) || !EqualityComparer<V>.Default.Equals(state[kvp.Key], kvp.Value))
+                return false;
+            }
+
+            int end = cachedState.ConditionsOffset + cachedState.ConditionCount;
+            for (int index = cachedState.ConditionsOffset; index < end; index++)
+            {
+                ConditionSnapshot<T, V> condition = conditionSnapshots[index];
+                if (!workingConditions.TryGetValue(condition.Key, out V value) ||
+                    !EqualityComparer<V>.Default.Equals(condition.Value, value))
                 {
                     return false;
                 }
             }
+
+            return true;
+        }
+
+        private static int GetConditionHash(T key, V value)
+        {
+            int keyHash = EqualityComparer<T>.Default.GetHashCode(key);
+            int valueHash = EqualityComparer<V>.Default.GetHashCode(value);
+
+            unchecked
+            {
+                return (keyHash * 397) ^ valueHash;
+            }
+        }
+
+        private static void ValidateActionMask(ulong actionMask, string parameterName)
+        {
+            if (actionMask == 0UL || (actionMask & (actionMask - 1UL)) != 0UL)
+            {
+                throw new ArgumentException(
+                    $"ActionMask {actionMask} 必须非零且只能包含一个置位 bit。",
+                    parameterName);
+            }
+        }
+
+        private bool InState(Dictionary<T, V> conditions, Dictionary<T, V> state)
+        {
+            foreach (KeyValuePair<T, V> condition in conditions)
+            {
+                if (!state.TryGetValue(condition.Key, out V value) ||
+                    !EqualityComparer<V>.Default.Equals(value, condition.Value))
+                {
+                    return false;
+                }
+            }
+
             return true;
         }
     }
-
 }

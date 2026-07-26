@@ -9,6 +9,12 @@ namespace GOAP
     public abstract class GoapAction<T, V>
     {
         /// <summary>
+        /// Action 在单个 Agent 中唯一占用且生命周期内保持不变的位标识。
+        /// 必须非零，并且只能包含一个置位 bit。
+        /// </summary>
+        public abstract ulong ActionMask { get; }
+
+        /// <summary>
         /// 行为所需要的前置条件
         /// </summary>
         protected Dictionary<T, V> preconditions;
@@ -39,6 +45,7 @@ namespace GOAP
 
         public string name = "";
         protected bool executed = false;
+        protected bool running = false;
         public GoapAction()
         {
             preconditions = new();
@@ -46,10 +53,8 @@ namespace GOAP
         }
 
 
-        public bool IsDone()
-        {
-            return executed;
-        }
+        public bool IsDone => executed;
+        public bool Running => running;
 
         protected abstract void Reset();
 
@@ -59,6 +64,7 @@ namespace GOAP
         public virtual void PlanEnter()
         {
             executed = false;
+            running = true;
         }
 
         public virtual void PlanExecute()
@@ -70,6 +76,8 @@ namespace GOAP
         }
         public virtual void PlanExit()
         {
+            Reset();
+            running = false;
 
         }
     }

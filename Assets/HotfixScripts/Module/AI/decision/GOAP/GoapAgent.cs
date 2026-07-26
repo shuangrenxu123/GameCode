@@ -5,17 +5,25 @@ namespace GOAP
 {
     public class GoapAgent<T, V>
     {
-        Dictionary<T, V> worldState = new(); //世界状态
-        public Dictionary<T, V> WorldState { get { return worldState; } set { worldState = value; } }
-        private HashSet<GoapAction<T, V>> availableActions;
+        private Dictionary<T, V> worldState = new();
+        public Dictionary<T, V> WorldState
+        {
+            get { return worldState; }
+            set { worldState = value; }
+        }
+
+        private readonly HashSet<GoapAction<T, V>> availableActions;
+        private ulong registeredActionMask;
         private Queue<GoapAction<T, V>> currentActions;
-
         public List<Goal<T, V>> goals;
-        // private IGoap dataProvider;
 
-        /// <summary>
-        /// 默认构造函数，初始化内部集合
-        /// </summary>
+        private readonly GoapPlanner<T, V> planner;
+        private float planDeltaTime = 1f;
+        private float lastPlanTime;
+        private bool running;
+
+        public float LastPlanTime => lastPlanTime;
+
         public GoapAgent()
         {
             availableActions = new HashSet<GoapAction<T, V>>();
@@ -24,37 +32,6 @@ namespace GOAP
             goals = new List<Goal<T, V>>();
         }
 
-        /// <summary>
-        /// 每次重新获得计划的间隔时间
-        /// </summary>
-        float planDeltaTime = 1f;
-
-
-        //==========RunTime====================
-
-        /// <summary>
-        /// 是否正在计划中
-        /// </summary>
-        bool isPlanning = false;
-
-        /// <summary>
-        /// 上一次计划的时间
-        /// </summary>
-        public float LastPlanTime => lastPlanTime;
-        float lastPlanTime = 0;
-
-        private GoapPlanner<T, V> planner;
-
-        private bool running = false;
-        private void Start()
-        {
-            availableActions = new();
-            currentActions = new();
-            planner = new();
-
-        }
-
-
         private bool HasActionPlan()
         {
             return currentActions.Count > 0;
@@ -62,81 +39,147 @@ namespace GOAP
 
         public void AddAction(GoapAction<T, V> action)
         {
+            if (action == null)
+            {
+                throw new System.ArgumentNullException(nameof(action));
+            }
+
+            if (availableActions.Contains(action))
+            {
+                return;
+            }
+
+            ValidateActionMask(action.ActionMask, nameof(action));
+            if ((registeredActionMask & action.ActionMask) != 0UL)
+            {
+                throw new System.ArgumentException(
+                    $"ActionMask {action.ActionMask} 已被其他 Action 使用。",
+                    nameof(action));
+            }
+
             availableActions.Add(action);
+            registeredActionMask |= action.ActionMask;
         }
+
         public void RemoveAction(GoapAction<T, V> action)
         {
-            availableActions.Remove(action);
+            if (action != null && availableActions.Remove(action))
+            {
+                registeredActionMask &= ~action.ActionMask;
+            }
         }
-        /// <summary>
-        /// 获取可用Action的数量（用于测试验证）
-        /// </summary>
-        /// <returns>Action数量</returns>
+
+        private static void ValidateActionMask(ulong actionMask, string parameterName)
+        {
+            if (actionMask == 0UL || (actionMask & (actionMask - 1UL)) != 0UL)
+            {
+                throw new System.ArgumentException(
+                    $"ActionMask {actionMask} 必须非零且只能包含一个置位 bit。",
+                    parameterName);
+            }
+        }
+
         public int GetAvailableActionsCount()
         {
-            return availableActions != null ? availableActions.Count : 0;
+            return availableActions.Count;
         }
-        /// <summary>
-        /// �Ƿ��ҵ��˺��ʵļƻ�
-        /// </summary>
-        /// <returns></returns>
+
         public bool BuildPlan(bool forcePlan = true)
         {
-            if (running && !forcePlan)
+            if (goals == null || goals.Count == 0)
             {
+                Debug.LogWarning("[GOAP] 没有可用目标，无法生成计划");
                 return false;
             }
+
+            if (running)
+            {
+                if (!forcePlan)
+                {
+                    return false;
+                }
+
+                AbortCurrentPlan();
+            }
+
             if (Time.time - lastPlanTime < planDeltaTime && !forcePlan)
             {
                 return false;
             }
+
             lastPlanTime = Time.time;
 
-            Goal<T, V> goal = null;
-            foreach (var g in goals)
+            foreach (Goal<T, V> goal in goals)
             {
-                if (goal == null)
+                // 已经满足的高优先级 Goal 不应阻塞后续未满足 Goal。
+                if (InState(goal.goal, worldState))
                 {
-                    goal = g;
+                    continue;
                 }
-                else
+
+                Queue<GoapAction<T, V>> plan =
+                    planner.Plan(availableActions, worldState, goal.goal);
+                if (plan != null)
                 {
-                    if (goal.Priority < g.Priority)
-                    {
-                        goal = g;
-                    }
+                    currentActions = plan;
+                    running = true;
+                    return true;
                 }
             }
 
-            //��� Actions
-            Queue<GoapAction<T, V>> plan = planner.Plan(availableActions, worldState, goal.goal);
-            if (plan != null)
+            return false;
+        }
+
+        private void AbortCurrentPlan()
+        {
+            if (currentActions.Count > 0)
             {
-                currentActions = plan;
-                running = true;
-                return true;
+                GoapAction<T, V> currentAction = currentActions.Peek();
+                if (currentAction.Running)
+                {
+                    currentAction.PlanExit();
+                }
             }
-            else
-            {
-                return false;
-            }
+
+            currentActions.Clear();
+            running = false;
+        }
+
+        private bool CanExecuteAction(GoapAction<T, V> action)
+        {
+            return InState(action.Preconditions, worldState) &&
+                   action.CheckProceduralPreCondition(worldState);
         }
 
         public bool ForceBuildPlan()
         {
-            lastPlanTime = 0;
+            lastPlanTime = 0f;
             return BuildPlan(true);
         }
 
         public void AddGoal(Goal<T, V> goal)
         {
             goals.Add(goal);
+            SortGoalsByPriority();
         }
 
-        /// <summary>
-        /// ִ��plan
-        /// </summary>
-        /// <returns>�Ƿ��������</returns>
+        public bool UpdateGoalPriority(Goal<T, V> goal, int priority)
+        {
+            if (goal == null || !goals.Contains(goal))
+            {
+                return false;
+            }
+
+            goal.SetPriority(priority);
+            SortGoalsByPriority();
+            return true;
+        }
+
+        private void SortGoalsByPriority()
+        {
+            goals.Sort((left, right) => right.Priority.CompareTo(left.Priority));
+        }
+
         public void RunPlan()
         {
             if (!HasActionPlan())
@@ -146,53 +189,48 @@ namespace GOAP
             }
 
             GoapAction<T, V> action = currentActions.Peek();
+            if (!CanExecuteAction(action))
+            {
+                AbortCurrentPlan();
+                BuildPlan(true);
+                return;
+            }
 
-            if (action.IsDone())
+            if (!action.Running)
+            {
+                action.PlanEnter();
+            }
+
+            action.PlanExecute();
+
+            if (action.IsDone)
             {
                 action.PlanExit();
-                // 在Action完成执行后应用其Effect
                 currentActions.Dequeue();
                 ApplyActionEffects(action);
             }
-            if (action != null)
-            {
-                action.PlanExecute();
-
-            }
         }
-        private Dictionary<T, V> PopulateState
-            (Dictionary<T, V> currentState,
-            Dictionary<T, V> stateChange)
-        {
-            Dictionary<T, V> state = new Dictionary<T, V>(currentState);
 
-            foreach (var change in stateChange)
+        private bool InState(Dictionary<T, V> conditions, Dictionary<T, V> state)
+        {
+            foreach (KeyValuePair<T, V> condition in conditions)
             {
-                if (state.ContainsKey(change.Key))
+                if (!state.TryGetValue(condition.Key, out V value) ||
+                    !EqualityComparer<V>.Default.Equals(value, condition.Value))
                 {
-                    // 假设 V 是 int，进行增量更新
-                    if (typeof(V) == typeof(int))
-                    {
-                        int newVal = ((int)(object)state[change.Key]) + ((int)(object)change.Value);
-                        state[change.Key] = (V)(object)newVal;
-                    }
-                    else
-                    {
-                        state[change.Key] = change.Value;
-                    }
-                }
-                else
-                {
-                    state.Add(change.Key, change.Value);
+                    return false;
                 }
             }
-            return state;
+
+            return true;
         }
 
         public void ApplyActionEffects(GoapAction<T, V> action)
         {
-            worldState = PopulateState(worldState, action.Effects);
+            foreach (KeyValuePair<T, V> effect in action.Effects)
+            {
+                worldState[effect.Key] = effect.Value;
+            }
         }
     }
 }
-
