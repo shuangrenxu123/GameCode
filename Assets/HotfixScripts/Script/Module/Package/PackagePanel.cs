@@ -1,5 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
+using Character.Player;
+using GameSave;
 using UIWindow;
 using UnityEngine;
 using UnityEngine.UI;
@@ -26,7 +27,7 @@ public class PackagePanel : BasePanel
 
     private readonly List<PackageCell> cellList = new List<PackageCell>();
 
-    private int lastTotalNum = -1;
+    private PlayerInventory inventory;
 
     override protected void Awake()
     {
@@ -36,25 +37,22 @@ public class PackagePanel : BasePanel
 
     private void Start()
     {
+        if (Player.Instance == null)
+        {
+            Debug.LogError("无法打开背包：场景中不存在 Player");
+            return;
+        }
+
+        inventory = Player.Instance.Inventory;
+        inventory.OnInventoryChanged += RefreshUI;
         RefreshUI();
     }
 
-    private void Update()
+    private void OnDestroy()
     {
-        if (PackageLocalData.Instance == null) return;
-        if (PackageLocalData.Instance.items == null) return;
-
-        int currentTotalNum = 0;
-
-        foreach (PackageLocalItem item in PackageLocalData.Instance.items)
+        if (inventory != null)
         {
-            currentTotalNum += item.num;
-        }
-
-        if (currentTotalNum != lastTotalNum)
-        {
-            lastTotalNum = currentTotalNum;
-            RefreshUI();
+            inventory.OnInventoryChanged -= RefreshUI;
         }
     }
 
@@ -66,6 +64,11 @@ public class PackagePanel : BasePanel
 
     private void RefreshUI()
     {
+        if (inventory == null)
+        {
+            return;
+        }
+
         RefreshScroll();
     }
 
@@ -95,37 +98,39 @@ public class PackagePanel : BasePanel
     private void RefreshScroll()
     {
         RectTransform scrollContent = UIScrollView.GetComponent<ScrollRect>().content;
-
-        List<PackageLocalItem> localDataList = GameManager.Instance.GetPackageLocalData();
-
-        int itemCount = localDataList.Count;
-
-        // 删除前 itemCount 个格子
-        for (int i = 0; i < itemCount; i++)
+        if (packageTable == null)
         {
-            if (scrollContent.childCount <= 0)
+            packageTable = Resources.Load<PackageTable>("UI/TableData/PackageTable");
+        }
+
+        ClearCells(scrollContent);
+        IReadOnlyList<InventoryItemSaveData> items = inventory.Items;
+        for (int i = 0; i < items.Count; i++)
+        {
+            PackageCell packageCell = Instantiate(packageCellPrefab, scrollContent);
+            packageCell.transform.SetSiblingIndex(i);
+            packageCell.Refresh(items[i], packageTable);
+            cellList.Add(packageCell);
+        }
+    }
+
+    private void ClearCells(RectTransform scrollContent)
+    {
+        if (cellList.Count == 0)
+        {
+            PackageCell[] existingCells = scrollContent.GetComponentsInChildren<PackageCell>(true);
+            cellList.AddRange(existingCells);
+        }
+
+        for (int i = 0; i < cellList.Count; i++)
+        {
+            PackageCell cell = cellList[i];
+            if (cell != null)
             {
-                Debug.LogWarning("背包格子不够删了");
-                break;
+                Destroy(cell.gameObject);
             }
-
-            Transform oldCell = scrollContent.GetChild(0);
-
-            // 先从 Content 里移出去，再 Destroy
-            oldCell.SetParent(null);
-            Destroy(oldCell.gameObject);
         }
 
-        // 把本地背包数据生成到最前面
-        for (int i = 0; i < itemCount; i++)
-        {
-            Transform packageUIItem = Instantiate(packageCellPrefab.transform, scrollContent);
-
-            // 插到最前面的第 i 个位置
-            packageUIItem.SetSiblingIndex(i);
-
-            PackageCell packageCell = packageUIItem.GetComponent<PackageCell>();
-            packageCell.Refresh(localDataList[i], this);
-        }
+        cellList.Clear();
     }
 }

@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+using GameSave;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class PackageCell : MonoBehaviour
@@ -12,10 +10,9 @@ public class PackageCell : MonoBehaviour
     private Transform UIFrame;
     private Transform UIAmount;
 
-    private PackageLocalItem packageLocalData;
     private PackageTableItem packageTableItem;
-    private PackageTable packageTableSO;
-    private PackagePanel uiParent;
+
+    public InventoryItemSaveData Item { get; private set; }
 
     private void Awake()
     {
@@ -29,16 +26,16 @@ public class PackageCell : MonoBehaviour
         UIAmount = transform.Find("Label_Amount");
     }
 
-    public void Refresh(PackageLocalItem packageLocalData, PackagePanel uiParent)
+    public void Refresh(InventoryItemSaveData inventoryItem, PackageTable packageTable)
     {
-        // 数据初始化
-        this.packageLocalData = packageLocalData;
-        this.packageTableItem = GameManager.Instance.GetPackageItemById(packageLocalData.id);
-        this.uiParent = uiParent;
-        // 物品的图片
-        UIIcon.GetComponent<Image>().sprite = packageTableItem.Icon;
+        Item = inventoryItem;
+        packageTableItem = packageTable != null ? packageTable.GetItemById(inventoryItem.itemId) : null;
 
-        //物品的数量
-        UIAmount.GetComponent<TMP_Text>().text = packageLocalData.num.ToString();
+        Image icon = UIIcon.GetComponent<Image>();
+        icon.sprite = packageTableItem != null ? packageTableItem.Icon : null;
+        icon.enabled = icon.sprite != null;
+        UIAmount.GetComponent<TMP_Text>().text = inventoryItem.count > 1
+            ? inventoryItem.count.ToString()
+            : string.Empty;
     }
 }

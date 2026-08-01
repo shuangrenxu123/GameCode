@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Character.Player;
 using ConsoleLog;
+using GameSave;
 using Helper;
 using UI;
 using UIWindow;
@@ -152,23 +153,33 @@ public class PlayerCommand : MonoBehaviour
 
     static void CreateLocalPackageData()
     {
-        PackageLocalData.Instance.items = new List<PackageLocalItem>();
-        PackageLocalData.Instance.SavePackage();
-        ConsoleManager.Instance.OutputToConsole("已创建空的本地背包数据", SuccessColor);
+        if (!TryResolvePlayer(out Player target))
+        {
+            return;
+        }
+
+        target.Inventory.Clear();
+        ConsoleManager.Instance.OutputToConsole("已清空玩家背包与装备数据", SuccessColor);
     }
 
     static void ReadLocalPackageData()
     {
-        List<PackageLocalItem> readItems = PackageLocalData.Instance.LoadPackage();
-        if (readItems == null || readItems.Count == 0)
+        if (!TryResolvePlayer(out Player target))
         {
-            ConsoleManager.Instance.OutputToConsole("本地背包数据为空");
             return;
         }
 
-        foreach (PackageLocalItem item in readItems)
+        IReadOnlyList<InventoryItemSaveData> items = target.Inventory.Items;
+        if (items.Count == 0)
         {
-            ConsoleManager.Instance.OutputToConsole(item != null ? item.ToString() : "null");
+            ConsoleManager.Instance.OutputToConsole("玩家背包数据为空");
+            return;
+        }
+
+        foreach (InventoryItemSaveData item in items)
+        {
+            ConsoleManager.Instance.OutputToConsole(
+                $"[instanceId]:{item.instanceId} [itemId]:{item.itemId} [count]:{item.count}");
         }
     }
 
@@ -185,8 +196,7 @@ public class PlayerCommand : MonoBehaviour
             return;
         }
 
-        PackageLocalItem item = GameManager.Instance.AddItem(id, num);
-        if (item != null)
+        if (GameManager.Instance.AddItem(id, num))
         {
             ConsoleManager.Instance.OutputToConsole($"已添加物品 id={id}, num={num}", SuccessColor);
         }

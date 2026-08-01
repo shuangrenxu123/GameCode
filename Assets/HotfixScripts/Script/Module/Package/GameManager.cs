@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using Character.Player;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -29,28 +29,23 @@ public class GameManager : MonoBehaviour
         return GetPackageTable().GetItemById(id);
     }
 
-    public List<PackageLocalItem> GetPackageLocalData()
-    {
-        return PackageLocalData.Instance.LoadPackage();
-    }
-
-    public PackageLocalItem AddItem(int id, int num)
+    public bool AddItem(int id, int num)
     {
         PackageTableItem packageTableItem = GetPackageItemById(id);
         if (packageTableItem == null)
         {
             Debug.LogError($"PackageTable 中找不到 id 为 {id} 的物品");
-            return null;
+            return false;
         }
 
-        PackageLocalItem packageLocalItem = new PackageLocalItem
+        if (Player.Instance == null)
         {
-            id = packageTableItem.id,
-            num = num,
-        };
+            Debug.LogError("场景中不存在 Player，无法添加背包物品");
+            return false;
+        }
 
-        PackageLocalData.Instance.items.Add(packageLocalItem);
-        PackageLocalData.Instance.SavePackage();
-        return packageLocalItem;
+        bool stackable = packageTableItem.type != ItemTypes.Weapon && packageTableItem.type != ItemTypes.Armor;
+        Player.Instance.Inventory.AddItem(id, num, stackable);
+        return true;
     }
 }
