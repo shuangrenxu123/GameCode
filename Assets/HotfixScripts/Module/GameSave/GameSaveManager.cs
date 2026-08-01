@@ -16,10 +16,17 @@ namespace GameSave
         string currentFileName;
 
         GameFileData fileData;
+        PlayerSaveEntity playerSaveEntity;
+
+        public event Action BeforeSave;
+        public event Action PlayerDataLoaded;
+
+        public PlayerSaveData PlayerData => playerSaveEntity.Data;
 
         public void OnCreate(object createParam)
         {
             fileData = new();
+            playerSaveEntity = new PlayerSaveEntity();
         }
 
         public void RegisterSaver(IGameSave saver)
@@ -34,6 +41,7 @@ namespace GameSave
 
         public void SaveData(string fileName)
         {
+            BeforeSave?.Invoke();
             saveData.Clear();
             foreach (var save in saveDataEntities)
             {
@@ -66,6 +74,11 @@ namespace GameSave
             }
 
             Debug.Log("Load Success");
+        }
+
+        internal void NotifyPlayerDataLoaded()
+        {
+            PlayerDataLoaded?.Invoke();
         }
 
         public void SaveValue(string key, string value)
