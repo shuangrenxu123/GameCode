@@ -13,31 +13,23 @@ namespace Character.Controller.LogicState
 
         public Dictionary<string, ClipTransition> injIryAnimations;
 
-        ClipTransition targetAnimation;
+        AnimancerState injuryAnimationState;
 
         public override void Enter(StateBaseInput input)
         {
             base.Enter();
 
             characterActor.Velocity = Vector3.zero;
-            var injIryInput = input as CharacterInjIryStateInput;
-
-            combatEntity.hp.OnValueReduced += OnHit;
-
             //Test
-            var state = Animancer.Play(injIryAnimations["0"]);
+            injuryAnimationState = Animancer.Play(injIryAnimations["0"]);
 
-            state.Events.OnEnd = () =>
+            injuryAnimationState.Events.OnEnd = () =>
             {
+                injuryAnimationState.Events.OnEnd = null;
+                injuryAnimationState = null;
                 ChangeNextState();
-                state.Events.OnEnd = null;
             };
             parentMachine.movementStateMachine.EnableMachine(false, false);
-        }
-
-        void OnHit()
-        {
-
         }
 
         void ChangeNextState()
@@ -54,10 +46,15 @@ namespace Character.Controller.LogicState
         public override void Exit()
         {
             base.Exit();
+
+            if (injuryAnimationState != null)
+            {
+                injuryAnimationState.Events.OnEnd = null;
+                injuryAnimationState = null;
+            }
+
             parentMachine.movementStateMachine.EnableMachine(true, true);
             parentMachine.movementStateMachine.RefreshAnimator();
-
-            combatEntity.hp.OnValueReduced -= OnHit;
 
         }
     }

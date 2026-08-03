@@ -6,27 +6,32 @@ namespace Character.Controller.MoveState
 {
     public class CharacterCrouchMovementState : CharacterMovementStateBase
     {
+        const float HeightTolerance = 0.01f;
+
         public CrouchParameters crouchParameters = new CrouchParameters();
+        bool isTryingToStand;
+
         public override ECharacterMoveState currentType
             => ECharacterMoveState.CrouchMove;
         public override void Enter(StateBaseInput input = null)
         {
-            base.Enter();
-            Crouch();
+            base.Enter(input);
+            isTryingToStand = false;
         }
         public override void Update()
         {
             base.Update();
             if (!characterActor.IsGrounded)
             {
+                RestoreDefaultHeightImmediately();
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
+                return;
             }
             else if (crouchParameters.inputMode == InputMode.Hold)
             {
-                if (TryGetLatestInput(CharacterInputType.Crouch, out var crouchCommand)
-                    && !crouchCommand.BoolValue)
+                if (TryGetLatestInput(CharacterInputType.Crouch, out var crouchCommand))
                 {
-                    parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                    isTryingToStand = !crouchCommand.BoolValue;
                 }
             }
             else
@@ -34,31 +39,48 @@ namespace Character.Controller.MoveState
                 if (TryGetInput(CharacterInputType.Crouch, out var crouchCommand)
                     && crouchCommand.Phase == CharacterInputPhase.Started)
                 {
-                    parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                    isTryingToStand = !isTryingToStand;
                 }
             }
         }
-        void Crouch()
-        {
-            var dt = Time.deltaTime;
-            SizeReferenceType sizeReferenceType = SizeReferenceType.Bottom;
 
-            characterActor.CheckAndInterpolateHeight(
-               characterActor.DefaultBodySize.y * crouchParameters.heightRatio,
-               crouchParameters.sizeLerpSpeed * dt, sizeReferenceType);
+        public override void FixUpdate()
+        {
+            float targetHeight = isTryingToStand
+                ? characterActor.DefaultBodySize.y
+                : characterActor.DefaultBodySize.y * crouchParameters.heightRatio;
+
+            bool canResize = characterActor.CheckAndInterpolateHeight(
+                targetHeight,
+                Mathf.Clamp01(crouchParameters.sizeLerpSpeed * Time.fixedDeltaTime),
+                SizeReferenceType.Bottom);
+
+            if (isTryingToStand
+                && canResize
+                && Mathf.Abs(characterActor.BodySize.y - targetHeight) <= HeightTolerance)
+            {
+                characterActor.SetSize(
+                    characterActor.DefaultBodySize,
+                    SizeReferenceType.Bottom);
+                parentMachine.ChangeState(ECharacterMoveState.NormalMove);
+                return;
+            }
+
+            base.FixUpdate();
         }
+
         public override void Exit()
         {
             base.Exit();
-            StandUp();
+            isTryingToStand = false;
         }
-        void StandUp()
-        {
-            var dt = Time.deltaTime;
-            SizeReferenceType sizeReferenceType = SizeReferenceType.Bottom;
 
-            characterActor.CheckAndInterpolateHeight
-               (characterActor.DefaultBodySize.y, crouchParameters.sizeLerpSpeed * dt, sizeReferenceType);
+        void RestoreDefaultHeightImmediately()
+        {
+            characterActor.CheckAndInterpolateHeight(
+                characterActor.DefaultBodySize.y,
+                1f,
+                SizeReferenceType.Bottom);
         }
         protected override Vector3 ProcessPlanarMovement(float dt)
         {

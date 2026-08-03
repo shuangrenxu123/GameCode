@@ -44,6 +44,8 @@ namespace CharacterControllerStateMachine
         [SerializeField]
         private SkillRunner skillRunner;
         Blackboard dataBase;
+        bool stateMachinesStarted;
+        bool damageEventSubscribed;
 
         private void Awake()
         {
@@ -58,6 +60,8 @@ namespace CharacterControllerStateMachine
         {
             moveStateMachine.Start();
             loginMachine.Start();
+            stateMachinesStarted = true;
+            SubscribeDamageEvent();
         }
 
         private void InitState()
@@ -74,6 +78,7 @@ namespace CharacterControllerStateMachine
             moveStateMachine.animator = CharacterActor.GetComponentInChildren<Animator>();
             moveStateMachine.database = dataBase;
             moveStateMachine.animancer = AnimancerHelper;
+            moveStateMachine.materialControl = materialControl;
 
             var lockOnMoveState = new CharacterLockOnMovementState
             {
@@ -141,11 +146,17 @@ namespace CharacterControllerStateMachine
             {
                 injIryAnimations = animatorConfig.injIryAnimators,
             };
+            var deathState = new CharacterDeathState()
+            {
+                deathAnimations = animatorConfig.DeathAnimators,
+                deathLoopAnimations = animatorConfig.DeathLoopAnimators,
+            };
             loginMachine.AddState(attackState);
             loginMachine.AddState(emptyState);
             loginMachine.AddState(interactState);
-            loginMachine.SetDefaultState(ECharacterLogicState.Empty);
             loginMachine.AddState(CharacterInjIryState);
+            loginMachine.AddState(deathState);
+            loginMachine.SetDefaultState(ECharacterLogicState.Empty);
         }
 
         void SetStateParameter()
@@ -171,6 +182,63 @@ namespace CharacterControllerStateMachine
         public void SetStateMachineData<T>(string key, T value)
         {
             dataBase.SetValue(key, value);
+        }
+
+        private void OnEnable()
+        {
+            if (stateMachinesStarted)
+            {
+                SubscribeDamageEvent();
+            }
+        }
+
+        private void OnDisable()
+        {
+            UnsubscribeDamageEvent();
+        }
+
+        void SubscribeDamageEvent()
+        {
+            if (damageEventSubscribed || combatEntity == null || combatEntity.hp == null)
+            {
+                return;
+            }
+
+            combatEntity.hp.OnValueReduced += HandleHpReduced;
+            damageEventSubscribed = true;
+        }
+
+        void UnsubscribeDamageEvent()
+        {
+            if (!damageEventSubscribed || combatEntity == null || combatEntity.hp == null)
+            {
+                return;
+            }
+
+            combatEntity.hp.OnValueReduced -= HandleHpReduced;
+            damageEventSubscribed = false;
+        }
+
+        void HandleHpReduced()
+        {
+            if (loginMachine == null
+                || loginMachine.CurrentStateType == ECharacterLogicState.Death)
+            {
+                return;
+            }
+
+            if (combatEntity.hp.Value <= 0)
+            {
+                loginMachine.ChangeState(ECharacterLogicState.Death);
+                return;
+            }
+
+            if (loginMachine.CurrentStateType != ECharacterLogicState.InjIry)
+            {
+                loginMachine.ChangeState(
+                    ECharacterLogicState.InjIry,
+                    new CharacterInjIryStateInput(0));
+            }
         }
     }
 }

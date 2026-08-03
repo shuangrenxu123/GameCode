@@ -17,18 +17,6 @@ namespace Character.Controller.LogicState
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
-            combatEntity.hp.OnValueReduced += TryChangeHitState;
-        }
-
-        public override void Exit()
-        {
-            base.Exit();
-            combatEntity.hp.OnValueReduced -= TryChangeHitState;
-        }
-
-        private void TryChangeHitState()
-        {
-            parentMachine.ChangeState(ECharacterLogicState.InjIry, new CharacterInjIryStateInput(0));
         }
 
         public override void Update()

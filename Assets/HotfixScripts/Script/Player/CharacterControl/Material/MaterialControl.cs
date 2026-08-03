@@ -28,6 +28,7 @@ namespace CharacterController
                 return;
             }
             GetSurfaceData();
+            GetVolumeData();
         }
         private void FixedUpdate()
         {

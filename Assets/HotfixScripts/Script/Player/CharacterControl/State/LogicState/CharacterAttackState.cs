@@ -111,7 +111,13 @@ namespace Character.Controller.LogicState
         public override void Exit()
         {
             base.Exit();
+            timelineExecutor.onFinish.RemoveListener(PlayerNextAttackAction);
+            timelineExecutor.OnReset();
             currentActionName = string.Empty;
+            isInput = false;
+            canInput = true;
+            timer = 0f;
+            nextActionInputTime = 0f;
             characterActor.SetUpRootMotion(false, false);
             // characterActor.UseRootMotion = false;
             parentMachine.movementStateMachine.RefreshAnimator();

@@ -22,12 +22,22 @@ namespace Character.Controller.MoveState
         public override void Update()
         {
             base.Update();
-            base.Update();
             if (!characterActor.IsGrounded)
             {
                 parentMachine.ChangeState(ECharacterMoveState.Jump);
+                return;
             }
-            else if (runMoveParameters.runInputMode == InputMode.Hold)
+
+            if (TryGetInput(CharacterInputType.Jump, out var jumpCommand)
+                && jumpCommand.BoolValue)
+            {
+                parentMachine.ChangeState(
+                    ECharacterMoveState.Jump,
+                    new CharacterJumpStateInput(true));
+                return;
+            }
+
+            if (runMoveParameters.runInputMode == InputMode.Hold)
             {
                 if (TryGetLatestInput(CharacterInputType.Run, out var runCommand)
                     && !runCommand.BoolValue)

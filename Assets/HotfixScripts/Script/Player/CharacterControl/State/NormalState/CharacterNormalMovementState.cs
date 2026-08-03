@@ -22,6 +22,11 @@ namespace Character.Controller.MoveState
             {
                 parentMachine.ChangeState(ECharacterMoveState.CrouchMove);
             }
+            else if (TryGetInput(CharacterInputType.Jump, out var jumpCommand)
+                && jumpCommand.BoolValue)
+            {
+                parentMachine.ChangeState(ECharacterMoveState.Jump, new CharacterJumpStateInput(true));
+            }
             else if (TryGetLatestInput(CharacterInputType.Run, out var runCommand)
                 && runCommand.BoolValue
                 && characterActor.Velocity != Vector3.zero)
@@ -29,11 +34,6 @@ namespace Character.Controller.MoveState
                 parentMachine.ChangeState(ECharacterMoveState.RunMove);
             }
 
-            else if (TryGetInput(CharacterInputType.Jump, out var jumpCommand)
-                && jumpCommand.BoolValue)
-            {
-                parentMachine.ChangeState(ECharacterMoveState.Jump, new CharacterJumpStateInput(true));
-            }
             else if (characterActor.Triggers.Count > 0
                 && characterActor.Triggers[0].transform.GetComponentInParent<Ladder>() != null
                 && TryGetInput(CharacterInputType.Interact, out var interactCommand)

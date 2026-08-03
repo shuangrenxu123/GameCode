@@ -130,18 +130,23 @@ namespace HFSM
                 return;
             }
 
-            currentState?.Exit();
+            StateBase<C> nextState = FindState(stateName);
+            StateBase<C> previousState = currentState;
+            C previousStateType = CurrentStateType;
 
-            var lastType = lastStateType;
-            lastStateType = CurrentStateType;
+            previousState?.Exit();
+            lastStateType = previousStateType;
 
-            currentState = FindState(stateName);
+            currentState = nextState;
 
             CurrentStateType = stateName;
             activeTransitions = currentState.transitions ?? noTransitions;
             currentState.Enter(input);
 
-            OnChangeState?.Invoke(FindState(lastType), currentState);
+            if (previousState != null)
+            {
+                OnChangeState?.Invoke(previousState, currentState);
+            }
         }
         /// <summary>
         /// 修改当前状态机的默认状态

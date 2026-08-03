@@ -20,6 +20,8 @@ namespace Character.Controller.LogicState
         public override ECharacterLogicState currentType => ECharacterLogicState.Interaction;
         public Dictionary<string, ClipTransition> interactAnimations;
         InteractionState inputData;
+        AnimancerState interactionAnimationState;
+
         public override void Enter(StateBaseInput input = null)
         {
             base.Enter();
@@ -39,11 +41,12 @@ namespace Character.Controller.LogicState
             {
                 characterActor.SetUpRootMotion(true, true);
             }
-            var animState = Animancer.Play(interactAnimations[inputData.animClipName]);
-            animState.Events.OnEnd = () =>
+            interactionAnimationState = Animancer.Play(interactAnimations[inputData.animClipName]);
+            interactionAnimationState.Events.OnEnd = () =>
             {
+                interactionAnimationState.Events.OnEnd = null;
+                interactionAnimationState = null;
                 parentMachine.ChangeState(ECharacterLogicState.Empty);
-                animState.Events.OnEnd = null;
             };
 
             inputData.onEnter?.Invoke();
@@ -52,6 +55,12 @@ namespace Character.Controller.LogicState
         public override void Exit()
         {
             base.Exit();
+
+            if (interactionAnimationState != null)
+            {
+                interactionAnimationState.Events.OnEnd = null;
+                interactionAnimationState = null;
+            }
 
             inputData.onExit?.Invoke();
 
