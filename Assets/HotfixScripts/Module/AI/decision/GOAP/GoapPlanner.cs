@@ -89,7 +89,7 @@ namespace GOAP
         }
     }
 
-    public class GoapPlanner<T, V>
+    public class GoapPlanner<T, V> : IGoapPlanner<T, V>
     {
         private readonly HashSet<GoapAction<T, V>> usableActions = new();
         private readonly Dictionary<T, V> workingConditions = new();
@@ -102,10 +102,6 @@ namespace GOAP
 
         private float bestCost;
         private int workingConditionsHash;
-
-        public int LastExpandedNodeCount { get; private set; }
-        public int LastDeduplicatedNodeCount { get; private set; }
-        public int LastHashCollisionStateCount { get; private set; }
 
         /// <summary>
         /// 从目标条件开始反向回归，寻找能够由当前世界状态支持的最低成本 Action 序列。
@@ -165,9 +161,6 @@ namespace GOAP
 
             bestCost = float.MaxValue;
             workingConditionsHash = 0;
-            LastExpandedNodeCount = 0;
-            LastDeduplicatedNodeCount = 0;
-            LastHashCollisionStateCount = 0;
         }
 
         private void ClearTransientSearchData()
@@ -231,7 +224,6 @@ namespace GOAP
             Dictionary<T, V> worldState)
         {
             bool foundPlan = false;
-            LastExpandedNodeCount++;
 
             foreach (GoapAction<T, V> action in usableActions)
             {
@@ -258,7 +250,6 @@ namespace GOAP
                 ulong nextUsedActionMask = usedActionMask | action.ActionMask;
                 if (!RegisterOrImproveCurrentState(nextCost, nextUsedActionMask))
                 {
-                    LastDeduplicatedNodeCount++;
                     RollbackConditions(rollbackMarker, previousHash);
                     continue;
                 }
@@ -416,10 +407,6 @@ namespace GOAP
             }
 
             int newStateIndex = cachedSearchStates.Count;
-            if (collisionIndex >= 0)
-            {
-                LastHashCollisionStateCount++;
-            }
 
             cachedSearchStates.Add(new CachedSearchState(
                 conditionsOffset,

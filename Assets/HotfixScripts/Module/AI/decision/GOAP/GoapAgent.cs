@@ -17,7 +17,7 @@ namespace GOAP
         private Queue<GoapAction<T, V>> currentActions;
         public List<Goal<T, V>> goals;
 
-        private readonly GoapPlanner<T, V> planner;
+        private readonly IGoapPlanner<T, V> planner;
         private float planDeltaTime = 1f;
         private float lastPlanTime;
         private bool running;
@@ -25,10 +25,18 @@ namespace GOAP
         public float LastPlanTime => lastPlanTime;
 
         public GoapAgent()
+            : this(new GoapPlanner<T, V>())
+        {
+        }
+
+        /// <summary>
+        /// 使用自定义规划器实现构造 Agent，便于替换不同实现做性能对比。
+        /// </summary>
+        public GoapAgent(IGoapPlanner<T, V> planner)
         {
             availableActions = new HashSet<GoapAction<T, V>>();
             currentActions = new Queue<GoapAction<T, V>>();
-            planner = new GoapPlanner<T, V>();
+            this.planner = planner ?? throw new System.ArgumentNullException(nameof(planner));
             goals = new List<Goal<T, V>>();
         }
 
