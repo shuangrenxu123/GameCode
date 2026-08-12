@@ -42,7 +42,29 @@ namespace AIBlackboard
 
     }
     internal abstract class BlackboardEntry
-    { }
+    {
+        public abstract Type ValueType { get; }
+
+        /// <summary>
+        /// 比较两个 Entry 的值是否相等；类型不同一律返回 false。
+        /// </summary>
+        public abstract bool ValueEquals(BlackboardEntry other);
+
+        /// <summary>
+        /// 取值的哈希，供 GOAP 等需要按条件散列的使用方使用。
+        /// </summary>
+        public abstract int GetValueHash();
+
+        /// <summary>
+        /// 从同类型 Entry 拷贝值（走 Value setter，会触发 OnValueChanged）。
+        /// </summary>
+        public abstract void CopyValueFrom(BlackboardEntry source);
+
+        /// <summary>
+        /// 复制一个只含值、不含订阅者的新 Entry。
+        /// </summary>
+        public abstract BlackboardEntry Clone();
+    }
 
     internal sealed class BlackboardEntry<T> : BlackboardEntry
     {
@@ -50,7 +72,30 @@ namespace AIBlackboard
         private static readonly EqualityComparer<T> Comparer = EqualityComparer<T>.Default;
         public event Action<T> OnValueChanged;
 
-        public Type ValueType => typeof(T);
+        public override Type ValueType => typeof(T);
+
+        public override bool ValueEquals(BlackboardEntry other)
+        {
+            return other is BlackboardEntry<T> typed && Comparer.Equals(_value, typed._value);
+        }
+
+        public override int GetValueHash()
+        {
+            return Comparer.GetHashCode(_value);
+        }
+
+        public override void CopyValueFrom(BlackboardEntry source)
+        {
+            if (source is BlackboardEntry<T> typed)
+            {
+                Value = typed._value;
+            }
+        }
+
+        public override BlackboardEntry Clone()
+        {
+            return new BlackboardEntry<T>(_value);
+        }
 
         public T Value
         {
@@ -77,6 +122,35 @@ namespace AIBlackboard
     {
         //这里的T用int 是为了泛型约束
         Dictionary<int, BlackboardEntry> data = new();
+
+        public int Count => data.Count;
+
+        /// <summary>
+        /// 供同程序集内（如 GOAP 规划器）直接遍历条目；外部程序集请使用类型化读写接口。
+        /// </summary>
+        internal Dictionary<int, BlackboardEntry> Entries => data;
+
+        internal bool TryGetEntry(int keyId, out BlackboardEntry entry)
+        {
+            return data.TryGetValue(keyId, out entry);
+        }
+
+        /// <summary>
+        /// 把 source 的值写入指定 key：已存在同类型条目时复用原条目并触发
+        /// OnValueChanged；否则克隆出新条目存入，避免与来源方共享可变对象。
+        /// </summary>
+        internal void WriteEntry(int keyId, BlackboardEntry source)
+        {
+            if (data.TryGetValue(keyId, out var existing) &&
+                existing.ValueType == source.ValueType)
+            {
+                existing.CopyValueFrom(source);
+            }
+            else
+            {
+                data[keyId] = source.Clone();
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetValue<T>(BlackboardKey<T> key, T value)

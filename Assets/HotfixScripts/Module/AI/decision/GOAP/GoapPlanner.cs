@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AIBlackboard;
 
 namespace GOAP
 {
@@ -43,29 +44,29 @@ namespace GOAP
         }
     }
 
-    readonly struct ConditionChange<T, V>
+    readonly struct ConditionChange
     {
-        public readonly T Key;
+        public readonly int Key;
         public readonly bool Existed;
-        public readonly V OldValue;
+        public readonly BlackboardEntry OldEntry;
 
-        public ConditionChange(T key, bool existed, V oldValue)
+        public ConditionChange(int key, bool existed, BlackboardEntry oldEntry)
         {
             Key = key;
             Existed = existed;
-            OldValue = oldValue;
+            OldEntry = oldEntry;
         }
     }
 
-    readonly struct ConditionSnapshot<T, V>
+    readonly struct ConditionSnapshot
     {
-        public readonly T Key;
-        public readonly V Value;
+        public readonly int Key;
+        public readonly BlackboardEntry Entry;
 
-        public ConditionSnapshot(T key, V value)
+        public ConditionSnapshot(int key, BlackboardEntry entry)
         {
             Key = key;
-            Value = value;
+            Entry = entry;
         }
     }
 
@@ -89,16 +90,17 @@ namespace GOAP
         }
     }
 
-    public class GoapPlanner<T, V> : IGoapPlanner<T, V>
+    public class GoapPlanner : IGoapPlanner
     {
-        private readonly HashSet<GoapAction<T, V>> usableActions = new();
-        private readonly Dictionary<T, V> workingConditions = new();
-        private readonly List<ConditionChange<T, V>> conditionChanges = new();
-        private readonly List<ConditionSnapshot<T, V>> conditionSnapshots = new();
+        private readonly List<GoapAction> usableActions = new();
+        private readonly Dictionary<int, BlackboardEntry> workingConditions = new();
+        private readonly List<ConditionChange> conditionChanges = new();
+        private readonly List<ConditionChange> pendingEffectRemovals = new();
+        private readonly List<ConditionSnapshot> conditionSnapshots = new();
         private readonly List<CachedSearchState> cachedSearchStates = new();
         private readonly Dictionary<SearchStateSignature, int> stateBucketHeads = new();
-        private readonly List<GoapAction<T, V>> currentPath = new();
-        private readonly List<GoapAction<T, V>> bestPath = new();
+        private readonly List<GoapAction> currentPath = new();
+        private readonly List<GoapAction> bestPath = new();
 
         private float bestCost;
         private int workingConditionsHash;
@@ -106,11 +108,14 @@ namespace GOAP
         /// <summary>
         /// 从目标条件开始反向回归，寻找能够由当前世界状态支持的最低成本 Action 序列。
         /// 搜索过程只复用一个条件字典，并通过修改栈在递归返回时恢复状态。
+        /// 对工作条件中的 Entry 只整体替换、从不修改其 Value，因此快照与回滚
+        /// 直接保存 Entry 引用即可；也绝不触碰 worldState 本体，避免误触
+        /// Blackboard 的 OnValueChanged 事件。
         /// </summary>
-        public Queue<GoapAction<T, V>> Plan(
-            HashSet<GoapAction<T, V>> availableActions,
-            Dictionary<T, V> worldState,
-            Dictionary<T, V> goal)
+        public Queue<GoapAction> Plan(
+            HashSet<GoapAction> availableActions,
+            Blackboard worldState,
+            Blackboard goal)
         {
             ResetSearch();
 
@@ -134,7 +139,7 @@ namespace GOAP
                     return null;
                 }
 
-                Queue<GoapAction<T, V>> plan = new(bestPath.Count);
+                Queue<GoapAction> plan = new(bestPath.Count);
                 for (int index = bestPath.Count - 1; index >= 0; index--)
                 {
                     plan.Enqueue(bestPath[index]);
@@ -144,7 +149,7 @@ namespace GOAP
             }
             finally
             {
-                ClearTransientSearchData();
+                ResetSearch();
             }
         }
 
@@ -153,6 +158,7 @@ namespace GOAP
             usableActions.Clear();
             workingConditions.Clear();
             conditionChanges.Clear();
+            pendingEffectRemovals.Clear();
             conditionSnapshots.Clear();
             cachedSearchStates.Clear();
             stateBucketHeads.Clear();
@@ -163,25 +169,12 @@ namespace GOAP
             workingConditionsHash = 0;
         }
 
-        private void ClearTransientSearchData()
-        {
-            usableActions.Clear();
-            workingConditions.Clear();
-            conditionChanges.Clear();
-            conditionSnapshots.Clear();
-            cachedSearchStates.Clear();
-            stateBucketHeads.Clear();
-            currentPath.Clear();
-            bestPath.Clear();
-            workingConditionsHash = 0;
-        }
-
         private void CollectUsableActions(
-            HashSet<GoapAction<T, V>> availableActions,
-            Dictionary<T, V> worldState)
+            HashSet<GoapAction> availableActions,
+            Blackboard worldState)
         {
             ulong availableActionMask = 0UL;
-            foreach (GoapAction<T, V> action in availableActions)
+            foreach (GoapAction action in availableActions)
             {
                 if (action == null)
                 {
@@ -206,11 +199,14 @@ namespace GOAP
                     usableActions.Add(action);
                 }
             }
+
+            // 低成本 Action 先行，让 bestCost 尽早下降以剪掉更多分支。
+            usableActions.Sort((left, right) => left.cost.CompareTo(right.cost));
         }
 
-        private void InitializeWorkingConditions(Dictionary<T, V> goal)
+        private void InitializeWorkingConditions(Blackboard goal)
         {
-            foreach (KeyValuePair<T, V> condition in goal)
+            foreach (KeyValuePair<int, BlackboardEntry> condition in goal.Entries)
             {
                 workingConditions.Add(condition.Key, condition.Value);
                 workingConditionsHash ^=
@@ -218,14 +214,12 @@ namespace GOAP
             }
         }
 
-        private bool BuildGraph(
+        private void BuildGraph(
             float runningCost,
             ulong usedActionMask,
-            Dictionary<T, V> worldState)
+            Blackboard worldState)
         {
-            bool foundPlan = false;
-
-            foreach (GoapAction<T, V> action in usableActions)
+            foreach (GoapAction action in usableActions)
             {
                 if ((usedActionMask & action.ActionMask) != 0UL)
                 {
@@ -261,67 +255,59 @@ namespace GOAP
                     bestCost = nextCost;
                     bestPath.Clear();
                     bestPath.AddRange(currentPath);
-                    foundPlan = true;
                 }
-                else if (BuildGraph(nextCost, nextUsedActionMask, worldState))
+                else
                 {
-                    foundPlan = true;
+                    BuildGraph(nextCost, nextUsedActionMask, worldState);
                 }
 
                 currentPath.RemoveAt(currentPath.Count - 1);
                 RollbackConditions(rollbackMarker, previousHash);
             }
-
-            return foundPlan;
         }
 
-        private bool TryRegressInPlace(GoapAction<T, V> action)
+        private bool TryRegressInPlace(GoapAction action)
         {
-            bool satisfiesCondition = false;
-
-            // 先完整检查 Effect，避免发生冲突后才修改工作字典。
-            foreach (KeyValuePair<T, V> effect in action.Effects)
+            // 先完整检查 Effect 并记录待移除项，避免发生冲突后才修改工作字典。
+            // 注意：Precondition 阶段是边检查边修改的，若中途冲突直接返回 false，
+            // 已做的修改依赖调用方按 rollbackMarker 回滚。
+            pendingEffectRemovals.Clear();
+            foreach (KeyValuePair<int, BlackboardEntry> effect in action.Effects.Entries)
             {
-                if (!workingConditions.TryGetValue(effect.Key, out V requiredValue))
+                if (!workingConditions.TryGetValue(effect.Key, out BlackboardEntry requiredEntry))
                 {
                     continue;
                 }
 
-                if (!EqualityComparer<V>.Default.Equals(effect.Value, requiredValue))
+                if (!effect.Value.ValueEquals(requiredEntry))
                 {
                     return false;
                 }
 
-                satisfiesCondition = true;
+                pendingEffectRemovals.Add(new ConditionChange(
+                    effect.Key,
+                    true,
+                    requiredEntry));
             }
 
-            if (!satisfiesCondition)
+            if (pendingEffectRemovals.Count == 0)
             {
                 return false;
             }
 
-            foreach (KeyValuePair<T, V> effect in action.Effects)
+            foreach (ConditionChange removal in pendingEffectRemovals)
             {
-                if (workingConditions.TryGetValue(effect.Key, out V requiredValue) &&
-                    EqualityComparer<V>.Default.Equals(effect.Value, requiredValue))
-                {
-                    conditionChanges.Add(new ConditionChange<T, V>(
-                        effect.Key,
-                        true,
-                        requiredValue));
-                    workingConditions.Remove(effect.Key);
-                    workingConditionsHash ^=
-                        GetConditionHash(effect.Key, requiredValue);
-                }
+                conditionChanges.Add(removal);
+                workingConditions.Remove(removal.Key);
+                workingConditionsHash ^=
+                    GetConditionHash(removal.Key, removal.OldEntry);
             }
 
-            foreach (KeyValuePair<T, V> precondition in action.Preconditions)
+            foreach (KeyValuePair<int, BlackboardEntry> precondition in action.Preconditions.Entries)
             {
-                if (workingConditions.TryGetValue(precondition.Key, out V requiredValue))
+                if (workingConditions.TryGetValue(precondition.Key, out BlackboardEntry requiredEntry))
                 {
-                    if (!EqualityComparer<V>.Default.Equals(
-                            precondition.Value,
-                            requiredValue))
+                    if (!precondition.Value.ValueEquals(requiredEntry))
                     {
                         return false;
                     }
@@ -329,10 +315,10 @@ namespace GOAP
                     continue;
                 }
 
-                conditionChanges.Add(new ConditionChange<T, V>(
+                conditionChanges.Add(new ConditionChange(
                     precondition.Key,
                     false,
-                    default));
+                    null));
                 workingConditions.Add(precondition.Key, precondition.Value);
                 workingConditionsHash ^=
                     GetConditionHash(precondition.Key, precondition.Value);
@@ -345,10 +331,10 @@ namespace GOAP
         {
             for (int index = conditionChanges.Count - 1; index >= marker; index--)
             {
-                ConditionChange<T, V> change = conditionChanges[index];
+                ConditionChange change = conditionChanges[index];
                 if (change.Existed)
                 {
-                    workingConditions[change.Key] = change.OldValue;
+                    workingConditions[change.Key] = change.OldEntry;
                 }
                 else
                 {
@@ -399,9 +385,9 @@ namespace GOAP
             }
 
             int conditionsOffset = conditionSnapshots.Count;
-            foreach (KeyValuePair<T, V> condition in workingConditions)
+            foreach (KeyValuePair<int, BlackboardEntry> condition in workingConditions)
             {
-                conditionSnapshots.Add(new ConditionSnapshot<T, V>(
+                conditionSnapshots.Add(new ConditionSnapshot(
                     condition.Key,
                     condition.Value));
             }
@@ -427,9 +413,9 @@ namespace GOAP
             int end = cachedState.ConditionsOffset + cachedState.ConditionCount;
             for (int index = cachedState.ConditionsOffset; index < end; index++)
             {
-                ConditionSnapshot<T, V> condition = conditionSnapshots[index];
-                if (!workingConditions.TryGetValue(condition.Key, out V value) ||
-                    !EqualityComparer<V>.Default.Equals(condition.Value, value))
+                ConditionSnapshot condition = conditionSnapshots[index];
+                if (!workingConditions.TryGetValue(condition.Key, out BlackboardEntry entry) ||
+                    !condition.Entry.ValueEquals(entry))
                 {
                     return false;
                 }
@@ -438,14 +424,11 @@ namespace GOAP
             return true;
         }
 
-        private static int GetConditionHash(T key, V value)
+        private static int GetConditionHash(int keyId, BlackboardEntry entry)
         {
-            int keyHash = EqualityComparer<T>.Default.GetHashCode(key);
-            int valueHash = EqualityComparer<V>.Default.GetHashCode(value);
-
             unchecked
             {
-                return (keyHash * 397) ^ valueHash;
+                return (keyId * 397) ^ entry.GetValueHash();
             }
         }
 
@@ -459,12 +442,20 @@ namespace GOAP
             }
         }
 
-        private bool InState(Dictionary<T, V> conditions, Dictionary<T, V> state)
+        private bool InState(
+            Dictionary<int, BlackboardEntry> conditions,
+            Blackboard state)
         {
-            foreach (KeyValuePair<T, V> condition in conditions)
+            // 条件 key 互不重复，状态必须至少包含同样多的条目才可能全部满足。
+            if (conditions.Count > state.Count)
             {
-                if (!state.TryGetValue(condition.Key, out V value) ||
-                    !EqualityComparer<V>.Default.Equals(value, condition.Value))
+                return false;
+            }
+
+            foreach (KeyValuePair<int, BlackboardEntry> condition in conditions)
+            {
+                if (!state.TryGetEntry(condition.Key, out BlackboardEntry entry) ||
+                    !entry.ValueEquals(condition.Value))
                 {
                     return false;
                 }

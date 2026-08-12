@@ -1,23 +1,24 @@
 using System.Collections.Generic;
+using AIBlackboard;
 using UnityEngine;
 
 namespace GOAP
 {
-    public class GoapAgent<T, V>
+    public class GoapAgent
     {
-        private Dictionary<T, V> worldState = new();
-        public Dictionary<T, V> WorldState
+        private Blackboard worldState = new();
+        public Blackboard WorldState
         {
             get { return worldState; }
             set { worldState = value; }
         }
 
-        private readonly HashSet<GoapAction<T, V>> availableActions;
+        private readonly HashSet<GoapAction> availableActions;
         private ulong registeredActionMask;
-        private Queue<GoapAction<T, V>> currentActions;
-        public List<Goal<T, V>> goals;
+        private Queue<GoapAction> currentActions;
+        public List<Goal> goals;
 
-        private readonly IGoapPlanner<T, V> planner;
+        private readonly IGoapPlanner planner;
         private float planDeltaTime = 1f;
         private float lastPlanTime;
         private bool running;
@@ -25,19 +26,19 @@ namespace GOAP
         public float LastPlanTime => lastPlanTime;
 
         public GoapAgent()
-            : this(new GoapPlanner<T, V>())
+            : this(new GoapPlanner())
         {
         }
 
         /// <summary>
         /// 使用自定义规划器实现构造 Agent，便于替换不同实现做性能对比。
         /// </summary>
-        public GoapAgent(IGoapPlanner<T, V> planner)
+        public GoapAgent(IGoapPlanner planner)
         {
-            availableActions = new HashSet<GoapAction<T, V>>();
-            currentActions = new Queue<GoapAction<T, V>>();
+            availableActions = new HashSet<GoapAction>();
+            currentActions = new Queue<GoapAction>();
             this.planner = planner ?? throw new System.ArgumentNullException(nameof(planner));
-            goals = new List<Goal<T, V>>();
+            goals = new List<Goal>();
         }
 
         private bool HasActionPlan()
@@ -45,7 +46,7 @@ namespace GOAP
             return currentActions.Count > 0;
         }
 
-        public void AddAction(GoapAction<T, V> action)
+        public void AddAction(GoapAction action)
         {
             if (action == null)
             {
@@ -69,7 +70,7 @@ namespace GOAP
             registeredActionMask |= action.ActionMask;
         }
 
-        public void RemoveAction(GoapAction<T, V> action)
+        public void RemoveAction(GoapAction action)
         {
             if (action != null && availableActions.Remove(action))
             {
@@ -117,7 +118,7 @@ namespace GOAP
 
             lastPlanTime = Time.time;
 
-            foreach (Goal<T, V> goal in goals)
+            foreach (Goal goal in goals)
             {
                 // 已经满足的高优先级 Goal 不应阻塞后续未满足 Goal。
                 if (InState(goal.goal, worldState))
@@ -125,7 +126,7 @@ namespace GOAP
                     continue;
                 }
 
-                Queue<GoapAction<T, V>> plan =
+                Queue<GoapAction> plan =
                     planner.Plan(availableActions, worldState, goal.goal);
                 if (plan != null)
                 {
@@ -142,7 +143,7 @@ namespace GOAP
         {
             if (currentActions.Count > 0)
             {
-                GoapAction<T, V> currentAction = currentActions.Peek();
+                GoapAction currentAction = currentActions.Peek();
                 if (currentAction.Running)
                 {
                     currentAction.PlanExit();
@@ -153,7 +154,7 @@ namespace GOAP
             running = false;
         }
 
-        private bool CanExecuteAction(GoapAction<T, V> action)
+        private bool CanExecuteAction(GoapAction action)
         {
             return InState(action.Preconditions, worldState) &&
                    action.CheckProceduralPreCondition(worldState);
@@ -165,13 +166,13 @@ namespace GOAP
             return BuildPlan(true);
         }
 
-        public void AddGoal(Goal<T, V> goal)
+        public void AddGoal(Goal goal)
         {
             goals.Add(goal);
             SortGoalsByPriority();
         }
 
-        public bool UpdateGoalPriority(Goal<T, V> goal, int priority)
+        public bool UpdateGoalPriority(Goal goal, int priority)
         {
             if (goal == null || !goals.Contains(goal))
             {
@@ -196,7 +197,7 @@ namespace GOAP
                 return;
             }
 
-            GoapAction<T, V> action = currentActions.Peek();
+            GoapAction action = currentActions.Peek();
             if (!CanExecuteAction(action))
             {
                 AbortCurrentPlan();
@@ -219,12 +220,12 @@ namespace GOAP
             }
         }
 
-        private bool InState(Dictionary<T, V> conditions, Dictionary<T, V> state)
+        private bool InState(Blackboard conditions, Blackboard state)
         {
-            foreach (KeyValuePair<T, V> condition in conditions)
+            foreach (KeyValuePair<int, BlackboardEntry> condition in conditions.Entries)
             {
-                if (!state.TryGetValue(condition.Key, out V value) ||
-                    !EqualityComparer<V>.Default.Equals(value, condition.Value))
+                if (!state.TryGetEntry(condition.Key, out BlackboardEntry entry) ||
+                    !entry.ValueEquals(condition.Value))
                 {
                     return false;
                 }
@@ -233,11 +234,11 @@ namespace GOAP
             return true;
         }
 
-        public void ApplyActionEffects(GoapAction<T, V> action)
+        public void ApplyActionEffects(GoapAction action)
         {
-            foreach (KeyValuePair<T, V> effect in action.Effects)
+            foreach (KeyValuePair<int, BlackboardEntry> effect in action.Effects.Entries)
             {
-                worldState[effect.Key] = effect.Value;
+                worldState.WriteEntry(effect.Key, effect.Value);
             }
         }
     }

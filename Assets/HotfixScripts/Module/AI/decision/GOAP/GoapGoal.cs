@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+using AIBlackboard;
 
 namespace GOAP
 {
-    public class Goal<T, V>
+    public class Goal
     {
-        public Goal(Dictionary<T, V> goal, int p)
+        public Goal(Blackboard goal, int p)
         {
             this.goal = goal;
             Priority = p;
@@ -13,7 +13,7 @@ namespace GOAP
         /// <summary>
         /// 目标的期望世界状态。
         /// </summary>
-        public Dictionary<T, V> goal;
+        public Blackboard goal;
 
         /// <summary>
         /// 目标的优先级。
