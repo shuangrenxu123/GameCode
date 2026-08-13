@@ -4,38 +4,37 @@ using AIBlackboard;
 
 namespace GOAP
 {
-    readonly struct ConditionChange
-    {
-        public readonly int Key;
-        public readonly bool Existed;
-        public readonly BlackboardEntry OldEntry;
-
-        public ConditionChange(int key, bool existed, BlackboardEntry oldEntry)
-        {
-            Key = key;
-            Existed = existed;
-            OldEntry = oldEntry;
-        }
-    }
-
-    public class GoapPlanner : IGoapPlanner
+    /// <summary>
+    /// 贪婪规划器：按成本升序深度优先搜索，找到第一个可行计划立即返回。
+    ///
+    /// 与 GoapPlanner 的取舍：
+    /// - 不保证代价最小：返回第一个可行计划即止，不做全空间穷举证明最优；
+    /// - 通常显著更快：省掉"找到计划后继续搜索更优解"的全部开销，
+    ///   在存在大量重叠/排列的场景中优势尤其明显；
+    /// - 启发式只用于终止判定：每个节点增量维护"尚未被 worldState 满足的
+    ///   条件数"，归零即得到计划（不做候选重排序，保持单遍搜索的低开销）；
+    /// - 受 MaxNodeExpansions 预算保护：预算耗尽直接返回 null，
+    ///   因此"有解但没找到"是可能的（使用方已知晓该约定）。
+    ///
+    /// 用法：new GoapAgent(new GoapGreedyPlanner())。
+    /// </summary>
+    public class GoapGreedyPlanner : IGoapPlanner
     {
         private readonly List<GoapAction> usableActions = new();
         private readonly Dictionary<int, BlackboardEntry> workingConditions = new();
         private readonly List<ConditionChange> conditionChanges = new();
         private readonly List<ConditionChange> pendingEffectRemovals = new();
         private readonly List<GoapAction> currentPath = new();
-        private readonly List<GoapAction> bestPath = new();
 
-        private float bestCost;
+        private Queue<GoapAction> foundPlan;
+        private int remainingExpansions;
 
         /// <summary>
-        /// 从目标条件开始反向回归，寻找能够由当前世界状态支持的最低成本 Action 序列。
-        /// 搜索过程只复用一个条件字典，并通过修改栈在递归返回时恢复状态。
-        /// 对工作条件中的 Entry 只整体替换、从不修改其 Value，因此回滚
-        /// 直接保存 Entry 引用即可；也绝不触碰 worldState 本体，避免误触
-        /// Blackboard 的 OnValueChanged 事件。
+        /// 单次 Plan 允许展开的最大节点数，用于封顶最坏耗时。
+        /// 预算耗尽时即使存在可行计划也返回 null。
         /// </summary>
+        public int MaxNodeExpansions = 1024;
+
         public Queue<GoapAction> Plan(
             HashSet<GoapAction> availableActions,
             Blackboard worldState,
@@ -48,27 +47,15 @@ namespace GOAP
                 CollectUsableActions(availableActions, worldState);
                 InitializeWorkingConditions(goal);
 
-                if (InState(workingConditions, worldState))
+                int rootUnsatisfied = CountUnsatisfied(worldState);
+                if (rootUnsatisfied == 0)
                 {
-                    bestCost = 0f;
-                }
-                else
-                {
-                    BuildGraph(0f, 0UL, worldState);
+                    return new Queue<GoapAction>();
                 }
 
-                if (bestCost == float.MaxValue)
-                {
-                    return null;
-                }
-
-                Queue<GoapAction> plan = new(bestPath.Count);
-                for (int index = bestPath.Count - 1; index >= 0; index--)
-                {
-                    plan.Enqueue(bestPath[index]);
-                }
-
-                return plan;
+                remainingExpansions = MaxNodeExpansions;
+                Search(0UL, rootUnsatisfied, worldState);
+                return foundPlan;
             }
             finally
             {
@@ -83,9 +70,9 @@ namespace GOAP
             conditionChanges.Clear();
             pendingEffectRemovals.Clear();
             currentPath.Clear();
-            bestPath.Clear();
 
-            bestCost = float.MaxValue;
+            foundPlan = null;
+            remainingExpansions = 0;
         }
 
         private void CollectUsableActions(
@@ -112,14 +99,13 @@ namespace GOAP
 
                 availableActionMask |= action.ActionMask;
 
-                // 负成本会破坏最低成本剪枝，因此不允许参与规划。
                 if (action.cost >= 0f && action.CheckProceduralPreCondition(worldState))
                 {
                     usableActions.Add(action);
                 }
             }
 
-            // 低成本 Action 先行，让 bestCost 尽早下降以剪掉更多分支。
+            // 成本升序：贪婪搜索优先沿便宜分支下降，改善首个可行计划的质量。
             usableActions.Sort((left, right) => left.cost.CompareTo(right.cost));
         }
 
@@ -131,11 +117,22 @@ namespace GOAP
             }
         }
 
-        private void BuildGraph(
-            float runningCost,
+        /// <summary>
+        /// 单遍深度优先：usableActions 已按成本升序，依次尝试回归，
+        /// 第一个成功的分支立即深入；任一路径达成计划则逐层直接返回。
+        /// </summary>
+        private bool Search(
             ulong usedActionMask,
+            int unsatisfied,
             Blackboard worldState)
         {
+            if (remainingExpansions <= 0)
+            {
+                return false;
+            }
+
+            remainingExpansions--;
+
             foreach (GoapAction action in usableActions)
             {
                 if ((usedActionMask & action.ActionMask) != 0UL)
@@ -143,42 +140,63 @@ namespace GOAP
                     continue;
                 }
 
-                float nextCost = runningCost + action.cost;
-                if (nextCost >= bestCost)
-                {
-                    continue;
-                }
-
                 int rollbackMarker = conditionChanges.Count;
-
-                if (!TryRegressInPlace(action))
+                if (!TryRegressInPlace(
+                        action,
+                        worldState,
+                        unsatisfied,
+                        out int childUnsatisfied))
                 {
                     RollbackConditions(rollbackMarker);
                     continue;
                 }
 
-                ulong nextUsedActionMask = usedActionMask | action.ActionMask;
-
                 currentPath.Add(action);
+                bool planFound;
 
-                if (InState(workingConditions, worldState))
+                if (childUnsatisfied == 0)
                 {
-                    bestCost = nextCost;
-                    bestPath.Clear();
-                    bestPath.AddRange(currentPath);
+                    foundPlan = new Queue<GoapAction>(currentPath.Count);
+                    for (int index = currentPath.Count - 1; index >= 0; index--)
+                    {
+                        foundPlan.Enqueue(currentPath[index]);
+                    }
+
+                    planFound = true;
                 }
                 else
                 {
-                    BuildGraph(nextCost, nextUsedActionMask, worldState);
+                    planFound = Search(
+                        usedActionMask | action.ActionMask,
+                        childUnsatisfied,
+                        worldState);
                 }
 
                 currentPath.RemoveAt(currentPath.Count - 1);
                 RollbackConditions(rollbackMarker);
+
+                if (planFound)
+                {
+                    return true;
+                }
             }
+
+            return false;
         }
 
-        private bool TryRegressInPlace(GoapAction action)
+        /// <summary>
+        /// 原地回归一个 Action，并增量更新未满足条件数：
+        /// 被 Effect 移除的条件若原本未被世界状态满足，计数 -1；
+        /// 新加入的前置条件若不被世界状态满足，计数 +1。
+        /// </summary>
+        private bool TryRegressInPlace(
+            GoapAction action,
+            Blackboard worldState,
+            int parentUnsatisfied,
+            out int childUnsatisfied)
         {
+            childUnsatisfied = parentUnsatisfied;
+
             // 先完整检查 Effect 并记录待移除项，避免发生冲突后才修改工作字典。
             // 注意：Precondition 阶段是边检查边修改的，若中途冲突直接返回 false，
             // 已做的修改依赖调用方按 rollbackMarker 回滚。
@@ -210,6 +228,11 @@ namespace GOAP
             {
                 conditionChanges.Add(removal);
                 workingConditions.Remove(removal.Key);
+
+                if (!WorldSatisfies(worldState, removal.Key, removal.OldEntry))
+                {
+                    childUnsatisfied--;
+                }
             }
 
             foreach (KeyValuePair<int, BlackboardEntry> precondition in action.Preconditions.Entries)
@@ -229,6 +252,11 @@ namespace GOAP
                     false,
                     null));
                 workingConditions.Add(precondition.Key, precondition.Value);
+
+                if (!WorldSatisfies(worldState, precondition.Key, precondition.Value))
+                {
+                    childUnsatisfied++;
+                }
             }
 
             return true;
@@ -257,6 +285,29 @@ namespace GOAP
             }
         }
 
+        private int CountUnsatisfied(Blackboard worldState)
+        {
+            int unsatisfied = 0;
+            foreach (KeyValuePair<int, BlackboardEntry> condition in workingConditions)
+            {
+                if (!WorldSatisfies(worldState, condition.Key, condition.Value))
+                {
+                    unsatisfied++;
+                }
+            }
+
+            return unsatisfied;
+        }
+
+        private static bool WorldSatisfies(
+            Blackboard worldState,
+            int keyId,
+            BlackboardEntry entry)
+        {
+            return worldState.TryGetEntry(keyId, out BlackboardEntry stateEntry) &&
+                   entry.ValueEquals(stateEntry);
+        }
+
         private static void ValidateActionMask(ulong actionMask, string parameterName)
         {
             if (actionMask == 0UL || (actionMask & (actionMask - 1UL)) != 0UL)
@@ -265,28 +316,6 @@ namespace GOAP
                     $"ActionMask {actionMask} 必须非零且只能包含一个置位 bit。",
                     parameterName);
             }
-        }
-
-        private bool InState(
-            Dictionary<int, BlackboardEntry> conditions,
-            Blackboard state)
-        {
-            // 条件 key 互不重复，状态必须至少包含同样多的条目才可能全部满足。
-            if (conditions.Count > state.Count)
-            {
-                return false;
-            }
-
-            foreach (KeyValuePair<int, BlackboardEntry> condition in conditions)
-            {
-                if (!state.TryGetEntry(condition.Key, out BlackboardEntry entry) ||
-                    !entry.ValueEquals(condition.Value))
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }
