@@ -17,6 +17,8 @@ namespace GOAP
     ///   因此"有解但没找到"是可能的（使用方已知晓该约定）。
     ///
     /// 用法：new GoapAgent(new GoapGreedyPlanner())。
+    /// 
+    /// 在链式Action，即一个Goal大概率只有一条action链能满足的情况下，他的性能不如默认的
     /// </summary>
     public class GoapGreedyPlanner : IGoapPlanner
     {

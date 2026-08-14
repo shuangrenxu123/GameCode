@@ -18,6 +18,10 @@ namespace GOAP
         }
     }
 
+    /// <summary>
+    /// DFS反向回溯的Planner，不要尝试出现Action顺序无关的情况，那样会大幅度降低性能
+    /// 比如先执行A在执行B与先执行B再执行A他们得到的Effect是一样的
+    /// </summary>
     public class GoapPlanner : IGoapPlanner
     {
         private readonly List<GoapAction> usableActions = new();
@@ -29,13 +33,6 @@ namespace GOAP
 
         private float bestCost;
 
-        /// <summary>
-        /// 从目标条件开始反向回归，寻找能够由当前世界状态支持的最低成本 Action 序列。
-        /// 搜索过程只复用一个条件字典，并通过修改栈在递归返回时恢复状态。
-        /// 对工作条件中的 Entry 只整体替换、从不修改其 Value，因此回滚
-        /// 直接保存 Entry 引用即可；也绝不触碰 worldState 本体，避免误触
-        /// Blackboard 的 OnValueChanged 事件。
-        /// </summary>
         public Queue<GoapAction> Plan(
             HashSet<GoapAction> availableActions,
             Blackboard worldState,
