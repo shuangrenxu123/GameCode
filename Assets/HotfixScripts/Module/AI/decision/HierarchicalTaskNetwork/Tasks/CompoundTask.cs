@@ -8,13 +8,5 @@ namespace HTN
     public class CompoundTask : Task
     {
         public List<Method> Methods { get; } = new();
-
-        public Method FindSatisfiedMethod(
-            AIBlackboard.Blackboard source,
-            AIBlackboard.Blackboard changes,
-            int startIndex = 0)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

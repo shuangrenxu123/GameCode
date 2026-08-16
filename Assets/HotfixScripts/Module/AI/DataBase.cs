@@ -1,7 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using HTN;
 using UnityEngine;
 
 namespace AIBlackboard
@@ -128,8 +127,8 @@ namespace AIBlackboard
         /// <summary>
         /// 供同程序集内（如 GOAP 规划器）直接遍历条目；外部程序集请使用类型化读写接口。
         /// </summary>
-        internal Dictionary<int, BlackboardEntry> Entries => data;
 
+        internal Dictionary<int, BlackboardEntry> Entries => data;
         internal bool TryGetEntry(int keyId, out BlackboardEntry entry)
         {
             return data.TryGetValue(keyId, out entry);
@@ -150,6 +149,16 @@ namespace AIBlackboard
             {
                 data[keyId] = source.Clone();
             }
+        }
+
+        /// <summary>
+        /// 用指定条目整体替换该 key（不原地改原条目）：供规划器等需要"替换式写入"
+        /// （零拷贝、不改旧引用）的场景。与 WriteEntry 的区别：WriteEntry 是"把值写进
+        /// 已有条目"，ReplaceEntry 是"换掉整个条目对象"。
+        /// </summary>
+        internal void ReplaceEntry(int keyId, BlackboardEntry entry)
+        {
+            data[keyId] = entry;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -299,6 +308,20 @@ namespace AIBlackboard
         public void Reset()
         {
             data.Clear();
+        }
+
+        /// <summary>
+        /// 深拷贝一份黑板（条目值拷贝，不含订阅者）。
+        /// 供规划回溯等需要快照/回滚的场景使用。
+        /// </summary>
+        public Blackboard Clone()
+        {
+            Blackboard clone = new Blackboard();
+            foreach (KeyValuePair<int, BlackboardEntry> kv in data)
+            {
+                clone.data[kv.Key] = kv.Value.Clone();
+            }
+            return clone;
         }
 
     }
