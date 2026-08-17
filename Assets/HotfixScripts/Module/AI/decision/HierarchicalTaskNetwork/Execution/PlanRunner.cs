@@ -37,6 +37,11 @@ namespace HTN
                     return TaskStatus.Success;
                 }
 
+                if (!next.ArePreconditionsSatisfied(_worldState))
+                {
+                    return TaskStatus.Failure;
+                }
+
                 CurrentTask = next;
             }
 
@@ -52,7 +57,7 @@ namespace HTN
                 // 成功：把效果写进真实世界，然后取下一条任务。
                 CurrentTask.ApplyEffects(_worldState);
                 CurrentTask = null;
-                return CurrentPlan.Tasks.Count > 0 ? TaskStatus.Running : TaskStatus.Success;
+                return CurrentPlan.RemainingCount > 0 ? TaskStatus.Running : TaskStatus.Success;
             }
 
             // Failure：整个计划失败。

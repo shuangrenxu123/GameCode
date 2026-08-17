@@ -4,36 +4,47 @@ namespace HTN
 {
     /// <summary>
     /// 由规划器生成的原子任务序列（按执行顺序）。
-    /// 本身是无逻辑的数据容器，只负责存放与取出原子任务。
+    /// 使用执行下标推进任务，保留完整任务序列供计划验证使用。
     /// </summary>
     public class Plan
     {
-        /// <summary>底层队列（按加入顺序执行）。</summary>
-        public Queue<PrimitiveTask> Tasks { get; } = new();
+        private readonly List<PrimitiveTask> _tasks = new();
+        private int _nextTaskIndex;
+
+        /// <summary>完整的原子任务序列。</summary>
+        public IReadOnlyList<PrimitiveTask> Tasks => _tasks;
+
+        /// <summary>下一项待执行任务在完整计划中的下标。</summary>
+        public int NextTaskIndex => _nextTaskIndex;
+
+        /// <summary>尚未取出的任务数量。</summary>
+        public int RemainingCount => _tasks.Count - _nextTaskIndex;
 
         /// <summary>向计划末尾追加一个原子任务。</summary>
         public void Add(PrimitiveTask task)
         {
-            Tasks.Enqueue(task);
+            _tasks.Add(task);
         }
 
-        /// <summary>取出并移除下一个原子任务；计划为空时返回 false。</summary>
+        /// <summary>取出下一个原子任务并推进执行下标；计划完成时返回 false。</summary>
         public bool TryGetNextTask(out PrimitiveTask task)
         {
-            if (Tasks.Count == 0)
+            if (_nextTaskIndex >= _tasks.Count)
             {
                 task = null;
                 return false;
             }
 
-            task = Tasks.Dequeue();
+            task = _tasks[_nextTaskIndex];
+            _nextTaskIndex++;
             return true;
         }
 
-        /// <summary>清空计划。</summary>
+        /// <summary>清空任务并重置执行位置，保留列表容量供后续规划复用。</summary>
         public void Clear()
         {
-            Tasks.Clear();
+            _tasks.Clear();
+            _nextTaskIndex = 0;
         }
     }
 }
