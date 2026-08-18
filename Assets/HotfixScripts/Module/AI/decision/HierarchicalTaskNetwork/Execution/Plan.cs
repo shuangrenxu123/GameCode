@@ -20,6 +20,8 @@ namespace HTN
         /// <summary>尚未取出的任务数量。</summary>
         public int RemainingCount => _tasks.Count - _nextTaskIndex;
 
+        internal int Count => _tasks.Count;
+
         /// <summary>向计划末尾追加一个原子任务。</summary>
         public void Add(PrimitiveTask task)
         {
@@ -45,6 +47,14 @@ namespace HTN
         {
             _tasks.Clear();
             _nextTaskIndex = 0;
+        }
+
+        internal void Truncate(int count)
+        {
+            if (_tasks.Count > count)
+            {
+                _tasks.RemoveRange(count, _tasks.Count - count);
+            }
         }
     }
 }

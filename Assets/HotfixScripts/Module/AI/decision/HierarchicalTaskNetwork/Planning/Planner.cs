@@ -23,7 +23,6 @@ namespace HTN
             }
         }
 
-        private readonly List<PrimitiveTask> _finalPlan = new();
         private readonly List<UndoEntry> _undoLog = new();
         private readonly Dictionary<int, BlackboardEntry> _workingChanges = new();
         private readonly Plan _plan = new();
@@ -33,22 +32,28 @@ namespace HTN
         public Plan FindPlan(HTNDomain domain)
         {
             _sourceState = domain.worldState;
-            _finalPlan.Clear();
             _undoLog.Clear();
             _workingChanges.Clear();
             _plan.Clear();
 
-            if (!DecomposeTask(domain.RootTask))
+            Plan result = null;
+            try
             {
-                return null;
+                if (DecomposeTask(domain.RootTask))
+                {
+                    result = _plan;
+                }
+                else
+                {
+                    _plan.Clear();
+                }
+            }
+            finally
+            {
+                ClearPlanningState();
             }
 
-            foreach (PrimitiveTask primitive in _finalPlan)
-            {
-                _plan.Add(primitive);
-            }
-
-            return _plan;
+            return result;
         }
 
         private bool DecomposeTask(Task task)
@@ -61,7 +66,7 @@ namespace HTN
                 }
 
                 ApplyEffects(primitive);
-                _finalPlan.Add(primitive);
+                _plan.Add(primitive);
                 return true;
             }
 
@@ -74,7 +79,7 @@ namespace HTN
                     continue;
                 }
 
-                int planMarker = _finalPlan.Count;
+                int planMarker = _plan.Count;
                 int undoMarker = _undoLog.Count;
 
                 bool ok = true;
@@ -92,7 +97,7 @@ namespace HTN
                     return true;
                 }
 
-                _finalPlan.RemoveRange(planMarker, _finalPlan.Count - planMarker);
+                _plan.Truncate(planMarker);
                 RollbackUndo(undoMarker);
             }
 
@@ -155,6 +160,13 @@ namespace HTN
             }
 
             return _sourceState.TryGetEntry(key, out entry);
+        }
+
+        private void ClearPlanningState()
+        {
+            _undoLog.Clear();
+            _workingChanges.Clear();
+            _sourceState = null;
         }
     }
 }
