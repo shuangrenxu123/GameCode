@@ -44,6 +44,7 @@ namespace Fight.Number
         public int ComputedBaseValue;
         public int FinalValue;
         public bool Dirty;
+        public bool Recalculating;
         public bool IsDerived;
         public PropertyType[] Dependencies = Array.Empty<PropertyType>();
         public readonly List<PropertyType> Dependents = new List<PropertyType>(2);

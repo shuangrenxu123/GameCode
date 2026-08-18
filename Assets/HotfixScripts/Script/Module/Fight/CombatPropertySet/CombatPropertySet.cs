@@ -9,7 +9,6 @@ namespace Fight.Number
         private readonly Dictionary<PropertyType, StatNode> _stats = new Dictionary<PropertyType, StatNode>();
         private readonly Dictionary<ResourceType, ResourceNode> _resources = new Dictionary<ResourceType, ResourceNode>();
 
-        private readonly HashSet<PropertyType> _recalculating = new HashSet<PropertyType>();
         private int _nextHandle = 1;
         private int _batchDepth;
 
@@ -472,11 +471,12 @@ namespace Fight.Number
                 return;
             }
 
-            if (!_recalculating.Add(id))
+            if (node.Recalculating)
             {
                 throw new InvalidOperationException("Circular derived property recalculation detected: " + id);
             }
 
+            node.Recalculating = true;
             try
             {
                 int oldValue = node.FinalValue;
@@ -495,7 +495,7 @@ namespace Fight.Number
             }
             finally
             {
-                _recalculating.Remove(id);
+                node.Recalculating = false;
             }
         }
 
@@ -555,45 +555,43 @@ namespace Fight.Number
 
         private void MarkDirty(PropertyType id)
         {
-            var visited = new HashSet<PropertyType>();
-            MarkDirtyRecursive(id, visited);
+            MarkDirtyRecursive(id);
 
             if (_batchDepth == 0)
             {
-                visited.Clear();
-                RecalculateDirtyCascade(id, visited);
+                RecalculateDirtyCascade(id);
             }
         }
 
-        private void MarkDirtyRecursive(PropertyType id, HashSet<PropertyType> visited)
+        private void MarkDirtyRecursive(PropertyType id)
         {
-            if (!visited.Add(id))
+            var node = GetNode(id);
+            if (node.Dirty)
             {
                 return;
             }
 
-            var node = GetNode(id);
             node.Dirty = true;
 
             for (int i = 0; i < node.Dependents.Count; i++)
             {
-                MarkDirtyRecursive(node.Dependents[i], visited);
+                MarkDirtyRecursive(node.Dependents[i]);
             }
         }
 
-        private void RecalculateDirtyCascade(PropertyType id, HashSet<PropertyType> visited)
+        private void RecalculateDirtyCascade(PropertyType id)
         {
-            if (!visited.Add(id))
+            var node = GetNode(id);
+            if (!node.Dirty)
             {
                 return;
             }
 
             RecalculateIfDirty(id);
 
-            var node = GetNode(id);
             for (int i = 0; i < node.Dependents.Count; i++)
             {
-                RecalculateDirtyCascade(node.Dependents[i], visited);
+                RecalculateDirtyCascade(node.Dependents[i]);
             }
         }
 

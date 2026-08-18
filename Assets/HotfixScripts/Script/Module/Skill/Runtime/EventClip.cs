@@ -133,22 +133,40 @@ namespace SkillRuntimeClip
             runner.actor.SetUpRootMotion(usePositionRootMotion, useRotationRootMotion);
 
             var properties = runner.actor.GetComponent<CombatEntity>().properties;
-            speedChange = properties.AddModifier(PropertyType.MoveSpeed
-                  , positionMultiplier
-                  , Fight.Number.ModifierType.AddPercent
-                  , new Fight.Number.ModifierSource(Fight.Number.ModifierSourceType.Buff));
-            rotationChange = properties.AddModifier(PropertyType.RotationMultiplier
-                   , rotationMultiplier
-                   , Fight.Number.ModifierType.AddPercent
-                   , new Fight.Number.ModifierSource(Fight.Number.ModifierSourceType.Buff));
+            properties.BeginBatch();
+            try
+            {
+                speedChange = properties.AddModifier(
+                    PropertyType.MoveSpeed,
+                    positionMultiplier,
+                    ModifierType.AddPercent,
+                    new ModifierSource(ModifierSourceType.Buff));
+                rotationChange = properties.AddModifier(
+                    PropertyType.RotationMultiplier,
+                    rotationMultiplier,
+                    ModifierType.AddPercent,
+                    new ModifierSource(ModifierSourceType.Buff));
+            }
+            finally
+            {
+                properties.EndBatch();
+            }
         }
         public override void OnFinish()
         {
             base.OnFinish();
             runner.actor.SetUpRootMotion(true, true);
             var properties = runner.actor.GetComponent<CombatEntity>().properties;
-            properties.RemoveModifier(PropertyType.MoveSpeed, speedChange);
-            properties.RemoveModifier(PropertyType.RotationMultiplier, rotationChange);
+            properties.BeginBatch();
+            try
+            {
+                properties.RemoveModifier(PropertyType.MoveSpeed, speedChange);
+                properties.RemoveModifier(PropertyType.RotationMultiplier, rotationChange);
+            }
+            finally
+            {
+                properties.EndBatch();
+            }
 
         }
         public override void OnUpdate()
